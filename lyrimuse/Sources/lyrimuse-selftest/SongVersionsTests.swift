@@ -281,6 +281,9 @@ func runSongVersionsTests() {
         let sheet = read(sources, "lyrimuse/LyricsManager/SongVersionsSheet.swift")
         expectEqual(V.evidenceOrder.allSatisfy { sourceBytes(sheet, contain: "case \"\($0)\": return L10n.t(") }, true,
                     "其他写法(契约): 每种证据都有文案")
+        expectEqual(sourceHas(sheet, "{ $0.size.width >= Self.tableWideMinWidth }) { tableIsWide = $0 }")
+                    && sourceHas(sheet, "HStack(spacing: 10) { overviewColumns(v, isCurrent: isCurrent) }\n .padding(.leading, Self.narrowColumnsIndent)"), true,
+                    "其他写法(契约): 「全部条目」表窄了每条拆两行,名字不被四列定宽挤成一两个字母")
         let store = read(sources, "lyrimuse/LyricsManager/EnrichCacheStore.swift")
         let edit = read(engine, "enrichedit.go")
         expectEqual(sourceBytes(store, contain: "commit(\"split_song\", [\"keys\": keys])")

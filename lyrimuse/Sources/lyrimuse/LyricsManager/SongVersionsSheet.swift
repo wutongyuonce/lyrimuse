@@ -24,6 +24,8 @@ struct SongVersionsSheet: View {
     @State private var diffExpanded = true
     @State private var evidenceExpanded = false
     @State private var pairEvidenceExpanded = false
+    /// 「全部条目」表够不够宽排成一行一条,见 `tableWideMinWidth`。
+    @State private var tableIsWide = true
     @State private var pendingSplit: String?
     @State private var confirmingSplit = false
     @State private var busy = false
@@ -440,12 +442,15 @@ struct SongVersionsSheet: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(L10n.t("全部条目")).font(.callout.weight(.semibold))
             HStack(spacing: 10) {
-                Text(L10n.t("条目")).frame(maxWidth: .infinity, alignment: .leading)
+                if tableIsWide {
+                    Text(L10n.t("条目")).frame(maxWidth: .infinity, alignment: .leading)
+                }
                 Text(L10n.t("时长")).frame(width: Self.durationColumn, alignment: .leading)
                 Text(L10n.t("歌词来源")).frame(width: Self.sourceColumn, alignment: .leading)
                 Text(L10n.t("歌词一致性")).frame(width: Self.lyricsColumn, alignment: .leading)
                 Text(L10n.t("同步策略")).frame(width: Self.relationColumn, alignment: .leading)
             }
+            .padding(.leading, tableIsWide ? 0 : Self.narrowColumnsIndent)
             .lineLimit(1)
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -458,9 +463,17 @@ struct SongVersionsSheet: View {
             }
             .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(Color.primary.opacity(0.1)))
         }
+        .onGeometryChange(for: Bool.self, of: { $0.size.width >= Self.tableWideMinWidth }) { tableIsWide = $0 }
     }
 
-    /// 一览表各列的宽度。弹窗最窄时(760)右边约 450 点,名字那列要留够两行字。
+    /// 表宽到这么多才一行排一条(名字那列还剩约 180 点);窄了每条拆两行:上面图标和完整的名字,
+    /// 下面四列照原列宽对齐、跟名字的字左缘对齐,表头只留这四列。左栏拖宽或弹窗最窄(760)时右边只有约 400 点,
+    /// 四列定宽一占,名字那列只剩一两个字母。
+    static let tableWideMinWidth: CGFloat = 540
+    /// 窄排时第二行缩进:图标那块(`playerIcons`,18 点的图标最多叠三个)加它跟名字的间距。
+    static let narrowColumnsIndent: CGFloat = 18 + 8 * 2 + 8
+
+    /// 一览表各列的宽度。
     static let durationColumn: CGFloat = 40
     static let sourceColumn: CGFloat = 92
     static let lyricsColumn: CGFloat = 70
@@ -471,33 +484,30 @@ struct SongVersionsSheet: View {
         return Button {
             selected = v.key
         } label: {
-            HStack(spacing: 10) {
-                HStack(spacing: 8) {
-                    playerIcons(v, size: 18)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(v.title).lineLimit(1)
-                        Text([v.artist, v.album].filter { !$0.isEmpty }.joined(separator: " · "))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+            let name = HStack(spacing: 8) {
+                playerIcons(v, size: 18)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(v.title).lineLimit(1)
+                    Text([v.artist, v.album].filter { !$0.isEmpty }.joined(separator: " · "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if tableIsWide {
+                    HStack(spacing: 10) {
+                        name
+                        overviewColumns(v, isCurrent: isCurrent)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 4) {
+                        name
+                        HStack(spacing: 10) { overviewColumns(v, isCurrent: isCurrent) }
+                            .padding(.leading, Self.narrowColumnsIndent)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Text(v.durationSecs == nil ? "—" : durationText(v))
-                    .monospacedDigit()
-                    .help(v.durationSecs == nil ? L10n.t("未提供") : "")
-                    .frame(width: Self.durationColumn, alignment: .leading)
-                Text(v.source.isEmpty ? "—" : sourceDisplayName(v.source))
-                    .help(sourceText(v))
-                    .frame(width: Self.sourceColumn, alignment: .leading)
-                HStack(spacing: 4) {
-                    if !isCurrent { statusDot(lyricsSymbol(v), lyricsColor(v), size: 10, label: nil) }
-                    Text(isCurrent ? "—" : lyricsVerdict(v))
-                }
-                .frame(width: Self.lyricsColumn, alignment: .leading)
-                Text(isCurrent ? L10n.t("当前条目") : Self.relationTitle(v.relation))
-                    .foregroundStyle(Self.relationColor(v.relation))
-                    .frame(width: Self.relationColumn, alignment: .leading)
             }
             .lineLimit(1)
             .font(.callout)
@@ -509,6 +519,26 @@ struct SongVersionsSheet: View {
         .buttonStyle(.glassListRow)
         .allowsHitTesting(!isCurrent)
         .help(isCurrent ? "" : L10n.t("与当前条目对比"))
+    }
+
+    /// 一览表名字之外的四列:时长、歌词来源、歌词一致性、同步策略。
+    @ViewBuilder
+    private func overviewColumns(_ v: Version, isCurrent: Bool) -> some View {
+        Text(v.durationSecs == nil ? "—" : durationText(v))
+            .monospacedDigit()
+            .help(v.durationSecs == nil ? L10n.t("未提供") : "")
+            .frame(width: Self.durationColumn, alignment: .leading)
+        Text(v.source.isEmpty ? "—" : sourceDisplayName(v.source))
+            .help(sourceText(v))
+            .frame(width: Self.sourceColumn, alignment: .leading)
+        HStack(spacing: 4) {
+            if !isCurrent { statusDot(lyricsSymbol(v), lyricsColor(v), size: 10, label: nil) }
+            Text(isCurrent ? "—" : lyricsVerdict(v))
+        }
+        .frame(width: Self.lyricsColumn, alignment: .leading)
+        Text(isCurrent ? L10n.t("当前条目") : Self.relationTitle(v.relation))
+            .foregroundStyle(Self.relationColor(v.relation))
+            .frame(width: Self.relationColumn, alignment: .leading)
     }
 
     /// 这首歌里全部证据按种类数:几对写法靠它连着,强弱跟对照页那块同一个口径。
