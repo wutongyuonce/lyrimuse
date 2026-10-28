@@ -310,14 +310,22 @@ func TestReadCredentialVaultFallsBackToPreviousAccount(t *testing.T) {
 }
 
 // 钥匙串锁着时 security 会一直等用户解锁:限时到了就放弃,不卡住调用方。
+// 假 security 把 sleep 放到后台再 wait:杀掉 sh 之后 sleep 还占着输出管道,要靠 WaitDelay 才返回得了。
+// 限时前先空跑一次:新建的脚本第一次执行要等系统检查(本机约 0.5 秒),不空跑的话 100 毫秒里脚本还没起到 sleep 就被杀,
+// 测不出 CI 上卡满的情形。
 func TestReadCredentialVaultTimesOut(t *testing.T) {
 	script := filepath.Join(t.TempDir(), "security")
-	if err := os.WriteFile(script, []byte("#!/bin/sh\nsleep 5\n"), 0o755); err != nil {
+	if err := os.WriteFile(script, []byte("#!/bin/sh\n[ \"$1\" = warm ] && exit 0\nsleep 5 &\nwait\n"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	oldBin, oldTimeout := credentialVaultSecurity, credentialVaultTimeout
-	credentialVaultSecurity, credentialVaultTimeout = script, 100*time.Millisecond
-	t.Cleanup(func() { credentialVaultSecurity, credentialVaultTimeout = oldBin, oldTimeout })
+	if err := exec.Command(script, "warm").Run(); err != nil {
+		t.Fatal(err)
+	}
+	oldBin, oldTimeout, oldDelay := credentialVaultSecurity, credentialVaultTimeout, credentialVaultWaitDelay
+	credentialVaultSecurity, credentialVaultTimeout, credentialVaultWaitDelay = script, 100*time.Millisecond, 50*time.Millisecond
+	t.Cleanup(func() {
+		credentialVaultSecurity, credentialVaultTimeout, credentialVaultWaitDelay = oldBin, oldTimeout, oldDelay
+	})
 	start := time.Now()
 	_, err := readCredentialVaultFromKeychain()
 	if err == nil || !strings.Contains(err.Error(), "timed out") {

@@ -54,8 +54,11 @@ var (
 	// credentialVaultKeychain 为空读默认搜索列表(登录钥匙串);测试指到临时钥匙串文件。
 	credentialVaultKeychain = ""
 	credentialVaultTimeout  = 5 * time.Second
-	credentialVaultRetry    = time.Minute
-	credentialVaultMaxRetry = time.Hour
+	// credentialVaultWaitDelay:限时到了只杀得掉 security 本身,它留下的子进程还占着输出管道时 Output 会一直等到
+	// 子进程退出;过了这么久就强行关掉管道返回。
+	credentialVaultWaitDelay = 500 * time.Millisecond
+	credentialVaultRetry     = time.Minute
+	credentialVaultMaxRetry  = time.Hour
 	// credentialVaultRead 取保险箱的 JSON 字节,没有条目返回 nil, nil。测试换成假的(TestMain)。
 	credentialVaultRead = readCredentialVaultFromKeychain
 )
@@ -137,7 +140,9 @@ func readCredentialVaultAccount(account string) ([]byte, error) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), credentialVaultTimeout)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, credentialVaultSecurity, args...).Output()
+	cmd := exec.CommandContext(ctx, credentialVaultSecurity, args...)
+	cmd.WaitDelay = credentialVaultWaitDelay
+	out, err := cmd.Output()
 	if ctx.Err() != nil {
 		return nil, fmt.Errorf("keychain read timed out after %s (keychain locked?)", credentialVaultTimeout)
 	}
