@@ -787,7 +787,7 @@
 "唯一的差异是胜者在「%1$@」一项多 %2$d 分" = "The only difference: the winner scored %2$d more on “%1$@”";
 "喜欢" = "Favorite";
 "喜欢/取消喜欢" = "Favorite/Remove Favorite";
-"四档报告共用。一行里的占位符都没有数据时，这一行不发送" = "Shared by all four reports. A line is left out when none of its placeholders has data";
+"四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送" = "Shared by all four reports. Click a placeholder below to insert it at the cursor; a line is left out when none of its placeholders has data";
 "回到逐句编辑" = "Back to Line Editing";
 "因网络不可用已停止" = "Stopped: no connection";
 "因连续失败暂时跳过：%@" = "Temporarily skipped after repeated failures: %@";
@@ -1282,11 +1282,13 @@
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Chat not found (incorrect Chat ID, or you haven’t messaged the bot yet)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Found %1$@ · Not found %2$@ · Skipped %3$@";
 "找到 %@ 首" = "%@ Found";
+"把「默认正文」换成概况、三份榜单、新歌手几段，可以逐段删改、调整顺序" = "Replace the default body with its parts (summary, the three charts, new artists) so you can edit, remove or reorder each one";
 "把听歌报告推到手机、群聊或你自己的服务" = "Send listening reports to your phone, group chats or your own service";
 "拆分" = "Split";
 "拆分…" = "Split…";
 "拆分「%@」？" = "Split “%@”?";
 "拆分后，该条目将作为独立歌曲：播放次数单独统计，不再同步歌词；此前同步过去的歌词将恢复为原有版本。之后可在此恢复合并" = "The entry will become a separate song: its plays are counted separately and its lyrics no longer sync. Lyrics previously synced to it are restored to its own. You can merge it back here later";
+"拆开默认正文" = "Split Default Body";
 "拖动调整顺序" = "Drag to reorder";
 "拷贝" = "Copy";
 "拷贝修复命令" = "Copy Fix Command";
@@ -2339,6 +2341,7 @@
 "触控栏右侧的亮度、音量等系统按键，可在「系统设置 › 键盘 › 触控栏设置…」中增减或调整顺序" = "Add, remove or reorder the brightness, volume and other system buttons on the right of the Touch Bar in System Settings › Keyboard › Touch Bar Settings…";
 "触控栏歌词" = "Touch Bar Lyrics";
 "触控栏歌词仅适用于配备触控栏的 MacBook Pro" = "Touch Bar Lyrics works only on MacBook Pro models with a Touch Bar";
+"认不出的占位符会原样发送：%@" = "Unrecognized placeholders are sent as typed: %@";
 "设为默认" = "Default Channel";
 "设备控制和数据访问" = "Device Control and Data Access";
 "设定歌词偏移" = "Set Lyrics Offset";
@@ -2750,6 +2753,7 @@
 "黑字描边" = "Black Text with Outline";
 "黑胶唱片" = "Vinyl";
 "默认" = "Default";
+"默认内容推送时按各平台的格式排版，这里只显示文字" = "The default content is formatted for each platform when pushed; only the text is shown here";
 "默认标注日文、韩文、中文和粤语" = "On by default for Japanese, Korean, Chinese and Cantonese";
 "默认标注日文、韩文和粤语" = "On by default for Japanese, Korean and Cantonese";
 "默认标题" = "Default title";

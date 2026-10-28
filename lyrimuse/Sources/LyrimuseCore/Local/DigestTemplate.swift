@@ -123,6 +123,75 @@ public struct DigestTemplate: Equatable, Sendable {
         return text
     }
 
+    /// 多行的占位符:插进正文时单独占一行,标题里不插。
+    public static let multilinePlaceholders: Set<String> = ["body", "top_artists", "top_albums", "top_tracks"]
+
+    /// 默认正文拆成各段的写法(编辑器「拆开默认正文」):换掉 `{body}` 后能逐段删改、调顺序。只有一条的榜单也照列,
+    /// 新歌手那句不带「等」,其余跟默认正文一样。
+    public static let expandedDefaultBody = """
+    {summary}
+
+    Top 歌手：
+    {top_artists}
+
+    Top 专辑：
+    {top_albums}
+
+    Top 歌曲：
+    {top_tracks}
+
+    新听了 {new_artists} 位歌手：{new_artist_names}
+    """
+
+    /// 模板里 `{小写字母和下划线}` 的位置(UTF-16,给 NSTextView 上色用)和认不认得,同 renderText 的匹配方式。
+    public struct Token: Equatable, Sendable {
+        public let range: NSRange
+        public let name: String
+        public let known: Bool
+    }
+
+    public static func tokens(in text: String) -> [Token] {
+        let units = Array(text.utf16)
+        var out: [Token] = []
+        var i = 0
+        let open = UInt16(UInt8(ascii: "{")), close = UInt16(UInt8(ascii: "}"))
+        let a = UInt16(UInt8(ascii: "a")), z = UInt16(UInt8(ascii: "z")), underscore = UInt16(UInt8(ascii: "_"))
+        while i < units.count {
+            guard units[i] == open else { i += 1; continue }
+            var j = i + 1
+            while j < units.count, (a...z).contains(units[j]) || units[j] == underscore { j += 1 }
+            if j > i + 1, j < units.count, units[j] == close {
+                let name = String(utf16CodeUnits: Array(units[(i + 1)..<j]), count: j - i - 1)
+                out.append(Token(range: NSRange(location: i, length: j - i + 1), name: name, known: placeholders.contains(name)))
+                i = j + 1
+            } else {
+                i += 1
+            }
+        }
+        return out
+    }
+
+    /// 在光标处插 `{name}` 时实际插进去的文字。`before` / `after` 是光标前后紧挨着的那个字(没有就是 nil)。
+    /// 多行的占位符单独占一行:前面不是行首就先换行,后面总带一个换行,插完光标在新的一行上;
+    /// 其余的,前一个字是英文字母、数字或别的占位符时补一个空格,不然 `{title}{plays}` 会粘在一起。
+    public static func insertionText(for name: String, before: Character?, after: Character?) -> String {
+        var token = "{\(name)}"
+        if multilinePlaceholders.contains(name) {
+            if let before, before != "\n" { token = "\n" + token }
+            if after != "\n" { token += "\n" }
+        } else if let before, before == "}" || (before.isASCII && (before.isLetter || before.isNumber)) {
+            token = " " + token
+        }
+        return token
+    }
+
+    /// 认不出的占位符(去重、按出现顺序);它们会原样发出去。
+    public static func unknownPlaceholders(in text: String) -> [String] {
+        var seen: [String] = []
+        for t in tokens(in: text) where !t.known && !seen.contains(t.name) { seen.append(t.name) }
+        return seen
+    }
+
     /// 这一期实际推的标题和正文;哪一段没自定义、或者渲染出来是空的,那一段用默认(同引擎 renderDigestTemplate)。
     public func render(defaultTitle: String, defaultBody: String, stats: NotificationPreview.Stats,
                        topN: Int) -> (title: String, body: String) {

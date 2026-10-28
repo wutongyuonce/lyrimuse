@@ -55981,25 +55981,25 @@
         }
       }
     },
-    "四档报告共用。一行里的占位符都没有数据时，这一行不发送" : {
+    "四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shared by all four reports. A line is left out when none of its placeholders has data"
+            "value" : "Shared by all four reports. Click a placeholder below to insert it at the cursor; a line is left out when none of its placeholders has data"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四档报告共用。一行里的占位符都没有数据时，这一行不发送"
+            "value" : "四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四種報告共用。一行裡的預留位置都沒有資料時，這一行不會送出"
+            "value" : "四種報告共用。點下面的預留位置插入到游標處；一行裡的預留位置都沒有資料時，這一行不會送出"
           }
         }
       }
@@ -57012,6 +57012,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "譯文接在原文後面，排成一行，「字級」照常生效"
+          }
+        }
+      }
+    },
+    "拆开默认正文" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Split Default Body"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拆开默认正文"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拆開預設內文"
+          }
+        }
+      }
+    },
+    "把「默认正文」换成概况、三份榜单、新歌手几段，可以逐段删改、调整顺序" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace the default body with its parts (summary, the three charts, new artists) so you can edit, remove or reorder each one"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把「默认正文」换成概况、三份榜单、新歌手几段，可以逐段删改、调整顺序"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把「預設內文」換成概況、三份排行榜、新歌手幾段，可以逐段刪改、調整順序"
+          }
+        }
+      }
+    },
+    "认不出的占位符会原样发送：%@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unrecognized placeholders are sent as typed: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "认不出的占位符会原样发送：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法辨識的預留位置會原樣送出：%@"
+          }
+        }
+      }
+    },
+    "默认内容推送时按各平台的格式排版，这里只显示文字" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The default content is formatted for each platform when pushed; only the text is shown here"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认内容推送时按各平台的格式排版，这里只显示文字"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設內容推送時依各平台的格式排版，這裡只顯示文字"
           }
         }
       }

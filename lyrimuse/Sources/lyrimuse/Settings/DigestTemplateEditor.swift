@@ -2,7 +2,8 @@ import LyrimuseCore
 import SwiftUI
 
 // 「听歌报告」卡里的「推送内容」:四档报告共用的自定义标题和正文(Core `DigestTemplate`,引擎 digesttemplate.go)。
-// 编辑器里点一个占位符插到正在编辑的那一栏末尾,下面按这一期的真实数据(取不到时用测试数据)实时预览。见 15 章决策 84。
+// 编辑器里点一个占位符插到正在编辑的那一栏的光标处(PlaceholderTextView),右边按这一期的真实数据(取不到时用测试数据)
+// 实时预览。见 15 章决策 84。
 
 /// 「推送内容」那一行:默认 / 已自定义,行尾「编辑…」开编辑器。
 struct DigestTemplateRow: View {
@@ -30,24 +31,21 @@ struct DigestTemplateRow: View {
     }
 }
 
-/// 编辑标题和正文。保存时跟默认一样的那一段存成空(`DigestTemplate.resolved`)。
+/// 编辑标题和正文:左边两个输入框和一排占位符,右边按这一期的数据实时预览。保存时跟默认一样的那一段存成空
+/// (`DigestTemplate.resolved`)。
 struct DigestTemplateEditor: View {
     let original: DigestTemplate
     let onSave: (DigestTemplate) -> Void
     let onCancel: () -> Void
 
     @ObservedObject private var features = FeatureSettingsStore.shared
+    @StateObject private var insertion = PlaceholderInsertionController()
     @State private var title: String
     @State private var bodyText: String
     @State private var kind: NotificationPreview.Kind = .daily
     @State private var loaded: [NotificationPreview.Kind: NotificationPreviewLoader.State] = [:]
     @State private var loading: Set<NotificationPreview.Kind> = []
-    @FocusState private var focus: Field?
-    /// 最近一次在编辑的那一栏:点占位符时焦点会离开输入框,插到这一栏。
-    @State private var lastField: Field = .body
     private let now = Date()
-
-    private enum Field { case title, body }
 
     init(original: DigestTemplate, onSave: @escaping (DigestTemplate) -> Void, onCancel: @escaping () -> Void) {
         self.original = original
@@ -59,22 +57,20 @@ struct DigestTemplateEditor: View {
 
     private var draft: DigestTemplate { DigestTemplate.resolved(title: title, body: bodyText) }
 
+    private static let editorHeight: CGFloat = 230
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(L10n.t("推送内容")).font(.system(size: 15, weight: .bold))
-                Text(L10n.t("四档报告共用。一行里的占位符都没有数据时，这一行不发送"))
+                Text(L10n.t("四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"))
                     .font(.system(size: 11.5))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            fields
-            placeholderChips
-            preview
-            if draft.isCustom {
-                Label(L10n.t("自定义内容按纯文本推送，不套用各平台的卡片排版"), systemImage: "info.circle")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 18) {
+                editorColumn.frame(width: 460)
+                previewColumn.frame(width: 340)
             }
             Divider()
             HStack {
@@ -91,64 +87,74 @@ struct DigestTemplateEditor: View {
             }
         }
         .padding(20)
-        .frame(width: 560)
-        .onChange(of: focus) { _, field in if let field { lastField = field } }
+        .fixedSize()
         .task(id: kind) { await load(kind) }
     }
 
-    private var fields: some View {
-        Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 10) {
-            GridRow {
-                Text(L10n.t("标题")).gridColumnAlignment(.trailing)
-                TextField(L10n.t("标题"), text: $title, prompt: Text(DigestTemplate.defaultTitle))
-                    .labelsHidden()
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focus, equals: .title)
+    // MARK: 编辑
+
+    private var editorColumn: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            fieldLabel(L10n.t("标题"))
+            PlaceholderTextView(text: $title, singleLine: true, controller: insertion, field: .title)
+                .frame(height: 26)
+                .modifier(TemplateFieldChrome(focused: insertion.lastField == .title))
+            HStack(alignment: .firstTextBaseline) {
+                fieldLabel(L10n.t("正文"))
+                Spacer()
+                if bodyText.contains("{body}") {
+                    Button(L10n.t("拆开默认正文")) {
+                        bodyText = bodyText.replacingOccurrences(of: "{body}", with: DigestTemplate.expandedDefaultBody)
+                    }
+                    .buttonStyle(.link)
+                    .font(.system(size: 11.5))
+                    .help(L10n.t("把「默认正文」换成概况、三份榜单、新歌手几段，可以逐段删改、调整顺序"))
+                }
             }
-            GridRow {
-                Text(L10n.t("正文"))
-                TextEditor(text: $bodyText)
-                    .font(.system(size: 12, design: .monospaced))
-                    .scrollContentBackground(.hidden)
-                    .padding(4)
-                    .frame(height: 130)
-                    .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(nsColor: .textBackgroundColor)))
-                    .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).strokeBorder(Color.primary.opacity(0.15)))
-                    .focused($focus, equals: .body)
-            }
+            PlaceholderTextView(text: $bodyText, controller: insertion, field: .body, initialFocus: true)
+                .frame(height: Self.editorHeight)
+                .modifier(TemplateFieldChrome(focused: insertion.lastField == .body))
+            placeholderChips
+            unknownWarning
         }
-        .font(.system(size: 13))
     }
 
-    /// 占位符一排:标签是说法,悬停说明写占位符本身和它是什么。
+    private func fieldLabel(_ text: String) -> some View {
+        Text(text).font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+    }
+
+    /// 占位符一排:标签是说法,悬停写它插进去的样子和是什么。正文、三份榜单是多行的,总是插进正文;标题正在编辑时它们灰掉。
     private var placeholderChips: some View {
         SettingsFlowRow(spacing: 5) {
             ForEach(DigestTemplate.placeholders, id: \.self) { name in
-                Button { insert(name) } label: {
+                let multiline = DigestTemplate.multilinePlaceholders.contains(name)
+                Button { insertion.insert(name) } label: {
                     Text(Self.label(name))
                         .font(.system(size: 11))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.primary.opacity(0.06)))
+                        .background(Capsule().fill(Color.accentColor.opacity(0.10)))
+                        .foregroundStyle(Color.accentColor)
                         .contentShape(Capsule())
                 }
                 .buttonStyle(SettingsGlassHoverButtonStyle())
+                .disabled(multiline && insertion.lastField == .title)
                 .hoverNote("{\(name)}  " + Self.note(name))
             }
         }
     }
 
-    private func insert(_ name: String) {
-        let token = "{\(name)}"
-        switch lastField {
-        case .title:
-            title += token
-        case .body:
-            // 多行的(三份榜单、整份正文)单独起一行。
-            let multiline = ["body", "top_artists", "top_albums", "top_tracks"].contains(name)
-            if multiline, !bodyText.isEmpty, !bodyText.hasSuffix("\n") { bodyText += "\n" }
-            bodyText += token
-        }
+    /// 认不出的占位符会原样发出去:列出来,免得拼错了没发现。这一行的位置一直留着,出现、消失时弹窗不跳。
+    private var unknownWarning: some View {
+        let unknown = DigestTemplate.unknownPlaceholders(in: title + "\n" + bodyText)
+        return Label(String(format: L10n.t("认不出的占位符会原样发送：%@"), unknown.map { "{\($0)}" }.joined(separator: "、")),
+                     systemImage: "exclamationmark.triangle.fill")
+            .font(.system(size: 11))
+            .foregroundStyle(.orange)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .opacity(unknown.isEmpty ? 0 : 1)
+            .accessibilityHidden(unknown.isEmpty)
     }
 
     // MARK: 预览
@@ -158,19 +164,33 @@ struct DigestTemplateEditor: View {
         return nil
     }
 
-    private var preview: some View {
+    private var previewColumn: some View {
         let stats = real?.stats ?? NotificationPreview.sample(kind)
         let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now)
         let defaultBody = NotificationPreview.body(stats, topN: features.digestTopN)
         let out = draft.render(defaultTitle: defaultTitle, defaultBody: defaultBody, stats: stats, topN: features.digestTopN)
-        return VStack(alignment: .leading, spacing: 6) {
+        return VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Text(L10n.t("预览")).font(.system(size: 12, weight: .semibold))
+                fieldLabel(L10n.t("预览"))
+                Spacer()
                 SettingsPillSegmentedControl(selection: $kind, options: NotificationPreview.Kind.allCases, label: {
                     $0 == .daily ? L10n.t("每日报告") : L10n.t("每周小结")
                 }, minWidth: 0)
                 .fixedSize()
-                Spacer()
+            }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(out.title).font(.system(size: 13, weight: .semibold))
+                    Text(out.body).font(.system(size: 12.5))
+                }
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+            }
+            // 跟左边标题、正文两栏加中间的标签对齐。
+            .frame(height: Self.editorHeight + 26 + 26)
+            .settingsCardBackground(cornerRadius: 10, inSheet: true)
+            VStack(alignment: .leading, spacing: 3) {
                 Group {
                     if real != nil {
                         Text(String(format: L10n.t("真实数据 · %@"), stats.sourceName))
@@ -183,20 +203,12 @@ struct DigestTemplateEditor: View {
                         Text(L10n.t("测试数据"))
                     }
                 }
-                .font(.system(size: 11))
-                .foregroundStyle(.secondary)
+                Text(draft.isCustom ? L10n.t("自定义内容按纯文本推送，不套用各平台的卡片排版")
+                                    : L10n.t("默认内容推送时按各平台的格式排版，这里只显示文字"))
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            ScrollView {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(out.title).font(.system(size: 13, weight: .semibold))
-                    Text(out.body).font(.system(size: 12.5))
-                }
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
-            }
-            .frame(height: 190)
-            .settingsCardBackground(cornerRadius: 10, inSheet: true)
+            .font(.system(size: 11))
+            .foregroundStyle(.secondary)
         }
     }
 
@@ -263,5 +275,18 @@ struct DigestTemplateEditor: View {
         case "link": return L10n.t("在 Last.fm 或 ListenBrainz 上看完整榜单的地址")
         default: return ""
         }
+    }
+}
+
+/// 输入框的底和边:跟系统文本框一样的白底细边,正在编辑的那一栏描强调色。
+private struct TemplateFieldChrome: ViewModifier {
+    let focused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(nsColor: .textBackgroundColor)))
+            .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .strokeBorder(focused ? Color.accentColor.opacity(0.7) : Color.primary.opacity(0.15), lineWidth: focused ? 1.5 : 1))
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
     }
 }

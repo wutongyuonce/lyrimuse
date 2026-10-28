@@ -582,6 +582,25 @@ func runSettingsInteractionTests() {
         let goList = goNames.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: CharacterSet(charactersIn: "\"")) }
             .filter { !$0.isEmpty }
         expectEqual(goList, DigestTemplate.placeholders, "推送内容: 占位符两边一致、顺序一致")
+        // 编辑器(15 章决策 89):拆开默认正文、插到光标处、认不出的占位符。
+        let daily = P.sample(.daily)
+        expectEqual(DigestTemplate(body: DigestTemplate.expandedDefaultBody)
+                        .render(defaultTitle: "t", defaultBody: P.body(daily, topN: 3), stats: daily, topN: 3).body,
+                    P.body(daily, topN: 3), "推送内容编辑器: 拆开默认正文渲染出来跟默认正文一样(日报样例)")
+        typealias TPL = DigestTemplate
+        expectEqual([TPL.insertionText(for: "plays", before: "}", after: nil), TPL.insertionText(for: "plays", before: "a", after: nil),
+                     TPL.insertionText(for: "plays", before: "了", after: nil), TPL.insertionText(for: "plays", before: nil, after: nil),
+                     TPL.insertionText(for: "plays", before: " ", after: "x")],
+                    [" {plays}", " {plays}", "{plays}", "{plays}", "{plays}"],
+                    "推送内容编辑器: 行内占位符跟在英文、数字或别的占位符后面补空格,中文后面不补")
+        expectEqual([TPL.insertionText(for: "top_artists", before: "x", after: nil), TPL.insertionText(for: "top_artists", before: "\n", after: "\n"),
+                     TPL.insertionText(for: "body", before: nil, after: "x")],
+                    ["\n{top_artists}\n", "{top_artists}", "{body}\n"],
+                    "推送内容编辑器: 多行占位符单独占一行,插完光标在新的一行")
+        expectEqual(TPL.tokens(in: "嗨{plays}{Plays}{play}🎧{top_artist}").map { [$0.name, $0.known ? "1" : "0", "\($0.range.location)"] },
+                    [["plays", "1", "1"], ["play", "0", "15"], ["top_artist", "1", "23"]],
+                    "推送内容编辑器: 找占位符的位置按 UTF-16 算(给 NSTextView 上色),大写的不算")
+        expectEqual(TPL.unknownPlaceholders(in: "{play} {plays} {play} {abc}"), ["play", "abc"], "推送内容编辑器: 认不出的去重、按顺序")
 
         // 真实预览缓存:数据源、每类列几名、每日报告推哪一天任一样变了就换键,不拿旧结果(引擎缓存键同一组输入)。
         let base = P.previewCacheKey(.daily, source: "", topN: 3, pushMinutes: 22 * 60)
