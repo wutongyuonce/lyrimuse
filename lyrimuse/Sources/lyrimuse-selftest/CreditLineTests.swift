@@ -603,6 +603,25 @@ func runCreditLineTests() {
             ["作词：甲", "男：琴键上透着光", "编曲：丙", "女：夜色如水流淌", "合：一起走到天亮"]),
                     [true, false, true, false, false],
                     "夹心(反向): 男/女/合 是对唱标记,夹在两条署名之间同样豁免")
+
+        // 去掉分隔符超过 10 字、段又超过 6 字的长标签(「立体声/杜比全景声混音工程师：」),单行规则都接不住,
+        // 夹在两条署名之间时按「冒号前最后一段含角色词」认。
+        expectEqual(LyricsSyncEngine.creditLineDropDecisions(
+            ["人声录音棚：Cashmere studio", "鼓录音棚：55TEC、Cashmere studio",
+             "立体声/杜比全景声混音工程师：Daniel J Schlett@Sound Work International",
+             "母带工程师: Matt Colton @London Metropolis Studios", "I wake at 22:22",
+             "The hallway hums A flat minor", "Door clock glitching", "I push the door open"]),
+                    [true, true, true, true, false, false, false, false],
+                    "夹心: 长串角色标签夹在两条署名之间要被删")
+        expectEqual(LyricsSyncEngine.creditLineDropDecisions(
+            ["作词：甲", "作曲：乙", "我想要的制作/其实就是一首歌：嗯", "编曲：丙", "混音：丁",
+             "风把旧信吹散", "月光落在窗前", "谁还记得那年", "留下一地尘埃", "我却转身离开"]),
+                    [true, true, false, true, true, false, false, false, false, false],
+                    "夹心(反向): 长标签冒号前最后一段不含角色词,夹在署名之间也不删")
+        expectEqual(LyricsSyncEngine.creditLineDropDecisions(
+            ["立体声/杜比全景声混音工程师：某人", "风把旧信吹散", "月光落在窗前", "谁还记得那年"]),
+                    [false, false, false, false],
+                    "夹心(反向): 长串角色标签单独出现不删")
     }
 
     // ---- 署名行过滤:带分隔符的中文标签 + 纯英文无冒号 ----

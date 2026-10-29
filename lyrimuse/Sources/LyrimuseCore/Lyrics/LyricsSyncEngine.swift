@@ -1263,7 +1263,7 @@ public final class LyricsSyncEngine {
     /// 剩下的敞口是歌词里点名某个平台(说唱报品牌那种写法),当前语料一例都没有。真遇到了
     /// 再按语料收窄,别先把判据放软去迎合想象中的写法:一软就退回 165 种那个量级。
     private static let platformBrandPattern = try! NSRegularExpression(
-        pattern: #"酷狗|酷我|网易云音乐|網易雲音樂|QQ ?音[乐樂]|腾讯音乐|騰訊音樂|咪咕|汽水音[乐樂]"#,
+        pattern: #"酷狗|酷我|网易云音乐|網易雲音樂|QQ ?音[乐樂]|腾讯音乐|騰訊音樂|咪咕|汽水音[乐樂]|Vemus|未音 ?APP"#,
         options: [.caseInsensitive]
     )
 
@@ -1384,6 +1384,25 @@ public final class LyricsSyncEngine {
         "白", "旁白", "念", "说", "对白", "口白",
         "男声", "女声", "合唱", "伴唱",
     ]
+
+    /// 夹心补漏用的长标签:标签只由汉字和 `/ ／ 、 & ＆` 组成、去掉分隔符后 1~16 个汉字、冒号前最后一段含角色词
+    /// (含简繁孪生)、冒号后有内容(「立体声/杜比全景声混音工程师：…」)。单独出现时不认(段超过 6 字、只有一段含角色词的
+    /// 长标签按 matchesRoleWordListLabel 不算署名),两侧都是署名时才认。见 08 章决策 62。
+    static func matchesLongRoleLabelCredit(_ text: String) -> Bool {
+        guard let colon = text.firstIndex(where: { $0 == ":" || $0 == "：" }) else { return false }
+        let label = text[text.startIndex..<colon].trimmingCharacters(in: .whitespaces)
+        let rest = text[text.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+        let separators = CharacterSet(charactersIn: "/／、&＆")
+        guard !rest.isEmpty,
+              label.unicodeScalars.allSatisfy({ $0.properties.isIdeographic || separators.contains($0) })
+        else { return false }
+        let core = label.unicodeScalars.filter { $0.properties.isIdeographic }.count
+        guard (1...16).contains(core),
+              let last = label.components(separatedBy: separators).last(where: { !$0.isEmpty })
+        else { return false }
+        let forms = [last, HanScript.sibling(last)].compactMap { $0 }
+        return creditRoleWords.contains { word in forms.contains { $0.contains(word) } }
+    }
 
     private static func matchesStructuralCreditPattern(
         _ text: String, exemptions: Set<String> = []
@@ -1679,7 +1698,8 @@ public final class LyricsSyncEngine {
         var drop = base
         for i in base.indices.dropFirst().dropLast() where !base[i] {
             guard base[i - 1], base[i + 1] else { continue }
-            guard matchesStructuralCreditPattern(texts[i], exemptions: speakerExemptions) else { continue }
+            guard matchesStructuralCreditPattern(texts[i], exemptions: speakerExemptions)
+                || matchesLongRoleLabelCredit(texts[i]) else { continue }
             drop[i] = true
         }
         // 结尾的结束标记(「END」「The end~」),见 matchesEndMarkerLine。从最后一行往上,跳过已经判掉的行(结尾那段署名),

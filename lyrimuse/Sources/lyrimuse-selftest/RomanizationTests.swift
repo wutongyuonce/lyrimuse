@@ -609,6 +609,8 @@ func runRomanizationTests() {
                 "平台水印: 另一家平台的写法")
     expectEqual(LyricsSyncEngine.matchesPlatformWatermarkLine("酷狗国风品牌『国风新语』"), true,
                 "平台水印: 品牌名在行首")
+    expectEqual(LyricsSyncEngine.matchesPlatformWatermarkLine("「释放你的音乐才华，AI作歌就选Vemus未音APP！」"), true,
+                "平台水印: AI 作曲 App 的推广语")
     // 反向:行业通名一个都不许进品牌词表 —— 进了,下面这几条真歌词当场被吞。
     for real in ["你最爱听的唱片", "我只是进了这圈子叫娱乐", "找出几张老唱片",
                  "Put on your records and regret me", "我的爱不是供你娱乐的玩具"] {
