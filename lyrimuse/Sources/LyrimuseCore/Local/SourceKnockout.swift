@@ -27,6 +27,8 @@ public enum SourceKnockout {
         case playerFile = "player-file"
         /// Pine Player 界面上的进度条(跳转、恢复之后补位置的小数,`PinePlayhead`):关掉后当成没授「辅助功能」权限。
         case pineSlider = "pine-slider"
+        /// foobar2000 主窗口的进度条(量 DSP 变速后的实际速度,`FoobarStretch`):关掉后照最后量出的速度走。
+        case foobarSlider = "foobar-slider"
         /// Amazon Music 的日志(位置时钟、暂停 / 拖动的即时信号、当前曲目的 ASIN):关掉后当成日志读不到,位置落到自记时。
         case amazonLog = "amazon-log"
         /// Amazon Music 界面上的播放时间(连播提前量、自记时的对表,`AmazonMusicUIProbe`):关掉后当成没授「辅助功能」权限。

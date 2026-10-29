@@ -102,7 +102,7 @@ public enum FoobarVolume {
     /// 当前音量 0~100;foobar2000 没在跑、没授权、找不到那根滑块为 nil。
     public static func read() -> Int? {
         guard let slider = volumeSlider(),
-              let value = (attribute(slider, kAXValueAttribute) as? NSNumber)?.doubleValue else { return nil }
+              let value = (FoobarSliders.attribute(slider, kAXValueAttribute) as? NSNumber)?.doubleValue else { return nil }
         return percent(value)
     }
 
@@ -114,7 +114,30 @@ public enum FoobarVolume {
     }
 
     private static func volumeSlider() -> AXUIElement? {
-        guard AXIsProcessTrusted(), let pid = PlayerProcess.pid(bundleID: FoobarMenuControl.bundleID) else { return nil }
+        let found = FoobarSliders.all()
+        return volumeIndex(found.map(\.slider)).map { found[$0].element }
+    }
+}
+
+/// foobar2000 主窗口里的滑块:音量(0~100)和进度条(最大值是这首的时长,值是当前位置,带小数)。要辅助功能权限;窗口隐藏时
+/// 照样读得到,被隐藏启动、主窗口没布局时读不到。会阻塞跨进程调用,别在主线程调。
+public enum FoobarSliders {
+    /// 几根滑块里哪一根是进度条:最大值跟时长差 1.5 秒以内的那一根;没有或不止一根(这首恰好 100 秒长时音量也对得上)为 nil。
+    /// 纯函数,selftest 覆盖。
+    public static func progressIndex(_ sliders: [PineVolume.Slider], duration: Double) -> Int? {
+        let hits = sliders.indices.filter { sliders[$0].min == 0 && abs(sliders[$0].max - duration) <= 1.5 }
+        return hits.count == 1 ? hits[0] : nil
+    }
+
+    /// 进度条此刻的值(秒);读不到为 nil。
+    public static func progress(duration: Double?) -> Double? {
+        guard let duration, duration > 0 else { return nil }
+        let found = all()
+        return progressIndex(found.map(\.slider), duration: duration).map { found[$0].slider.value }
+    }
+
+    static func all() -> [(element: AXUIElement, slider: PineVolume.Slider)] {
+        guard AXIsProcessTrusted(), let pid = PlayerProcess.pid(bundleID: FoobarMenuControl.bundleID) else { return [] }
         let app = MenuBarAX.timed(AXUIElementCreateApplication(pid), timeout: PineVolume.axTimeout)
         var found: [(element: AXUIElement, slider: PineVolume.Slider)] = []
         for window in MenuBarAX.children(app, attribute: kAXWindowsAttribute, timeout: PineVolume.axTimeout) {
@@ -129,10 +152,10 @@ public enum FoobarVolume {
             }
             if !found.isEmpty { break }
         }
-        return volumeIndex(found.map(\.slider)).map { found[$0].element }
+        return found
     }
 
-    private static func attribute(_ element: AXUIElement, _ name: String) -> AnyObject? {
+    static func attribute(_ element: AXUIElement, _ name: String) -> AnyObject? {
         var value: AnyObject?
         return AXUIElementCopyAttributeValue(element, name as CFString, &value) == .success ? value : nil
     }

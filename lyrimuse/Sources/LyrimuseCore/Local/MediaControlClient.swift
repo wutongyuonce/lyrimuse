@@ -3618,10 +3618,18 @@ public enum MediaControlClient {
             ? PinePlayhead.reading(track: trackKey, playing: playing == true, anchorElapsed: raw.elapsedTime,
                                    anchorAt: timestampDate, duration: raw.duration, pid: raw.processIdentifier, now: sampledAt)
             : nil
-        let foobarLoop = Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: elapsed, duration: raw.duration)
-        if let foobarLoop, let elapsed, let duration = raw.duration,
-           Self.noteFoobarLoopLogged(trackKey + "|" + String(Int(elapsed / duration))) {
-            logger.notice("foobar2000 loop: \(raw.title ?? "", privacy: .public) past the end without a new anchor, extrapolated=\(elapsed, format: .fixed(precision: 3)) duration=\(duration, format: .fixed(precision: 3)) → \(foobarLoop, format: .fixed(precision: 3))")
+        // foobar2000 开着 DSP 变速时它照报速率 1:按进度条量出的速度外推(见 FoobarStretch)。
+        let foobarRate = bundleID == PlaybackPlayer.foobar2000.bundleIdentifier && !isRadio
+            ? FoobarStretch.rate(anchorKey: anchorKey, playing: playing == true && republish.hold == nil,
+                                 duration: raw.duration, now: sampledAt)
+            : 1
+        let stretched = foobarRate != 1 && playing == true
+            ? elapsed.map { FoobarStretch.position(anchor: raw.elapsedTime ?? $0, oneX: $0, rate: foobarRate) }
+            : elapsed
+        let foobarLoop = Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: stretched, duration: raw.duration)
+        if let foobarLoop, let stretched, let duration = raw.duration,
+           Self.noteFoobarLoopLogged(trackKey + "|" + String(Int(stretched / duration))) {
+            logger.notice("foobar2000 loop: \(raw.title ?? "", privacy: .public) past the end without a new anchor, extrapolated=\(stretched, format: .fixed(precision: 3)) duration=\(duration, format: .fixed(precision: 3)) → \(foobarLoop, format: .fixed(precision: 3))")
         }
         let held = republish.hold != nil || pine?.waiting == true
         var snapshot = MediaControlSnapshot(
@@ -3629,9 +3637,9 @@ public enum MediaControlClient {
             artist: raw.artist,
             album: raw.album,
             duration: raw.duration,
-            elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,
+            elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? stretched,
             playing: held ? false : playing,
-            playbackRate: held ? 0 : raw.playbackRate,
+            playbackRate: held ? 0 : (foobarRate != 1 && playing == true ? foobarRate : raw.playbackRate),
             // 复用这个字段原本的语义("这是当前选定播放器的一份有效快照",见
             // MediaControlSnapshot 注释)——调用方(fetchMediaControlSnapshot/
             // fetchAutoDetectedSnapshot)已经各自核实过 bundleID 是它关心的那个,
@@ -3645,13 +3653,13 @@ public enum MediaControlClient {
         )
         // 读到之后主线程可能要等一两百毫秒才处理(换歌那一刻加载封面 / 歌词,实测 0.21s),位置得按读到的时刻
         // 补到处理那一刻(见 MediaControlSnapshot.capturedAt)。只对实测过的播放器开(02 章决策 41)。
-        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil || foobarLoop != nil {
+        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil || foobarLoop != nil || foobarRate != 1 {
             snapshot.capturedAt = sampledAt
         }
         if held { snapshot.isWaitingToPlay = true }
         if pine?.precise == true { snapshot.positionIsPrecise = true }
         snapshot.republishDueBy = republish.dueBy ?? pine?.dueBy
-            ?? Self.foobarLoopCheckAt(bundleID: bundleID, playing: playing, position: foobarLoop ?? elapsed,
+            ?? Self.foobarLoopCheckAt(bundleID: bundleID, playing: playing, position: foobarLoop ?? stretched,
                                       duration: raw.duration, now: sampledAt)
         snapshot.processIdentifier = raw.processIdentifier
         return (snapshot, bundleID)

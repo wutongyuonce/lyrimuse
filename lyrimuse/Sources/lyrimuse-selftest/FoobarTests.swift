@@ -140,6 +140,41 @@ func runFoobarTests() {
         expectEqual(PlayerOpenFile.fileMatches(reportedArtist: "测试_歌手", reportedTitle: "换行检查_第二行", reportedDuration: 40,
                                                tags: multiline, fileName: "newline.mp3"), false,
                     "foobar 标签带换行: 别的播放器照旧不把下划线当换行")
+
+        // DSP 变速(Audio-Stretch)时它照报速率 1:按进度条量速度(见 02 章决策 211)。
+        typealias S = FoobarStretch
+        let t0 = Date(timeIntervalSince1970: 1_000)
+        func sample(_ value: Double, _ secs: Double) -> S.Sample { S.Sample(value: value, at: t0.addingTimeInterval(secs)) }
+        expectEqual(S.measuredRate(from: sample(10, 0), to: sample(15.28, 4)), 1.32, "foobar 变速: 隔 4 秒的两次读数算出 1.32 倍")
+        expectEqual(S.measuredRate(from: sample(10, 0), to: sample(14, 3)) == nil, true, "foobar 变速: 间隔不到 4 秒不算")
+        expectEqual(S.measuredRate(from: sample(10, 0), to: sample(14.12, 4)), 1, "foobar 变速: 偏离不到 5% 算 1 倍")
+        expectEqual(S.measuredRate(from: sample(10, 0), to: sample(3, 4)) == nil, true, "foobar 变速: 读数倒退(跳转过)不算")
+        expectEqual(abs(S.position(anchor: 10, oneX: 20, rate: 1.32) - 23.2) < 1e-9, true, "foobar 变速: 锚点以来那段乘速度")
+        func at(_ secs: Double) -> Date { t0.addingTimeInterval(secs) }
+        var tracker = S.step(S.Tracker(), anchorKey: "a", playing: true, sample: sample(0, 0), now: at(0))
+        expectEqual(tracker.first == nil && tracker.rate == 1, true, "foobar 变速: 锚点之后头 3 秒不取起点(进度条的落后还在涨)")
+        tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(3.6, 3), now: at(3))
+        expectEqual(tracker.first == sample(3.6, 3) && tracker.rate == 1.2, true, "foobar 变速: 3 秒后取细量起点,粗量偏离够大先用粗量的")
+        tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(10.2, 8), now: at(8))
+        expectEqual(tracker.rate, 1.32, "foobar 变速: 同一份锚点下隔 5 秒算出速度")
+        tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(16.9, 13), now: at(13))
+        expectEqual(tracker.rate == 1.33 && tracker.first == sample(3.6, 3), true, "foobar 变速: 起点不动、拿更长的间隔重算")
+        tracker = S.step(tracker, anchorKey: "b", playing: true, sample: sample(30, 14), now: at(14))
+        expectEqual(tracker.rate == 1.33 && tracker.first == nil, true, "foobar 变速: 换锚点从头量、速度记着")
+        tracker = S.step(tracker, anchorKey: "b", playing: false, sample: nil, now: at(20))
+        expectEqual(tracker.first == nil && tracker.rate == 1.33, true, "foobar 变速: 停着不量")
+        tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(40, 20), now: at(20))
+        tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(42.5, 22.5), now: at(22.5))
+        expectEqual(tracker.rate, 1, "foobar 变速: 记着变速、锚点后头两次读数粗量是 1 倍就马上放掉")
+        var fresh = S.step(S.Tracker(), anchorKey: "d", playing: true, sample: sample(0.5, 0), now: at(0))
+        fresh = S.step(fresh, anchorKey: "d", playing: true, sample: sample(3.1, 2), now: at(2))
+        expectEqual(fresh.rate, 1.3, "foobar 变速: 记着 1 倍、粗量偏离 15% 以上先用粗量的")
+        var slight = S.step(S.Tracker(), anchorKey: "e", playing: true, sample: sample(0.5, 0), now: at(0))
+        slight = S.step(slight, anchorKey: "e", playing: true, sample: sample(2.7, 2), now: at(2))
+        expectEqual(slight.rate, 1, "foobar 变速: 粗量偏离不到 15% 不改,等细量")
+        let bars = [PineVolume.Slider(min: 0, max: 100, value: 40), PineVolume.Slider(min: 0, max: 223.453, value: 34.02)]
+        expectEqual(FoobarSliders.progressIndex(bars, duration: 223.4), 1, "foobar 进度条: 最大值对上时长的那一根")
+        expectEqual(FoobarSliders.progressIndex([bars[0], PineVolume.Slider(min: 0, max: 100, value: 7)], duration: 100) == nil, true, "foobar 进度条: 恰好 100 秒跟音量分不出时不认")
     }
 
     // ---- 接线契约 ----
@@ -158,6 +193,15 @@ func runFoobarTests() {
                     "foobar 接线: 停播页「继续播放」按开播那一项")
         expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,
                     "foobar 接线: 按了还停着(列表是空的)就算没放起来,退回打开它")
+        expectEqual(sourceHas(client, "? FoobarStretch.rate(anchorKey: anchorKey, playing: playing == true && republish.hold == nil,"), true,
+                    "foobar 接线: 在放、没卡住时按进度条量速度")
+        expectEqual(sourceHas(client, "playbackRate: held ? 0 : (foobarRate != 1 && playing == true ? foobarRate : raw.playbackRate),"), true,
+                    "foobar 接线: 量出的速度交给下游外推")
+        expectEqual(sourceHas(client, "Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: stretched, duration: raw.duration)"), true,
+                    "foobar 接线: 单曲循环按变速后的位置取余")
+        expectEqual(sourceHas(sourceText("LyrimuseCore/Local/FoobarStretch.swift"),
+                              "let value = playing && !SourceKnockout.isOut(.foobarSlider) ? FoobarSliders.progress(duration: duration) : nil"), true,
+                    "foobar 接线: 进度条那条腿能拔(foobar-slider)")
         let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
         expectEqual(sourceHas(openFile, "foobar: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
                     "foobar 接线: 按开着的文件认曲目时打开 foobar 那两条(不带扩展名的文件名、控制字符换下划线)")
@@ -171,7 +215,7 @@ func runFoobarTests() {
                     "foobar 接线: 拔了 player-file 不写 local_file")
         expectEqual(sourceHas(openFile, "out.republishDueBy = snapshot.republishDueBy"), true,
                     "foobar 接线: 换成标签那份要带上补查时刻,不然曲尾那一查排不上")
-        expectEqual(sourceHas(client, "elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,"), true,
+        expectEqual(sourceHas(client, "elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? stretched,"), true,
                     "foobar 接线: 解码那一拍位置换成取余后的")
         expectEqual(sourceHas(openFile, "acceptsBaseName: foobar)"), true,
                     "foobar 接线: 认当前文件时没写标签的按不带扩展名的文件名拆")
