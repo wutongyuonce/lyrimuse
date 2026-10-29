@@ -487,6 +487,7 @@ public enum SettingsSearchCatalog {
         surface(.notch, "纯音乐/无歌词时收起歌词行", kw: ["自动隐藏", "收起", "纯音乐", "无歌词", "没有歌词", "伴奏", "instrumental"], group: "行为"),
         surface(.notch, "广告时收起", kw: ["自动隐藏", "收起", "缩回", "广告", "插播", "Spotify", "YouTube Music", "ad"], group: "行为"),
         surface(.notch, "全屏时隐藏", kw: ["全屏", "隐藏", "自动隐藏", "遮挡", "看视频", "收起歌词", "fullscreen"], group: "行为"),
+        surface(.notch, "锁屏时显示", kw: ["锁屏", "锁定", "锁屏歌词", "锁屏显示", "lock screen"], group: "行为"),
         surface(.notch, "收听里程碑", kw: ["里程碑", "第 100 次", "累计", "报喜", "纪念", "Last.fm"], group: "行为"),
         surface(.notch, "换歌时显示歌名", kw: ["换歌", "切歌", "歌名", "歌手", "刘海", "滑出", "掉下来", "换歌翻牌"], group: "行为"),
         surface(.notch, "触控板手势", kw: ["手势", "滑动", "切歌", "音量", "双指", "trackpad", "swipe"], group: "行为"),

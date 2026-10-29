@@ -899,7 +899,7 @@ func runNotchTests() {
                             && view.contains("timingEpoch: LyricsTimingEpoch.of(anchor: playback.anchor, pausedPositionMs: playback.pausedPositionMs,"), true,
                         "灵动岛接线: 订阅总偏移,偏移一变当前行重装")
             // 先算几何再建 hostingView:SwiftUI 第一次排版就拿终值,卡片不从占位窗口里那份旧版位置弹过去。见 05 章决策 64。
-            let initBody = controller.components(separatedBy: "convenience init(pinnedScreenID: String?) {").last ?? ""
+            let initBody = controller.components(separatedBy: "convenience init(pinnedScreenID: String?, presentsOnLockScreen: Bool = false) {").last ?? ""
             let geometryAt = initBody.range(of: "recomputeGeometry(animate: false)")?.lowerBound
             let hostingAt = initBody.range(of: "NSHostingView(rootView: NotchWindowRoot(controller: self))")?.lowerBound
             expectEqual(geometryAt != nil && hostingAt != nil && geometryAt! < hostingAt!, true,
@@ -2323,8 +2323,8 @@ func runNotchTests() {
                     "全屏契约: 每个实例(含镜像副本)自己订阅开关与全屏表,值从 sink 参数拿")
         expectEqual(sourceHas(controller, "let screen = resolvedScreen()\n        let covered = FullScreenSpaces.covers("), true,
                     "全屏契约: 按这扇窗自己所在的屏判,不看别的屏")
-        expectEqual(controller.contains("let hide = NotchVisibility.fullScreenHides(enabled: enabled, coveredByFullScreenApp: covered)"), true,
-                    "全屏契约: 全屏一律整卡隐藏,判据走 Core")
+        expectEqual(controller.contains("let hide = !presentsOnLockScreen && NotchVisibility.fullScreenHides(enabled: enabled, coveredByFullScreenApp: covered)"), true,
+                    "全屏契约: 全屏一律整卡隐藏,判据走 Core;锁屏那份不认(锁屏上没有全屏 App)")
         expectEqual(controller.contains("safeAreaInsets.top ?? 0) > 0") || controller.contains("lyricsOffByFullScreen"), false,
                     "全屏契约: 不再按有没有刘海区别对待(刘海屏也整卡隐藏,不是只收歌词行)")
         expectEqual(controller.contains("subscriptions.removeAll()"), true, "全屏契约: teardown 摘掉订阅")
@@ -2971,5 +2971,48 @@ func runNotchTests() {
                     "多行歌词: 接鼠标那一层撤掉时放掉点亮的那句,对读屏隐藏")
         expectEqual(sourceHas(src("LyricsLayerList.swift"), "override func hitTest(_ point: NSPoint) -> NSView? { interactive ? super.hitTest(point) : nil }"),
                     true, "多行歌词: 列表自己不接鼠标,滚轮落到灵动岛的手势上")
+    }
+
+    // ---- 锁屏时显示(05 章决策 122) ----
+    do {
+        var watch = LockScreenUnlockWatch()
+        expectEqual(watch.observe(sessionLocked: false), false, "锁屏显示: 还没见到会话锁着时读到没锁不算解锁(锁屏通知可能先到)")
+        expectEqual(watch.observe(sessionLocked: true), false, "锁屏显示: 锁着时不解锁")
+        expectEqual(watch.observe(sessionLocked: true), false, "锁屏显示: 一直锁着时不解锁")
+        expectEqual(watch.observe(sessionLocked: false), true, "锁屏显示: 见过锁着之后读到没锁就算解锁")
+
+        let ui = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("lyrimuse/UI")
+        func src(_ name: String) -> String {
+            (try? String(contentsOf: ui.appendingPathComponent(name), encoding: .utf8)) ?? ""
+        }
+        let controller = src("NotchLyricsWindowController.swift")
+        let presenter = src("NotchLockScreenPresenter.swift")
+        let space = src("LockScreenSpace.swift")
+        let appDelegate = src("../AppDelegate.swift")
+        let initBody = controller.components(separatedBy: "convenience init(pinnedScreenID: String?, presentsOnLockScreen: Bool = false) {").last ?? ""
+        let hiddenAt = initBody.range(of: "isVisible = false")?.lowerBound
+        let playingAt = initBody.range(of: "PlaybackCoordinator.shared.$isPlayingSmoothed.sink")?.lowerBound
+        expectEqual(hiddenAt != nil && playingAt != nil && hiddenAt! < playingAt!
+                        && initBody.contains("if presentsOnLockScreen {")
+                        && sourceHas(initBody, "isVisible = false\n panel.ignoresMouseEvents = true\n }"), true,
+                    "锁屏显示: 锁屏那份先藏着(挪进锁屏那层之前不露面)、不接鼠标")
+        expectEqual(sourceHas(presenter, "let instance = NotchLyricsWindowController(pinnedScreenID: screenID, presentsOnLockScreen: true)\n guard let window = instance.window, LockScreenSpace.adopt(window) else {")
+                        && presenter.components(separatedBy: ".teardown()").count - 1 == 1
+                        && sourceHas(presenter, "instances[screenID] = instance"), true,
+                    "锁屏显示: 挪进锁屏那层的窗口留着不销毁,只有没挪进去的才拆")
+        expectEqual(sourceHas(presenter, "instances[shownScreenID]?.syncStateFromSettings(notchEnabled: false)")
+                        && sourceHas(presenter, "instance.syncStateFromSettings(notchEnabled: true)")
+                        && !presenter.contains("NotchLyricsWindowController.shared"), true,
+                    "锁屏显示: 显隐经 syncStateFromSettings 定,不碰灵动岛 .shared")
+        expectEqual(sourceHas(presenter, "settings.$notchShowOnLockScreen\n .combineLatest(settings.$notchOverlayEnabled)\n .dropFirst()\n .sink { enabled, notchEnabled in apply(enabled: enabled && notchEnabled) }"), true,
+                    "锁屏显示: 开关和灵动岛总开关从 sink 参数拿")
+        expectEqual(space.contains("dlopen(\"/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/SkyLight\", RTLD_LAZY)")
+                        && space.contains("guard let functions = Self.functions, window.windowNumber > 0 else { return false }"), true,
+                    "锁屏显示: SkyLight 函数运行时查找,查不到不显示")
+        expectEqual(sourceHas(appDelegate, "NotchLockScreenPresenter.setLocked(screenIsLocked && !sessionIsInactive)\n")
+                        && sourceHas(appDelegate, "let lockScreenShowsLyrics = NotchLockScreenPresenter.isPresenting && !screensAreAsleep\n LocalPlaybackSource.shared.setScreenLocked(hidden && !lockScreenShowsLyrics)")
+                        && appDelegate.contains("NotchLockScreenPresenter.start()"), true,
+                    "锁屏显示: 先定锁屏那份露不露,再按它决定歌词那一拍停不停")
     }
 }

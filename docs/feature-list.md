@@ -44,6 +44,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Hide or shrink when paused](#feature-hide-when-paused) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide When Paused |
 | [Hide for instrumentals and songs without lyrics](#feature-hide-when-no-lyrics) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide for Instrumentals & No Lyrics |
 | [Step aside during ads](#feature-hide-during-ads) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide During Ads |
+| [Notch on the Lock Screen](#feature-notch-show-on-lock-screen) | Settings › Lyrics Display › Notch › Behavior › Show on Lock Screen |
 | [Floating lyrics step aside in full screen](#feature-overlay-hide-in-full-screen) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide in Full Screen |
 | [Web lyrics: a phone or tablet as a second screen, or an OBS browser source](#feature-web-lyrics) | Settings › Lyrics Display › Lyrics Window › Web Lyrics |
 | [YouTube Music and Spotify Web in your browser](#feature-web-players) | Settings › Player › Web |
@@ -479,6 +480,15 @@ Notch lyrics tuck away while a video, game or any app is full screen.
 - On by default
 - Settings: Lyrics Display › Notch › Behavior › Hide in Full Screen
 
+<a id="feature-notch-show-on-lock-screen"></a>
+
+### Notch on the Lock Screen
+
+The notch keeps showing the playing song and its lyrics on the Lock Screen.
+
+- Off by default
+- Settings: Lyrics Display › Notch › Behavior › Show on Lock Screen
+
 <a id="feature-overlay-hide-in-full-screen"></a>
 
 ### Floating lyrics step aside in full screen
@@ -837,7 +847,7 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 293 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 294 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1024,6 +1034,7 @@ Every setting in the Settings window, by where it lives: 293 in all. Type a name
 - **Collapse Lyric Row for Instrumentals & No Lyrics**
 - **Shrink During Ads**
 - **Hide in Full Screen**
+- **Show on Lock Screen**
 - **Listening Milestones**
 - **Show Title on Song Change**
 - **Trackpad Gestures**

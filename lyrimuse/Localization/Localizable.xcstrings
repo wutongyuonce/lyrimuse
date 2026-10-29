@@ -57383,6 +57383,52 @@
           }
         }
       }
+    },
+    "锁屏时显示" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show on Lock Screen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁屏时显示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鎖定畫面時顯示"
+          }
+        }
+      }
+    },
+    "锁屏后灵动岛仍显示歌曲和歌词，旁人也能看到" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keeps the notch with the song and lyrics on the Lock Screen, visible to anyone nearby"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁屏后灵动岛仍显示歌曲和歌词，旁人也能看到"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鎖定畫面後動態島仍顯示歌曲和歌詞，旁人也看得到"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

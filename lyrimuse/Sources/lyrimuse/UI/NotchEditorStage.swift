@@ -464,6 +464,8 @@ struct NotchEditorStage: View {
                 }
                 + [(title: NotchBehaviorItem.hideInFullScreen.title,
                     isOn: NotchBehaviorItem.hideInFullScreen.binding.wrappedValue),
+                   (title: NotchBehaviorItem.showOnLockScreen.title,
+                    isOn: NotchBehaviorItem.showOnLockScreen.binding.wrappedValue),
                    (title: NotchBehaviorItem.trackDrop.title,
                     isOn: NotchBehaviorItem.trackDrop.binding.wrappedValue),
                    (title: NotchBehaviorItem.listenMilestones.title,

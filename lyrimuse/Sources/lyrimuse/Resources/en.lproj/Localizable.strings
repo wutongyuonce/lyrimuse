@@ -2680,6 +2680,8 @@
 "锁定位置仅对桌面悬浮歌词有效" = "Locking the position only applies to Floating Lyrics";
 "锁定手选歌词" = "Lock Hand-Picked Lyrics";
 "锁屏上约显示前 4 行，点开可看全文" = "About the first 4 lines show on the Lock Screen; open it to read the rest";
+"锁屏后灵动岛仍显示歌曲和歌词，旁人也能看到" = "Keeps the notch with the song and lyrics on the Lock Screen, visible to anyone nearby";
+"锁屏时显示" = "Show on Lock Screen";
 "长句处理" = "Long Lines";
 "长句拆分" = "Split Long Lines";
 "长按即可拖动位置" = "Click and hold to drag";

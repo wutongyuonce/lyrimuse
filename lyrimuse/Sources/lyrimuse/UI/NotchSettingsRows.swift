@@ -287,6 +287,7 @@ enum NotchStyleDefaults {
         settings.notchCollapseLyricsWhenNoLyrics = AppSettings.defaultNotchCollapseLyricsWhenNoLyrics
         settings.notchCollapsesDuringAds = AppSettings.defaultNotchCollapsesDuringAds
         settings.notchHideInFullScreen = AppSettings.defaultNotchHideInFullScreen
+        settings.notchShowOnLockScreen = AppSettings.defaultNotchShowOnLockScreen
         settings.notchListenMilestones = AppSettings.defaultNotchListenMilestones
         settings.notchShowsTrackDrop = AppSettings.defaultNotchShowsTrackDrop
         settings.notchGestures = AppSettings.defaultNotchGestures

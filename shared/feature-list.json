@@ -1271,6 +1271,31 @@
           ]
         },
         {
+          "id": "notch-show-on-lock-screen",
+          "title": {
+            "zh-Hans": "锁屏时显示灵动岛",
+            "en": "Notch on the Lock Screen",
+            "zh-Hant": "鎖定畫面時顯示動態島"
+          },
+          "desc": {
+            "zh-Hans": "锁屏后灵动岛照常显示正在播放的歌曲和歌词。",
+            "en": "The notch keeps showing the playing song and its lyrics on the Lock Screen.",
+            "zh-Hant": "鎖定畫面後動態島照常顯示正在播放的歌曲和歌詞。"
+          },
+          "default": "off",
+          "check": {
+            "appSetting": "notchShowOnLockScreen"
+          },
+          "settings": [
+            [
+              "歌词显示",
+              "灵动岛",
+              "行为",
+              "锁屏时显示"
+            ]
+          ]
+        },
+        {
           "id": "overlay-hide-in-full-screen",
           "title": {
             "zh-Hans": "全屏时隐藏悬浮歌词",

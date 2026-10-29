@@ -321,6 +321,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // 在碰 NotchLyricsWindowController.shared 之前就 return(碰一下就会凭空建出窗口,
         // 见那个类文件头的不变量)。
         NotchMirrorManager.start()
+        // 「锁屏时显示」:锁屏时另摆一份灵动岛到锁屏之上,同样不碰 `.shared`。
+        NotchLockScreenPresenter.start()
         // 触控栏歌词(默认关,设置 › 歌词显示 › 触控栏)。开着就把图标放进功能栏。
         TouchBarLyricsController.shared.start()
         // PlaybackCoordinator.shared.start() / MenuBarStatusItem.shared.start() 在上面 BrowserAutomationPermission
@@ -656,7 +658,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func applyScreenHidden() {
         let hidden = screenIsLocked || screensAreAsleep || sessionIsInactive
-        LocalPlaybackSource.shared.setScreenLocked(hidden)
+        NotchLockScreenPresenter.setLocked(screenIsLocked && !sessionIsInactive)
+        // 锁屏上摆着灵动岛(「锁屏时显示」)、屏幕亮着时歌词那一拍照走,不然锁屏上的歌词不按时换句、不逐字填色。
+        let lockScreenShowsLyrics = NotchLockScreenPresenter.isPresenting && !screensAreAsleep
+        LocalPlaybackSource.shared.setScreenLocked(hidden && !lockScreenShowsLyrics)
         ScreenVisibility.shared.setHidden(hidden)
     }
 

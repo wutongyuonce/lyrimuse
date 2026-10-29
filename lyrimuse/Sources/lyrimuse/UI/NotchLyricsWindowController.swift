@@ -289,6 +289,9 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// hover/播放订阅,只是钉在别的屏上。多加一个"这是副本"的布尔就会诱使后面的人写
     /// `if isMirror { ... }` 的分支,那正是两套行为慢慢分叉的起点。
     private var pinnedScreenID: String?
+    /// 锁屏那一份(`NotchLockScreenPresenter` 建,窗口在锁屏之上的 Space 里)。跟别的实例只差三处:显不显示由 presenter 经
+    /// `syncStateFromSettings(notchEnabled:)` 定、不认「全屏时隐藏」(锁屏上没有全屏 App)、不接鼠标。
+    private(set) var presentsOnLockScreen = false
     /// 「按宽度断句」的歌词列宽度由这个实例报(只有主实例报,见 `NotchWindowRoot.body`)。
     var reportsLineLayoutWidth: Bool { pinnedScreenID == nil }
 
@@ -303,7 +306,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 任何一行**的空壳控制器,`updateActualVisibility()` 里的 `window?.orderFrontRegardless()`
     /// 对 nil 什么都不做,灵动岛就此彻底不出现,而且编译期、运行期都没有任何报错或日志。
     /// 所以主实例也显式传 nil(见 `shared` 的声明),不留 `()` 这种写法。
-    convenience init(pinnedScreenID: String?) {
+    convenience init(pinnedScreenID: String?, presentsOnLockScreen: Bool = false) {
         // 初始 contentRect 只是占位——真正的尺寸/位置由下面 recomputeGeometry() 按
         // 当前屏幕几何重新算一遍并 setFrame,这里传什么都会被立刻覆盖掉。
         let placeholder = NSSize(width: AppSettings.shared.notchContentWidth,
@@ -313,6 +316,12 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         panel.sharingType = AppSettings.shared.notchHideDuringScreenCapture ? .none : .readWrite
         self.init(window: panel)
         self.pinnedScreenID = pinnedScreenID
+        self.presentsOnLockScreen = presentsOnLockScreen
+        if presentsOnLockScreen {
+            // 先藏着:下面的播放订阅一挂上就会按 isVisible 摆出来,窗口要等挪进锁屏那层之后才露面。
+            isVisible = false
+            panel.ignoresMouseEvents = true
+        }
 
         // 先算好几何(刘海尺寸、两档卡宽、窗口 frame)再建 hostingView:反过来 SwiftUI 先按声明默认值和占位窗口排一版,
         // 几何一到卡片就从那个位置沿 cardAnimation 弹过去,冷启动主线程一忙就冻在半路。见 05 章决策 64。
@@ -1507,7 +1516,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
             screenID: screen.flatMap(ScreenIdentity.id(of:)),
             isMainScreen: screen != nil && screen == NSScreen.screens.first,
             fullScreenDisplays: displays)
-        let hide = NotchVisibility.fullScreenHides(enabled: enabled, coveredByFullScreenApp: covered)
+        let hide = !presentsOnLockScreen && NotchVisibility.fullScreenHides(enabled: enabled, coveredByFullScreenApp: covered)
         guard hide != coveredByFullScreen else { return }
         coveredByFullScreen = hide
         updateActualVisibility(isPlayingNow: PlaybackCoordinator.shared.isPlayingSmoothed)

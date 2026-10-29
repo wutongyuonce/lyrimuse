@@ -427,6 +427,7 @@ final class AppSettings: ObservableObject {
         static let notchHideDuringScreenCapture = "np:notchHideDuringScreenCapture"
         static let notchHideWhenNotPlaying = "np:notchHideWhenNotPlaying"
         static let notchHideInFullScreen = "np:notchHideInFullScreen"
+        static let notchShowOnLockScreen = "np:notchShowOnLockScreen"
         // 「纯音乐/无歌词时隐藏」,悬浮歌词和灵动岛各一份;灵动岛那份是收起歌词行,键名不跟着改(改了已开着的会丢)。
         static let hideWhenNoLyrics = "np:hideWhenNoLyrics"
         static let overlayHideInFullScreen = "np:overlayHideInFullScreen"
@@ -628,6 +629,8 @@ final class AppSettings: ObservableObject {
     static let defaultNotchCollapsesDuringAds = false
     /// 默认开:全屏 App 期间整卡隐藏(有没有刘海一样),见 `NotchVisibility.fullScreenHides`。
     static let defaultNotchHideInFullScreen = true
+    /// 默认关:锁屏上的灵动岛谁路过都看得到在听什么。
+    static let defaultNotchShowOnLockScreen = false
     /// 默认开:某首歌第 100 / 1,000…… 次、累计跨过一档时灵动岛报一次喜(连着 Last.fm 才有)。
     static let defaultNotchListenMilestones = true
     /// 默认开:换歌时新歌名从刘海里掉出来停几秒。
@@ -1401,6 +1404,10 @@ final class AppSettings: ObservableObject {
     /// 每个灵动岛实例(含镜像副本)自己订阅这个值(`NotchLyricsWindowController` init 里那条订阅)。
     @Published var notchHideInFullScreen: Bool {
         didSet { defaults.set(notchHideInFullScreen, forKey: Keys.notchHideInFullScreen) }
+    }
+    /// 锁屏时把灵动岛摆到锁屏之上(`NotchLockScreenPresenter`)。
+    @Published var notchShowOnLockScreen: Bool {
+        didSet { defaults.set(notchShowOnLockScreen, forKey: Keys.notchShowOnLockScreen) }
     }
     /// 这首按纯音乐处理、或搜完确认没有歌词时(`NoLyricsAutoHide`):悬浮歌词整个窗口隐藏(「纯音乐/无歌词时隐藏」),
     /// 灵动岛只收起歌词行(「纯音乐/无歌词时收起歌词行」,`NotchVisibility.showsLyrics`)。
@@ -2658,6 +2665,8 @@ final class AppSettings: ObservableObject {
         }
         notchHideInFullScreen = (defaults.object(forKey: Keys.notchHideInFullScreen) as? Bool)
             ?? Self.defaultNotchHideInFullScreen
+        notchShowOnLockScreen = (defaults.object(forKey: Keys.notchShowOnLockScreen) as? Bool)
+            ?? Self.defaultNotchShowOnLockScreen
         hideWhenNoLyrics = (defaults.object(forKey: Keys.hideWhenNoLyrics) as? Bool) ?? false
         overlayHideInFullScreen = (defaults.object(forKey: Keys.overlayHideInFullScreen) as? Bool) ?? false
         notchCollapseLyricsWhenNoLyrics = (defaults.object(forKey: Keys.notchCollapseLyricsWhenNoLyrics) as? Bool)

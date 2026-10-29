@@ -3781,6 +3781,8 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
     case collapseWhenPaused
     /// 灵动岛所在屏幕的当前 Space 是全屏 App 时收起歌词行,无刘海屏整卡隐藏(`AppSettings.notchHideInFullScreen`)。归「行为」。
     case hideInFullScreen
+    /// 锁屏时把灵动岛摆到锁屏之上(`AppSettings.notchShowOnLockScreen`)。归「行为」。
+    case showOnLockScreen
     /// 收听里程碑(`AppSettings.notchListenMilestones`)。归「行为」。
     case listenMilestones
     /// 换歌时显示歌名(`AppSettings.notchShowsTrackDrop`)。归「行为」。耳朵里的封面那一翻一直开,不在这里管。
@@ -3806,6 +3808,7 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .karaoke: return "sparkles"
         case .collapseWhenPaused: return "arrow.down.right.and.arrow.up.left"
         case .hideInFullScreen: return "arrow.up.left.and.arrow.down.right"
+        case .showOnLockScreen: return "lock.display"
         case .listenMilestones: return "trophy"
         case .trackDrop: return "rectangle.topthird.inset.filled"
         case .gestures: return "hand.draw"
@@ -3827,6 +3830,7 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .karaoke: return L10n.t("卡拉OK效果")
         case .collapseWhenPaused: return L10n.t("暂停时收起")
         case .hideInFullScreen: return L10n.t("全屏时隐藏")
+        case .showOnLockScreen: return L10n.t("锁屏时显示")
         case .listenMilestones: return L10n.t("收听里程碑")
         case .trackDrop: return L10n.t("换歌时显示歌名")
         case .gestures: return L10n.t("触控板手势")
@@ -3852,6 +3856,7 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .expandedNextLine: return L10n.t("展开时在进度条上方显示下一句要唱的歌词")
         case .karaoke: return L10n.t("逐字歌词随演唱逐字高亮；无逐字数据的歌曲整行高亮")
         case .hideInFullScreen: return L10n.t("灵动岛所在屏幕有 App 全屏时隐藏")
+        case .showOnLockScreen: return L10n.t("锁屏后灵动岛仍显示歌曲和歌词，旁人也能看到")
         case .listenMilestones:
             return L10n.t("单曲收听达到 100、1,000… 次，或累计收听达到 1,000、5,000… 次时，灵动岛展开庆祝。需连接 Last.fm")
         case .trackDrop:
@@ -3878,6 +3883,9 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .hideInFullScreen:
             return Binding(get: { settings.notchHideInFullScreen },
                             set: { settings.notchHideInFullScreen = $0 })
+        case .showOnLockScreen:
+            return Binding(get: { settings.notchShowOnLockScreen },
+                            set: { settings.notchShowOnLockScreen = $0 })
         case .listenMilestones:
             return Binding(get: { settings.notchListenMilestones },
                             set: { settings.notchListenMilestones = $0 })
@@ -4320,20 +4328,21 @@ private struct NotchExpandedLyricListRows: View {
 
 /// 「行为」组 —— 工具栏「行为」浮层(`NotchBehaviorPopover`)与抽屉 `behaviorGroup` 同一份:
 /// 「暂停时收起」+ 自动隐藏那几行(`AutoHideSettingsRows`,跟悬浮歌词共用同一份视图、靠 `surface`
-/// 分流到灵动岛那几个键,无歌词那一行在灵动岛上是收起歌词行)+「全屏时隐藏」(只有灵动岛有,所以不进 `AutoHideItem`)+「换歌时显示歌名」+「收听里程碑」
+/// 分流到灵动岛那几个键,无歌词那一行在灵动岛上是收起歌词行)+「全屏时隐藏」(只有灵动岛有,所以不进 `AutoHideItem`)+「锁屏时显示」+「换歌时显示歌名」+「收听里程碑」
 /// +「触控板手势」。
 ///
 /// 工具栏「行为」按钮的摘要(`NotchEditorStage.behaviorSummary`)要把这里每一项都算进去 ——
 /// 少算不会编译报错,只会让按钮在漏掉的那项开着时照旧显示「全部关闭」。
 @MainActor
 struct NotchBehaviorSettingsRows: View {
-    // 一组小块(三列),不分组名:先收起与隐藏(暂停时收起、自动隐藏几项、全屏时隐藏),再两项提示(换歌时显示歌名、收听里程碑),最后触控板手势。
+    // 一组小块(三列),不分组名:先收起、隐藏与显示(暂停时收起、自动隐藏几项、全屏时隐藏、锁屏时显示),再两项提示(换歌时显示歌名、收听里程碑),最后触控板手势。
     // 分成两组带组名时,组名和组间距多出的二十来 pt 正好让第三行出界,浮层要滚。
     var body: some View {
         SettingsTileGrid(columns: 3) {
             NotchBehaviorToggleTile(item: .collapseWhenPaused)
             AutoHideToggleTiles(surface: .notch)
             NotchBehaviorToggleTile(item: .hideInFullScreen)
+            NotchBehaviorToggleTile(item: .showOnLockScreen)
             NotchBehaviorToggleTile(item: .trackDrop)
             NotchListenMilestonesTile()
             NotchBehaviorToggleTile(item: .gestures)
