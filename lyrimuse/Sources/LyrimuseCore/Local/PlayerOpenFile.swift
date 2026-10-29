@@ -19,15 +19,17 @@ public enum PlayerOpenFile {
 
     /// 播放器报的这一首是不是这个文件。三种报法都认:标签里的歌名(QQ;报了歌手时还得跟标签一致)、带或不带扩展名的
     /// 文件名(网易云)、文件名在第一个 `-` 处拆开去掉空白的歌手和歌名(酷狗)。两边连续空白压成一个比;两边都有时长时差
-    /// 1.5 秒以内。纯函数,selftest 覆盖。
+    /// 1.5 秒以内。`underscoresControls`:标签先照 `underscoringControls` 换过再比(foobar2000)。纯函数,selftest 覆盖。
     public static func fileMatches(reportedArtist: String, reportedTitle: String, reportedDuration: Double?,
-                                   tags: LocalAudioFileTags?, fileName: String) -> Bool {
+                                   tags: LocalAudioFileTags?, fileName: String, underscoresControls: Bool = false) -> Bool {
         if let reportedDuration, let duration = tags?.duration, abs(duration - reportedDuration) > 1.5 { return false }
         let title = PlayerTitleSplit.collapsedWhitespace(reportedTitle)
         let artist = PlayerTitleSplit.collapsedWhitespace(reportedArtist)
         guard !title.isEmpty else { return false }
-        if let tags, !tags.title.isEmpty, PlayerTitleSplit.collapsedWhitespace(tags.title) == title,
-           artist.isEmpty || PlayerTitleSplit.collapsedWhitespace(tags.artist) == artist { return true }
+        func shown(_ tag: String) -> String {
+            PlayerTitleSplit.collapsedWhitespace(underscoresControls ? underscoringControls(tag) : tag)
+        }
+        if let tags, !tags.title.isEmpty, shown(tags.title) == title, artist.isEmpty || shown(tags.artist) == artist { return true }
         let base = PlayerTitleSplit.strippingAudioExtension(fileName)
         if title == PlayerTitleSplit.collapsedWhitespace(fileName) || title == PlayerTitleSplit.collapsedWhitespace(base) {
             return true
@@ -38,6 +40,13 @@ public enum PlayerOpenFile {
             if !left.isEmpty, left == artist, right == title { return true }
         }
         return false
+    }
+
+    /// foobar2000 报标签时每个控制字符(换行、回车、制表符)各换成一个 `_`(`\r\n` 是两个),见 02 章决策 210。纯函数,selftest 覆盖。
+    public static func underscoringControls(_ text: String) -> String {
+        var out = String.UnicodeScalarView()
+        for scalar in text.unicodeScalars { out.append(scalar.value < 0x20 ? "_" : scalar) }
+        return String(out)
     }
 
     /// 没写歌名的文件、播放器把带扩展名的文件名报成歌名时(网易云;`acceptsBaseName` 时不带扩展名的也认,foobar2000):
@@ -80,7 +89,7 @@ public enum PlayerOpenFile {
               let title = snapshot.title, !title.isEmpty,
               let file = fileIdentity(artist: snapshot.artist, title: title, duration: snapshot.duration,
                                       pid: snapshot.processIdentifier ?? PlayerProcess.pid(bundleID: bundleID).map { Int($0) },
-                                      acceptsBaseName: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,
+                                      foobar: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,
                                       now: now) else { return snapshot }
         var out = snapshot.withTitle(file.title)
         if !file.artist.isEmpty { out = out.withArtist(file.artist) }
@@ -90,9 +99,9 @@ public enum PlayerOpenFile {
         return out
     }
 
-    /// `pid` 只在要读盘时才取(缓存命中时不找进程)。
+    /// `pid` 只在要读盘时才取(缓存命中时不找进程)。`foobar`:不带扩展名的文件名也认、标签里的控制字符按 `_` 比。
     static func fileIdentity(artist: String?, title: String, duration: Double?, pid: @autoclosure () -> Int?,
-                             acceptsBaseName: Bool = false, now: Date = Date()) -> PlayerTitleSplit.FileIdentity? {
+                             foobar: Bool = false, now: Date = Date()) -> PlayerTitleSplit.FileIdentity? {
         let key = cacheKey(artist: artist, title: title)
         if let hit = cache.withLock({ $0[key] }),
            !PlayerTitleSplit.shouldLookUpFile(found: hit.path != nil, attempts: hit.attempts,
@@ -100,7 +109,7 @@ public enum PlayerOpenFile {
             return hit.identity
         }
         guard let pid = pid(), pid > 0 else { return nil }
-        let found = lookUp(artist: artist ?? "", title: title, duration: duration, pid: pid_t(pid), acceptsBaseName: acceptsBaseName)
+        let found = lookUp(artist: artist ?? "", title: title, duration: duration, pid: pid_t(pid), foobar: foobar)
         cache.withLock { entries in
             if entries.count > 64 { entries.removeAll() }
             let previous = entries[key]?.attempts ?? 0
@@ -136,7 +145,7 @@ public enum PlayerOpenFile {
     }
 
     private static func lookUp(artist: String, title: String, duration: Double?, pid: pid_t,
-                               acceptsBaseName: Bool) -> (identity: PlayerTitleSplit.FileIdentity?, path: String)? {
+                               foobar: Bool) -> (identity: PlayerTitleSplit.FileIdentity?, path: String)? {
         let candidates = ProcessOpenFiles.paths(pid: pid)
             .filter { PlayerTitleSplit.audioExtensions.contains(URL(fileURLWithPath: $0).pathExtension.lowercased()) }
         guard !candidates.isEmpty else { return nil }
@@ -144,10 +153,10 @@ public enum PlayerOpenFile {
             let fileName = URL(fileURLWithPath: path).lastPathComponent
             let tags = LocalAudioFileTags.read(path: path)
             guard fileMatches(reportedArtist: artist, reportedTitle: title, reportedDuration: duration, tags: tags,
-                              fileName: fileName) else { continue }
+                              fileName: fileName, underscoresControls: foobar) else { continue }
             let found = tags.flatMap(PlayerTitleSplit.identity(from:))
                 ?? fileNameIdentity(reportedArtist: artist, reportedTitle: title, fileName: fileName, duration: tags?.duration,
-                                    acceptsBaseName: acceptsBaseName)
+                                    acceptsBaseName: foobar)
             logger.notice("player file: \(fileName, privacy: .public) matches the reported track, tags \(found == nil ? "absent" : "used", privacy: .public)")
             return (found, path)
         }

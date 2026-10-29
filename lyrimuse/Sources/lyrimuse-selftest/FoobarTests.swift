@@ -131,6 +131,15 @@ func runFoobarTests() {
         expectEqual(PlayerOpenFile.fileNameIdentity(reportedArtist: "", reportedTitle: "无标签 Mezzamo - Happy Boy",
                                                     fileName: "无标签 Mezzamo - Happy Boy.mp3", duration: 40) == nil, true,
                     "foobar 没写标签: 别的播放器照旧只认带扩展名的")
+        expectEqual(PlayerOpenFile.underscoringControls("回车检查\r\n第二行\t制表"), "回车检查__第二行_制表",
+                    "foobar 标签里的控制字符: 各换成一个下划线,回车换行是两个")
+        let multiline = LocalAudioFileTags(title: "换行检查\n第二行", artist: "测试\n歌手", album: "测试专辑", duration: 40)
+        expectEqual(PlayerOpenFile.fileMatches(reportedArtist: "测试_歌手", reportedTitle: "换行检查_第二行", reportedDuration: 40,
+                                               tags: multiline, fileName: "newline.mp3", underscoresControls: true), true,
+                    "foobar 标签带换行: 它报成下划线也认得出是这个文件")
+        expectEqual(PlayerOpenFile.fileMatches(reportedArtist: "测试_歌手", reportedTitle: "换行检查_第二行", reportedDuration: 40,
+                                               tags: multiline, fileName: "newline.mp3"), false,
+                    "foobar 标签带换行: 别的播放器照旧不把下划线当换行")
     }
 
     // ---- 接线契约 ----
@@ -150,6 +159,10 @@ func runFoobarTests() {
         expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,
                     "foobar 接线: 按了还停着(列表是空的)就算没放起来,退回打开它")
         let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
+        expectEqual(sourceHas(openFile, "foobar: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
+                    "foobar 接线: 按开着的文件认曲目时打开 foobar 那两条(不带扩展名的文件名、控制字符换下划线)")
+        expectEqual(sourceHas(openFile, "fileName: fileName, underscoresControls: foobar)"), true,
+                    "foobar 接线: 找文件时把控制字符那条交给比对")
         expectEqual(sourceHas(openFile, "guard let snapshot, !SourceKnockout.isOut(.playerFile),"), true,
                     "foobar 接线: 开着的文件那条腿能拔(player-file)")
         expectEqual(sourceHas(openFile, "guard !SourceKnockout.isOut(.playerFile), let bundleID, bundleIDs.contains(bundleID), let rawTitle"), true,
@@ -160,7 +173,7 @@ func runFoobarTests() {
                     "foobar 接线: 换成标签那份要带上补查时刻,不然曲尾那一查排不上")
         expectEqual(sourceHas(client, "elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,"), true,
                     "foobar 接线: 解码那一拍位置换成取余后的")
-        expectEqual(sourceHas(openFile, "acceptsBaseName: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
+        expectEqual(sourceHas(openFile, "acceptsBaseName: foobar)"), true,
                     "foobar 接线: 认当前文件时没写标签的按不带扩展名的文件名拆")
     }
 }
