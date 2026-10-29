@@ -649,6 +649,25 @@ public final class LocalPlaybackSource: ObservableObject {
         tier == .noisyFloored && reported - predicted > flooredForwardSnapEpsilonSecs
     }
 
+    /// QQ 音乐 Mac 版那几条位置修正(整秒下取整、暂停不报准位置那一套:开播早锚点、整秒重发锚点、拖动补中点、放完归零、
+    /// 暂停着开播、晚到的 0 锚点、恢复时按住开头、暂停按屏上位置停住、恢复出声滞后)按这个 bundle id 判:这份会话是 iPad 版报的
+    /// (`client`)就换成 iPad 版的,那几条都不套;别的原样交回。iPad 版的进度带微秒,暂停帧报的就是停住的位置,开播、拖动的锚点
+    /// 也准,套上取整补偿反而改坏。见 02 章决策 204。纯函数,selftest 覆盖。
+    public nonisolated static func qqMacQuirkBundleID(bundleID: String?, client: String?) -> String? {
+        bundleID == PlaybackPlayer.qqMusic.bundleIdentifier && client == QQIPadNowPlaying.bundleID ? client : bundleID
+    }
+
+    /// 见 qqMacQuirkBundleID。
+    private var qqMacQuirkBundleID: String? {
+        lastSnapshot.flatMap(Self.qqMacQuirkBundleID)
+    }
+
+    /// 见 qqMacQuirkBundleID。
+    private nonisolated static func qqMacQuirkBundleID(_ snapshot: MediaControlSnapshot) -> String? {
+        qqMacQuirkBundleID(bundleID: snapshot.bundleIdentifier,
+                           client: MediaControlClient.reportingClient(forBundleID: snapshot.bundleIdentifier))
+    }
+
     /// QQ 音乐的开播锚点有时比真正出声早(点播那一刻就发 `elapsed=0`,缓冲完才出声),从它外推下来整首偏快,
     /// 而前向棘轮只会往前追、EMA 门槛 1.0s 够不着。这首从开播锚点一路外推下来时(`posAnchorLagSampleValid`),
     /// 读数比外推落后 `earlyStartAnchorMinSecs`~`earlyStartAnchorMaxSecs` 就对齐读数,一首一次;对齐过头变偏慢的,
@@ -2246,7 +2265,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 trackPosSeconds = natural?.seed ?? (rawReported + seedLag)
                 let playingSince = posResumeEpisodeAt.map { now.timeIntervalSince($0) }
                 let startLead = Self.qqLateZeroAnchorLead(
-                    bundleID: lastSnapshot?.bundleIdentifier, anchorElapsed: anchorElapsedTime, rawReported: rawReported,
+                    bundleID: qqMacQuirkBundleID, anchorElapsed: anchorElapsedTime, rawReported: rawReported,
                     resumeSignalAge: playingSince)
                     + Self.lateStartAnchorLead(
                         bundleID: lastSnapshot?.bundleIdentifier, anchorElapsed: anchorElapsedTime, rawReported: rawReported,
@@ -2300,11 +2319,11 @@ public final class LocalPlaybackSource: ObservableObject {
                         reported: reported,
                         frozen: pausedPositionMs.map { Double($0) / 1000 },
                         maxForwardSecs: awaitingAudio
-                            ? 0 : sinceSignal - Self.resumeAudioLagSecs(bundleID: lastSnapshot?.bundleIdentifier),
+                            ? 0 : sinceSignal - Self.resumeAudioLagSecs(bundleID: qqMacQuirkBundleID),
                         capSecs: resumeSignalAge == nil ? Self.resumeMaxForwardCapSecs : .infinity)
                 let frozen = pausedPositionMs.map { Double($0) / 1000 }
-                posAnchorLagSampleValid = Self.resumeContinuesStartAnchor(bundleID: lastSnapshot?.bundleIdentifier, frozen: frozen)
-                if let frozen, Self.resumeDropsToTrackStart(bundleID: lastSnapshot?.bundleIdentifier, frozen: frozen, reported: reported) {
+                posAnchorLagSampleValid = Self.resumeContinuesStartAnchor(bundleID: qqMacQuirkBundleID, frozen: frozen)
+                if let frozen, Self.resumeDropsToTrackStart(bundleID: qqMacQuirkBundleID, frozen: frozen, reported: reported) {
                     logger.notice("resume to track start: frozen=\(frozen, format: .fixed(precision: 3)) reported=\(reported, format: .fixed(precision: 3)), keeping the paused position until the title changes")
                     trackPosSeconds = Self.resumeHoldSeed(bundleID: lastSnapshot?.bundleIdentifier, frozen: frozen,
                                                           sinceSignal: sinceSignal)
@@ -2442,7 +2461,7 @@ public final class LocalPlaybackSource: ObservableObject {
             return (trackPosSeconds, false)
         }
         // QQ 自然放完、换歌名之前那几拍:按住旧歌的位置,见 holdsTrackEndZero。
-        if Self.holdsTrackEndZero(bundleID: lastSnapshot?.bundleIdentifier, reported: reported, predicted: predicted,
+        if Self.holdsTrackEndZero(bundleID: qqMacQuirkBundleID, reported: reported, predicted: predicted,
                                   duration: posPrevDurationSecs) {
             let since = posTrackEndZeroSince ?? now
             if posTrackEndZeroSince == nil {
@@ -2504,7 +2523,7 @@ public final class LocalPlaybackSource: ObservableObject {
             // elapsedTimeNow 分不出"带偏置的锚点没动"和"准锚点+拖了≈偏置":拖动
             // ≥3s(绝大多数)正常进此分支纠正,换歌即自愈。
             setReportedBias(0, anchorElapsed: nil)
-            let midpoint = Self.flooredSeekMidpoint(bundleID: lastSnapshot?.bundleIdentifier, anchorElapsedTime: anchorElapsedTime)
+            let midpoint = Self.flooredSeekMidpoint(bundleID: qqMacQuirkBundleID, anchorElapsedTime: anchorElapsedTime)
             if midpoint > 0 {
                 logger.notice("floored seek anchor: raw=\(rawReported, format: .fixed(precision: 3)) predicted=\(predicted, format: .fixed(precision: 3)) anchorElapsed=\(anchorElapsedTime ?? -1, format: .fixed(precision: 3)), adding \(midpoint, format: .fixed(precision: 2))s")
             }
@@ -2569,7 +2588,7 @@ public final class LocalPlaybackSource: ObservableObject {
         // 拖动够久的是整秒跳变那一刻发的,按 tickAnchorError 两个方向都纠。见 02 章决策 115、118。
         if let anchorElapsed = anchorElapsedTime, anchorElapsed >= 1, anchorElapsed != posTickCheckedAnchorElapsed {
             posTickCheckedAnchorElapsed = anchorElapsed
-            let bundle = lastSnapshot?.bundleIdentifier
+            let bundle = qqMacQuirkBundleID
             if anchorLagSampleWasValid,
                Self.correctsEarlyStartAnchor(bundleID: bundle, reported: reported, predicted: predicted) {
                 logger.notice("early start anchor: reported=\(reported, format: .fixed(precision: 3)) predicted=\(predicted, format: .fixed(precision: 3)) ahead=\(predicted - reported, format: .fixed(precision: 3)) anchorElapsed=\(anchorElapsedTime ?? -1, format: .fixed(precision: 3))")
@@ -4545,7 +4564,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 if let shown = pauseShownMs, let stale = snapshot.anchorElapsedTime,
                    Self.pauseAnchorIsStale(bundleID: snapshot.bundleIdentifier, frozenByEvent: pauseAnchorWasFrozenByEvent,
                                            latestAnchorPublishedWhilePaused: env.latestAnchorPublishedWhilePaused())
-                    || Self.holdsShownPositionAtPause(bundleID: snapshot.bundleIdentifier, frozenByEvent: pauseAnchorWasFrozenByEvent) {
+                    || Self.holdsShownPositionAtPause(bundleID: Self.qqMacQuirkBundleID(snapshot), frozenByEvent: pauseAnchorWasFrozenByEvent) {
                     posHeldPause = (stale, shown)
                     logger.notice("pause hold: snapshot still carries the last playing anchor \(stale, format: .fixed(precision: 3)), keeping the shown position \(Double(shown) / 1000, format: .fixed(precision: 3)) until the pause anchor lands")
                 }
@@ -4595,7 +4614,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 if let anchorNow = snapshot.anchorElapsedTime, abs(anchorNow - held.anchorElapsed) < 0.001 { return held.ms }
                 // QQ 暂停中再报的值多半是下取整的,见 pausedReadingReplacesShown;不换的话记住这个锚点、接着停在原处。
                 if let anchorNow = snapshot.anchorElapsedTime,
-                   Self.holdsShownPositionAtPause(bundleID: snapshot.bundleIdentifier, frozenByEvent: true),
+                   Self.holdsShownPositionAtPause(bundleID: Self.qqMacQuirkBundleID(snapshot), frozenByEvent: true),
                    !Self.pausedReadingReplacesShown(reported: reported, shown: Double(held.ms) / 1000) {
                     posHeldPause = (anchorNow, held.ms)
                     return held.ms
@@ -4804,7 +4823,7 @@ public final class LocalPlaybackSource: ObservableObject {
             // 暂停态:显示源是 pausedPositionMs(见 apply() 里那段注释),没有锚点可改。
             pausedPositionMs = clampedMs
             // QQ 回报的是拖到的目标下取整,按屏上位置停住的规则停在目标上(见 pausedReadingReplacesShown)。
-            if Self.holdsShownPositionAtPause(bundleID: lastSnapshot?.bundleIdentifier, frozenByEvent: true) {
+            if Self.holdsShownPositionAtPause(bundleID: qqMacQuirkBundleID, frozenByEvent: true) {
                 posHeldPause = (lastSnapshot?.anchorElapsedTime ?? -1, clampedMs)
             }
         }

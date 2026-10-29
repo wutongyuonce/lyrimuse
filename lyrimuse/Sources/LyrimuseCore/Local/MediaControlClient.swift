@@ -1463,7 +1463,7 @@ public enum MediaControlClient {
             let c = try decoder.container(keyedBy: CodingKeys.self)
             let reportedTitle = try c.decodeIfPresent(String.self, forKey: .title)
             let reportedArtist = try c.decodeIfPresent(String.self, forKey: .artist)
-            album = try c.decodeIfPresent(String.self, forKey: .album)
+            let reportedAlbum = try c.decodeIfPresent(String.self, forKey: .album)
             bundleIdentifier = try c.decodeIfPresent(String.self, forKey: .bundleIdentifier)
             playing = try c.decodeIfPresent(Bool.self, forKey: .playing)
             let rate = try c.decodeIfPresent(Double.self, forKey: .playbackRate)
@@ -1482,11 +1482,15 @@ public enum MediaControlClient {
             // iPad 版网易云「锁屏歌词」开着时 title 是歌词、artist 是「歌手/歌名」,先还原成真名;开播晚的那种锚点补上提前量
             // (见 NetEaseIPadNowPlaying)。
             let names = NetEaseIPadNowPlaying.normalized(
-                .init(title: reportedTitle, artist: reportedArtist, album: album, duration: times.duration,
+                .init(title: reportedTitle, artist: reportedArtist, album: reportedAlbum, duration: times.duration,
                       elapsed: times.elapsedTime, timestamp: times.timestamp),
                 bundleID: bundleIdentifier)
-            title = names.title
-            artist = names.artist
+            // iPad 版 QQ 音乐改写成「歌名 — 歌手」、专辑空的那一帧还原(见 QQIPadNowPlaying)。
+            let qqNames = QQIPadNowPlaying.normalized(
+                .init(title: names.title, artist: names.artist, album: reportedAlbum), bundleID: bundleIdentifier)
+            title = qqNames.title
+            artist = qqNames.artist
+            album = qqNames.album
             duration = names.duration
             timestamp = times.timestamp
             var lead = 0.0
@@ -2466,8 +2470,9 @@ public enum MediaControlClient {
             return (nil, prefix + "the system reports \(raw.bundleIdentifier ?? "no player"), which is not accepted")
         }
         // VOX 这份载荷的歌手是「歌手 — 专辑」、没写标签时歌名是小写文件名:换成跟快照同一份再算曲目标识(见 VoxPlayerInfo)。
-        // iPad 版网易云的歌名按记住的真名还原(见 NetEaseIPadNowPlaying)。
+        // iPad 版网易云的歌名按记住的真名还原(见 NetEaseIPadNowPlaying),iPad 版 QQ 音乐的去掉改写的那一截(见 QQIPadNowPlaying)。
         var (keyTitle, keyArtist) = NetEaseIPadNowPlaying.names(title: raw.title, artist: raw.artist, bundleID: raw.bundleIdentifier)
+        (keyTitle, keyArtist) = QQIPadNowPlaying.names(title: keyTitle, artist: keyArtist, bundleID: raw.bundleIdentifier)
         var filePath = PlayerTitleSplit.currentFilePath(bundleID: bundleID, title: raw.title)
             ?? PlayerOpenFile.currentFilePath(bundleID: bundleID, rawArtist: raw.artist, rawTitle: raw.title)
         if bundleID == VoxPlayerInfo.bundleID {

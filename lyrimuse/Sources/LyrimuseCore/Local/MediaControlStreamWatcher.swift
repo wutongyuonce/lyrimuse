@@ -356,13 +356,13 @@ public final class MediaControlStreamWatcher {
         // 曲目换没换,跟锚点判定完全无关:只带 title/artist 的 diff 行(实测电台换歌就有这种形态)会在
         // 下面那道"没有 elapsedTime/timestamp 就早退"的闸之前返回,所以这一步必须在闸之前算。
         // 合并状态里留原样(下一行只带 title 的 diff 才拼得回 iPad 版网易云的歌词模式),判换歌、算锚点身份用整理过的,
-        // 跟轮询那一路逐字一致(见 NetEaseIPadNowPlaying)。开播差量要在整理之前记下,这一行的锚点身份才带上提前量。
+        // 跟轮询那一路逐字一致(见 NetEaseIPadNowPlaying、QQIPadNowPlaying)。开播差量要在整理之前记下,这一行的锚点身份才带上提前量。
         // 上一行要先于这一行再整理一次:整理共用一份状态,反过来的话上一行(撕裂帧)会按这一行刚记下的真名认成新歌,换歌报不出来。
         if NetEaseIPadNowPlaying.isBareStart(payload: payload, merged: next), let timestamp = next["timestamp"] as? String {
             NetEaseIPadNowPlaying.noteBareStart(timestamp: timestamp, full: payload["elapsedTime"] != nil)
         }
-        let before = NetEaseIPadNowPlaying.normalizedFields(merged)
-        let identity = NetEaseIPadNowPlaying.normalizedFields(next)
+        let before = QQIPadNowPlaying.normalizedFields(NetEaseIPadNowPlaying.normalizedFields(merged))
+        let identity = QQIPadNowPlaying.normalizedFields(NetEaseIPadNowPlaying.normalizedFields(next))
         let changed = changedTrackKey(before: before, after: identity)
         guard payload.keys.contains("elapsedTime") || payload.keys.contains("timestamp") else {
             return MediaControlAnchorDigest(merged: next, anchorKey: nil, tight: false, anchorAge: nil,

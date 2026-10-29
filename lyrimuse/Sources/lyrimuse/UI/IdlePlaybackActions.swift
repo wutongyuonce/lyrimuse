@@ -24,8 +24,10 @@ enum IdlePlaybackActions {
     /// 有没有真的「继续播放」可给:AM / Spotify 有 AppleScript(AM = 三段式,Spotify 自带恢复上下文);酷狗、QQ、网易云、
     /// Pine 按它菜单里的播放 / 暂停,冷启动后按也放上次那首(`resumeViaMenu`);洛雪直接发给它本体。reAMP、VOX、汽水一启动就
     /// 自己跳到前台,Kaset 冷启动后不到前台开不了播(隐藏或不激活启动时内嵌网页播放器一直停在加载,见 02 章决策 190),都不给;别的只能「打开」。
+    /// 最近那份会话是 iPad 版报的(`PlayerProcess.sessionIsOtherClient`)也不给:它没有本体那份菜单,按了会把本体放起来。
     static func canResume(_ player: PlaybackPlayer) -> Bool {
-        switch player {
+        guard !PlayerProcess.sessionIsOtherClient(bundleID: player.bundleIdentifier) else { return false }
+        return switch player {
         case .appleMusic, .spotify, .kugou, .qqMusic, .netease, .pinePlayer, .lxMusic: true
         default: false
         }
@@ -99,9 +101,11 @@ enum IdlePlaybackActions {
         return (try? await NSWorkspace.shared.openApplication(at: url, configuration: configuration)) != nil
     }
 
+    /// 最近那份会话是 iPad 版报的就开它。
     static func openPlayerApp(_ player: PlaybackPlayer) {
-        guard let url = NSWorkspace.shared.urlForApplication(
-            withBundleIdentifier: player.bundleIdentifier) else { return }
+        let id = PlayerProcess.otherClient(reporting: MediaControlClient.reportingClient(forBundleID: player.bundleIdentifier))
+            ?? player.bundleIdentifier
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: id) else { return }
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 }

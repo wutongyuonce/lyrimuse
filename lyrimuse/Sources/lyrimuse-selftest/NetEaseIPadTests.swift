@@ -471,7 +471,7 @@ func runNetEaseIPadTests() {
         expectEqual(sourceHas(client, "var (keyTitle, keyArtist) = NetEaseIPadNowPlaying.names(title: raw.title, artist: raw.artist, bundleID: raw.bundleIdentifier)"),
                     true, "iPad 网易云 接线: 取封面那一路的曲目标识按真名算")
         let watcher = sourceText("LyrimuseCore/Local/MediaControlStreamWatcher.swift")
-        expectEqual([sourceHas(watcher, "let identity = NetEaseIPadNowPlaying.normalizedFields(next)"),
+        expectEqual([sourceHas(watcher, "NetEaseIPadNowPlaying.normalizedFields(next))"),
                      sourceHas(watcher, "let changed = changedTrackKey(before: before, after: identity)"),
                      sourceHas(watcher, "artist: identity[\"artist\"] as? String, title: identity[\"title\"] as? String,"),
                      sourceHas(watcher, "\"bundleIdentifier\", \"duration\", \"album\"] where payload.keys.contains(key) {")],
@@ -483,7 +483,7 @@ func runNetEaseIPadTests() {
                      sourceHas(watcher, "let elapsed = (identity[\"elapsedTime\"] as? NSNumber)?.doubleValue")],
                     [true, true, true, true, true], "iPad 网易云 接线: 开播提前量轮询、事件流两路都用整理过的进度")
         let probe = sourceText("LyrimuseCore/Local/NowPlayingClientsProbe.swift")
-        expectEqual([sourceHas(probe, "let data = NetEaseIPadNowPlaying.normalizedPayload(raw)"),
+        expectEqual([sourceHas(probe, "NetEaseIPadNowPlaying.normalizedPayload(raw))"),
                      sourceHas(probe, "NetEaseIPadNowPlaying.names(title: decoded.title, artist: decoded.artist, bundleID: foundID)")],
                     [true, true], "iPad 网易云 接线: 单问会话、单问封面都整理")
         expectEqual([sourceHas(sourceText("LyrimuseCore/Local/PlayerProcess.swift"),

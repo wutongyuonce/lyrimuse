@@ -63,8 +63,9 @@ public enum NowPlayingClientsProbe {
             break
         }
         guard let (decoded, data, foundID) = found else { return nil }
-        // iPad 版网易云的歌名按记住的真名还原(见 NetEaseIPadNowPlaying)。
+        // iPad 版网易云的歌名按记住的真名还原(见 NetEaseIPadNowPlaying),iPad 版 QQ 音乐的去掉改写的那一截(见 QQIPadNowPlaying)。
         var (title, artist) = NetEaseIPadNowPlaying.names(title: decoded.title, artist: decoded.artist, bundleID: foundID)
+        (title, artist) = QQIPadNowPlaying.names(title: title, artist: artist, bundleID: foundID)
         if bundleID == VoxPlayerInfo.bundleID {
             (title, artist, _) = VoxPlayerInfo.artworkIdentity(title: title, artist: artist)
         } else if bundleID == PinePlayerInfo.bundleID {
@@ -229,8 +230,8 @@ public enum NowPlayingClientsProbe {
 
     /// 解出 helper 单问那一份的输出。纯函数,selftest 覆盖。
     public static func decodeSnapshot(_ raw: Data) -> (snapshot: MediaControlSnapshot, anchor: SessionAnchor)? {
-        // iPad 版网易云的歌名先还原(见 NetEaseIPadNowPlaying),快照的字段解出来就不能改了。
-        let data = NetEaseIPadNowPlaying.normalizedPayload(raw)
+        // iPad 版网易云、QQ 音乐的歌名先还原(见 NetEaseIPadNowPlaying、QQIPadNowPlaying),快照的字段解出来就不能改了。
+        let data = QQIPadNowPlaying.normalizedPayload(NetEaseIPadNowPlaying.normalizedPayload(raw))
         // helper 对"那个 App 现在没在报"输出字面量 null,解码失败即视为没有。
         guard let decoded = try? JSONDecoder().decode(MediaControlSnapshot.self, from: data),
               let anchor = try? JSONDecoder().decode(SessionAnchor.self, from: data) else {
