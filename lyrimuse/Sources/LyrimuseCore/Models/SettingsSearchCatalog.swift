@@ -158,7 +158,7 @@ public enum SettingsSearchCatalog {
             RowGate(menuBar, "已唱颜色", "menuBar.fillColorShown", "卡拉OK效果"),
         ]
         // 灵动岛「歌词行」组:收起时不显示歌词时整组藏起(`NotchLyricRowSettingsRows`)。
-        for title in ["对齐方式", "副行", "高度", "卡拉OK效果", "显示封面", "封面位置"] {
+        for title in ["对齐方式", "歌词颜色", "副行", "高度", "卡拉OK效果", "显示封面", "封面位置"] {
             gates.append(RowGate(notch, title, "notch.showLyrics", "收起时显示歌词"))
         }
         // Last.fm「Scrobble 规则」:上面的「Scrobble 到 Last.fm」关着时整组换成一句提示,落到组标题上。
@@ -417,7 +417,7 @@ public enum SettingsSearchCatalog {
         surface(.overlay, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.overlay, "字号", kw: ["大小", "font size"], group: "字体"),
         surface(.overlay, "卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "颜色"),
-        surface(.overlay, "文字颜色", kw: ["字色", "颜色", "跟随封面"], group: "颜色"),
+        surface(.overlay, "文字颜色", kw: ["字色", "颜色", "跟随封面", "彩虹", "渐变"], group: "颜色"),
         surface(.overlay, "文字描边", kw: ["描边", "outline"], group: "颜色"),
         surface(.overlay, "描边颜色", kw: ["描边"], group: "颜色"),
         surface(.overlay, "未唱颜色", kw: ["卡拉OK", "未唱", "未唱颜色", "逐字", "karaoke", "跟随封面"], group: "颜色"),
@@ -462,6 +462,7 @@ public enum SettingsSearchCatalog {
         surface(.notch, "展开宽度", kw: ["展开态", "pt"]),
         surface(.notch, "收起时显示歌词", kw: ["显示歌词", "歌词行", "状态条"], group: "歌词行"),
         surface(.notch, "对齐方式", kw: ["居中", "左对齐", "右对齐"], group: "歌词行"),
+        surface(.notch, "歌词颜色", kw: ["颜色", "彩虹", "渐变", "强调色"], group: "歌词行"),
         surface(.notch, "副行", kw: ["下一句", "译文", "读音", "罗马音", "两行"], group: "歌词行"),
         surface(.notch, "展开时预览下一句", kw: ["下一句", "预览"], group: "歌词行"),
         surface(.notch, "高度", kw: ["行高", "歌词行高度", "调高", "调矮", "遮挡", "pt"], group: "歌词行"),

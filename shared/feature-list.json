@@ -884,9 +884,9 @@
             "zh-Hant": "外觀自訂"
           },
           "desc": {
-            "zh-Hans": "字体（跟随系统，或导入 .ttf / .otf 字体）、字号、粗细、文字和背景颜色、描边、毛玻璃背景。悬浮歌词提供多套配色主题，也可将自定义配色保存为主题；文字颜色可跟随专辑封面变化。悬浮歌词的字号还可通过快捷键，或按住 ⌘ 在歌词上滚动鼠标滚轮或双指上下轻扫随时调整。",
-            "en": "Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.",
-            "zh-Hant": "字體（跟隨系統，或匯入 .ttf / .otf 字體）、字級、粗細、文字和背景顏色、描邊、毛玻璃背景。浮動歌詞提供多套配色主題，也可將自訂配色儲存為主題；文字顏色可跟隨專輯封面變化。浮動歌詞的字級還可透過快速鍵，或按住 ⌘ 在歌詞上捲動滑鼠滾輪或雙指上下輕掃隨時調整。"
+            "zh-Hans": "字体（跟随系统，或导入 .ttf / .otf 字体）、字号、粗细、文字和背景颜色、描边、毛玻璃背景。悬浮歌词提供多套配色主题，也可将自定义配色保存为主题；文字颜色可跟随专辑封面变化，悬浮歌词、灵动岛和触控栏还可选流动的彩虹。悬浮歌词的字号还可通过快捷键，或按住 ⌘ 在歌词上滚动鼠标滚轮或双指上下轻扫随时调整。",
+            "en": "Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork, and floating lyrics, the notch and the Touch Bar can also flow as a rainbow. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.",
+            "zh-Hant": "字體（跟隨系統，或匯入 .ttf / .otf 字體）、字級、粗細、文字和背景顏色、描邊、毛玻璃背景。浮動歌詞提供多套配色主題，也可將自訂配色儲存為主題；文字顏色可跟隨專輯封面變化，浮動歌詞、動態島和觸控列還可選流動的彩虹。浮動歌詞的字級還可透過快速鍵，或按住 ⌘ 在歌詞上捲動滑鼠滾輪或雙指上下輕掃隨時調整。"
           },
           "settings": [
             [
@@ -900,6 +900,12 @@
               "悬浮歌词",
               "主题",
               "我的配色主题"
+            ],
+            [
+              "歌词显示",
+              "灵动岛",
+              "歌词行",
+              "歌词颜色"
             ],
             [
               "歌词显示",

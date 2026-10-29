@@ -2455,6 +2455,7 @@
 "跟随「全部播放器」：%@" = "Following “All players”: %@";
 "跟随刘海" = "Match Notch";
 "跟随封面" = "Follow Cover Art";
+"跟随强调色" = "Accent Color";
 "跟随当前使用的屏幕，位置保持不变" = "Follows the screen you’re using, keeping the same position";
 "跟随当前窗口" = "Follow Active Window";
 "跟随播放" = "Follow Playback";

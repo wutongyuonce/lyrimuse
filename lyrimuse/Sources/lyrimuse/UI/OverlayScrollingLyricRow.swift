@@ -76,8 +76,10 @@ struct OverlayScrollingLyricRow: NSViewRepresentable {
         /// 「减弱动态效果」时传,见 17 章决策 43)。
         var still: Bool = false
         /// true = 字的颜色换成沿这一行流动的彩虹(`RainbowLyrics`):两张长图只当蒙版用,透明度照旧(未唱的字暗一档),
-        /// 颜色由底下横向循环平移的渐变给。暂停、`still` 时彩虹停住。只有触控栏传,见 17 章决策 54。
+        /// 颜色由底下横向循环平移的渐变给。`still` 时彩虹停住。触控栏、悬浮歌词、灵动岛传,见 17 章决策 54。
         var rainbow: Bool = false
+        /// 彩虹停不停:nil = 跟着 `paused`。逐字填色唱完一句就停表的宿主(悬浮歌词、灵动岛)单独给,彩虹不在两句之间停住。
+        var rainbowPaused: Bool? = nil
     }
 
     /// 整行阴影。`offsetY` 取 SwiftUI 的口径(正 = 往下)。
@@ -135,10 +137,7 @@ final class OverlayLyricScrollView: NSView {
     private let fillRainbowHost = CALayer()
     private let baseRainbow = CAGradientLayer()
     private let fillRainbow = CAGradientLayer()
-    private static let rainbowKey = "lyrimuse.overlay-rainbow"
-    /// 同一进程里所有行从同一个零相位起算,主行、副行、换句前后的颜色接得上。
-    private static let rainbowEpoch = CACurrentMediaTime()
-    private var rainbowClock = RainbowLyrics.FlowClock(epoch: OverlayLyricScrollView.rainbowEpoch)
+    private let rainbowDriver = RainbowGradientDriver()
 
     private var spec: OverlayScrollingLyricRow.Spec?
     /// 长图(= contentLayer)的点宽 / 点高。描边开着时四周各含一圈 `inset`。
@@ -222,8 +221,6 @@ final class OverlayLyricScrollView: NSView {
                 l.anchorPoint = .zero
                 l.actions = ["position": NSNull(), "bounds": NSNull(), "contents": NSNull()]
             }
-            gradient.startPoint = CGPoint(x: 0, y: 0.5)
-            gradient.endPoint = CGPoint(x: 1, y: 0.5)
             host.addSublayer(gradient)
         }
     }
@@ -265,6 +262,7 @@ final class OverlayLyricScrollView: NSView {
         let imagesChanged = spec.map { !Self.sameImages($0, next) } ?? true
         let timingChanged = spec?.paused != next.paused || spec?.pacedWindow != next.pacedWindow
             || spec?.timingEpoch != next.timingEpoch || spec?.rate != next.rate || spec?.still != next.still
+            || spec?.rainbowPaused != next.rainbowPaused
         spec = next
         if imagesChanged { rebuildImages(spec: next) }
         // 在跑时动画不在(首次装上 / 上一轮判成不用滚)要重装;停着时本来就不装动画,不算缺。
@@ -277,7 +275,7 @@ final class OverlayLyricScrollView: NSView {
         place(nowMs: nowMs, reinstall: true)
     }
 
-    /// 两份输入画出来的长图是不是同一张 —— 除了 `paused` / `pacedWindow` / `timingEpoch` / `rate` / `still` 全都一样。
+    /// 两份输入画出来的长图是不是同一张 —— 除了 `paused` / `pacedWindow` / `timingEpoch` / `rate` / `still` / `rainbowPaused` 全都一样。
     /// 这几项只影响动画和摆位,不重画位图。
     static func sameImages(_ a: OverlayScrollingLyricRow.Spec, _ b: OverlayScrollingLyricRow.Spec) -> Bool {
         var a = a
@@ -286,6 +284,7 @@ final class OverlayLyricScrollView: NSView {
         a.timingEpoch = b.timingEpoch
         a.rate = b.rate
         a.still = b.still
+        a.rainbowPaused = b.rainbowPaused
         return a == b
     }
 
@@ -502,7 +501,7 @@ final class OverlayLyricScrollView: NSView {
         let running = reinstall && !spec.paused && !spec.still
         applyEdgeFade(viewWidth: viewW, layoutWidth: layoutW, offset: offset, nowMs: nowMs, running: running)
         applyRainbowFlow(period: pixelAligned(RainbowLyrics.cycleWidth(textWidth: layoutW, viewWidth: viewW)),
-                         flowing: !spec.paused && !spec.still)
+                         flowing: !(spec.rainbowPaused ?? spec.paused) && !spec.still)
         guard running else { return }
         installFill(nowMs: nowMs)
         installScroll(nowMs: nowMs, restingX: restingX)
@@ -563,47 +562,15 @@ final class OverlayLyricScrollView: NSView {
         fadeCover.add(reveal, forKey: Self.fadeCoverKey)
     }
 
-    /// 彩虹渐变:一圈 = `period`(`RainbowLyrics.cycleWidth`),渐变铺满长图再多一圈;从左往右流 = 渐变从 -period 平移到 0 再循环。
-    /// 两层渐变同一条动画、同一个起点,已唱和未唱的颜色对得上。停着时定在 `rainbowClock` 停下那一刻的相位。
+    /// 彩虹渐变:一圈 = `period`(`RainbowLyrics.cycleWidth`),渐变铺满长图再多一圈、从左往右流(`RainbowGradientDriver`)。
+    /// 两层渐变同一条动画、同一个起点,已唱和未唱的颜色对得上。
     private func applyRainbowFlow(period: CGFloat, flowing: Bool) {
         let layers = [baseRainbow, fillRainbow]
-        guard spec?.rainbow == true, period > 0 else {
-            layers.forEach { $0.removeAnimation(forKey: Self.rainbowKey) }
+        guard spec?.rainbow == true else {
+            layers.forEach { $0.removeAnimation(forKey: RainbowGradientDriver.animationKey) }
             return
         }
-        let now = CACurrentMediaTime()
-        if flowing { rainbowClock.resume(at: now) } else { rainbowClock.freeze(at: now) }
-        let cycles = Int((imageWidth / period).rounded(.up)) + 1
-        let stops = RainbowLyrics.cycleStops
-        let perCycle = stops.count - 1
-        var colors: [CGColor] = []
-        for _ in 0..<cycles {
-            colors += stops.dropLast().map { CGColor(srgbRed: $0.r, green: $0.g, blue: $0.b, alpha: 1) }
-        }
-        colors.append(CGColor(srgbRed: stops[0].r, green: stops[0].g, blue: stops[0].b, alpha: 1))
-        let total = Double(cycles * perCycle)
-        let locations = (0...cycles * perCycle).map { NSNumber(value: Double($0) / total) }
-        let x = -period + CGFloat(rainbowClock.phase(at: now)) * period
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        for g in layers {
-            g.colors = colors
-            g.locations = locations
-            g.bounds = CGRect(x: 0, y: 0, width: period * CGFloat(cycles), height: boxHeight)
-            g.position = CGPoint(x: x, y: 0)
-            g.removeAnimation(forKey: Self.rainbowKey)
-        }
-        CATransaction.commit()
-        guard flowing else { return }
-        for g in layers {
-            let flow = CABasicAnimation(keyPath: "position.x")
-            flow.fromValue = -period
-            flow.toValue = 0
-            flow.duration = rainbowClock.cycle
-            flow.repeatCount = .infinity
-            flow.beginTime = g.convertTime(rainbowClock.epoch, from: nil)
-            g.add(flow, forKey: Self.rainbowKey)
-        }
+        rainbowDriver.apply(to: layers, period: period, width: imageWidth, height: boxHeight, flowing: flowing)
     }
 
     /// 互补裁剪:已唱区 [0, x] 只显示强调色那张,未唱区 [x, 末端] 只显示基础色那张。

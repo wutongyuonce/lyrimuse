@@ -563,6 +563,18 @@ func runWebLyricsTests() {
         expectEqual(styleObject?["width"] as? Double, 640, "网页歌词: style 带悬浮歌词宽度")
         expectEqual(styleObject?["hidePaused"] as? Bool, true, "网页歌词: style 带暂停时隐藏")
         expectEqual(styleObject?["anim"] as? Bool, true, "网页歌词: style 带换句动画")
+        expectEqual(styleObject?["rainbow"] == nil, true, "网页歌词: 没选彩虹时 style 不带彩虹")
+        let rainbowJSON = WebLyricsObsPayload.style(.init(
+            fontFamily: "", fontSize: 31, weights: [600, 400, 300, 400], sung: "rgba(255,255,255,1.0)", unsung: "rgba(255,255,255,0.45)",
+            stroke: "rgba(0,0,0,0.9)", card: nil, showRomanization: true, showTranslation: false, showNextLine: true, karaoke: true,
+            alignment: .leading, overflow: .scroll, spacing: .init(romanization: 4, translation: 6, nextLine: 99),
+            width: 640, hideWhenPaused: true, lineChangeAnimation: true, duetStageInset: 76, duetCenterInset: 84, rainbow: true))
+        let rainbow = ((try? JSONSerialization.jsonObject(with: Data(rainbowJSON.utf8))) as? [String: Any])?["rainbow"] as? [String: Any]
+        expectEqual((rainbow?["stops"] as? [String])?.count, RainbowLyrics.cycleStops.count,
+                    "网页歌词: 彩虹带一圈的色标(首尾同色)")
+        expectEqual((rainbow?["stops"] as? [String])?.first, (rainbow?["stops"] as? [String])?.last, "网页歌词: 彩虹色标首尾同色")
+        expectEqual(rainbow?["seconds"] as? Double, RainbowLyrics.cycleSeconds, "网页歌词: 彩虹带一圈的秒数")
+        expectEqual(rainbow?["unsung"] as? Double, RainbowLyrics.unsungOpacity, "网页歌词: 彩虹带未唱的透明度")
         let duet = WebLyricsObsPayload.duetInsets(overlayWidth: 640, fontSize: 31)
         expectEqual(duet.stage, Double(OverlayCardGeometry.duetStageInset(availableWidth: 600, fontSize: 31)),
                     "网页歌词: 对唱舞台缩进同悬浮歌词(可用宽度 = 宽度 − 40)")
@@ -732,6 +744,20 @@ func runWebLyricsTests() {
         expectEqual(sourceBytes(gapDots, contain: "guard c.running, window != nil || rendersDetached else { return }"), true,
                     "网页歌词: 间奏点离屏时也装动画")
         let pagesSource = app("WebLyrics/WebLyricsPages.swift")
+        // 彩虹(04 章决策 78):按整页坐标铺(逐字分段颜色连得上)、未唱按透明度打折、副行整行打折、暂停时停住;
+        // App 那边彩虹时只给白色两档、彩虹开关一变就重发样式。
+        expectEqual(sourceBytes(pagesSource, contain: "background-image: var(--rb); background-size: var(--rbw) 100%; background-repeat: repeat-x; background-attachment: fixed;")
+                        && sourceBytes(pagesSource, contain: "rgba(0,0,0,var(--rbu)) var(--p, 0%)")
+                        && sourceBytes(pagesSource, contain: "const fade = style.rainbow && o.pct ? `opacity:${o.pct / 100};` : '';")
+                        && sourceBytes(pagesSource, contain: "card.classList.toggle('paused', !playing);")
+                        && sourceBytes(pagesSource, contain: "card.classList.toggle('rainbow', !!style.rainbow);"), true,
+                    "网页歌词: OBS 彩虹按整页坐标铺、未唱和副行按透明度打折、暂停停住")
+        let obsFeed = app("WebLyrics/WebLyricsObsFeed.swift")
+        expectEqual(sourceBytes(obsFeed, contain: "let sung = s.overlayRainbow ? Color.white :")
+                        && sourceBytes(obsFeed, contain: "let unsung = s.overlayRainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)")
+                        && sourceBytes(obsFeed, contain: "rainbow: s.overlayRainbow))")
+                        && sourceBytes(obsFeed, contain: "s.$overlayRainbow.map { _ in () }.eraseToAnyPublisher(),"), true,
+                    "网页歌词: OBS 跟悬浮歌词的彩虹,开关一变就重发样式")
         expectEqual(sourceBytes(pagesSource, contain: "ws.send(JSON.stringify({ ptr: [phase,"), true, "网页歌词: 副屏把按下、拖动、抬起发回 App")
         expectEqual(sourceBytes(pagesSource, contain: "if (downLink && linkAt(u, v) === downLink) window.open(downLink, '_blank', 'noopener');"),
                     true, "网页歌词: 平台页在手指抬起那一刻由网页自己打开(等 App 回话再开会被浏览器拦掉)")
@@ -864,7 +890,7 @@ func runWebLyricsTests() {
             expectEqual(sourceHas(obsPage, "else if (m.type === 'song') { if (!song || song.id !== m.id) songSince = 0; song = m; applySong(); }")
                             && sourceHas(obsPage, "const hasLyrics = !!(track && song && track.id === song.id && track.lines.length > 0);"), true,
                         "网页歌词 歌名卡: 换了一首才重新计时;有没有歌词按同一首的 track 判")
-            expectEqual(sourceHas(app("WebLyrics/WebLyricsObsFeed.swift"), "songCard: s.obsSongCard))")
+            expectEqual(sourceHas(app("WebLyrics/WebLyricsObsFeed.swift"), "songCard: s.obsSongCard, rainbow: s.overlayRainbow))")
                             && sourceHas(app("WebLyrics/WebLyricsObsFeed.swift"), "s.$obsSongCard.map { _ in () }.eraseToAnyPublisher(),")
                             && sourceHas(app("WebLyrics/WebLyricsObsFeed.swift"), "for message in [lastStyle, lastTrack, lastPosition, lastSong] where !message.isEmpty"), true,
                         "网页歌词 歌名卡: 档位随 style 发、改了就重发;新连上的网页补发 song")

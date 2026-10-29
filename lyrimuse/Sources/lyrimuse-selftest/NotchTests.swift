@@ -1526,7 +1526,7 @@ func runNotchTests() {
             expectEqual(notchView.contains("var lyricsClockRunning: Bool { isPlayingNow && !(anchor?.isFrozen ?? false) }")
                         && notchView.contains("paused: !playback.lyricsClockRunning || playback.currentLineFillSettled || !layerActive,")
                         && notchView.contains("isPlaying: playback.lyricsClockRunning, isVisible: layerActive,")
-                        && notchView.contains("rate: playback.playbackRate),"), true,
+                        && notchView.contains("rate: playback.playbackRate,"), true,
                         "图层主行契约: 暂停通知先到、锚点已冻时也停表;倍速按速率排")
             expectEqual(notchView.contains("if !playback.isPlayingNow {\n                    Text(adRemainingText(total: clock.durationMs, position: clock.positionMs))"), true,
                         "广告倒计时契约: Kaset 广告暂停时停在取样那一刻,不按墙钟往下走")

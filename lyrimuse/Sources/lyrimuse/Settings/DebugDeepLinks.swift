@@ -118,6 +118,10 @@ enum DebugDeepLinks {
             AppSettings.shared.japaneseReadingStyle = style
             LocalPlaybackSource.shared.japaneseReading = style
             logger.notice("debug japanese reading \(style.rawValue, privacy: .public)")
+        case let .rainbow(overlay, notch):
+            if let overlay { AppSettings.shared.overlayRainbow = overlay }
+            if let notch { AppSettings.shared.notchLyricsColor = notch ? .rainbow : .accent }
+            logger.notice("debug rainbow overlay=\(String(describing: overlay), privacy: .public) notch=\(String(describing: notch), privacy: .public)")
         case let .touchBarDisplay(color):
             AppSettings.shared.touchBarLyricsColorMode = color
             logger.notice("debug touch bar display color=\(color.rawValue, privacy: .public)")

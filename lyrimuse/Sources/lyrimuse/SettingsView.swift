@@ -4041,6 +4041,34 @@ private struct NotchLyricsAlignmentRow: View {
     }
 }
 
+/// 「歌词颜色」那一行:跟随强调色(歌名、音浪、进度线同一个颜色)或流动彩虹(`NotchLyricsColor`)。只管歌词字:
+/// 主行、副行、展开时的「下一句」;展开时的多行歌词列表不跟。
+@MainActor
+private struct NotchLyricsColorRow: View {
+    @ObservedObject private var settings = AppSettings.shared
+
+    var body: some View {
+        SettingsRow(icon: "paintpalette", title: L10n.t("歌词颜色")) {
+            SettingsGlassTabPicker(
+                selection: $settings.notchLyricsColor,
+                options: NotchLyricsColor.allCases,
+                label: \.displayName,
+                compact: true
+            )
+            .fixedSize()
+        }
+    }
+}
+
+extension NotchLyricsColor {
+    var displayName: String {
+        switch self {
+        case .accent: return L10n.t("跟随强调色")
+        case .rainbow: return L10n.t("彩虹")
+        }
+    }
+}
+
 /// 「副行」那一行:主歌词下方那 11pt 显示什么,四选一(不显示 / 下一句 / 译文 / 罗马音),
 /// 默认「下一句」。开着副行时歌词行的高度下限是放得下两行(`NotchLyricRowMetrics.effectiveRowHeight`),
 /// 默认高度就停在这个下限上;关掉又矮回一行的高度。跟「对齐方式」一样是歌词行自己的**顶层**
@@ -4142,6 +4170,8 @@ struct NotchLyricRowSettingsRows: View {
                 SettingsRowGroup {
                     VStack(spacing: 0) {
                         NotchLyricsAlignmentRow()
+                        CardDivider()
+                        NotchLyricsColorRow()
                         CardDivider()
                         LyricSecondaryLineRow()
                         CardDivider()

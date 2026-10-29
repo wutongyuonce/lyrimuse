@@ -310,7 +310,7 @@ extension NotchLyricsView {
     /// 溢出时尾部渐隐(`lyricEdgeFadeWidth`)、装得下时按「对齐方式」静置、停表判据(同 `lyricFollow`)。不同的一处:已唱 / 未唱的
     /// 交界是硬边(悬浮歌词滚动模式、菜单栏同款),没有 SwiftUI 版那条 `wordEdgeSoftenBand` 软过渡。
     private func layerKaraokeLine(words: [SyncedLyricWord], layerActive: Bool) -> some View {
-        let fg = NSColor(accentOrWhite)
+        let fg = NSColor(lyricInk)
         let side: LyricDuet.Side
         switch playback.mainLyricAlignment.horizontal {
         case .leading: side = .leading
@@ -335,7 +335,9 @@ extension NotchLyricsView {
                 edgeFadeWidth: NotchMetrics.lyricEdgeFadeWidth,
                 timingEpoch: LyricsTimingEpoch.of(anchor: playback.anchor, pausedPositionMs: playback.pausedPositionMs,
                                                   offsetMs: playback.lyricsOffsetMs),
-                rate: playback.playbackRate),
+                rate: playback.playbackRate,
+                rainbow: lyricsRainbow,
+                rainbowPaused: !playback.lyricsClockRunning || !layerActive),
             nowMs: Self.lyricsNowMs)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement()
@@ -363,8 +365,8 @@ extension NotchLyricsView {
             // 固定 11pt、比主行细一档,只跟主行的字体族与粗细(理由见 NotchLyricRowMetrics.secondaryFontSize)。
             .font(playback.secondaryFont)
             .lyricTypesetting(playback.secondaryText, translation: playback.secondaryLine == .translation)
-            .foregroundStyle(accentOrWhite.opacity(secondaryLineOpacity))
-            .notchTextShadow()
+            .foregroundStyle(lyricInk.opacity(secondaryLineOpacity))
+            .notchLyricPaint(rainbow: lyricsRainbow, flowing: lyricsRainbowFlowing)
             .lineLimit(1)
             .truncationMode(.tail)
             .frame(maxWidth: .infinity, alignment: playback.secondaryLyricAlignment)
@@ -476,9 +478,9 @@ extension NotchLyricsView {
                 // 广告/纯音乐/无歌词/断网/搜索中都各自接走了,能落到这里的空态只剩"没有曲目"。
                 if let plainText = playback.displayLine?.plainText {
                     Text(plainText)
-                        .foregroundStyle(accentOrWhite)
+                        .foregroundStyle(lyricInk)
                         .lyricTypesetting(plainText)
-                        .notchTextShadow()
+                        .notchLyricPaint(rainbow: lyricsRainbow, flowing: lyricsRainbowFlowing)
                 } else if !isIdleNoTrack, let raw = playback.rawGapWindow {
                     let window = playback.secondaryLine.gapDotsWindow(raw, compactPlaceholder: playback.compactShowsPlaceholder)
                     // 尺寸按字号等比,别写死:歌词窗口字号至少 22(见 lyricFontSize),它那边 8pt 只相当于 0.36 倍字号;灵动岛主行只有

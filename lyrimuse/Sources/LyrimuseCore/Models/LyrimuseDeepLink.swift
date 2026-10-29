@@ -120,6 +120,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case japaneseReading(JapaneseReadingStyle)
         /// 触控栏「歌词颜色」那一档,跟设置页走同一个设置(`debug/touchbar-display?color=white|cover|custom|rainbow`)。
         case touchBarDisplay(color: TouchBarLyricsColorMode)
+        /// 悬浮歌词、灵动岛的彩虹开关,跟设置页走同一个设置(`debug/rainbow?overlay=0|1&notch=0|1`,至少带一个)。
+        case rainbow(overlay: Bool?, notch: Bool?)
         /// 主线程原地睡这么多毫秒(`debug/stall?ms=`,1…`maxStallMs`):造出「别的窗口把主线程占住」那一下,验动画扛不扛得住。
         case stall(ms: Int)
         /// 灵动岛摆一次报喜,跟设置页「收听里程碑」旁那颗「试用」走同一条路(`debug/milestone-preview`)。
@@ -281,6 +283,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case ("debug", "/japanese-reading"):
             guard let style = value("style").flatMap({ JapaneseReadingStyle(rawValue: $0.lowercased()) }) else { return nil }
             self = .debug(.japaneseReading(style))
+        case ("debug", "/rainbow"):
+            let overlay = value("overlay").flatMap(Self.parseBool)
+            let notch = value("notch").flatMap(Self.parseBool)
+            guard overlay != nil || notch != nil else { return nil }
+            self = .debug(.rainbow(overlay: overlay, notch: notch))
         case ("debug", "/touchbar-display"):
             guard let color = value("color").flatMap({ TouchBarLyricsColorMode(rawValue: $0.lowercased()) }) else { return nil }
             self = .debug(.touchBarDisplay(color: color))
@@ -428,6 +435,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]
+            case let .rainbow(overlay, notch):
+                components.path = "/rainbow"
+                components.queryItems = (overlay.map { [URLQueryItem(name: "overlay", value: $0 ? "1" : "0")] } ?? [])
+                    + (notch.map { [URLQueryItem(name: "notch", value: $0 ? "1" : "0")] } ?? [])
             case let .touchBarDisplay(color):
                 components.path = "/touchbar-display"
                 components.queryItems = [URLQueryItem(name: "color", value: color.rawValue)]

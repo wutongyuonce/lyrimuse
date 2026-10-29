@@ -82,6 +82,9 @@ private final class OverlayPlayback: ObservableObject {
     /// (那份保留给设置页预览等别处),这里预组合成单个去重值:三个输入(动态高亮色/
     /// "跟随封面"开关/手选前景色)任何一个变了才发一次。
     @Published private(set) var displayForegroundColor: Color = .white
+    /// 字换成流动彩虹(`AppSettings.overlayRainbow`)。开着时上下两个显示色是白色和白色打未唱的折,只当蒙版的深浅用,
+    /// 颜色由彩虹给:图层行带 `Spec.rainbow`,SwiftUI 画字的地方套 `.rainbowFill`。
+    @Published private(set) var rainbow = false
     // ---- 来自 AppSettings(只挑悬浮窗读的这一小片) ----
     @Published private(set) var lockPosition = false
     /// 指针划过时让开(见 AppSettings.overlayFadeOnHover)。
@@ -220,10 +223,11 @@ private final class OverlayPlayback: ObservableObject {
                 .map { raw, markers in raw?.isMarked(in: markers) ?? false }
                 .removeDuplicates()
                 .sink { [weak self] in self?.inMarkedInterlude = $0 },
-            Publishers.CombineLatest3(p.$artworkAccentColor, s.$followsCoverArt, s.$foregroundColor)
-                .map { accent, follows, fg in (follows ? accent : nil) ?? fg }
+            Publishers.CombineLatest4(p.$artworkAccentColor, s.$followsCoverArt, s.$foregroundColor, s.$overlayRainbow)
+                .map { accent, follows, fg, rainbow in rainbow ? .white : ((follows ? accent : nil) ?? fg) }
                 .removeDuplicates()
                 .sink { [weak self] in self?.displayForegroundColor = $0 },
+            s.$overlayRainbow.removeDuplicates().sink { [weak self] in self?.rainbow = $0 },
             s.$lockPosition.removeDuplicates().sink { [weak self] in self?.lockPosition = $0 },
             s.$overlayFadeOnHover.removeDuplicates().sink { [weak self] in self?.fadeOnHover = $0 },
             s.$overlayPlacementMode.removeDuplicates().sink { [weak self] in self?.placementMode = $0 },
@@ -250,9 +254,11 @@ private final class OverlayPlayback: ObservableObject {
             // 进度效果直接消失。这里补一次 dimOpacity,复现"未唱比已唱调暗"的观感,只是源头
             // 从固定 fg 换成了动态 accent。固定色(fixed,没开跟随封面时手选或迁移种下的那个)
             // 已经在存的时候就带着期望的深浅,不再额外调暗。
-            Publishers.CombineLatest3(p.$artworkAccentColor, s.$karaokeUnsungFollowsCoverArt, s.$karaokeUnsungColor)
-                .map { accent, follows, fixed in
-                    (follows ? accent?.opacity(WordKaraokeGradient.dimOpacity) : nil) ?? fixed
+            Publishers.CombineLatest4(p.$artworkAccentColor, s.$karaokeUnsungFollowsCoverArt, s.$karaokeUnsungColor,
+                                      s.$overlayRainbow)
+                .map { accent, follows, fixed, rainbow in
+                    rainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)
+                        : ((follows ? accent?.opacity(WordKaraokeGradient.dimOpacity) : nil) ?? fixed)
                 }
                 .removeDuplicates()
                 .sink { [weak self] in self?.displayKaraokeUnsungColor = $0 },
@@ -989,7 +995,9 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                 // 跟 SwiftUI 那条逐字染色的 TimelineView 同一条 paused 判据。
                 paused: !playback.lyricsClockRunning || playback.currentLineFillSettled || !surfaceVisible,
                 timingEpoch: playback.timingEpoch,
-                rate: playback.playbackRate),
+                rate: playback.playbackRate,
+                rainbow: playback.rainbow,
+                rainbowPaused: !rainbowFlowing),
             nowMs: Self.lyricsNowMs)
         .frame(maxWidth: .infinity)
         .frame(height: mainScrollRowHeight)
@@ -1029,7 +1037,9 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
             rowAlignment: rowAlignment,
             paused: !playback.lyricsClockRunning || playback.currentLineFillSettled || !surfaceVisible,
             timingEpoch: playback.timingEpoch,
-            rate: playback.playbackRate)
+            rate: playback.playbackRate,
+            rainbow: playback.rainbow,
+            rainbowPaused: !rainbowFlowing)
     }
 
     /// 换句动画开着时,按主句的样式、同样的宽度把下一句在后台先画好(看不见、不占位、不上报),图进
@@ -1092,13 +1102,20 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
             .truncationMode(.tail)
             .lyricTypesetting(text, translation: translation)
         return ViewThatFits(in: .horizontal) {
-            base
-                .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
-            base
-                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+            lyricStroke(base)
+            lyricStroke(base.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading))
         }
     }
+
+    /// SwiftUI 画歌词的那几条路(整行主行、读音、译文、下一句)套描边;选了彩虹时字当蒙版、颜色换成流动彩虹
+    /// (`LyricStrokeRainbow`)。状态文案、提示不走这里,彩虹时照旧白字。
+    private func lyricStroke<V: View>(_ text: V) -> some View {
+        text.modifier(LyricStrokeRainbow(rainbow: playback.rainbow, flowing: rainbowFlowing,
+                                         strokeEnabled: playback.textStrokeEnabled, strokeColor: playback.textStrokeColor))
+    }
+
+    /// 彩虹流不流:时钟在走、悬浮窗看得见时流。不跟逐字填色那条「唱完一句就停表」走,两句之间照样流。
+    private var rainbowFlowing: Bool { playback.lyricsClockRunning && surfaceVisible }
 
     /// 按显示时长配速的图层行。不填色(整行一个颜色),描边、对齐、停走跟跟唱那条同一套。
     private func pacedLayerRow(
@@ -1121,7 +1138,8 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                 pacedWindow: window,
                 timingEpoch: playback.timingEpoch,
                 rate: playback.playbackRate,
-                translation: translation),
+                translation: translation,
+                rainbow: playback.rainbow),
             nowMs: Self.lyricsNowMs)
         .frame(maxWidth: .infinity)
         .frame(height: height)
@@ -1391,11 +1409,10 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                                                 color: playback.displayForegroundColor.opacity(0.6)))
         } else if let roma = romanizationRowText {
             reportingTextRect(
-                Text(roma)
+                lyricStroke(Text(roma)
                     .font(playback.romanizationFont)
                     .foregroundStyle(playback.displayForegroundColor.opacity(0.6))
-                    .overlayLineFit(playback.lineOverflow) // 换行模式如实撑高,不被裁掉
-                    .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+                    .overlayLineFit(playback.lineOverflow)) // 换行模式如实撑高,不被裁掉
                     .overlayScroll(playback.lineOverflow == .scroll, id: roma, alignment: marqueeRestingAlignment,
                                    height: playback.scrollRowHeight(playback.overlayNSFonts.romanization)))
         }
@@ -1415,12 +1432,11 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                                                 translation: true))
         } else if let tr = translationRowText {
             reportingTextRect(
-                Text(tr)
+                lyricStroke(Text(tr)
                     .font(playback.translationFont)
                     .foregroundStyle(playback.displayForegroundColor.opacity(0.75))
                     .lyricTypesetting(tr, translation: true)
-                    .overlayLineFit(playback.lineOverflow)
-                    .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+                    .overlayLineFit(playback.lineOverflow))
                     .overlayScroll(playback.lineOverflow == .scroll, id: tr, alignment: marqueeRestingAlignment,
                                    height: playback.scrollRowHeight(playback.overlayNSFonts.translation)))
         }
@@ -1468,19 +1484,18 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .clipped()
             }
-            .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+            .modifier(LyricStrokeRainbow(rainbow: playback.rainbow, flowing: rainbowFlowing,
+                                         strokeEnabled: playback.textStrokeEnabled, strokeColor: playback.textStrokeColor))
         } else if still {
             stillUpcomingText(next, font: nextLinePreviewFont, color: color)
         } else if let groups = upcomingWordGroups {
-            upcomingGroupColumns(groups, key: next, color: color)
-                .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+            lyricStroke(upcomingGroupColumns(groups, key: next, color: color))
         } else {
-            Text(next)
+            lyricStroke(Text(next)
                 .font(nextLinePreviewFont)
                 .foregroundStyle(color)
                 .lyricTypesetting(next)
-                .overlayLineFit(playback.lineOverflow)
-                .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+                .overlayLineFit(playback.lineOverflow))
         }
     }
 
@@ -1772,12 +1787,11 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                           color: playback.displayForegroundColor, alignment: duetSide,
                           height: playback.scrollRowHeight(playback.overlayNSFonts.main), window: window)
         } else if let text = line?.mainText {
-            Text(text)
+            lyricStroke(Text(text)
                 .font(playback.mainFont)
                 .foregroundStyle(playback.displayForegroundColor)
                 .lyricTypesetting(text)
-                .overlayLineFit(playback.lineOverflow)
-                .lyricsTextStroke(playback.textStrokeEnabled, color: playback.textStrokeColor)
+                .overlayLineFit(playback.lineOverflow))
                 // 整行歌词(没有逐字时间轴)没有跟唱路径可走,退回时间配速的「首停到匀速到尾停」。
                 .overlayScroll(playback.lineOverflow == .scroll, id: text, alignment: marqueeRestingAlignment,
                                height: playback.scrollRowHeight(playback.overlayNSFonts.main))
@@ -2054,6 +2068,25 @@ private struct OptionalTextStroke<MaskSource: View>: ViewModifier {
 
 // internal(而不是 private):设置页顶部的实时预览要用同一个描边实现渲染同一段歌词 ——
 // 预览和真窗口各写一份描边最终一定会漂,而描边是这一页最难凭想象判断效果的一项。
+/// 歌词文字的描边,外加彩虹:开着彩虹时内容只当蒙版(`rainbowFill`),描边的剪影另拿一份内容本身画
+/// (剪影画不出彩虹底下那块 AppKit 视图)。没开彩虹时就是 `lyricsTextStroke`。
+struct LyricStrokeRainbow: ViewModifier {
+    let rainbow: Bool
+    let flowing: Bool
+    let strokeEnabled: Bool
+    let strokeColor: Color
+
+    func body(content: Content) -> some View {
+        if rainbow {
+            content
+                .rainbowFill(true, flowing: flowing)
+                .lyricsTextStroke(strokeEnabled, color: strokeColor) { content }
+        } else {
+            content.lyricsTextStroke(strokeEnabled, color: strokeColor)
+        }
+    }
+}
+
 extension View {
     func lyricsTextStroke(_ enabled: Bool, color: Color) -> some View {
         modifier(OptionalTextStroke<EmptyView>(enabled: enabled, color: color, maskSource: nil))

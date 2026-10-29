@@ -404,6 +404,8 @@ final class AppSettings: ObservableObject {
         static let backgroundColorHex = "np:backgroundColorHex"
         // 悬浮歌词背景毛玻璃。np: 前缀 = 随配置导出/搬家走(这是偏好,不是机器状态)。
         static let overlayBackgroundGlass = "np:overlayBackgroundGlass"
+        // 悬浮歌词的字换成流动彩虹(配色主题的一项,`ColorTheme.rainbow`)。
+        static let overlayRainbow = "np:overlayRainbow"
         // 毛玻璃「浓淡」档位。只在上面那颗开着时才生效,但键本身独立存——关着玻璃再打开,
         // 浓淡该停在用户上次选的档,不因为玻璃关过一次就丢。
         static let overlayGlassIntensity = "np:overlayGlassIntensity"
@@ -522,6 +524,7 @@ final class AppSettings: ObservableObject {
         static let notchLyricRowShowsArtwork = "np:notchLyricRowShowsArtwork"
         static let notchLyricRowArtworkPosition = "np:notchLyricRowArtworkPosition"
         static let notchLyricsAlignment = "np:notchLyricsAlignment"
+        static let notchLyricsColor = "np:notchLyricsColor"
         static let notchSecondaryLine = "np:notchSecondaryLine"
         static let notchFontFamilyName = "np:notchFontFamilyName"
         static let notchFontWeight = "np:notchFontWeight"
@@ -671,6 +674,7 @@ final class AppSettings: ObservableObject {
     /// 歌词行的静止对齐,默认 `.automatic`(有对唱声部就按声部左右分,没有就左对齐):没有声部信息时
     /// 正好退化成 leading(见 `LyricsRestingAlignment.resolved(duetSide:)`),非对唱歌的观感跟 `.leading` 一样。
     static let defaultNotchLyricsAlignment = LyricsRestingAlignment.automatic
+    static let defaultNotchLyricsColor = NotchLyricsColor.accent
     /// 灵动岛歌词行「副行」默认「下一句」:这项的主要目的是让它可以提前看到下一行歌词,默认就该是那个。
     static let defaultNotchSecondaryLine = LyricSecondaryLine.nextLine
     /// 灵动岛歌词的字体三件,默认系统字体 / semibold / 13pt。字号的默认值与合法区间真源在 Core
@@ -1994,6 +1998,11 @@ final class AppSettings: ObservableObject {
     @Published var notchLyricsAlignment: LyricsRestingAlignment {
         didSet { defaults.set(notchLyricsAlignment.rawValue, forKey: Keys.notchLyricsAlignment) }
     }
+    /// 灵动岛歌词行的颜色:跟着强调色,或沿歌词流动的彩虹(主行、副行、展开态「下一句」,05 章决策 120)。
+    /// 只影响渲染,走 `NotchPlayback` 现读,同 `notchLyricsAlignment`。
+    @Published var notchLyricsColor: NotchLyricsColor {
+        didSet { defaults.set(notchLyricsColor.rawValue, forKey: Keys.notchLyricsColor) }
+    }
     /// 灵动岛歌词行的「副行」:主行下面那 11pt 显示什么,四选一(不显示 / 下一句 / 译文 / 罗马音)。
     /// 文字走 `NotchPlayback` 现读,跟 `notchLyricsAlignment` 一样;几何上它决定歌词行要不要装下两行
     /// (`notchEffectiveLyricRowHeight`),另外选「下一句」时展开区那行「下一句歌词预览」被顶掉,
@@ -2161,6 +2170,11 @@ final class AppSettings: ObservableObject {
     // 跟灵动岛「磨砂玻璃」风格同一种材质语言),上面的 backgroundColorHex 变成盖在玻璃上的
     // 着色:背景色全透明就是纯玻璃,alpha 越高越接近纯色卡片。关着时就是透明或纯色卡片。
     // 不塞进 ColorTheme:用户自存主题与 hasSameColors 判定都不用迁移。
+    /// 悬浮歌词的字换成沿行流动的彩虹(`RainbowLyrics`):已唱全亮、未唱打 `RainbowLyrics.unsungOpacity` 的折,
+    /// 文字色和未唱色(含跟随封面)这时只是备用。配色主题的一项(`ColorTheme.rainbow`),OBS 网页跟着它。见 04 章决策 78。
+    @Published var overlayRainbow: Bool {
+        didSet { defaults.set(overlayRainbow, forKey: Keys.overlayRainbow) }
+    }
     @Published var overlayBackgroundGlass: Bool {
         didSet {
             defaults.set(overlayBackgroundGlass, forKey: Keys.overlayBackgroundGlass)
@@ -2598,6 +2612,7 @@ final class AppSettings: ObservableObject {
         manualPickLocksLyrics = (defaults.object(forKey: Keys.manualPickLocksLyrics) as? Bool) ?? false
         textStrokeEnabled = (defaults.object(forKey: Keys.textStrokeEnabled) as? Bool) ?? ColorTheme.defaultTheme.textStrokeEnabled
         overlayBackgroundGlass = (defaults.object(forKey: Keys.overlayBackgroundGlass) as? Bool) ?? false
+        overlayRainbow = (defaults.object(forKey: Keys.overlayRainbow) as? Bool) ?? false
         overlayGlassIntensity = defaults.string(forKey: Keys.overlayGlassIntensity)
             .flatMap(OverlayGlassIntensity.init(rawValue:)) ?? .default
         textStrokeColorHex = defaults.string(forKey: Keys.textStrokeColorHex) ?? ColorTheme.defaultTheme.textStrokeColorHex
@@ -2833,6 +2848,8 @@ final class AppSettings: ObservableObject {
             .flatMap(NotchLyricRowArtworkPosition.init(rawValue:)) ?? Self.defaultNotchLyricRowArtworkPosition
         notchLyricsAlignment = defaults.string(forKey: Keys.notchLyricsAlignment)
             .flatMap(LyricsRestingAlignment.init(rawValue:)) ?? Self.defaultNotchLyricsAlignment
+        notchLyricsColor = NotchLyricsColor.resolved(stored: defaults.string(forKey: Keys.notchLyricsColor),
+                                                     fallback: Self.defaultNotchLyricsColor)
         notchSecondaryLine = defaults.string(forKey: Keys.notchSecondaryLine)
             .flatMap(LyricSecondaryLine.init(rawValue:)) ?? Self.defaultNotchSecondaryLine
         // 字体三件:没存过一律落到默认常量;粗细的 rawValue 被手改坏时同样走兜底,不让一个坏字符串

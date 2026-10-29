@@ -13,6 +13,8 @@ public enum RainbowLyrics {
     public static let huesPerCycle = 9
     /// 颜色流过一圈要几秒。
     public static let cycleSeconds = 6.0
+    /// 没唱到的字打的透明度(悬浮歌词、灵动岛、网页;触控栏按自己的「暗部亮度」)。
+    public static let unsungOpacity = 0.45
     /// 一圈多宽(点)的下限:一圈按这一行字的宽算(`cycleWidth`),只有两三个字的句子不至于挤进一整圈。
     public static let minCycleWidth = 100.0
 

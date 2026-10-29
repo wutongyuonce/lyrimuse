@@ -272,6 +272,10 @@ func runTouchBarTests() {
         let epoch = clock.epoch
         clock.resume(at: 300)
         expectEqual(clock.epoch, epoch, "彩虹时钟: 本来就在走时再走一次不挪起点")
+        expectEqual(R.unsungOpacity > 0 && R.unsungOpacity < 1, true, "彩虹: 未唱的透明度在 0~1 之间")
+        expectEqual(NotchLyricsColor.resolved(stored: "rainbow", fallback: .accent), .rainbow, "灵动岛歌词颜色: 存过彩虹就是彩虹")
+        expectEqual(NotchLyricsColor.resolved(stored: nil, fallback: .accent), .accent, "灵动岛歌词颜色: 没存过用默认")
+        expectEqual(NotchLyricsColor.resolved(stored: "pink", fallback: .accent), .accent, "灵动岛歌词颜色: 存坏了用默认")
     }
 
     // ---- 黑底上打折的歌词色(未唱的部分、副行):不暗于白字打同一个折,只往亮里补,色相族不变,未唱仍比已唱暗 ----
@@ -826,8 +830,46 @@ func runTouchBarTests() {
                         && rainbowPreview.contains("rainbow: settings.touchBarLyricsColorMode == .rainbow"), true,
                     "触控栏彩虹: 本体和设置页预览都按「歌词颜色」传")
         expectEqual(rainbowRow.contains("mountRainbow(spec?.rainbow == true)")
-                        && sourceHas(rainbowRow, "applyRainbowFlow(period: pixelAligned(RainbowLyrics.cycleWidth(textWidth: layoutW, viewWidth: viewW)),\nflowing: !spec.paused && !spec.still)"), true,
+                        && sourceHas(rainbowRow, "applyRainbowFlow(period: pixelAligned(RainbowLyrics.cycleWidth(textWidth: layoutW, viewWidth: viewW)),\nflowing: !(spec.rainbowPaused ?? spec.paused) && !spec.still)"), true,
                     "触控栏彩虹: 图层行排版时换蒙版、摆位时装流动(暂停 / 减弱动态效果停住)")
+        // 彩虹扩到悬浮歌词、灵动岛(04 章决策 78、05 章决策 120):图层行的「彩虹停不停」单独给,不跟「唱完一句就停表」走;
+        // 判图层要不要重画位图时不算它。
+        expectEqual(sourceHas(rainbowRow, "flowing: !(spec.rainbowPaused ?? spec.paused) && !spec.still)")
+                        && rainbowRow.contains("a.rainbowPaused = b.rainbowPaused")
+                        && rainbowRow.contains("|| spec?.rainbowPaused != next.rainbowPaused"), true,
+                    "彩虹: 图层行的彩虹停不停单独给,不触发重画位图")
+        let overlayView = code(appDir.appendingPathComponent("UI/LyricsOverlayView.swift")) ?? ""
+        expectEqual(overlayView.components(separatedBy: "rainbow: playback.rainbow").count - 1 >= 3
+                        && overlayView.components(separatedBy: "rainbowPaused: !rainbowFlowing").count - 1 >= 2
+                        && overlayView.components(separatedBy: "lyricStroke(").count - 1 >= 7, true,
+                    "悬浮歌词彩虹: 逐字 / 换行 / 配速三条图层行带彩虹,SwiftUI 画歌词的几处走 lyricStroke")
+        expectEqual(overlayView.contains("rainbow ? .white : ((follows ? accent : nil) ?? fg)")
+                        && overlayView.contains("rainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)"), true,
+                    "悬浮歌词彩虹: 彩虹时显示色是白色两档,只当蒙版的深浅")
+        let wrapped = code(appDir.appendingPathComponent("UI/WrappedKaraokeRows.swift")) ?? ""
+        expectEqual(sourceHas(wrapped, "rainbow: spec.rainbow,\nrainbowPaused: spec.rainbowPaused)"), true,
+                    "悬浮歌词彩虹: 换行模式每一行都带上彩虹")
+        let theme = code(appDir.appendingPathComponent("Settings/ColorTheme.swift")) ?? ""
+        expectEqual(theme.contains("id: \"builtin-rainbow\"") && theme.contains("textStrokeEnabled: true, textStrokeColorHex: \"#000000E6\", rainbow: true")
+                        && theme.contains("settings.overlayRainbow = rainbow")
+                        && theme.contains("rainbow: settings.overlayRainbow")
+                        && theme.contains("rainbow = try c.decodeIfPresent(Bool.self, forKey: .rainbow) ?? false")
+                        && theme.contains("&& (rainbow || textColorsMatch(other))"), true,
+                    "悬浮歌词彩虹: 内置「彩虹」主题带深色描边,套用 / 另存 / 老 JSON / 判等都带上彩虹")
+        let styleRows = code(appDir.appendingPathComponent("UI/OverlayStyleSettingsRows.swift")) ?? ""
+        expectEqual(styleRows.contains("settings.overlayRainbow = ColorTheme.defaultTheme.rainbow")
+                        && styleRows.contains("if settings.overlayLyricsKaraoke && !settings.overlayRainbow {"), true,
+                    "悬浮歌词彩虹: 恢复默认关掉彩虹,彩虹时藏起未唱颜色")
+        let notchRow = code(appDir.appendingPathComponent("UI/NotchLyricsView+LyricRow.swift")) ?? ""
+        let notchExpanded = code(appDir.appendingPathComponent("UI/NotchLyricsView+Expanded.swift")) ?? ""
+        expectEqual(notchRow.contains("let fg = NSColor(lyricInk)")
+                        && sourceHas(notchRow, "rainbow: lyricsRainbow,\nrainbowPaused: !playback.lyricsClockRunning || !layerActive),")
+                        && notchRow.components(separatedBy: ".notchLyricPaint(rainbow: lyricsRainbow, flowing: lyricsRainbowFlowing)").count - 1 == 2
+                        && notchExpanded.contains(".rainbowFill(lyricsRainbow, flowing: lyricsRainbowFlowing)"), true,
+                    "灵动岛彩虹: 逐字主行、整行主行、副行、展开态下一句都接上")
+        let notchReset = code(appDir.appendingPathComponent("UI/NotchSettingsRows.swift")) ?? ""
+        expectEqual(notchReset.contains("settings.notchLyricsColor = AppSettings.defaultNotchLyricsColor"), true,
+                    "灵动岛彩虹: 「重置」恢复歌词颜色")
         // 自动展开 / 收起(17 章决策 45):启用那一刻先记状态再订阅播放状态(订阅的头一拍丢掉);四项一起防抖;可见状态的变化
         // 跟自己发起的对不上就当成用户动的;工具栏第二行是「行为」加两份占位和「重置 ▾」的占位。漏一处不报错,只表现成
         // 自动展开 / 收起不灵、或者手动收起后又被弹出来。

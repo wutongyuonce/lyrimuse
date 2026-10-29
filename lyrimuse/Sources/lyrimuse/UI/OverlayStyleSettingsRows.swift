@@ -124,16 +124,23 @@ struct OverlayColorSettingsRows: View {
             }
             SettingsTileGrid(columns: 2) {
                 SettingsControlCell(icon: "paintbrush", title: L10n.t("文字颜色")) {
-                    colorModeMenu(
-                        follows: $settings.followsCoverArt,
-                        color: Binding(
-                            get: { settings.foregroundColor },
-                            set: { settings.foregroundColorHex = $0.hexStringWithAlpha }
-                        ),
-                        supportsOpacity: true
-                    )
+                    HStack(spacing: 8) {
+                        SettingsGlassMenuPicker(
+                            selection: textColorSource,
+                            options: OverlayTextColorSource.allCases,
+                            label: \.displayName,
+                            compact: true
+                        )
+                        if textColorSource.wrappedValue == .custom {
+                            AppColorPicker(selection: Binding(
+                                get: { settings.foregroundColor },
+                                set: { settings.foregroundColorHex = $0.hexStringWithAlpha }
+                            ), supportsOpacity: true)
+                        }
+                    }
                 }
-                if settings.overlayLyricsKaraoke {
+                // 彩虹时没唱到的字固定是暗一档的彩虹,没有可调的颜色。
+                if settings.overlayLyricsKaraoke && !settings.overlayRainbow {
                     SettingsControlCell(icon: "circle.lefthalf.filled", title: L10n.t("未唱颜色")) {
                         colorModeMenu(
                             follows: $settings.karaokeUnsungFollowsCoverArt,
@@ -171,9 +178,20 @@ struct OverlayColorSettingsRows: View {
         .animation(.default, value: settings.textStrokeEnabled)
         .animation(.default, value: settings.overlayLyricsKaraoke)
         .animation(.default, value: settings.overlayBackgroundGlass)
+        .animation(.default, value: settings.overlayRainbow)
     }
 
-    /// 「文字颜色」「未唱颜色」共用的取色控件:玻璃下拉选"跟随封面"还是"自定义颜色",
+    /// 「文字颜色」从哪来:跟随封面 / 自定义颜色 / 彩虹三选一,落在 `followsCoverArt` 和 `overlayRainbow` 两个设置上。
+    private var textColorSource: Binding<OverlayTextColorSource> {
+        Binding(
+            get: { settings.overlayRainbow ? .rainbow : (settings.followsCoverArt ? .cover : .custom) },
+            set: { source in
+                settings.overlayRainbow = source == .rainbow
+                if source != .rainbow { settings.followsCoverArt = source == .cover }
+            })
+    }
+
+    /// 「未唱颜色」的取色控件:玻璃下拉选"跟随封面"还是"自定义颜色",
     /// 选了自定义才在旁边露出取色器。
     ///
     /// 这里**不用** `Toggle(带文字标签, isOn:)`:macOS 上这个标签
@@ -690,6 +708,7 @@ enum OverlayStyleDefaults {
         // 毛玻璃虽然关了,浓淡却停在用户上次选的档,下次重新打开毛玻璃时又不是默认观感
         // (同上面那条注释警告的坑,新加字段不进这个函数就会被漏掉)。
         settings.overlayGlassIntensity = .default
+        settings.overlayRainbow = ColorTheme.defaultTheme.rainbow
         settings.textStrokeEnabled = ColorTheme.defaultTheme.textStrokeEnabled
         settings.textStrokeColorHex = ColorTheme.defaultTheme.textStrokeColorHex
         // 「已唱/未唱」是文字组多出来的一对独立颜色,新加字段不进这个函数,点"恢复默认"时它会被漏掉。
@@ -746,7 +765,8 @@ enum OverlayStyleSummary {
 
     /// 「颜色」按钮的摘要:文字色从哪来 + 背景是什么,例「跟随封面 · 透明」。
     static var color: String {
-        let text = AppSettings.shared.followsCoverArt ? L10n.t("跟随封面") : L10n.t("自定义颜色")
+        let s = AppSettings.shared
+        let text = s.overlayRainbow ? L10n.t("彩虹") : (s.followsCoverArt ? L10n.t("跟随封面") : L10n.t("自定义颜色"))
         return "\(text) · \(background)"
     }
 
@@ -796,3 +816,16 @@ enum OverlayStyleSummary {
 //  就是一段没人调的代码。其余几截仍在用:编辑台工具栏那几颗按钮上的摘要就是它们
 //  —— 是 `theme` / `text` / `background` / `layout` 四截,`color` 那一截随
 //  「配色」浮层一起拆成了前面的 `theme` 和 `background`。)
+
+/// 悬浮歌词「文字颜色」那一格的三档。
+enum OverlayTextColorSource: CaseIterable, Hashable {
+    case cover, custom, rainbow
+
+    var displayName: String {
+        switch self {
+        case .cover: return L10n.t("跟随封面")
+        case .custom: return L10n.t("自定义颜色")
+        case .rainbow: return L10n.t("彩虹")
+        }
+    }
+}

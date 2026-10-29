@@ -863,6 +863,13 @@ enum WebLyricsPages {
         #card.stroked .tx { filter: url(#lmStroke); }
         .w { -webkit-background-clip: text; background-clip: text; color: transparent;
              background-image: linear-gradient(90deg, var(--sung) 0, var(--sung) var(--p, 0%), var(--unsung) var(--p, 0%), var(--unsung) 100%); }
+        #card.rainbow .tx, #card.rainbow .w { -webkit-background-clip: text; background-clip: text; color: transparent;
+             background-image: var(--rb); background-size: var(--rbw) 100%; background-repeat: repeat-x; background-attachment: fixed;
+             animation: lmRainbow var(--rbs) linear infinite; }
+        #card.rainbow .w { -webkit-mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%);
+             mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%); }
+        #card.rainbow.paused .tx, #card.rainbow.paused .w { animation-play-state: paused; }
+        @keyframes lmRainbow { from { background-position-x: 0; } to { background-position-x: var(--rbw); } }
         .dots { display: flex; gap: .3em; padding-top: .25em; }
         .dots > i { width: .32em; height: .32em; border-radius: 50%; background: var(--sung); }
         .ghost { position: absolute; left: 0; right: 0; pointer-events: none; }
@@ -982,6 +989,15 @@ enum WebLyricsPages {
             card.style.setProperty('--sung', style.sung);
             card.style.setProperty('--unsung', style.unsung);
             card.style.setProperty('--sung-reading', `color-mix(in srgb, ${style.sung} 75%, transparent)`);
+            // 彩虹(同悬浮歌词):一圈 = 卡片内容宽,按整页坐标铺,逐字分段的颜色连得上;未唱打 `RainbowLyrics.unsungOpacity` 的折。
+            card.classList.toggle('rainbow', !!style.rainbow);
+            if (style.rainbow) {
+              const stops = style.rainbow.stops;
+              card.style.setProperty('--rb', `linear-gradient(90deg, ${stops.join(', ')})`);
+              card.style.setProperty('--rbw', Math.max(100, (style.width - 40)) * u + 'px');
+              card.style.setProperty('--rbs', style.rainbow.seconds + 's');
+              card.style.setProperty('--rbu', String(style.rainbow.unsung));
+            }
             card.classList.toggle('scroll', style.overflow === 'scroll');
             card.classList.toggle('stroked', !!style.stroke);
             // 描边外沿取模糊剪影透明度 1% 的等值线(离字边 2.326σ),透明度在跨一个设备像素的区间里拉到 0…1。
@@ -1012,9 +1028,11 @@ enum WebLyricsPages {
             return { key: 'l' + idx, line: idx, next: idx + 1 < lines.length ? idx + 1 : -1 };
           }
           function color(pct) { return `color-mix(in srgb, var(--sung) ${pct}%, transparent)`; }
+          // 彩虹时字是透明的(颜色由流动渐变给),副行打的折改用整行不透明度(`pct`)。
           function row(inner, o) {
+            const fade = style.rainbow && o.pct ? `opacity:${o.pct / 100};` : '';
             return `<div class="row tx${o.cls ? ' ' + o.cls : ''}" data-side="${o.side || ''}" style="font-size:${o.em}em;font-weight:${o.weight};` +
-              `color:${o.color};margin-top:${(o.top || 0) * unit()}px"><span class="in${o.cols ? ' cols' : ''}">${inner}</span></div>`;
+              `color:${o.color};${fade}margin-top:${(o.top || 0) * unit()}px"><span class="in${o.cols ? ' cols' : ''}">${inner}</span></div>`;
           }
           function perWord(line) { return !!(style.karaoke && style.roma && line.w && line.g); }
           function wordSpans(ws, fill) {
@@ -1054,16 +1072,16 @@ enum WebLyricsPages {
           function secondaryRows(line, side, cls) {
             let html = '';
             if (style.roma && line.roma && !perWord(line)) {
-              html += row(esc(line.roma), { em: .65, weight: style.weights[1], color: color(60), top: style.spacing[0], side, cls });
+              html += row(esc(line.roma), { em: .65, weight: style.weights[1], color: color(60), pct: 60, top: style.spacing[0], side, cls });
             }
             // 紧跟读音(整行或逐词)的译文不往上挤:网页的行框比原生卡片里的窄,负的行距会让读音的下伸部(g、p)压到译文上。
             const afterReading = (style.roma && line.roma) || perWord(line);
             const trTop = afterReading ? Math.max(0, style.spacing[1]) : style.spacing[1];
-            if (style.tr && line.tr) html += row(esc(line.tr), { em: .7, weight: style.weights[2], color: color(75), top: trTop, side, cls });
+            if (style.tr && line.tr) html += row(esc(line.tr), { em: .7, weight: style.weights[2], color: color(75), pct: 75, top: trTop, side, cls });
             return html;
           }
           function nextRow(next, em, weight, upcoming) {
-            const opts = { em, weight, color: color(40), top: style.spacing[2], side: next.s, cls: 'next' };
+            const opts = { em, weight, color: color(40), pct: 40, top: style.spacing[2], side: next.s, cls: 'next' };
             if (upcoming && perWord(next)) return row(columns(next, false, em), { ...opts, cols: true });
             return row(esc(next.text), opts);
           }
@@ -1200,6 +1218,7 @@ enum WebLyricsPages {
             const t = now();
             const playing = !!pos && pos.state === 'playing';
             const paused = !!pos && pos.state === 'paused';
+            card.classList.toggle('paused', !playing);
             const ready = connected && style && track && track.lines.length > 0;
             box.classList.toggle('on', !!(ready && (playing || (paused && !style.hidePaused))));
             const eligible = !!(connected && style && song && song.title && (playing || (paused && !style.hidePaused)));

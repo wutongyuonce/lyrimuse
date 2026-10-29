@@ -55,6 +55,7 @@ final class WebLyricsObsFeed {
             s.$foregroundColor.map { _ in () }.eraseToAnyPublisher(),
             s.$karaokeUnsungFollowsCoverArt.map { _ in () }.eraseToAnyPublisher(),
             s.$karaokeUnsungColor.map { _ in () }.eraseToAnyPublisher(),
+            s.$overlayRainbow.map { _ in () }.eraseToAnyPublisher(),
             s.$textStrokeEnabled.map { _ in () }.eraseToAnyPublisher(),
             s.$textStrokeColor.map { _ in () }.eraseToAnyPublisher(),
             s.$backgroundIsVisible.map { _ in () }.eraseToAnyPublisher(),
@@ -160,9 +161,11 @@ final class WebLyricsObsFeed {
     private static func makeStyle() -> String {
         let p = PlaybackCoordinator.shared
         let s = AppSettings.shared
-        let sung = (s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor
-        let unsung = (s.karaokeUnsungFollowsCoverArt ? p.artworkAccentColor?.opacity(WordKaraokeGradient.dimOpacity) : nil)
-            ?? s.karaokeUnsungColor
+        // 彩虹时两色只给透明度(白、白打未唱的折),颜色由网页里的流动渐变给,同悬浮歌词。
+        let sung = s.overlayRainbow ? Color.white : ((s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor)
+        let unsung = s.overlayRainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)
+            : ((s.karaokeUnsungFollowsCoverArt ? p.artworkAccentColor?.opacity(WordKaraokeGradient.dimOpacity) : nil)
+                ?? s.karaokeUnsungColor)
         let duet = WebLyricsObsPayload.duetInsets(overlayWidth: s.overlayWidth, fontSize: s.fontSize)
         return WebLyricsObsPayload.style(.init(
             fontFamily: s.fontFamilyName, fontSize: s.fontSize, weights: WebLyricsObsPayload.cssWeights(s.overlayFontWeight),
@@ -174,7 +177,7 @@ final class WebLyricsObsFeed {
             alignment: s.overlayDuetAlignmentOverride, overflow: s.overlayLineOverflow,
             spacing: s.overlayRowSpacing, width: s.overlayWidth, hideWhenPaused: s.hideWhenNotPlaying,
             lineChangeAnimation: s.overlayLineChangeAnimation, duetStageInset: duet.stage, duetCenterInset: duet.center,
-            songCard: s.obsSongCard))
+            songCard: s.obsSongCard, rainbow: s.overlayRainbow))
     }
 
     private static func makeTrack() -> String {

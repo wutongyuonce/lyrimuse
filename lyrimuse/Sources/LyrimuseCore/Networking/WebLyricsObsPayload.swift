@@ -38,12 +38,14 @@ public enum WebLyricsObsPayload {
         public var duetStageInset: Double
         public var duetCenterInset: Double
         public var songCard: SongCard
+        /// 悬浮歌词选了彩虹(`RainbowLyrics`):网页里字的颜色换成沿行流动的渐变,`sung` / `unsung` 只给透明度。
+        public var rainbow: Bool
 
         public init(fontFamily: String, fontSize: Double, weights: [Int], sung: String, unsung: String,
                     stroke: String?, card: String?, showRomanization: Bool, showTranslation: Bool, showNextLine: Bool,
                     karaoke: Bool, alignment: OverlayDuetAlignmentOverride, overflow: OverlayLineOverflow,
                     spacing: OverlayRowSpacing.Values, width: Double, hideWhenPaused: Bool, lineChangeAnimation: Bool,
-                    duetStageInset: Double, duetCenterInset: Double, songCard: SongCard = .off) {
+                    duetStageInset: Double, duetCenterInset: Double, songCard: SongCard = .off, rainbow: Bool = false) {
             self.fontFamily = fontFamily
             self.fontSize = fontSize
             self.weights = weights
@@ -64,6 +66,7 @@ public enum WebLyricsObsPayload {
             self.duetStageInset = duetStageInset
             self.duetCenterInset = duetCenterInset
             self.songCard = songCard
+            self.rainbow = rainbow
         }
     }
 
@@ -82,6 +85,14 @@ public enum WebLyricsObsPayload {
         ]
         if let stroke = s.stroke { o["stroke"] = stroke }
         if let card = s.card { o["card"] = card }
+        if s.rainbow {
+            // 一圈的色标(首尾同色)、流过一圈的秒数、未唱的透明度;网页照触控栏那套从左往右流。
+            o["rainbow"] = [
+                "stops": RainbowLyrics.cycleStops.map { cssColor(red: $0.r, green: $0.g, blue: $0.b, alpha: 1) },
+                "seconds": RainbowLyrics.cycleSeconds,
+                "unsung": RainbowLyrics.unsungOpacity,
+            ] as [String: Any]
+        }
         return json(o)
     }
 

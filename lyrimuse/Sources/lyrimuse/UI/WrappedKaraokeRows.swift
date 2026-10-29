@@ -43,6 +43,9 @@ struct WrappedKaraokeRows: NSViewRepresentable {
         /// 同 OverlayScrollingLyricRow.Spec 的两项,原样交给每一行。
         var timingEpoch: Int = 0
         var rate: Double = 1
+        /// 同 `OverlayScrollingLyricRow.Spec.rainbow`,原样交给每一行(每行各按自己的字宽算一圈)。
+        var rainbow: Bool = false
+        var rainbowPaused: Bool? = nil
     }
 
     let spec: Spec
@@ -381,7 +384,9 @@ final class WrappedKaraokeRowsView: NSView {
             alignment: .leading,
             paused: spec.paused,
             timingEpoch: spec.timingEpoch,
-            rate: spec.rate)
+            rate: spec.rate,
+            rainbow: spec.rainbow,
+            rainbowPaused: spec.rainbowPaused)
     }
 }
 

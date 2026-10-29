@@ -269,6 +269,7 @@ enum NotchStyleDefaults {
         settings.notchLyricRowShowsArtwork = AppSettings.defaultNotchLyricRowShowsArtwork
         settings.notchLyricRowArtworkPosition = AppSettings.defaultNotchLyricRowArtworkPosition
         settings.notchLyricsAlignment = AppSettings.defaultNotchLyricsAlignment
+        settings.notchLyricsColor = AppSettings.defaultNotchLyricsColor
         settings.notchSecondaryLine = AppSettings.defaultNotchSecondaryLine
         // 「卡拉OK效果」在「歌词行」浮层里,同属内容开关。
         settings.notchLyricsKaraoke = AppSettings.defaultNotchLyricsKaraoke

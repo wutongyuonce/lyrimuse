@@ -29,6 +29,8 @@ public struct ColorTheme: Codable, Identifiable, Hashable {
     public var followsCoverArt: Bool
     /// 未唱色跟随封面(`AppSettings.karaokeUnsungFollowsCoverArt`);开着时 `karaokeUnsungColorHex` 只是备用色。
     public var karaokeUnsungFollowsCoverArt: Bool
+    /// 字换成流动彩虹(`AppSettings.overlayRainbow`);开着时文字色、未唱色和它们的「跟随封面」都只是备用。
+    public var rainbow: Bool
 
     /// `karaokeUnsungColorHex` 不给就取文字色淡化后的样子(`AppSettings.dimmedForegroundHex`),
     /// 内置预设都走这条,未唱色永远跟自己的文字色成对。
@@ -37,7 +39,7 @@ public struct ColorTheme: Codable, Identifiable, Hashable {
         foregroundColorHex: String, karaokeUnsungColorHex: String? = nil, backgroundColorHex: String,
         backgroundGlass: Bool = false, glassIntensity: OverlayGlassIntensity = .default,
         textStrokeEnabled: Bool, textStrokeColorHex: String,
-        followsCoverArt: Bool = false, karaokeUnsungFollowsCoverArt: Bool = false
+        followsCoverArt: Bool = false, karaokeUnsungFollowsCoverArt: Bool = false, rainbow: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -50,6 +52,7 @@ public struct ColorTheme: Codable, Identifiable, Hashable {
         self.textStrokeColorHex = textStrokeColorHex
         self.followsCoverArt = followsCoverArt
         self.karaokeUnsungFollowsCoverArt = karaokeUnsungFollowsCoverArt
+        self.rainbow = rainbow
     }
 
     // 手写解码,兼容两类老 JSON:
@@ -90,6 +93,7 @@ public struct ColorTheme: Codable, Identifiable, Hashable {
             ?? "#000000A6"
         followsCoverArt = try c.decodeIfPresent(Bool.self, forKey: .followsCoverArt) ?? false
         karaokeUnsungFollowsCoverArt = try c.decodeIfPresent(Bool.self, forKey: .karaokeUnsungFollowsCoverArt) ?? false
+        rainbow = try c.decodeIfPresent(Bool.self, forKey: .rainbow) ?? false
     }
 
     // 必须手写:CodingKeys 里多了两个没有对应属性的 legacy case,合成的 encode 编不出来。
@@ -107,11 +111,12 @@ public struct ColorTheme: Codable, Identifiable, Hashable {
         try c.encode(textStrokeColorHex, forKey: .textStrokeColorHex)
         try c.encode(followsCoverArt, forKey: .followsCoverArt)
         try c.encode(karaokeUnsungFollowsCoverArt, forKey: .karaokeUnsungFollowsCoverArt)
+        try c.encode(rainbow, forKey: .rainbow)
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, name, foregroundColorHex, karaokeUnsungColorHex, backgroundColorHex, backgroundGlass, glassIntensity
-        case textStrokeEnabled, textStrokeColorHex, followsCoverArt, karaokeUnsungFollowsCoverArt
+        case textStrokeEnabled, textStrokeColorHex, followsCoverArt, karaokeUnsungFollowsCoverArt, rainbow
         case legacyTextShadowEnabled = "textShadowEnabled"
         case legacyTextShadowColorHex = "textShadowColorHex"
     }
@@ -126,6 +131,7 @@ extension ColorTheme {
     //   磨砂玻璃  深灰字 + 超薄白色毛玻璃,底下透出模糊的壁纸
     //   纸白卡片  深灰字压在暖白卡片上 —— 浅色风格
     //   霓虹      白字 + 深洋红描边
+    //   彩虹      流动彩虹字 + 深色描边,透明底 —— 彩虹各色同一个亮度,浅色壁纸上靠描边托字
     //
     // 可读性底线(改色值前先复算):已唱对紧贴的底色(有描边看描边,有卡片看卡片叠在壁纸上的合成色)
     // 最坏对比度 ≥ 6,未唱 ≥ 3.3。"最坏"取白 / 黑 / 中灰三种壁纸,毛玻璃再乘浅 / 深两种系统外观。
@@ -166,6 +172,11 @@ extension ColorTheme {
             id: "builtin-neon", name: L10n.t("霓虹"),
             foregroundColorHex: "#FFFFFFFF", karaokeUnsungColorHex: "#FFFFFFBF", backgroundColorHex: "#00000000",
             textStrokeEnabled: true, textStrokeColorHex: "#B8127FFF"
+        ),
+        ColorTheme(
+            id: "builtin-rainbow", name: L10n.t("彩虹"),
+            foregroundColorHex: "#FFFFFFFF", karaokeUnsungColorHex: "#FFFFFF73", backgroundColorHex: "#00000000",
+            textStrokeEnabled: true, textStrokeColorHex: "#000000E6", rainbow: true
         ),
     ] }
 
@@ -234,17 +245,22 @@ extension ColorTheme {
     // 跟"是不是同一个主题"(id/name)无关,只比较真正影响观感的配色字段——用来判断
     // "当前配色是不是正好等于某个预设/自定义主题",给「主题」预览卡的选中框、工具栏摘要和
     // 快捷菜单的勾当依据(`OverlayThemeSettingsRows.currentThemeLabel`)。看不见的值不参与比较:
-    // 描边关着时的描边色、跟随封面开着时的那个备用色。
+    // 描边关着时的描边色、跟随封面开着时的那个备用色、彩虹开着时的文字色与未唱色。
     public func hasSameColors(as other: ColorTheme) -> Bool {
-        followsCoverArt == other.followsCoverArt
-            && (followsCoverArt || foregroundColorHex == other.foregroundColorHex)
-            && karaokeUnsungFollowsCoverArt == other.karaokeUnsungFollowsCoverArt
-            && (karaokeUnsungFollowsCoverArt || karaokeUnsungColorHex == other.karaokeUnsungColorHex)
+        rainbow == other.rainbow
+            && (rainbow || textColorsMatch(other))
             && backgroundColorHex == other.backgroundColorHex
             && backgroundGlass == other.backgroundGlass
             && (!backgroundGlass || glassIntensity == other.glassIntensity)
             && textStrokeEnabled == other.textStrokeEnabled
             && (!textStrokeEnabled || textStrokeColorHex == other.textStrokeColorHex)
+    }
+
+    private func textColorsMatch(_ other: ColorTheme) -> Bool {
+        followsCoverArt == other.followsCoverArt
+            && (followsCoverArt || foregroundColorHex == other.foregroundColorHex)
+            && karaokeUnsungFollowsCoverArt == other.karaokeUnsungFollowsCoverArt
+            && (karaokeUnsungFollowsCoverArt || karaokeUnsungColorHex == other.karaokeUnsungColorHex)
     }
 
     /// 当前设置里的配色打包成一个无名主题:存为新主题、用当前配色覆盖、判断"当前是哪套"都读它。
@@ -260,7 +276,8 @@ extension ColorTheme {
             textStrokeEnabled: settings.textStrokeEnabled,
             textStrokeColorHex: settings.textStrokeColorHex,
             followsCoverArt: settings.followsCoverArt,
-            karaokeUnsungFollowsCoverArt: settings.karaokeUnsungFollowsCoverArt
+            karaokeUnsungFollowsCoverArt: settings.karaokeUnsungFollowsCoverArt,
+            rainbow: settings.overlayRainbow
         )
     }
 
@@ -279,6 +296,7 @@ extension ColorTheme {
         if backgroundGlass { settings.overlayGlassIntensity = glassIntensity }
         settings.textStrokeEnabled = textStrokeEnabled
         settings.textStrokeColorHex = textStrokeColorHex
+        settings.overlayRainbow = rainbow
     }
 }
 
@@ -332,7 +350,7 @@ extension ColorTheme {
             foregroundHex: foregroundColorHex, foregroundFollowsCover: followsCoverArt,
             unsungHex: karaokeUnsungColorHex, unsungFollowsCover: karaokeUnsungFollowsCoverArt,
             backgroundHex: backgroundColorHex,
-            strokeEnabled: textStrokeEnabled, strokeHex: textStrokeColorHex
+            strokeEnabled: textStrokeEnabled, strokeHex: textStrokeColorHex, rainbow: rainbow
         )
     }
 }

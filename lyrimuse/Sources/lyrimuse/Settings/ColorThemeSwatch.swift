@@ -1,4 +1,5 @@
 import AppKit
+import LyrimuseCore
 
 /// 悬浮窗快捷菜单「配色主题」子菜单条目左边的四段色条(设置页那边是预览卡,见 OverlayThemeGallery)。
 ///
@@ -22,7 +23,7 @@ enum ThemeSwatch {
     static func image(
         foregroundHex: String, foregroundFollowsCover: Bool = false,
         unsungHex: String, unsungFollowsCover: Bool = false,
-        backgroundHex: String, strokeEnabled: Bool, strokeHex: String,
+        backgroundHex: String, strokeEnabled: Bool, strokeHex: String, rainbow: Bool = false,
         size: NSSize = defaultSize
     ) -> NSImage {
         // 解析失败兜底成看得出来"坏了"的颜色组合(白 / 透明 / 黑),不崩、不空白。
@@ -58,8 +59,17 @@ enum ThemeSwatch {
             func coverBand(_ rect: NSRect) {
                 NSGradient(colors: coverHintColors)?.draw(in: rect, angle: 90)
             }
-            if foregroundFollowsCover { coverBand(band(0)) } else { foreground.setFill(); band(0).fill() }
-            if unsungFollowsCover { coverBand(band(1)) } else { unsung.setFill(); band(1).fill() }
+            if rainbow {
+                // 彩虹:已唱、未唱两段连成一条横向色带,未唱那段打未唱的折。
+                let stops = RainbowLyrics.cycleStops.map { NSColor(srgbRed: $0.r, green: $0.g, blue: $0.b, alpha: 1) }
+                let both = band(0).union(band(1))
+                NSGradient(colors: stops)?.draw(in: both, angle: 0)
+                NSColor.black.withAlphaComponent(1 - RainbowLyrics.unsungOpacity).setFill()
+                band(1).fill(using: .sourceOver)
+            } else {
+                if foregroundFollowsCover { coverBand(band(0)) } else { foreground.setFill(); band(0).fill() }
+                if unsungFollowsCover { coverBand(band(1)) } else { unsung.setFill(); band(1).fill() }
+            }
             background.setFill(); band(2).fill()
             if strokeEnabled {
                 stroke.setFill(); band(3).fill()

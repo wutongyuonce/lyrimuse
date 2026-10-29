@@ -396,6 +396,10 @@ struct NotchEditorStage: View {
         if settings.notchLyricsAlignment != AppSettings.defaultNotchLyricsAlignment {
             parts.append(LyricsAlignmentSegmentedControl.label(for: settings.notchLyricsAlignment))
         }
+        // 「歌词颜色」同一条规则:只在选了彩虹时报。
+        if settings.notchLyricsColor != AppSettings.defaultNotchLyricsColor {
+            parts.append(settings.notchLyricsColor.displayName)
+        }
         // 「副行」同一条规则:四选一、默认「下一句」,只在非默认时报,写成「副行 · 译文」。
         if settings.notchSecondaryLine != AppSettings.defaultNotchSecondaryLine {
             parts.append("\(L10n.t("副行")) · \(settings.notchSecondaryLine.displayName)")

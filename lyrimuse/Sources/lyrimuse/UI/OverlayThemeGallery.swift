@@ -1,3 +1,4 @@
+import LyrimuseCore
 import SwiftUI
 
 // 「主题」浮层与抽屉「主题」组里的预览卡:每套配色画成一张小卡,用它自己的已唱 / 未唱 / 背景 /
@@ -5,9 +6,9 @@ import SwiftUI
 
 enum ThemeGalleryMetrics {
     /// 自适应列宽:编辑台「主题」浮层(720pt)一行排下全部 7 个内置预设;抽屉是整列宽(上限 600pt),排 6 列。
-    /// 固定 7 列:七套内置主题一行排完(自适应列在抽屉的卡片宽度下只放得下 6 格,「霓虹」会单独掉到第二行)。
+    /// 固定 8 列:八套内置主题一行排完(自适应列在抽屉的卡片宽度下放不下,最后一套会单独掉到第二行)。
     /// 窄到一格放不下示例字时,示例字自己缩(`ThemeSampleLyric` 的 minimumScaleFactor)。
-    static let columns = Array(repeating: GridItem(.flexible(minimum: 60, maximum: 150), spacing: 8, alignment: .top), count: 7)
+    static let columns = Array(repeating: GridItem(.flexible(minimum: 50, maximum: 150), spacing: 8, alignment: .top), count: 8)
     static let rowSpacing: CGFloat = 10
     static let tileHeight: CGFloat = 46
     static let cornerRadius: CGFloat = 8
@@ -25,8 +26,9 @@ private struct ThemeTileBackdrop: View {
     }
 }
 
-/// 一行示例歌词:前半截用已唱色、后半截用未唱色(跟随封面的那一半画多色渐变,它没有固定颜色),背景色画成歌词后面的圆角底(开了毛玻璃就先垫一层
-/// 材质、背景色叠在上面当着色,跟悬浮窗同一个叠法),描边走悬浮窗同一个 `lyricsTextStroke`。
+/// 一行示例歌词:前半截用已唱色、后半截用未唱色(跟随封面的那一半画多色渐变,它没有固定颜色;彩虹主题整行是流动彩虹、
+/// 后半截打未唱的折),背景色画成歌词后面的圆角底(开了毛玻璃就先垫一层材质、背景色叠在上面当着色,跟悬浮窗同一个
+/// 叠法),描边走悬浮窗同一个 `lyricsTextStroke`。
 private struct ThemeSampleLyric: View {
     let theme: ColorTheme
 
@@ -38,21 +40,14 @@ private struct ThemeSampleLyric: View {
 
     var body: some View {
         let halves = halves
-        HStack(spacing: 0) {
-            Text(halves.sung).foregroundStyle(
-                Self.style(hex: theme.foregroundColorHex, followsCover: theme.followsCoverArt, fallback: .white))
-            Text(halves.unsung).foregroundStyle(
-                Self.style(hex: theme.karaokeUnsungColorHex, followsCover: theme.karaokeUnsungFollowsCoverArt,
-                           fallback: .white.opacity(0.35)))
-        }
-        .font(.system(size: 15, weight: .semibold))
-        .lineLimit(1)
-        .minimumScaleFactor(0.75)
-        .lineLimit(1)
-        .lyricsTextStroke(
-            theme.textStrokeEnabled,
-            color: Color(hexWithAlpha: theme.textStrokeColorHex, fallback: .black.opacity(0.65))
-        )
+        sample(halves)
+            .rainbowFill(theme.rainbow, flowing: true)
+            .lyricsTextStroke(
+                theme.textStrokeEnabled,
+                color: Color(hexWithAlpha: theme.textStrokeColorHex, fallback: .black.opacity(0.65))
+            ) {
+                sample(halves)
+            }
         .padding(.horizontal, 8)
         .padding(.vertical, 3)
         .background {
@@ -62,6 +57,19 @@ private struct ThemeSampleLyric: View {
                 shape.fill(Color(hexWithAlpha: theme.backgroundColorHex, fallback: .clear))
             }
         }
+    }
+
+    private func sample(_ halves: (sung: String, unsung: String)) -> some View {
+        HStack(spacing: 0) {
+            Text(halves.sung).foregroundStyle(theme.rainbow ? AnyShapeStyle(Color.white) :
+                Self.style(hex: theme.foregroundColorHex, followsCover: theme.followsCoverArt, fallback: .white))
+            Text(halves.unsung).foregroundStyle(theme.rainbow ? AnyShapeStyle(Color.white.opacity(RainbowLyrics.unsungOpacity)) :
+                Self.style(hex: theme.karaokeUnsungColorHex, followsCover: theme.karaokeUnsungFollowsCoverArt,
+                           fallback: .white.opacity(0.35)))
+        }
+        .font(.system(size: 15, weight: .semibold))
+        .lineLimit(1)
+        .minimumScaleFactor(0.75)
     }
 
     private static func style(hex: String, followsCover: Bool, fallback: Color) -> AnyShapeStyle {

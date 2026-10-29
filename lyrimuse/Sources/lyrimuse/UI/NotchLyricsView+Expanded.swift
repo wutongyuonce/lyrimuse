@@ -23,9 +23,10 @@ extension NotchLyricsView {
                     // 跟副行同一个派生字体:它俩是同一类"辅助的下一句",字号不随主行变、粗细细一档。
                     .font(playback.secondaryFont)
                     .lyricTypesetting(nextLineDisplayText)
-                    .foregroundStyle(accentOrWhite.opacity(0.5))
+                    .foregroundStyle(lyricInk.opacity(0.5))
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .rainbowFill(lyricsRainbow, flowing: lyricsRainbowFlowing)
                     // 「对齐方式」也管这一行。不能只改主歌词行:那样选了「居中」之后主行居中、这一行还贴着左边,看起来就是没做完
                     // (同一个视觉属性别漏改一条路径,见 swiftUIAlignment 注释)。
                     //

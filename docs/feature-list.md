@@ -363,10 +363,11 @@ When nothing is playing, the lyrics window shows the last song with a line from 
 
 ### Appearance
 
-Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.
+Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork, and floating lyrics, the notch and the Touch Bar can also flow as a rainbow. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.
 
 - Settings: Lyrics Display › Floating Lyrics › Theme › Color Theme
 - Settings: Lyrics Display › Floating Lyrics › Theme › My Themes
+- Settings: Lyrics Display › Notch › Lyric Row › Lyrics Color
 - Settings: Lyrics Display › Floating Lyrics › Font › Font
 - Settings: Lyrics Display › Floating Lyrics › Color › Frosted Glass Background
 - Settings: Keyboard Shortcuts › Increase Floating Lyrics Font Size
@@ -835,7 +836,7 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 291 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 292 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -991,6 +992,7 @@ Every setting in the Settings window, by where it lives: 291 in all. Type a name
 
 - **Show Lyrics When Collapsed**: When off, the resting card keeps only the notch-height row and shows no lyrics; hovering to expand still shows playback controls, the scrubber, and the next-line preview as usual
 - **Alignment**
+- **Lyrics Color**
 - **Second Line**
 - **Preview Next Line When Expanded**
 - **Height**

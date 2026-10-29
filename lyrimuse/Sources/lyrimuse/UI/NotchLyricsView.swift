@@ -371,6 +371,30 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
         // 组合逻辑(风格是不是「跟随封面」× 动态主色)已下沉进 NotchPlayback.accent 预组合去重,这里只是个语义化的别名。
         playback.accent
     }
+
+    /// 歌词选了彩虹(`NotchLyricsColor.rainbow`):歌词字(主行、副行、展开态「下一句」)用白色当蒙版、颜色由流动彩虹给。
+    /// 歌名、状态文字、音浪、进度线照旧跟强调色。
+    var lyricsRainbow: Bool { playback.lyricsColor == .rainbow }
+
+    /// 歌词字的颜色:彩虹时是白色(只当蒙版的深浅),否则强调色。
+    var lyricInk: Color { lyricsRainbow ? .white : accentOrWhite }
+
+    /// 彩虹流不流:歌词时钟在走、灵动岛看得见时流。
+    var lyricsRainbowFlowing: Bool { playback.lyricsClockRunning && surfaceVisible }
+}
+
+extension View {
+    /// 灵动岛歌词字的上色:彩虹时字当蒙版(`rainbowFill`),文字阴影改从一份压黑的字副本画(阴影画不出彩虹底下那块
+    /// AppKit 视图),跟 `notchTextShadow` 同色同半径同偏移;否则就是 `notchTextShadow`。
+    @ViewBuilder
+    func notchLyricPaint(rainbow: Bool, flowing: Bool) -> some View {
+        if rainbow {
+            rainbowFill(true, flowing: flowing)
+                .background(colorMultiply(.black).opacity(0.45).blur(radius: 2).offset(y: 1))
+        } else {
+            notchTextShadow()
+        }
+    }
 }
 
 /// 歌词行 / 多行歌词那一格上「瞬态横幅盖歌词」这层壳,单独订阅 NotchTransientCenter:banner 只被这一格消费,订阅挂在
