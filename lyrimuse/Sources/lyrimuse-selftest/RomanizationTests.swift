@@ -18,6 +18,21 @@ func runRomanizationTests() {
     for other in ["아파트", "君の名は", "你好 hello", "Привет", "สวัสดี", "채영이가 random game"] {
         expectEqual(Romanizer.needsRomanization(other), true, "Romanizer.needsRomanization: 非拉丁文字要读音: \(other)")
     }
+    // 拉丁字母的行里夹着冒充拉丁字母的西里尔、希腊字母:不标读音、不现算(10 章决策 63)。
+    for lookalike in ["Bеrhadapan dengan partai yang sok suci", "Le faccе dei nemici come vedi sono pallide",
+                      "Α un quedα n pα lα brα s", "Ѕunt vаgаbоntul реrfес", "Yеah, café nаïve",
+                      "So fin е, you'll always be mine", "Pan F а-а-а-а",
+                      "Ɔbaa wo hwɛ ne body aa Nutеlla"] {
+        expectEqual(Romanizer.isLatinWithLookalikes(lookalike), true, "Romanizer.isLatinWithLookalikes: 夹形近字母的拉丁行: \(lookalike)")
+        expectEqual(Romanizer.needsRomanization(lookalike), false, "Romanizer.needsRomanization: 夹形近字母的拉丁行不要读音: \(lookalike)")
+        expectEqual(Romanizer.romanize(lookalike), nil, "Romanizer.romanize: 夹形近字母的拉丁行不现算: \(lookalike)")
+    }
+    for real in ["Я кажу I don't care", "Hey ура", "хо", "Еу", "Love you мама", "Привет world", "Hello Ελλάδα",
+                 "hello world", "Hey ура yeah"] {
+        expectEqual(Romanizer.isLatinWithLookalikes(real), false, "Romanizer.isLatinWithLookalikes: 真的西里尔 / 希腊词、三个字母以上整词形近、整行没有拉丁字母、没有形近字母都不算: \(real)")
+    }
+    expectEqual(Romanizer.needsRomanization("Я кажу I don't care"), true, "Romanizer.needsRomanization: 拉丁行里真的西里尔词照标")
+
     // 不建音译器的那几支(全 ASCII 判假、见到假名 / 谚文音节 / 常用汉字判真)跟整行音译比对是同一个结果。
     for line in ["Hello my friend", "Don't stop (feat. 123)", "", "  ", "ROSÉ café", "Ｈｅｌｌｏ", "Привет мир",
                  "君の名前を呼んだ", "明日はきっと晴れる", "사랑해요", "你好世界", "Oh！ yeah～", "カタカナ only",

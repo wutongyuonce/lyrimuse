@@ -93,11 +93,53 @@ public enum Romanizer {
         // 一模一样的"读音",那对用户没有任何信息增量,徒增一行重复文字。
         let world = WorldRomanization.romanize(text, song: songScript)
         let korean = containsHangul(world) ? KoreanRomanization.romanize(world) : world
-        guard let transformed = korean.applyingTransform(.toLatin, reverse: false),
+        guard !isLatinWithLookalikes(text),
+            let transformed = korean.applyingTransform(.toLatin, reverse: false),
             transformed != text
         else { return nil }
         return transformed
     }
+
+    /// 拉丁字母的行里夹着冒充拉丁字母的西里尔、希腊字母(「Bеrhadapan」的 е 是西里尔字母):音译出来只是把那几个字母
+    /// 换成长得一样的拉丁字母,当读音就是底下多一行看不出差别的原文。判据:拉丁字母以外的字母全是形近字母,而且冒充的
+    /// 多于自成一词的。冒充的是混在拉丁字母词里的,以及行里有拉丁字母时一两个字母自成一词的(「fin е」);三个字母以上
+    /// 整词都是形近字母的(「Hey ура」)照旧标。见 10 章决策 63。
+    public static func isLatinWithLookalikes(_ text: String) -> Bool {
+        var mixed = 0, short = 0, standalone = 0, lineLatin = false
+        var wordLatin = false, wordLookalikes = 0
+        func endWord() {
+            if wordLatin {
+                mixed += wordLookalikes
+            } else if wordLookalikes <= 2 {
+                short += wordLookalikes
+            } else {
+                standalone += wordLookalikes
+            }
+            wordLatin = false
+            wordLookalikes = 0
+        }
+        for scalar in text.unicodeScalars {
+            guard scalar.properties.isAlphabetic else {
+                endWord()
+                continue
+            }
+            switch scalar.value {
+            case 0x41...0x5A, 0x61...0x7A, 0xC0...0x2AF, 0x1E00...0x1EFF:
+                wordLatin = true
+                lineLatin = true
+            default:
+                guard latinLookalikes.contains(scalar) else { return false }
+                wordLookalikes += 1
+            }
+        }
+        endWord()
+        return lineLatin && mixed + short > standalone
+    }
+
+    /// 跟拉丁字母长得一样的西里尔、希腊字母。小写的 в к м н т 这类在多数字体里不像拉丁字母,不收。
+    private static let latinLookalikes = Set(
+        "АВЕКМНОРСТУХІЈЅԚԜаеорсухіјѕԁһӏԛԝ" + "ΑΒΕΖΗΙΚΜΝΟΡΤΥΧαιονυ"
+    ).reduce(into: Set<Unicode.Scalar>()) { $0.formUnion($1.unicodeScalars) }
 
     /// 这一行里有没有需要标读音的文字:音译成拉丁字母之后跟原文不一样。英文(带不带重音)、数字、
     /// 标点、全角标点原样穿透,判假;谚文、假名、汉字、西里尔字母、泰文判真。跟 `romanize` 末尾
@@ -113,7 +155,7 @@ public enum Romanizer {
             default: onlyASCII = false
             }
         }
-        if onlyASCII { return false }
+        if onlyASCII || isLatinWithLookalikes(text) { return false }
         guard let transformed = text.applyingTransform(.toLatin, reverse: false) else { return true }
         return transformed != text
     }
