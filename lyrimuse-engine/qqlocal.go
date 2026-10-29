@@ -185,6 +185,15 @@ func refreshQQLocalIndexLocked(ctx context.Context) {
 	// 真读到了才撤掉「被拒」(见 noteLocalCacheReadFailure)。
 	noteLocalCacheReadable("qq")
 	noteParserRecognized("qq-local-library")
+	idx := qqLocalIndexFromRows(rows)
+	qqLocalIndex = idx
+	if len(idx) > 0 {
+		log.Printf("qq local: indexed %d tracks from client library", len(idx))
+	}
+}
+
+// qqLocalIndexFromRows 按 qqLocalKey 建索引,没有 mid 或键为空的行跳过。
+func qqLocalIndexFromRows(rows []qqLocalRow) map[string][]qqLocalEntry {
 	idx := map[string][]qqLocalEntry{}
 	for _, r := range rows {
 		key := qqLocalKey(r.Singer, r.Name)
@@ -196,9 +205,64 @@ func refreshQQLocalIndexLocked(ctx context.Context) {
 			duration: float64(r.MS) / 1000,
 		})
 	}
-	qqLocalIndex = idx
-	if len(idx) > 0 {
-		log.Printf("qq local: indexed %d tracks from client library", len(idx))
+	return idx
+}
+
+// iPad 版 QQ 音乐(com.tencent.QQMusic,App 按 QQ 音乐 Mac 版认)的曲库跟 Mac 版同构(SONGS 表,K_SONG_RESERVE1 是
+// songmid、K_SONG_RESERVE12 是毫秒时长),每放一首写一次,也是 rollback journal。两份各建各的索引,查的时候候选合在一起挑
+// (qqLocalMatch)。读它的成败不记进 "qq" 的访问状态:那一份管的是 Mac 版完全磁盘访问那一行。见 02 章决策 204。
+
+// qqIPadLocalDBOverride 让单测把库指到临时路径。空 = 用真实路径。
+var qqIPadLocalDBOverride string
+
+func qqIPadLocalDBPath() string {
+	if qqIPadLocalDBOverride != "" {
+		return qqIPadLocalDBOverride
+	}
+	return homeSubdir("Library/Containers/com.tencent.QQMusic/Data/Library/Application Support/com.tencent.QQMusic/iDB/qqmusic.sqlite")
+}
+
+// 跟 Mac 版那份同一把锁(qqLocalMu)。
+var (
+	qqIPadLocalIndex   map[string][]qqLocalEntry
+	qqIPadLocalDBMod   time.Time
+	qqIPadLocalDBSize  int64
+	qqIPadLocalScanned time.Time
+	qqIPadLocalReady   bool
+)
+
+// refreshQQIPadLocalIndexLocked 同 refreshQQLocalIndexLocked:库变过、且距上次扫描超过节流间隔时重建;读失败保留上一次的索引。
+// 调用方必须持有 qqLocalMu。
+func refreshQQIPadLocalIndexLocked(ctx context.Context) {
+	path := qqIPadLocalDBPath()
+	if path == "" {
+		qqIPadLocalIndex, qqIPadLocalReady = nil, true
+		return
+	}
+	st, err := os.Stat(path)
+	if err != nil || st.IsDir() {
+		qqIPadLocalIndex, qqIPadLocalReady = nil, true
+		return
+	}
+	now := time.Now()
+	if qqIPadLocalReady && st.ModTime().Equal(qqIPadLocalDBMod) && st.Size() == qqIPadLocalDBSize {
+		return
+	}
+	if qqIPadLocalReady && now.Sub(qqIPadLocalScanned) < qqLocalRescanMin {
+		return
+	}
+	qqIPadLocalScanned, qqIPadLocalReady = now, true
+	rows, err := queryQQLocalSongs(ctx, path)
+	if err != nil {
+		if ctx.Err() != nil {
+			qqIPadLocalScanned = time.Time{}
+		}
+		return
+	}
+	qqIPadLocalDBMod, qqIPadLocalDBSize = st.ModTime(), st.Size()
+	qqIPadLocalIndex = qqLocalIndexFromRows(rows)
+	if len(qqIPadLocalIndex) > 0 {
+		log.Printf("qq local: indexed %d tracks from the iPad app's library", len(qqIPadLocalIndex))
 	}
 }
 
@@ -259,7 +323,8 @@ func qqLocalMatch(ctx context.Context, artist, title, album string, durationSecs
 	}
 	qqLocalMu.Lock()
 	refreshQQLocalIndexLocked(ctx)
-	ents := append([]qqLocalEntry(nil), qqLocalIndex[key]...)
+	refreshQQIPadLocalIndexLocked(ctx)
+	ents := append(append([]qqLocalEntry(nil), qqLocalIndex[key]...), qqIPadLocalIndex[key]...)
 	qqLocalMu.Unlock()
 	if len(ents) == 0 {
 		return qqMusicMatch{}, false

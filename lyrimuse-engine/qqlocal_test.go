@@ -58,6 +58,58 @@ func resetQQLocalIndex(t *testing.T, dbPath string) {
 	})
 }
 
+// resetQQIPadLocalIndex 把 iPad 版那份库指到 dbPath(空串 = 不存在的路径),清掉它的索引。
+func resetQQIPadLocalIndex(t *testing.T, dbPath string) {
+	t.Helper()
+	clear := func() {
+		qqLocalMu.Lock()
+		qqIPadLocalIndex, qqIPadLocalReady, qqIPadLocalScanned = nil, false, time.Time{}
+		qqIPadLocalDBMod, qqIPadLocalDBSize = time.Time{}, 0
+		qqLocalMu.Unlock()
+	}
+	clear()
+	old := qqIPadLocalDBOverride
+	if dbPath == "" {
+		dbPath = filepath.Join(t.TempDir(), "missing", "qqmusic.sqlite")
+	}
+	qqIPadLocalDBOverride = dbPath
+	t.Cleanup(func() {
+		qqIPadLocalDBOverride = old
+		clear()
+	})
+}
+
+// iPad 版的曲库跟 Mac 版同构:Mac 版那份没有这首(或根本没装)时照样命中,两份都有时候选合在一起挑,
+// 读它不改 "qq" 的访问状态。
+func TestQQLocalMatchReadsIPadLibrary(t *testing.T) {
+	resetQQLocalIndex(t, filepath.Join(t.TempDir(), "missing", "qqmusic.sqlite"))
+	localCacheDeniedMu.Lock()
+	delete(localCacheReadableNow, "qq")
+	delete(localCacheDeniedNow, "qq")
+	localCacheDeniedMu.Unlock()
+	resetQQIPadLocalIndex(t, writeTestQQDB(t, []qqLocalRow{
+		{Mid: "0047tFBc4M5Dsq", Name: "童话", Singer: "周宣绮", Album: "风，飞鸟，高山", MS: 266000},
+	}))
+	m, ok := qqLocalMatch(context.Background(), "周宣绮", "童话", "风，飞鸟，高山", 266)
+	if !ok || qqMidFromURL(m.url) != "0047tFBc4M5Dsq" || !m.fromLocalLibrary {
+		t.Fatalf("Mac 版那份没有时应当从 iPad 版那份命中,得到 ok=%v %+v", ok, m)
+	}
+	localCacheDeniedMu.Lock()
+	marked := localCacheReadableNow["qq"] || localCacheDeniedNow["qq"]
+	localCacheDeniedMu.Unlock()
+	if marked {
+		t.Fatal("读 iPad 版那份不该改 \"qq\" 的访问状态(那一份管 Mac 版的完全磁盘访问)")
+	}
+
+	resetQQLocalIndex(t, writeTestQQDB(t, []qqLocalRow{
+		{Mid: "004aupsp1RFXAN", Name: "童话", Singer: "周宣绮", Album: "另一张", MS: 200000},
+	}))
+	m, ok = qqLocalMatch(context.Background(), "周宣绮", "童话", "风，飞鸟，高山", 266)
+	if !ok || qqMidFromURL(m.url) != "0047tFBc4M5Dsq" {
+		t.Fatalf("两份都有时候选合在一起挑,应选专辑、时长都对的 iPad 版那条,得到 ok=%v %+v", ok, m)
+	}
+}
+
 var qqLocalTestRows = []qqLocalRow{
 	{Mid: "003FdJZH1wljMU", Name: "西西里", Singer: "周杰伦", Album: "太阳之子", MS: 229000},
 	{Mid: "0039MnYb0qxYhV", Name: "晴天", Singer: "周杰伦", Album: "叶惠美", MS: 269000},

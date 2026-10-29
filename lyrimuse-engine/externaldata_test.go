@@ -70,6 +70,7 @@ func TestMain(m *testing.M) {
 		_ = os.Unsetenv(k)
 	}
 	qqLocalDBOverride = filepath.Join(missing, "qqmusic.sqlite")
+	qqIPadLocalDBOverride = filepath.Join(missing, "iDB", "qqmusic.sqlite")
 	neteaseLocalDBOverride = filepath.Join(missing, "sqlite_storage.sqlite3")
 	spotifyISRCUsersDirOverride = filepath.Join(missing, "SpotifyUsers")
 	applemusicLocalDirOverride = filepath.Join(missing, "fsCachedData")
