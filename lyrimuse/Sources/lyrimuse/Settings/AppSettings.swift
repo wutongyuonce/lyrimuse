@@ -369,6 +369,7 @@ final class AppSettings: ObservableObject {
         static let menuBarLyricsKaraoke = "np:menuBarLyricsKaraoke"
         static let menuBarLyricsTextColorHex = "np:menuBarLyricsTextColorHex"
         static let menuBarLyricsFillColorHex = "np:menuBarLyricsFillColorHex"
+        static let menuBarLyricsRainbow = "np:menuBarLyricsRainbow"
         static let menuBarLyricsIconPosition = "np:menuBarLyricsIconPosition"
         static let menuBarLyricsPlacement = "np:menuBarLyricsPlacement"
         static let menuBarCenterScreen = "np:menuBarCenterScreen"
@@ -1208,6 +1209,11 @@ final class AppSettings: ObservableObject {
     }
     @Published var menuBarLyricsFillColorHex: String {
         didSet { defaults.set(menuBarLyricsFillColorHex, forKey: Keys.menuBarLyricsFillColorHex) }
+    }
+    /// 菜单栏歌词换成沿行流动的彩虹(`RainbowLyrics`,浅色菜单栏用压暗的那组):文字颜色、已唱颜色这时只管进度图标和间奏三点。
+    /// 菜单打开反白时照旧换成选中色。见 06 章决策 76。
+    @Published var menuBarLyricsRainbow: Bool {
+        didSet { defaults.set(menuBarLyricsRainbow, forKey: Keys.menuBarLyricsRainbow) }
     }
     // 歌词旁边那枚带播放进度的图标摆哪边(off = 不显示)。见 MenuBarLyricsIconPosition。
     @Published var menuBarLyricsIconPosition: MenuBarLyricsIconPosition {
@@ -2580,6 +2586,7 @@ final class AppSettings: ObservableObject {
         }
         menuBarLyricsTextColorHex = defaults.string(forKey: Keys.menuBarLyricsTextColorHex) ?? Self.defaultMenuBarLyricsTextColorHex
         menuBarLyricsFillColorHex = defaults.string(forKey: Keys.menuBarLyricsFillColorHex) ?? Self.defaultMenuBarLyricsFillColorHex
+        menuBarLyricsRainbow = (defaults.object(forKey: Keys.menuBarLyricsRainbow) as? Bool) ?? false
         menuBarLyricsIconPosition = defaults.string(forKey: Keys.menuBarLyricsIconPosition)
             .flatMap(MenuBarLyricsIconPosition.init(rawValue:)) ?? Self.defaultMenuBarLyricsIconPosition
         menuBarLyricsPlacement = defaults.string(forKey: Keys.menuBarLyricsPlacement)

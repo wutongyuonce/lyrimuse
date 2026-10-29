@@ -230,6 +230,8 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/rainbow?overlay=1"), .debug(.rainbow(overlay: true, notch: nil)), "debug: 只开悬浮歌词彩虹")
         expectEqual(link("lyrimuse://debug/rainbow?overlay=0&notch=1"), .debug(.rainbow(overlay: false, notch: true)),
                     "debug: 悬浮歌词、灵动岛彩虹一起设")
+        expectEqual(link("lyrimuse://debug/rainbow?menubar=1"), .debug(.rainbow(overlay: nil, notch: nil, menuBar: true)),
+                    "debug: 只开菜单栏彩虹")
         expectEqual(link("lyrimuse://debug/rainbow"), nil, "debug: 彩虹什么都没带不认")
         expectEqual(link("lyrimuse://debug/touchbar-display?color=Rainbow"), .debug(.touchBarDisplay(color: .rainbow)),
                     "debug: 触控栏歌词颜色切彩虹(大小写不敏感)")
@@ -376,6 +378,7 @@ func runDeepLinkTests() {
             .debug(.japaneseReading(.kana)), .debug(.japaneseReading(.romaji)),
             .debug(.touchBarDisplay(color: .rainbow)), .debug(.touchBarDisplay(color: .cover)),
             .debug(.rainbow(overlay: true, notch: nil)), .debug(.rainbow(overlay: false, notch: true)),
+            .debug(.rainbow(overlay: nil, notch: nil, menuBar: false)),
             .debug(.menuBarDisplay(artwork: true, content: nil)), .debug(.menuBarDisplay(artwork: nil, content: "title")),
             .debug(.menuBarDisplay(artwork: false, content: "lyrics")),
             .debug(.menuBarDisplay(artwork: nil, content: nil, iconSize: "small")),

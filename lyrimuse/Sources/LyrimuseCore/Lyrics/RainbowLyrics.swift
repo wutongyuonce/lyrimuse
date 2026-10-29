@@ -6,6 +6,8 @@ import Foundation
 /// 黑底上蓝、紫不比黄、绿暗;直接取饱和的纯色相,蓝紫那几个字看不清。
 public enum RainbowLyrics {
     public static let lightness = 0.80
+    /// 浅色底(浅色菜单栏)上用的亮度:0.80 那组压在近白的底上发虚。
+    public static let lightBackgroundLightness = 0.55
     public static let maxChroma = 0.14
     /// 第一档的色相(度),从偏暖的红起。
     public static let startHue = 20.0
@@ -31,15 +33,20 @@ public enum RainbowLyrics {
         public var b: Double
     }
 
-    /// 一圈的色标,`huesPerCycle + 1` 个:最后一个跟第一个是同一个颜色,一圈接一圈拼起来没有接缝。
-    public static let cycleStops: [RGB] = {
+    /// 一圈的色标,`huesPerCycle + 1` 个:最后一个跟第一个是同一个颜色,一圈接一圈拼起来没有接缝。深色底用。
+    public static let cycleStops: [RGB] = stops(lightness: lightness)
+    /// 同上,浅色底用(`lightBackgroundLightness`)。
+    public static let lightBackgroundCycleStops: [RGB] = stops(lightness: lightBackgroundLightness)
+
+    /// 按 `lightness` 绕色相一圈取色标,首尾同色。
+    public static func stops(lightness: Double) -> [RGB] {
         let step = 360.0 / Double(huesPerCycle)
-        let ring = (0..<huesPerCycle).map { inGamut(hue: startHue + Double($0) * step) }
+        let ring = (0..<huesPerCycle).map { inGamut(hue: startHue + Double($0) * step, lightness: lightness) }
         return ring + [ring[0]]
-    }()
+    }
 
     /// 这个色相在 `lightness` 下、彩度不超过 `maxChroma` 时落在 sRGB 色域里的颜色(彩度二分到色域边界)。
-    public static func inGamut(hue: Double) -> RGB {
+    public static func inGamut(hue: Double, lightness: Double = RainbowLyrics.lightness) -> RGB {
         if let rgb = srgb(l: lightness, c: maxChroma, hue: hue) { return rgb }
         var lo = 0.0, hi = maxChroma
         for _ in 0..<24 {

@@ -286,6 +286,13 @@ final class MenuBarStatusItem: NSObject {
                 self?.scrollingLabel.refreshColors()
                 self?.centerLyrics.labels.forEach { $0.refreshColors() }
             }.store(in: &cancellables)
+        // 彩虹:换色之外还可能换绘制路径(按钮自己画的短句彩虹时改走图层,`adaptiveDrawsWithLayers`),所以也排一次 refresh。
+        settings.$menuBarLyricsRainbow.dropFirst().receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.scrollingLabel.refreshColors()
+                self?.centerLyrics.labels.forEach { $0.refreshColors() }
+                self?.scheduleRefresh()
+            }.store(in: &cancellables)
         // 逐字染色的对表通道:锚点(每次 poll ~2s 重发一次 + seek/暂停/恢复)、暂停位置、
         // 时间轴偏移任一变化都重新对一次表。这条**不走 refresh**(不涉及槽位/内容,只是
         // 时钟),标签内部有 250ms 漂移门,逐 poll 的锚点更新几乎都被无声吸收,不会打断
@@ -1465,7 +1472,7 @@ final class MenuBarStatusItem: NSObject {
             if MenuBarSlotPolicy.adaptiveDrawsWithLayers(
                 hasFillPath: fillPath != nil, hasIcon: icon != nil, twoRows: rowState.twoRows,
                 windowWidth: slotTextW, textWidth: mainW,
-                inlineTranslation: rowState.inlineTranslationStart != nil) {
+                inlineTranslation: rowState.inlineTranslationStart != nil, rainbow: settings.menuBarLyricsRainbow) {
                 // 逐字染色画不进 button.title(那条路是 AppKit 自绘的单色文字,没有图层
                 // 可以叠强调色),所以走图层渲染,窗口宽取歌词格宽 slotTextW:槽宽公式跟上面
                 // 完全一致,footprint 不变,只是画的人是 scrollingLabel 而不是按钮。

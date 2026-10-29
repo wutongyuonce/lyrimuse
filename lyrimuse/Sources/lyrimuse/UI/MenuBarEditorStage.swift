@@ -123,7 +123,8 @@ struct MenuBarEditorStage: View {
     /// "摘要复用现成 item 标题"的纪律。(标题随开关改名「卡拉OK效果」,宽度预算见
     /// toolbar 头注:比原「卡拉OK染色」等长,不用重量。)
     private var colorSummary: String {
-        settings.menuBarLyricsKaraoke ? L10n.t("卡拉OK效果") : L10n.t("跟随系统")
+        if settings.menuBarLyricsRainbow { return L10n.t("彩虹") }
+        return settings.menuBarLyricsKaraoke ? L10n.t("卡拉OK效果") : L10n.t("跟随系统")
     }
 
     /// 「字体」按钮摘要:粗细档位显示名(跟下拉里的选项同一份文案)恒报;**只有偏离默认才追加**
@@ -437,6 +438,7 @@ enum MenuBarStyleDefaults {
         settings.menuBarLyricsKaraoke = AppSettings.defaultMenuBarLyricsKaraoke
         settings.menuBarLyricsTextColorHex = AppSettings.defaultMenuBarLyricsTextColorHex
         settings.menuBarLyricsFillColorHex = AppSettings.defaultMenuBarLyricsFillColorHex
+        settings.menuBarLyricsRainbow = false
         // 「字体」浮层
         settings.menuBarLyricsFontFamily = AppSettings.defaultMenuBarLyricsFontFamily
         settings.menuBarLyricsFontWeight = AppSettings.defaultMenuBarLyricsFontWeight
@@ -928,11 +930,20 @@ struct MenuBarColorRows: View {
                     title: L10n.t("卡拉OK效果"),
                     help: L10n.t("随演唱进度将已演唱部分显示为系统强调色。仅在歌曲有逐字时间轴时生效；打开菜单反白期间暂停着色"),
                     isOn: $settings.menuBarLyricsKaraoke)
+                SettingsToggleTile(
+                    icon: "rainbow",
+                    title: L10n.t("彩虹"),
+                    help: L10n.t("歌词换成从左往右流动的彩虹，浅色菜单栏上自动压暗；打开菜单反白期间恢复系统颜色"),
+                    isOn: $settings.menuBarLyricsRainbow)
             }
-            SettingsRowGroup {
-                VStack(spacing: 0) { colorRows }
+            // 彩虹时文字颜色、已唱颜色只管进度图标(和间奏三点),没开图标就藏起来。
+            if !settings.menuBarLyricsRainbow || settings.menuBarLyricsIconPosition != .off {
+                SettingsRowGroup {
+                    VStack(spacing: 0) { colorRows }
+                }
             }
         }
+        .animation(.default, value: settings.menuBarLyricsRainbow)
     }
 
     @ViewBuilder

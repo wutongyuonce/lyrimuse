@@ -13,10 +13,12 @@ final class RainbowGradientDriver {
     static let epoch = CACurrentMediaTime()
 
     private var clock = RainbowLyrics.FlowClock(epoch: RainbowGradientDriver.epoch)
-    private var configured: (period: CGFloat, cycles: Int)?
+    private var configured: (cycles: Int, stops: [RainbowLyrics.RGB])?
 
     /// 按一圈 `period` 摆好 `layers`:宽 = 铺满 `width` 再多一圈,高 = `height`;`flowing` 时装流动动画,否则停在此刻的相位。
-    func apply(to layers: [CAGradientLayer], period: CGFloat, width: CGFloat, height: CGFloat, flowing: Bool) {
+    /// `stops` 是一圈的色标,浅色底上传压暗的那组(`RainbowLyrics.lightBackgroundCycleStops`)。
+    func apply(to layers: [CAGradientLayer], period: CGFloat, width: CGFloat, height: CGFloat, flowing: Bool,
+               stops: [RainbowLyrics.RGB] = RainbowLyrics.cycleStops) {
         guard period > 0 else {
             layers.forEach { $0.removeAnimation(forKey: Self.animationKey) }
             return
@@ -25,7 +27,8 @@ final class RainbowGradientDriver {
         if flowing { clock.resume(at: now) } else { clock.freeze(at: now) }
         let cycles = Int((width / period).rounded(.up)) + 1
         let x = -period + CGFloat(clock.phase(at: now)) * period
-        let colors = configured.map { $0.cycles == cycles } == true ? nil : Self.colors(cycles: cycles)
+        let colors = configured.map { $0.cycles == cycles && $0.stops == stops } == true
+            ? nil : Self.colors(cycles: cycles, stops: stops)
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         for g in layers {
@@ -41,7 +44,7 @@ final class RainbowGradientDriver {
             g.removeAnimation(forKey: Self.animationKey)
         }
         CATransaction.commit()
-        configured = (period, cycles)
+        configured = (cycles, stops)
         guard flowing else { return }
         for g in layers {
             let flow = CABasicAnimation(keyPath: "position.x")
@@ -54,9 +57,8 @@ final class RainbowGradientDriver {
         }
     }
 
-    /// `cycles` 圈首尾相接的色标和位置(每圈 `RainbowLyrics.cycleStops` 去掉末尾那个重复色,最后补回第一个)。
-    private static func colors(cycles: Int) -> (colors: [CGColor], locations: [NSNumber]) {
-        let stops = RainbowLyrics.cycleStops
+    /// `cycles` 圈首尾相接的色标和位置(每圈 `stops` 去掉末尾那个重复色,最后补回第一个)。
+    private static func colors(cycles: Int, stops: [RainbowLyrics.RGB]) -> (colors: [CGColor], locations: [NSNumber]) {
         let perCycle = stops.count - 1
         var colors: [CGColor] = []
         for _ in 0..<cycles {

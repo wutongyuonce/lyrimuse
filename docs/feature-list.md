@@ -363,11 +363,12 @@ When nothing is playing, the lyrics window shows the last song with a line from 
 
 ### Appearance
 
-Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork, and floating lyrics, the notch and the Touch Bar can also flow as a rainbow. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.
+Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork, and floating lyrics, the notch, the menu bar and the Touch Bar can also flow as a rainbow. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.
 
 - Settings: Lyrics Display › Floating Lyrics › Theme › Color Theme
 - Settings: Lyrics Display › Floating Lyrics › Theme › My Themes
 - Settings: Lyrics Display › Notch › Lyric Row › Lyrics Color
+- Settings: Lyrics Display › Menu Bar › Color › Rainbow
 - Settings: Lyrics Display › Floating Lyrics › Font › Font
 - Settings: Lyrics Display › Floating Lyrics › Color › Frosted Glass Background
 - Settings: Keyboard Shortcuts › Increase Floating Lyrics Font Size
@@ -836,7 +837,7 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 292 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 293 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1049,6 +1050,7 @@ Every setting in the Settings window, by where it lives: 292 in all. Type a name
 ### Lyrics Display › Menu Bar › Color
 
 - **Karaoke Effect**
+- **Rainbow**: Lyrics flow left to right in rainbow colours, darkened on a light menu bar; system colours return while the menu is open
 - **Text Color**
 - **Sung Color**
 

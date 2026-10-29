@@ -273,6 +273,11 @@ func runTouchBarTests() {
         clock.resume(at: 300)
         expectEqual(clock.epoch, epoch, "彩虹时钟: 本来就在走时再走一次不挪起点")
         expectEqual(R.unsungOpacity > 0 && R.unsungOpacity < 1, true, "彩虹: 未唱的透明度在 0~1 之间")
+        let lightStops = R.lightBackgroundCycleStops
+        expectEqual(lightStops.count == stops.count && lightStops.first == lightStops.last
+                        && lightStops.map(R.oklabLightness).allSatisfy { abs($0 - R.lightBackgroundLightness) < 0.01 }, true,
+                    "彩虹: 浅色底那组同样首尾同色、亮度一致(压暗到 \(R.lightBackgroundLightness))")
+        expectEqual(R.lightBackgroundLightness < R.lightness, true, "彩虹: 浅色底那组比深色底那组暗")
         expectEqual(NotchLyricsColor.resolved(stored: "rainbow", fallback: .accent), .rainbow, "灵动岛歌词颜色: 存过彩虹就是彩虹")
         expectEqual(NotchLyricsColor.resolved(stored: nil, fallback: .accent), .accent, "灵动岛歌词颜色: 没存过用默认")
         expectEqual(NotchLyricsColor.resolved(stored: "pink", fallback: .accent), .accent, "灵动岛歌词颜色: 存坏了用默认")
@@ -867,6 +872,21 @@ func runTouchBarTests() {
                         && notchRow.components(separatedBy: ".notchLyricPaint(rainbow: lyricsRainbow, flowing: lyricsRainbowFlowing)").count - 1 == 2
                         && notchExpanded.contains(".rainbowFill(lyricsRainbow, flowing: lyricsRainbowFlowing)"), true,
                     "灵动岛彩虹: 逐字主行、整行主行、副行、展开态下一句都接上")
+        // 菜单栏(06 章决策 76):字用白色当蒙版、图标和三点照旧原色;反白时不算彩虹;播放 / 暂停一翻转就重装流动;
+        // 浅色菜单栏换压暗的色标;副行挪的是宿主。
+        let menuLabel = code(appDir.appendingPathComponent("MenuBar/MenuBarScrollingLabel.swift")) ?? ""
+        expectEqual(menuLabel.contains("private var rainbowActive: Bool { AppSettings.shared.menuBarLyricsRainbow && !highlighted }")
+                        && menuLabel.contains("built = MenuBarMarqueeRenderer.prepare(text: plan.text, color: textInk, scale: scale,")
+                        && menuLabel.contains("iconBase = MenuBarProgressIcon.tinted(icon: icon, color: color, played: false, scale: scale)")
+                        && menuLabel.contains("let stops = dark ? RainbowLyrics.cycleStops : RainbowLyrics.lightBackgroundCycleStops")
+                        && menuLabel.contains("if playingChanged { applyRainbow() }")
+                        && menuLabel.contains("secondaryMovable.position = CGPoint(x: x, y: 0)")
+                        && menuLabel.contains("appearance: effectiveAppearance.name, rainbow: rainbowActive)"), true,
+                    "菜单栏彩虹: 字当蒙版、图标原色、反白退出、播放翻转重装、浅色压暗、位图缓存认彩虹")
+        let statusItem = code(appDir.appendingPathComponent("MenuBar/MenuBarStatusItem.swift")) ?? ""
+        expectEqual(statusItem.contains("inlineTranslation: rowState.inlineTranslationStart != nil, rainbow: settings.menuBarLyricsRainbow) {")
+                        && statusItem.contains("settings.$menuBarLyricsRainbow.dropFirst().receive(on: DispatchQueue.main)"), true,
+                    "菜单栏彩虹: 选了彩虹短句也走图层,开关一变就重画")
         let notchReset = code(appDir.appendingPathComponent("UI/NotchSettingsRows.swift")) ?? ""
         expectEqual(notchReset.contains("settings.notchLyricsColor = AppSettings.defaultNotchLyricsColor"), true,
                     "灵动岛彩虹: 「重置」恢复歌词颜色")

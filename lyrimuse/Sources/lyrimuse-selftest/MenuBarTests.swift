@@ -1626,6 +1626,9 @@ func runMenuBarTests() {
         expectEqual(MenuBarSlotPolicy.adaptiveDrawsWithLayers(hasFillPath: false, hasIcon: false, twoRows: false,
                                                               windowWidth: 98.5, textWidth: 98.5, inlineTranslation: true),
                     true, "画法: 同一行接着译文走图层(译文那段要画淡,button.title 只有一种颜色)")
+        expectEqual(MenuBarSlotPolicy.adaptiveDrawsWithLayers(hasFillPath: false, hasIcon: false, twoRows: false,
+                                                              windowWidth: 98.5, textWidth: 98.5, rainbow: true),
+                    true, "画法: 彩虹走图层(button.title 叠不上流动渐变,06 章决策 76)")
     }
 
     // ---- 主行显示译文 / 原文接着译文(06 章决策 70) ----

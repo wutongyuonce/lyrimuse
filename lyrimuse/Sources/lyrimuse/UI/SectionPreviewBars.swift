@@ -769,7 +769,8 @@ struct MenuBarPreviewBar<Lane: View>: View {
             if visible == fullText, MenuBarSlotPolicy.adaptiveDrawsWithLayers(
                 hasFillPath: karaokeFillPath != nil, hasIcon: previewIconBadge != nil, twoRows: twoRows,
                 windowWidth: w, textWidth: MenuBarMarqueeRenderer.width(of: visible, font: mainFont),
-                inlineTranslation: composedText.translationStart != nil) {
+                inlineTranslation: composedText.translationStart != nil,
+                rainbow: AppSettings.shared.menuBarLyricsRainbow) {
                 MenuBarScrollingLabel.Representable(
                     text: visible, windowWidth: w, pacing: nil, fillPath: karaokeFillPath,
                     followPath: followReadingPath, karaokePositionMs: karaokePositionMs,

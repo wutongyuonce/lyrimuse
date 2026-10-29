@@ -57337,6 +57337,29 @@
           }
         }
       }
+    },
+    "歌词换成从左往右流动的彩虹，浅色菜单栏上自动压暗；打开菜单反白期间恢复系统颜色" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lyrics flow left to right in rainbow colours, darkened on a light menu bar; system colours return while the menu is open"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歌词换成从左往右流动的彩虹，浅色菜单栏上自动压暗；打开菜单反白期间恢复系统颜色"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歌詞換成由左往右流動的彩虹，淺色選單列上自動壓暗；打開選單反白期間恢復系統顏色"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -499,6 +499,7 @@ public enum SettingsSearchCatalog {
         surface(.menuBar, "副行", kw: ["下一句", "译文", "读音", "罗马音", "双排", "两行"], group: "内容"),
         surface(.menuBar, "歌词旁的图标", kw: ["进度图标", "图标"], group: "内容"),
         surface(.menuBar, "卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "颜色"),
+        surface(.menuBar, "彩虹", kw: ["彩虹", "渐变", "流动", "颜色", "rainbow"], group: "颜色"),
         surface(.menuBar, "文字颜色", alt: ["未唱颜色"], kw: ["字色", "颜色", "跟随系统"], group: "颜色"),
         surface(.menuBar, "已唱颜色", kw: ["染色", "高亮色"], group: "颜色"),
         surface(.menuBar, "字体", kw: ["字体族", "font"], group: "字体"),

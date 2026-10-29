@@ -36,6 +36,10 @@ import SwiftUI
 //     └ secondaryClipLayer (masksToBounds,副行那一格,双排;单行时 isHidden;装不下时 mask 尾部渐隐)
 //          └ secondaryTextLayer (副行,**不滚**;opacity 按档位压淡)
 //
+// 开了彩虹(`AppSettings.menuBarLyricsRainbow`,反白时不算)时 textLayer / fillTextLayer / secondaryTextLayer 各从裁剪层里
+// 摘下来,当一个宿主层的蒙版,宿主下面挂一条横向循环平移的彩虹渐变(`RainbowGradientDriver`);字用白色画、透明度表示
+// 深浅。进度图标、间奏三点不跟彩虹,照旧用文字色 / 已唱色。
+//
 // 图标那一支**挂在 self.layer 上、不挂在 clipLayer/contentLayer 里** —— 它不跟着歌词滚,
 // 也不该被歌词那一格的裁剪窗切掉;它跟歌词是并排的两块,只在 layout() 里一起排位。
 //
@@ -87,6 +91,15 @@ final class MenuBarScrollingLabel: NSView {
     private let iconFillLayer = MenuBarDrawnLayer()
     private let secondaryClipLayer = CALayer()
     private let secondaryTextLayer = MenuBarDrawnLayer()
+    /// 彩虹:三个宿主(蒙版 = 对应那层字)各挂一条渐变,见头注。
+    private let baseRainbowHost = CALayer()
+    private let fillRainbowHost = CALayer()
+    private let secondaryRainbowHost = CALayer()
+    private let baseRainbow = CAGradientLayer()
+    private let fillRainbow = CAGradientLayer()
+    private let secondaryRainbow = CAGradientLayer()
+    private let rainbowDriver = RainbowGradientDriver()
+    private let secondaryRainbowDriver = RainbowGradientDriver()
     /// 前奏/间奏那三颗呼吸圆点。**挂在 `contentLayer` 里**,跟(这一档里是空白的)文字长图
     /// 同一个坐标系 —— 静止落位、对齐方式、槽宽让位这些都由既有的文字那条路算好了,圆点
     /// 只要贴着那张空白位图画就天然落在对的地方,不用再写一套摆位。
@@ -294,6 +307,14 @@ final class MenuBarScrollingLabel: NSView {
         secondaryClipLayer.isHidden = true
         secondaryClipLayer.addSublayer(secondaryTextLayer)
         layer?.addSublayer(secondaryClipLayer)
+        for (host, gradient) in [(baseRainbowHost, baseRainbow), (fillRainbowHost, fillRainbow),
+                                 (secondaryRainbowHost, secondaryRainbow)] {
+            for l in [host, gradient] as [CALayer] {
+                l.anchorPoint = .zero
+                l.actions = ["position": NSNull(), "bounds": NSNull(), "opacity": NSNull()]
+            }
+            host.addSublayer(gradient)
+        }
         // 渐隐遮罩:从左到右 不透明 → 不透明 → 透明,中间那个 location 在 placeSecondaryText 里按格宽算。
         secondaryFadeMask.startPoint = CGPoint(x: 0, y: 0.5)
         secondaryFadeMask.endPoint = CGPoint(x: 1, y: 0.5)
@@ -426,6 +447,7 @@ final class MenuBarScrollingLabel: NSView {
             applyKaraokeFill()
             applyFollowScroll()
             applyGapDots()
+            applyRainbow()
             return
         }
         let next = KaraokeClock(baseMs: positionMs, rate: rate, playing: playing, capturedAt: Date())
@@ -441,10 +463,12 @@ final class MenuBarScrollingLabel: NSView {
             karaokeClock = next
             return
         }
+        let playingChanged = karaokeClock?.playing != playing
         karaokeClock = next
         applyKaraokeFill()
         applyFollowScroll()
         applyGapDots()
+        if playingChanged { applyRainbow() }
     }
 
     /// 漂移门看的"动画在跑":填色那三条,或按时钟走的滚动那一条(跟唱 / 按时钟配速;卡拉OK关着时只有
@@ -774,7 +798,7 @@ final class MenuBarScrollingLabel: NSView {
             ]
             secondaryClipLayer.mask = secondaryFadeMask
         }
-        secondaryTextLayer.position = CGPoint(x: x, y: 0)
+        secondaryMovable.position = CGPoint(x: x, y: 0)
     }
 
     /// 「未唱到 / 整行」文字色的**唯一口径**。设置页那个色块也从这里取(定型在菜单栏那一档
@@ -826,7 +850,7 @@ final class MenuBarScrollingLabel: NSView {
         // 紧随其后的漂移门就形同虚设,预览里每 ~2 秒小跳一下。
         // 位图比例也进键:换到不同 DPI 的屏幕时 rebuildIfScaleChanged 也走这里。
         let key = ColorKey(tint: tintColor, fill: karaokeFillColor, appearance: effectiveAppearance.name,
-                           scale: menuBarBitmapScale)
+                           scale: menuBarBitmapScale, rainbow: rainbowActive)
         guard key != lastColorKey else { return }
         lastColorKey = key
         rebuildImage()
@@ -839,6 +863,7 @@ final class MenuBarScrollingLabel: NSView {
         var fill: NSColor
         var appearance: NSAppearance.Name
         var scale: CGFloat
+        var rainbow: Bool
     }
 
     private var lastColorKey: ColorKey?
@@ -861,6 +886,7 @@ final class MenuBarScrollingLabel: NSView {
         var fill: NSColor
         var scale: CGFloat
         var appearance: NSAppearance.Name
+        var rainbow: Bool
     }
 
     private var lastBitmapInputs: BitmapInputs?
@@ -890,7 +916,7 @@ final class MenuBarScrollingLabel: NSView {
             secondaryText: plan.secondaryText, secondaryKind: plan.secondaryKind,
             inlineTranslationStart: plan.inlineTranslationStart,
             tint: tintColor, fill: karaokeFillColor, scale: menuBarBitmapScale,
-            appearance: effectiveAppearance.name)
+            appearance: effectiveAppearance.name, rainbow: rainbowActive)
     }
 
     /// 按当前颜色重排这一句。**不重启动画**:图片尺寸只跟文字+字体有关,颜色变了尺寸不变,
@@ -924,22 +950,27 @@ final class MenuBarScrollingLabel: NSView {
         // 副行同样只需要压淡,不用另算一个色。
         let twoRows = plan.secondaryKind.showsSecondaryRow
         let mainFont = MenuBarMarqueeRenderer.mainFont(for: plan.text, twoRows: twoRows)
+        // 彩虹时字只当蒙版:白色画,未唱(有逐字染色时)打 `RainbowLyrics.unsungOpacity` 的折;图标和三点照旧用 `color`。
+        let rainbow = rainbowActive
+        let textInk = rainbow
+            ? NSColor.white.withAlphaComponent(plan.fillPath != nil ? CGFloat(RainbowLyrics.unsungOpacity) : 1) : color
+        let fillInk = rainbow ? NSColor.white : karaokeFillColor
         // labelColor/selectedMenuItemTextColor 是**动态**颜色,真正解析成 RGB 是在
         // 绘制那一刻按"当前绘制 appearance"决定的。不套这一层的话,深色菜单栏上会画出
         // 一行几乎看不见的深色字(取决于 App 自己的 appearance,而不是菜单栏的)。
         effectiveAppearance.performAsCurrentDrawingAppearance {
             guard cached == nil else { return }
-            built = MenuBarMarqueeRenderer.prepare(text: plan.text, color: color, scale: scale,
+            built = MenuBarMarqueeRenderer.prepare(text: plan.text, color: textInk, scale: scale,
                                                    font: mainFont, exactBox: twoRows,
                                                    dimmedFrom: plan.inlineTranslationStart)
             if plan.fillPath != nil {
-                fillBuilt = MenuBarMarqueeRenderer.prepare(text: plan.text, color: karaokeFillColor,
+                fillBuilt = MenuBarMarqueeRenderer.prepare(text: plan.text, color: fillInk,
                                                            scale: scale, font: mainFont, exactBox: twoRows,
                                                            dimmedFrom: plan.inlineTranslationStart)
             }
             if twoRows, let secondary = plan.secondaryText {
                 secondaryBuilt = MenuBarMarqueeRenderer.prepare(
-                    text: secondary, color: color, scale: scale,
+                    text: secondary, color: rainbow ? .white : color, scale: scale,
                     font: MenuBarMarqueeRenderer.doubleRowSecondaryFont, exactBox: true,
                     translation: plan.secondaryKind == .translation)
             }
@@ -1023,8 +1054,75 @@ final class MenuBarScrollingLabel: NSView {
             iconFillLayer.painter = nil
             iconHostLayer.isHidden = true
         }
+        mountRainbow(rainbow)
         CATransaction.commit()
+        applyRainbow()
         needsLayout = true
+    }
+
+    /// 彩虹这一刻算不算数:开着、而且菜单没打开(反白时字换成选中色,见 `setHighlighted`)。
+    private var rainbowActive: Bool { AppSettings.shared.menuBarLyricsRainbow && !highlighted }
+
+    /// 彩虹开着:三层字从裁剪层摘下来、当宿主的蒙版;关着:挂回裁剪层。副行的横向落点、压淡跟着搬到宿主上
+    /// (`placeSecondaryText`、`secondaryMovable`)。调用方负责套 CATransaction。
+    private func mountRainbow(_ on: Bool) {
+        for (clip, text, host) in [(baseClipLayer, textLayer as CALayer, baseRainbowHost),
+                                   (fillClipLayer, fillTextLayer as CALayer, fillRainbowHost),
+                                   (secondaryClipLayer, secondaryTextLayer as CALayer, secondaryRainbowHost)] {
+            host.bounds = text.bounds
+            if on {
+                if host.mask !== text {
+                    let position = text.position
+                    text.removeFromSuperlayer()
+                    host.mask = text
+                    clip.addSublayer(host)
+                    host.position = text === secondaryTextLayer ? position : .zero
+                }
+                text.position = .zero
+            } else if text.superlayer !== clip {
+                let position = host.position
+                host.mask = nil
+                host.removeFromSuperlayer()
+                clip.addSublayer(text)
+                text.position = text === secondaryTextLayer ? position : .zero
+            }
+        }
+        // 副行的压淡挂在真正画出来的那一层上:彩虹时是宿主(蒙版层自己的不透明度不一定算进遮罩)。
+        guard let plan else { return }
+        let secondaryOpacity = MenuBarLyricRows.secondaryOpacity(for: plan.secondaryKind)
+        secondaryRainbowHost.opacity = on ? secondaryOpacity : 1
+        secondaryTextLayer.opacity = on ? 1 : secondaryOpacity
+    }
+
+    /// 副行横向挪的那一层:彩虹时是宿主,否则是字本身。
+    private var secondaryMovable: CALayer {
+        secondaryTextLayer.superlayer === secondaryClipLayer ? secondaryTextLayer : secondaryRainbowHost
+    }
+
+    /// 摆好彩虹渐变并按播放状态装 / 停流动:一圈按这一句的字宽(`RainbowLyrics.cycleWidth`),浅色菜单栏用压暗的那组色标。
+    /// 换句、换色、对表(播放 / 暂停翻转)时调。
+    private func applyRainbow() {
+        let all = [baseRainbow, fillRainbow, secondaryRainbow]
+        guard rainbowActive, let plan, let prepared else {
+            all.forEach { $0.removeAnimation(forKey: RainbowGradientDriver.animationKey) }
+            return
+        }
+        let dark = effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let stops = dark ? RainbowLyrics.cycleStops : RainbowLyrics.lightBackgroundCycleStops
+        let flowing = karaokeClock?.playing == true
+        let view = Double(plan.windowWidth)
+        rainbowDriver.apply(
+            to: [baseRainbow, fillRainbow],
+            period: CGFloat(RainbowLyrics.cycleWidth(textWidth: Double(prepared.textWidth), viewWidth: view)),
+            width: prepared.textWidth, height: prepared.pointHeight, flowing: flowing, stops: stops)
+        if let secondary = preparedSecondary {
+            secondaryRainbowDriver.apply(
+                to: [secondaryRainbow],
+                period: CGFloat(RainbowLyrics.cycleWidth(textWidth: Double(secondary.textWidth), viewWidth: view)),
+                width: secondary.textWidth, height: secondary.pointHeight, flowing: flowing, stops: stops)
+        } else {
+            secondaryRainbow.removeAnimation(forKey: RainbowGradientDriver.animationKey)
+        }
     }
 
     // (错位排查用的 debugGeometryDescription 已删——排查结案、全仓零调用,
