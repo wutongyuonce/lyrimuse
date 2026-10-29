@@ -516,6 +516,8 @@ func main() {
 	startStaleGeneratedRomaMigration(ctx)
 	// 存量里日 / 韩 / 中以外几种文字的歌补预生成读音(worldroma.go),同样起 helper、放后台。
 	startWorldRomaBackfill(ctx)
+	// 该有预生成读音却空着的条目定期补算(missingroma.go),同样起 helper、放后台。
+	startMissingRomaBackfill(ctx)
 	// 常驻进程里播放热路径的保存走 2 秒节流(见 enrichsave.go);退出前把排着的那次补写当场做掉。
 	enableEnrichSaveThrottle()
 	err = run(ctx, cfg, lb)

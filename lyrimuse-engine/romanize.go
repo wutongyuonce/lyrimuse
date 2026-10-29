@@ -143,7 +143,12 @@ func (e *enrichEntry) maybeGenerateHelperRoma() {
 		return
 	}
 	roma, err := onDeviceRomanizer(e.Lyrics.String(), e.LyricsKana)
-	if err != nil || roma == "" {
+	if err != nil {
+		// 这一条先空着,missingroma.go 的定期补算会再试。
+		warnf("romanize: helper failed lyrics_bytes=%d: %v", e.Lyrics.Len(), err)
+		return
+	}
+	if roma == "" {
 		return
 	}
 	e.LyricsRoma = bt(roma)
