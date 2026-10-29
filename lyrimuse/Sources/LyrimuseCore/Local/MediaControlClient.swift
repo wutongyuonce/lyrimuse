@@ -3342,6 +3342,16 @@ public enum MediaControlClient {
     /// 见 `foobarLoopPosition`。
     public static let foobarLoopSlackSecs: Double = 0.15
 
+    nonisolated(unsafe) private static var lastLoggedFoobarLoop: String?
+    /// 每一圈只记一行。
+    private nonisolated static func noteFoobarLoopLogged(_ key: String) -> Bool {
+        resetAnchorLock.lock()
+        defer { resetAnchorLock.unlock() }
+        guard lastLoggedFoobarLoop != key else { return false }
+        lastLoggedFoobarLoop = key
+        return true
+    }
+
     /// foobar2000 在放、离曲尾不到 3 秒时,刚过绕回点(曲长加 `foobarLoopSlackSecs`)那一刻补查一次:不然绕回之后要等下一拍
     /// 轮询才按曲长取余,屏上在曲尾停最多一拍。不循环时这一查看到的是下一首,也无害。纯函数,selftest 覆盖。
     public nonisolated static func foobarLoopCheckAt(bundleID: String?, playing: Bool?, position: Double?, duration: Double?,
@@ -3609,6 +3619,10 @@ public enum MediaControlClient {
                                    anchorAt: timestampDate, duration: raw.duration, pid: raw.processIdentifier, now: sampledAt)
             : nil
         let foobarLoop = Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: elapsed, duration: raw.duration)
+        if let foobarLoop, let elapsed, let duration = raw.duration,
+           Self.noteFoobarLoopLogged(trackKey + "|" + String(Int(elapsed / duration))) {
+            logger.notice("foobar2000 loop: \(raw.title ?? "", privacy: .public) past the end without a new anchor, extrapolated=\(elapsed, format: .fixed(precision: 3)) duration=\(duration, format: .fixed(precision: 3)) → \(foobarLoop, format: .fixed(precision: 3))")
+        }
         let held = republish.hold != nil || pine?.waiting == true
         var snapshot = MediaControlSnapshot(
             title: raw.title,

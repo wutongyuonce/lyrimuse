@@ -150,6 +150,12 @@ func runFoobarTests() {
         expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,
                     "foobar 接线: 按了还停着(列表是空的)就算没放起来,退回打开它")
         let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
+        expectEqual(sourceHas(openFile, "guard let snapshot, !SourceKnockout.isOut(.playerFile),"), true,
+                    "foobar 接线: 开着的文件那条腿能拔(player-file)")
+        expectEqual(sourceHas(openFile, "guard !SourceKnockout.isOut(.playerFile), let bundleID, bundleIDs.contains(bundleID), let rawTitle"), true,
+                    "foobar 接线: 拔了 player-file 不按开着的文件找同目录封面")
+        expectEqual(sourceHas(openFile, "guard !SourceKnockout.isOut(.playerFile), let bundleID, bundleIDs.contains(bundleID), !title.isEmpty"), true,
+                    "foobar 接线: 拔了 player-file 不写 local_file")
         expectEqual(sourceHas(openFile, "out.republishDueBy = snapshot.republishDueBy"), true,
                     "foobar 接线: 换成标签那份要带上补查时刻,不然曲尾那一查排不上")
         expectEqual(sourceHas(client, "elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,"), true,

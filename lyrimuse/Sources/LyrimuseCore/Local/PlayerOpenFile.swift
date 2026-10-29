@@ -76,7 +76,7 @@ public enum PlayerOpenFile {
 
     /// 换到快照上:对上了开着的文件、标签里有歌名就换成标签那份;都不用换时原样返回。会读盘(同一首只读一次),在轮询的后台线程上调。
     public static func applied(to snapshot: MediaControlSnapshot?, now: Date = Date()) -> MediaControlSnapshot? {
-        guard let snapshot, let bundleID = snapshot.bundleIdentifier, bundleIDs.contains(bundleID),
+        guard let snapshot, !SourceKnockout.isOut(.playerFile), let bundleID = snapshot.bundleIdentifier, bundleIDs.contains(bundleID),
               let title = snapshot.title, !title.isEmpty,
               let file = fileIdentity(artist: snapshot.artist, title: title, duration: snapshot.duration,
                                       pid: snapshot.processIdentifier ?? PlayerProcess.pid(bundleID: bundleID).map { Int($0) },
@@ -119,13 +119,13 @@ public enum PlayerOpenFile {
 
     /// 播放器原样报的(歌手、歌名)对上的那个文件(`applied` 找到过才有,不读盘)。封面取不到系统那份时按它找同目录的图。
     public static func currentFilePath(bundleID: String?, rawArtist: String?, rawTitle: String?) -> String? {
-        guard let bundleID, bundleIDs.contains(bundleID), let rawTitle else { return nil }
+        guard !SourceKnockout.isOut(.playerFile), let bundleID, bundleIDs.contains(bundleID), let rawTitle else { return nil }
         return cache.withLock { $0[cacheKey(artist: rawArtist, title: rawTitle)]?.path }
     }
 
     /// 换过之后的这首(歌手、歌名)对上的那个文件(不读盘)。写给引擎的播放状态用(`local_file`)。
     public static func currentFilePath(bundleID: String?, artist: String, title: String) -> String? {
-        guard let bundleID, bundleIDs.contains(bundleID), !title.isEmpty else { return nil }
+        guard !SourceKnockout.isOut(.playerFile), let bundleID, bundleIDs.contains(bundleID), !title.isEmpty else { return nil }
         return cache.withLock { entries in
             entries.first { key, entry in
                 guard entry.path != nil else { return false }
