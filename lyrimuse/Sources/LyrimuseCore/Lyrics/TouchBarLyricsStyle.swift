@@ -1,10 +1,12 @@
 import Foundation
 
-/// 触控栏歌词句的颜色从哪来:白色、封面主色(取不到时白色)、用户自选的颜色。见 17 章决策 51。
+/// 触控栏歌词句的颜色从哪来:白色、封面主色(取不到时白色)、用户自选的颜色、沿歌词流动的彩虹(`RainbowLyrics`)。
+/// 见 17 章决策 51、17 章决策 54。
 public enum TouchBarLyricsColorMode: String, CaseIterable, Sendable {
     case white
     case cover
     case custom
+    case rainbow
 
     /// 存着的值;没存过时按旧的「跟随封面」开关落档(开着 → 跟随封面,关着 → 白色),两样都没存过用 `fallback`。
     public static func resolved(stored: String?, legacyFollowsCover: Bool?,

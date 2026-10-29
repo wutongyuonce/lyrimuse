@@ -651,9 +651,9 @@
             "zh-Hant": "觸控列歌詞"
           },
           "desc": {
-            "en": "On a MacBook Pro with a Touch Bar, the current line scrolls along as it is sung, with optional artwork and playback controls. The lyrics can be white, follow the artwork or use your own color, with adjustable brightness for the unsung part. They can expand when playback starts and fold away when paused, and a More button brings up timing, like, shuffle and repeat, volume and a progress slider.",
-            "zh-Hans": "在配备触控栏的 MacBook Pro 上，当前歌词在触控栏上随演唱位置滚动，还可显示封面和播放控制。歌词颜色可选白色、跟随封面或自定义，未唱部分的亮度可调。可在开始播放时自动展开、暂停时自动收起；「更多」按钮中提供歌词校准、喜欢、随机和循环、音量和播放进度。",
-            "zh-Hant": "在配備觸控列的 MacBook Pro 上，目前歌詞在觸控列上隨演唱位置捲動，還可顯示封面和播放控制。歌詞顏色可選白色、跟隨封面或自訂，未唱部分的亮度可調。可在開始播放時自動展開、暫停時自動收起；「更多」按鈕中提供歌詞校正、喜歡、隨機和循環、音量和播放進度。"
+            "en": "On a MacBook Pro with a Touch Bar, the current line scrolls along as it is sung, with optional artwork and playback controls. The lyrics can be white, follow the artwork, use your own color or flow as a rainbow, with adjustable brightness for the unsung part. They can expand when playback starts and fold away when paused, and a More button brings up timing, like, shuffle and repeat, volume and a progress slider.",
+            "zh-Hans": "在配备触控栏的 MacBook Pro 上，当前歌词在触控栏上随演唱位置滚动，还可显示封面和播放控制。歌词颜色可选白色、跟随封面、自定义或流动的彩虹，未唱部分的亮度可调。可在开始播放时自动展开、暂停时自动收起；「更多」按钮中提供歌词校准、喜欢、随机和循环、音量和播放进度。",
+            "zh-Hant": "在配備觸控列的 MacBook Pro 上，目前歌詞在觸控列上隨演唱位置捲動，還可顯示封面和播放控制。歌詞顏色可選白色、跟隨封面、自訂或流動的彩虹，未唱部分的亮度可調。可在開始播放時自動展開、暫停時自動收起；「更多」按鈕中提供歌詞校正、喜歡、隨機和循環、音量和播放進度。"
           },
           "default": "off",
           "check": {

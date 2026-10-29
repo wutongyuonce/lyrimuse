@@ -515,7 +515,7 @@ public enum SettingsSearchCatalog {
         touchBar("字号", kw: ["大小", "font size"], group: "歌词"),
         touchBar("对齐方式", kw: ["左对齐", "居中", "右对齐", "自动", "靠左", "靠右", "对唱"], group: "歌词"),
         touchBar("卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "样式"),
-        touchBar("歌词颜色", sub: "白色、跟随封面或自定义颜色", kw: ["颜色", "主色", "封面颜色", "跟随封面", "自定义", "白色"], group: "样式"),
+        touchBar("歌词颜色", sub: "白色、跟随封面、自定义颜色或彩虹", kw: ["颜色", "主色", "封面颜色", "跟随封面", "自定义", "白色", "彩虹", "渐变"], group: "样式"),
         touchBar("暗部亮度", sub: "未唱部分与副行的亮度", kw: ["亮度", "透明度", "未唱", "副行", "太暗", "brightness"], group: "样式"),
         touchBar("显示封面", kw: ["封面缩略图", "专辑图", "位置", "左边", "右边"], group: "布局"),
         touchBar("封面位置", kw: ["位置", "左边", "右边", "封面"], group: "布局"),

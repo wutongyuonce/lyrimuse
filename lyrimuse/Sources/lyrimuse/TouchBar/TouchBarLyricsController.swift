@@ -726,7 +726,8 @@ final class TouchBarLyricsController: NSObject, NSTouchBarDelegate {
             dimLevel: TouchBarLyricsStyle.clampedDimLevel(settings.touchBarLyricsDimLevel),
             karaoke: settings.touchBarLyricsKaraoke,
             alignment: settings.touchBarLyricsAlignment,
-            still: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+            still: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+            rainbow: settings.touchBarLyricsColorMode == .rainbow)
         if let hint {
             var row = inputs
             row.startMs = hint.startMs

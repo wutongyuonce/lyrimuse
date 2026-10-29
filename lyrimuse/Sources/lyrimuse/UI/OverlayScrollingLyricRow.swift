@@ -16,6 +16,9 @@ import SwiftUI
 //                   ├ baseClipLayer (只露未唱区) └ baseTextLayer 基础色长图
 //                   └ fillClipLayer (只露已唱区) └ fillTextLayer 强调色长图
 //
+// 开了彩虹(`Spec.rainbow`)时两个裁剪层里换成「蒙版宿主(mask = 那张长图)└ 横向平移的彩虹渐变」:渐变挂在宿主下面
+// 平移,蒙版不跟着走,字不动、颜色流。
+//
 // 长图按字体的上下沿和量出来的字宽开,每一行再按实际墨迹补:上下画出的往上下加高(`OverlayRowGeometry.inkPadTop` /
 // `inkPadBottom`),左右画出的加进出血(`bleed`);补出来的部分画进行间空白和视图两侧,不改行高、不挪字。
 // 所以可视窗不能等于视图框,别把 `self.layer` 改回 masksToBounds,见 04 章决策 74、75。
@@ -72,6 +75,9 @@ struct OverlayScrollingLyricRow: NSViewRepresentable {
         /// true = 不装滚动和填色动画:整行按 `fillColor` 画,放不下时停在开头、尾部渐隐(触控栏在系统开了
         /// 「减弱动态效果」时传,见 17 章决策 43)。
         var still: Bool = false
+        /// true = 字的颜色换成沿这一行流动的彩虹(`RainbowLyrics`):两张长图只当蒙版用,透明度照旧(未唱的字暗一档),
+        /// 颜色由底下横向循环平移的渐变给。暂停、`still` 时彩虹停住。只有触控栏传,见 17 章决策 54。
+        var rainbow: Bool = false
     }
 
     /// 整行阴影。`offsetY` 取 SwiftUI 的口径(正 = 往下)。
@@ -124,6 +130,15 @@ final class OverlayLyricScrollView: NSView {
     private let baseTextLayer = CALayer()
     private let fillClipLayer = CALayer()
     private let fillTextLayer = CALayer()
+    /// 彩虹:两张长图各当一个宿主的蒙版,宿主下面挂一条更宽的渐变横向循环平移(见文件头注)。
+    private let baseRainbowHost = CALayer()
+    private let fillRainbowHost = CALayer()
+    private let baseRainbow = CAGradientLayer()
+    private let fillRainbow = CAGradientLayer()
+    private static let rainbowKey = "lyrimuse.overlay-rainbow"
+    /// 同一进程里所有行从同一个零相位起算,主行、副行、换句前后的颜色接得上。
+    private static let rainbowEpoch = CACurrentMediaTime()
+    private var rainbowClock = RainbowLyrics.FlowClock(epoch: OverlayLyricScrollView.rainbowEpoch)
 
     private var spec: OverlayScrollingLyricRow.Spec?
     /// 长图(= contentLayer)的点宽 / 点高。描边开着时四周各含一圈 `inset`。
@@ -202,6 +217,15 @@ final class OverlayLyricScrollView: NSView {
         fadeMask.addSublayer(fadeSolid)
         fadeMask.addSublayer(fadeRamp)
         fadeMask.addSublayer(fadeCover)
+        for (host, gradient) in [(baseRainbowHost, baseRainbow), (fillRainbowHost, fillRainbow)] {
+            for l in [host, gradient] as [CALayer] {
+                l.anchorPoint = .zero
+                l.actions = ["position": NSNull(), "bounds": NSNull(), "contents": NSNull()]
+            }
+            gradient.startPoint = CGPoint(x: 0, y: 0.5)
+            gradient.endPoint = CGPoint(x: 1, y: 0.5)
+            host.addSublayer(gradient)
+        }
     }
 
     @available(*, unavailable)
@@ -371,10 +395,29 @@ final class OverlayLyricScrollView: NSView {
         baseTextLayer.contents = images.base
         fillTextLayer.contents = images.fill
         strokeLayer.contents = images.stroke
-        for l in [strokeLayer, baseTextLayer, fillTextLayer] {
+        for l in [strokeLayer, baseTextLayer, fillTextLayer, baseRainbowHost, fillRainbowHost] {
             l.contentsScale = g.scale
             l.position = .zero
             l.bounds = CGRect(x: 0, y: 0, width: g.imageWidth, height: g.boxHeight)
+        }
+        mountRainbow(spec?.rainbow == true)
+    }
+
+    /// 彩虹开着:两张长图从裁剪层里摘下来、当宿主的蒙版;关着:挂回裁剪层。
+    private func mountRainbow(_ on: Bool) {
+        for (clip, text, host) in [(baseClipLayer, baseTextLayer, baseRainbowHost),
+                                   (fillClipLayer, fillTextLayer, fillRainbowHost)] {
+            if on {
+                guard host.mask !== text else { continue }
+                text.removeFromSuperlayer()
+                host.mask = text
+                clip.addSublayer(host)
+            } else {
+                guard text.superlayer !== clip else { continue }
+                host.mask = nil
+                host.removeFromSuperlayer()
+                clip.addSublayer(text)
+            }
         }
     }
 
@@ -458,6 +501,7 @@ final class OverlayLyricScrollView: NSView {
         }
         let running = reinstall && !spec.paused && !spec.still
         applyEdgeFade(viewWidth: viewW, layoutWidth: layoutW, offset: offset, nowMs: nowMs, running: running)
+        applyRainbowFlow(period: pixelAligned(viewW), flowing: !spec.paused && !spec.still)
         guard running else { return }
         installFill(nowMs: nowMs)
         installScroll(nowMs: nowMs, restingX: restingX)
@@ -516,6 +560,49 @@ final class OverlayLyricScrollView: NSView {
         reveal.fillMode = .both
         reveal.isRemovedOnCompletion = false
         fadeCover.add(reveal, forKey: Self.fadeCoverKey)
+    }
+
+    /// 彩虹渐变:一圈 = 可视窗宽(`period`),渐变铺满长图再多一圈;从左往右流 = 渐变从 -period 平移到 0 再循环。
+    /// 两层渐变同一条动画、同一个起点,已唱和未唱的颜色对得上。停着时定在 `rainbowClock` 停下那一刻的相位。
+    private func applyRainbowFlow(period: CGFloat, flowing: Bool) {
+        let layers = [baseRainbow, fillRainbow]
+        guard spec?.rainbow == true, period > 0 else {
+            layers.forEach { $0.removeAnimation(forKey: Self.rainbowKey) }
+            return
+        }
+        let now = CACurrentMediaTime()
+        if flowing { rainbowClock.resume(at: now) } else { rainbowClock.freeze(at: now) }
+        let cycles = Int((imageWidth / period).rounded(.up)) + 1
+        let stops = RainbowLyrics.cycleStops
+        let perCycle = stops.count - 1
+        var colors: [CGColor] = []
+        for _ in 0..<cycles {
+            colors += stops.dropLast().map { CGColor(srgbRed: $0.r, green: $0.g, blue: $0.b, alpha: 1) }
+        }
+        colors.append(CGColor(srgbRed: stops[0].r, green: stops[0].g, blue: stops[0].b, alpha: 1))
+        let total = Double(cycles * perCycle)
+        let locations = (0...cycles * perCycle).map { NSNumber(value: Double($0) / total) }
+        let x = -period + CGFloat(rainbowClock.phase(at: now)) * period
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for g in layers {
+            g.colors = colors
+            g.locations = locations
+            g.bounds = CGRect(x: 0, y: 0, width: period * CGFloat(cycles), height: boxHeight)
+            g.position = CGPoint(x: x, y: 0)
+            g.removeAnimation(forKey: Self.rainbowKey)
+        }
+        CATransaction.commit()
+        guard flowing else { return }
+        for g in layers {
+            let flow = CABasicAnimation(keyPath: "position.x")
+            flow.fromValue = -period
+            flow.toValue = 0
+            flow.duration = rainbowClock.cycle
+            flow.repeatCount = .infinity
+            flow.beginTime = g.convertTime(rainbowClock.epoch, from: nil)
+            g.add(flow, forKey: Self.rainbowKey)
+        }
     }
 
     /// 互补裁剪:已唱区 [0, x] 只显示强调色那张,未唱区 [x, 末端] 只显示基础色那张。

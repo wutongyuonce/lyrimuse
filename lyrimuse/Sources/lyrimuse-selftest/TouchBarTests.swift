@@ -235,6 +235,39 @@ func runTouchBarTests() {
         expectEqual(M.resolved(stored: nil, legacyFollowsCover: false, fallback: .cover), .white, "触控栏歌词颜色: 旧开关关着 → 白色")
         expectEqual(M.resolved(stored: nil, legacyFollowsCover: nil, fallback: .cover), .cover, "触控栏歌词颜色: 都没存过用默认")
         expectEqual(M.resolved(stored: "bogus", legacyFollowsCover: false, fallback: .cover), .white, "触控栏歌词颜色: 存坏了按旧开关")
+        expectEqual(M.resolved(stored: "rainbow", legacyFollowsCover: true, fallback: .cover), .rainbow, "触控栏歌词颜色: 彩虹存得住")
+    }
+
+    // ---- 彩虹(17 章决策 54):一圈亮度一致、都在 sRGB 色域里、首尾同色;流动时钟停住定相位、再走接着走 ----
+    do {
+        typealias R = RainbowLyrics
+        let stops = R.cycleStops
+        expectEqual(stops.count, R.huesPerCycle + 1, "彩虹: 一圈色标数 = 色相数 + 首尾重复的一个")
+        expectEqual(stops.first, stops.last, "彩虹: 首尾同色,一圈接一圈没有接缝")
+        expectEqual(stops.allSatisfy { [$0.r, $0.g, $0.b].allSatisfy { $0 >= 0 && $0 <= 1 } }, true, "彩虹: 色标都在 sRGB 色域里")
+        let lightness = stops.map(R.oklabLightness)
+        expectEqual(lightness.allSatisfy { abs($0 - R.lightness) < 0.01 }, true,
+                    "彩虹: 每个色相亮度一致(OKLab L ≈ \(R.lightness)),实际 \(lightness)")
+        expectEqual(Set(stops.dropLast().map { "\(Int($0.r * 20))-\(Int($0.g * 20))-\(Int($0.b * 20))" }).count, R.huesPerCycle,
+                    "彩虹: 一圈里的颜色两两不同")
+        expectEqual(R.srgb(l: R.lightness, c: 0.3, hue: 250) == nil, true, "彩虹: 色域外的颜色认得出来(蓝紫高彩度)")
+        let blue = R.inGamut(hue: 260)
+        expectEqual(abs(R.oklabLightness(blue) - R.lightness) < 0.01, true, "彩虹: 越界的色相收彩度、不降亮度")
+
+        var clock = R.FlowClock(epoch: 100, cycle: 6)
+        expectEqual(abs(clock.phase(at: 103) - 0.5) < 1e-9, true, "彩虹时钟: 走到半圈相位 0.5")
+        expectEqual(abs(clock.phase(at: 107.5) - 0.25) < 1e-9, true, "彩虹时钟: 过了一圈从头算")
+        expectEqual(abs(clock.phase(at: 98.5) - 0.75) < 1e-9, true, "彩虹时钟: 早于起点也落在 0..<1")
+        clock.freeze(at: 103)
+        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 停住后相位不动")
+        clock.freeze(at: 104)
+        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 停着时再停一次不改相位")
+        clock.resume(at: 200)
+        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 再走时从定住的相位接着走,不跳色")
+        expectEqual(abs(clock.phase(at: 201.5) - 0.75) < 1e-9, true, "彩虹时钟: 接着走之后照常前进")
+        let epoch = clock.epoch
+        clock.resume(at: 300)
+        expectEqual(clock.epoch, epoch, "彩虹时钟: 本来就在走时再走一次不挪起点")
     }
 
     // ---- 黑底上打折的歌词色(未唱的部分、副行):不暗于白字打同一个折,只往亮里补,色相族不变,未唱仍比已唱暗 ----
@@ -770,13 +803,27 @@ func runTouchBarTests() {
             expectEqual(restore.contains("settings.\(key) = "), true, "触控栏: 「恢复默认」管到 \(key)")
         }
         expectEqual(restore.contains("showLyricsInTouchBar"), false, "触控栏: 「恢复默认」不碰总开关")
-        // 主行未唱的部分、副行在黑底上打折都走 dimmedOnBlack,不直接打透明度(跟随封面时那样会发糊)。
+        // 主行未唱的部分、副行在黑底上打折都走 dimmedOnBlack,不直接打透明度(跟随封面时那样会发糊);只有彩虹按透明度打
+        // (长图当蒙版,颜色由彩虹给)。
         let dimmedColorCell = code(appDir.appendingPathComponent("TouchBar/TouchBarLyricsCell.swift")) ?? ""
-        expectEqual(dimmedColorCell.contains("dimmedOnBlack(inputs.color, opacity: CGFloat(inputs.dimLevel))")
-                        && dimmedColorCell.contains("opacity: CGFloat(TouchBarLyricsStyle.secondaryRowOpacity(for: kind, dimLevel: inputs.dimLevel))")
+        expectEqual(dimmedColorCell.contains("dimmed(inputs.color, opacity: inputs.dimLevel, inputs)")
+                        && dimmedColorCell.contains("opacity: TouchBarLyricsStyle.secondaryRowOpacity(for: kind, dimLevel: inputs.dimLevel), inputs)")
+                        && dimmedColorCell.contains("inputs.rainbow ? color.withAlphaComponent(CGFloat(opacity)) : dimmedOnBlack(color, opacity: CGFloat(opacity))")
                         && !dimmedColorCell.contains("withAlphaComponent(CGFloat(inputs.dimLevel))")
                         && !dimmedColorCell.contains("withAlphaComponent(CGFloat(TouchBarLyricsStyle.secondaryRowOpacity"), true,
-                    "触控栏配色: 未唱的部分、副行打折走 dimmedOnBlack")
+                    "触控栏配色: 未唱的部分、副行打折走 dimmedOnBlack(彩虹除外)")
+        // 彩虹(17 章决策 54):歌词句(逐字 / 整行)和副行带上,歌名、广告、间奏、快捷键回声不带;本体和预览都按设置传;
+        // 图层行换蒙版、装流动都接在排版和摆位里。
+        let rainbowRow = code(appDir.appendingPathComponent("UI/OverlayScrollingLyricRow.swift")) ?? ""
+        let rainbowPreview = code(appDir.appendingPathComponent("UI/TouchBarPreviewStage.swift")) ?? ""
+        expectEqual(dimmedColorCell.components(separatedBy: "spec.rainbow = inputs.rainbow").count - 1, 3,
+                    "触控栏彩虹: 逐字句、整行句、副行三处带上彩虹")
+        expectEqual(controller.contains("rainbow: settings.touchBarLyricsColorMode == .rainbow")
+                        && rainbowPreview.contains("rainbow: settings.touchBarLyricsColorMode == .rainbow"), true,
+                    "触控栏彩虹: 本体和设置页预览都按「歌词颜色」传")
+        expectEqual(rainbowRow.contains("mountRainbow(spec?.rainbow == true)")
+                        && rainbowRow.contains("applyRainbowFlow(period: pixelAligned(viewW), flowing: !spec.paused && !spec.still)"), true,
+                    "触控栏彩虹: 图层行排版时换蒙版、摆位时装流动(暂停 / 减弱动态效果停住)")
         // 自动展开 / 收起(17 章决策 45):启用那一刻先记状态再订阅播放状态(订阅的头一拍丢掉);四项一起防抖;可见状态的变化
         // 跟自己发起的对不上就当成用户动的;工具栏第二行是「行为」加两份占位和「重置 ▾」的占位。漏一处不报错,只表现成
         // 自动展开 / 收起不灵、或者手动收起后又被弹出来。
@@ -846,11 +893,11 @@ func runTouchBarTests() {
                         && scrollRow.contains("a.still = b.still")
                         && scrollRow.contains("spec?.still != next.still"), true,
                     "触控栏减弱动态: 图层行 still 时不装动画、停在开头、整行用已唱那张")
-        expectEqual(controller.contains("still: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)")
+        expectEqual(controller.contains("still: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,")
                         && controller.contains(".publisher(for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification)"),
                     true, "触控栏减弱动态: 本体读系统设置、拨了当场重画")
         expectEqual(previewSource.contains("@Environment(\\.accessibilityReduceMotion) private var reduceMotion")
-                        && previewSource.contains("still: reduceMotion)")
+                        && previewSource.contains("still: reduceMotion,")
                         && previewSource.contains("let scrolls = !reduceMotion && "), true,
                     "触控栏减弱动态: 预览同本体,「横向滚动」提示也看它")
         expectEqual(structBody("TouchBarStyleRows").contains(

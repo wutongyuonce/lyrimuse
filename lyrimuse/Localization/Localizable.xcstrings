@@ -20220,25 +20220,25 @@
         }
       }
     },
-    "白色、跟随封面或自定义颜色" : {
+    "白色、跟随封面、自定义颜色或彩虹" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "White, cover art color or a custom color"
+            "value" : "White, cover art color, a custom color or a rainbow"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "白色、跟随封面或自定义颜色"
+            "value" : "白色、跟随封面、自定义颜色或彩虹"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "白色、跟隨封面或自訂顏色"
+            "value" : "白色、跟隨封面、自訂顏色或彩虹"
           }
         }
       }
@@ -57104,6 +57104,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "預設內容推送時依各平台的格式排版，這裡只顯示文字"
+          }
+        }
+      }
+    },
+    "彩虹" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彩虹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彩虹"
           }
         }
       }

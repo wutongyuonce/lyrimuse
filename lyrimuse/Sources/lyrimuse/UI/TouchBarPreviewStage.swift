@@ -107,7 +107,8 @@ struct TouchBarPreviewStage: View {
             dimLevel: TouchBarLyricsStyle.clampedDimLevel(settings.touchBarLyricsDimLevel),
             karaoke: settings.touchBarLyricsKaraoke,
             alignment: settings.touchBarLyricsAlignment,
-            still: reduceMotion)
+            still: reduceMotion,
+            rainbow: settings.touchBarLyricsColorMode == .rainbow)
         var spec = TouchBarLyricsCell.spec(for: content, inputs)
         var secondarySpec = TouchBarLyricsCell.secondarySpec(
             for: content, kind: snapshot.secondary,

@@ -65,6 +65,9 @@ enum TouchBarLyricsCell {
         var alignment: LyricsRestingAlignment
         /// 系统开了「减弱动态效果」:不滚动、不逐字填色(图层行的 `still`,见 17 章决策 43)。
         var still: Bool
+        /// 「歌词颜色」选了彩虹:歌词句和副行按白字画、透明度照旧打折,颜色交给图层行的彩虹(`Spec.rainbow`)。
+        /// 歌名、广告、间奏、快捷键回声不跟。见 17 章决策 54。
+        var rainbow: Bool = false
     }
 
     /// 设置里选的对齐方式落到这一行:「自动」按这一行的对唱声部走,没有声部时靠左(`LyricsRestingAlignment.resolved`,
@@ -200,6 +203,7 @@ enum TouchBarLyricsCell {
         case .white: return lyricColor
         case .cover: return coverAccent ?? lyricColor
         case .custom: return NSColor(hexStringWithAlpha: customHex)?.withAlphaComponent(1) ?? lyricColor
+        case .rainbow: return lyricColor
         }
     }
 
@@ -232,12 +236,16 @@ enum TouchBarLyricsCell {
             let alignment = side(inputs.alignment, duetSide: line.side)
             if let words = line.words, !words.isEmpty {
                 // 卡拉OK效果关着:照样按逐字时间轴跟唱滚动,只是不染色(已唱、未唱同一个颜色)。
-                let unsung = inputs.karaoke ? dimmedOnBlack(inputs.color, opacity: CGFloat(inputs.dimLevel)) : inputs.color
-                return makeSpec(key: line.plainText ?? "", words: words, base: unsung, fill: inputs.color,
-                                window: nil, alignment: alignment, inputs)
+                let unsung = inputs.karaoke ? dimmed(inputs.color, opacity: inputs.dimLevel, inputs) : inputs.color
+                var spec = makeSpec(key: line.plainText ?? "", words: words, base: unsung, fill: inputs.color,
+                                    window: nil, alignment: alignment, inputs)
+                spec.rainbow = inputs.rainbow
+                return spec
             }
-            return pacedSpec(line.plainText ?? "", color: inputs.color, dwellMs: inputs.dwellMs,
-                             alignment: alignment, inputs)
+            var spec = pacedSpec(line.plainText ?? "", color: inputs.color, dwellMs: inputs.dwellMs,
+                                 alignment: alignment, inputs)
+            spec.rainbow = inputs.rainbow
+            return spec
         case .interlude, .track, .adBreak:
             return pacedSpec(text(for: content) ?? "", color: secondaryColor, dwellMs: nil,
                              alignment: side(inputs.alignment, duetSide: nil), inputs)
@@ -253,8 +261,8 @@ enum TouchBarLyricsCell {
         guard let text = content.secondaryText(kind, nextLineText: nextLineText) else { return nil }
         var row = inputs
         row.font = secondaryFont
-        let color = dimmedOnBlack(inputs.color,
-                                  opacity: CGFloat(TouchBarLyricsStyle.secondaryRowOpacity(for: kind, dimLevel: inputs.dimLevel)))
+        let color = dimmed(inputs.color,
+                           opacity: TouchBarLyricsStyle.secondaryRowOpacity(for: kind, dimLevel: inputs.dimLevel), inputs)
         let duetSide: LyricDuet.Side?
         if kind == .nextLine {
             duetSide = nextLineSide
@@ -266,7 +274,13 @@ enum TouchBarLyricsCell {
         var spec = pacedSpec(text, color: color, dwellMs: content.isLyric ? inputs.dwellMs : nil,
                              alignment: side(inputs.alignment, duetSide: duetSide), row)
         spec.translation = kind == .translation
+        spec.rainbow = inputs.rainbow
         return spec
+    }
+
+    /// 歌词句打折:彩虹时按透明度打(长图当蒙版,颜色由彩虹给),否则按黑底不透明色打(`dimmedOnBlack`)。
+    private static func dimmed(_ color: NSColor, opacity: Double, _ inputs: Inputs) -> NSColor {
+        inputs.rainbow ? color.withAlphaComponent(CGFloat(opacity)) : dimmedOnBlack(color, opacity: CGFloat(opacity))
     }
 
     /// 快捷键回声那一行(`TouchBarLyricsController.flashHint`):歌词色、整行一个颜色,放不下时按固定速度滚,对齐同歌名那几档。
@@ -308,6 +322,7 @@ extension TouchBarLyricsColorMode {
         case .white: return L10n.t("白色")
         case .cover: return L10n.t("跟随封面")
         case .custom: return L10n.t("自定义")
+        case .rainbow: return L10n.t("彩虹")
         }
     }
 }

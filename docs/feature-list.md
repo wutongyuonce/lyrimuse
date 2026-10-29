@@ -286,7 +286,7 @@ The current line right in the menu bar, scrolling when it is too long instead of
 
 ### Touch Bar lyrics
 
-On a MacBook Pro with a Touch Bar, the current line scrolls along as it is sung, with optional artwork and playback controls. The lyrics can be white, follow the artwork or use your own color, with adjustable brightness for the unsung part. They can expand when playback starts and fold away when paused, and a More button brings up timing, like, shuffle and repeat, volume and a progress slider.
+On a MacBook Pro with a Touch Bar, the current line scrolls along as it is sung, with optional artwork and playback controls. The lyrics can be white, follow the artwork, use your own color or flow as a rainbow, with adjustable brightness for the unsung part. They can expand when playback starts and fold away when paused, and a More button brings up timing, like, shuffle and repeat, volume and a progress slider.
 
 - Off by default
 - Settings: Lyrics Display › Touch Bar › Touch Bar Lyrics
@@ -1075,7 +1075,7 @@ Every setting in the Settings window, by where it lives: 291 in all. Type a name
 ### Lyrics Display › Touch Bar › Style
 
 - **Karaoke Effect**
-- **Lyrics Color**: White, cover art color or a custom color
+- **Lyrics Color**: White, cover art color, a custom color or a rainbow
 - **Dimmed Text Brightness**: Brightness of unsung words and the second line
 
 ### Lyrics Display › Touch Bar › Layout

@@ -1213,6 +1213,7 @@
 "当天收听 %@ 次，以下为收听最多的歌曲" = "%@ plays that day, most played below";
 "当天收听 %@ 次，以下为收听最多的歌曲#one" = "%@ play that day, most played below";
 "当天最后一次收听：%@" = "Last played that day: %@";
+"彩虹" = "Rainbow";
 "待补交的收听" = "Pending Scrobbles";
 "循环播放" = "Repeat";
 "循环最多：《%1$@》— %2$@（%3$@ 次）" = "Most played: %1$@ — %2$@ (%3$@ plays)";
@@ -2084,7 +2085,7 @@
 "白俄罗斯语" = "Belarusian";
 "白字描边" = "White Text with Outline";
 "白色" = "White";
-"白色、跟随封面或自定义颜色" = "White, cover art color or a custom color";
+"白色、跟随封面、自定义颜色或彩虹" = "White, cover art color, a custom color or a rainbow";
 "皇家学术院转写（RTGS），如 สวัสดี → sawatdi" = "Royal Thai General System (RTGS), e.g. สวัสดี → sawatdi";
 "直连失败时，经下方代理服务器重试" = "If a direct connection fails, retry through the proxy server below";
 "直连失败时，经系统代理或本机检测到的代理重试" = "If a direct connection fails, retry through the system proxy or a proxy detected on this Mac";
