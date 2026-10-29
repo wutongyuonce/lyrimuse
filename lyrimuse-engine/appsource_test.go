@@ -18,7 +18,7 @@ func plainAppJudge() appPlaybackJudge {
 		sodaPreview: func(string, string, string, string, float64) (float64, float64, bool, bool) {
 			return 0, 0, false, false
 		},
-		neteaseTrial:   func(string, string, string, string, float64) (float64, bool) { return 0, false },
+		trial:          func(string, string, string, string, float64) (float64, bool) { return 0, false },
 		catalog:        func(string, int64, int, string, string, string) (float64, bool) { return 0, false },
 		libraryCatalog: func(string, int, string, string, string, float64) {},
 	}
@@ -446,7 +446,7 @@ func TestAppPlaybackTickClampsPositionToDuration(t *testing.T) {
 // 网易云试听:这一拍的时长换回整首,位置照旧(网易云不给试听段起点)。
 func TestAppPlaybackTickNeteaseTrial(t *testing.T) {
 	j := plainAppJudge()
-	j.neteaseTrial = func(bundle, title, artist, album string, d float64) (float64, bool) {
+	j.trial = func(bundle, title, artist, album string, d float64) (float64, bool) {
 		if bundle == neteaseMusicBundleID && d == 30 {
 			return 212.8, true
 		}

@@ -40,8 +40,8 @@ type appPlaybackJudge struct {
 	fixRev func() int64
 	// sodaPreview:汽水试听段。known=true 时给出起点与整首时长;pending = 还没有结论(sodaPreviewLookupPending)。
 	sodaPreview func(bundle, title, artist, album string, duration float64) (startSecs, fullSecs float64, known, pending bool)
-	// neteaseTrial:网易云试听,是的话给出整首时长(见 neteasetrial.go)。
-	neteaseTrial func(bundle, title, artist, album string, duration float64) (fullSecs float64, ok bool)
+	// trial:网易云、QQ 音乐试听,是的话给出整首时长(见 neteasetrial.go、qqtrial.go)。
+	trial func(bundle, title, artist, album string, duration float64) (fullSecs float64, ok bool)
 	// catalog:Apple 目录锚点,核对通过时 ok=true;durationSecs 可能为 0(目录不报时长)。
 	catalog func(bundle string, trackID int64, trackNumber int, artist, title, album string) (durationSecs float64, ok bool)
 	// libraryCatalog:Apple Music 从资料库放目录音频、系统没给目录 ID 时,按锚点认出目录 ID 记下。
@@ -52,7 +52,7 @@ var liveAppPlaybackJudge = appPlaybackJudge{
 	fixedTrack:     liveAppFixedTrack,
 	fixRev:         currentPlayerArtistFixRev,
 	sodaPreview:    liveAppSodaPreview,
-	neteaseTrial:   liveNeteaseTrialFull,
+	trial:          liveTrialFull,
 	catalog:        liveAppCatalog,
 	libraryCatalog: liveAppLibraryCatalog,
 }
@@ -177,7 +177,7 @@ func appPlaybackTickFor(rec appStateRecord, prev appPlaybackMarks, now time.Time
 	} else {
 		s.SodaPreviewPending = pending
 	}
-	if full, ok := j.neteaseTrial(rec.Player, t.Raw.Title, t.Raw.Artist, t.Raw.Album, s.Duration); ok {
+	if full, ok := j.trial(rec.Player, t.Raw.Title, t.Raw.Artist, t.Raw.Album, s.Duration); ok {
 		s.Duration, s.ReportedDuration = full, full
 	}
 	catalogDuration := 0.0

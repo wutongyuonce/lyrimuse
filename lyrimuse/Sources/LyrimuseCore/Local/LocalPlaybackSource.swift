@@ -2067,9 +2067,17 @@ public final class LocalPlaybackSource: ObservableObject {
 
     /// 挑同名不同录音变体(`~durN`)用的时长,口径跟引擎的 `lyricsDurationSecs` 一致:电台(整档节目的时长)、
     /// MV(视频比录音室版长)都当未知。纯函数,selftest 覆盖。
-    public nonisolated static func lyricsLookupDuration(isRadio: Bool, isMusicVideo: Bool, duration: Double?) -> Double? {
-        isRadio || isMusicVideo ? nil : duration
+    public nonisolated static func lyricsLookupDuration(isRadio: Bool, isMusicVideo: Bool, bundleID: String?,
+                                                        duration: Double?) -> Double? {
+        if isRadio || isMusicVideo { return nil }
+        if bundleID == PlaybackPlayer.qqMusic.bundleIdentifier, let duration, qqTrialLength.contains(duration) { return nil }
+        return duration
     }
+
+    /// QQ 音乐非会员试听报的时长范围:会员歌只放开头 60 秒,位置跟整首重合,引擎按整首解析(qqtrial.go),这边不按 60 秒
+    /// 去挑时长变体,不然整段试听找不到条目、一直没词。跟引擎 qqtrial.go 的 qqTrialMinSecs / qqTrialMaxSecs 必须一起改。
+    /// 见 02 章决策 205。
+    public nonisolated static let qqTrialLength: ClosedRange<Double> = 59...61
 
     /// 界面专辑位显示的字:播放器报的专辑;没报时 YouTube Music 上登记的那张(用 Kaset 放的歌);都没有、又是 MV 时写
     /// `musicVideoLabel`(MV 不属于任何专辑,不留一块空白)。只画在界面上 —— 缓存 key、简介、链接一律仍用 `album`。
@@ -3935,7 +3943,7 @@ public final class LocalPlaybackSource: ObservableObject {
         EnrichCacheReader.notePlayingDuration(
             artist: rawSnapshot.artist ?? "", title: rawSnapshot.title ?? "", album: rawSnapshot.album ?? "",
             secs: Self.lyricsLookupDuration(isRadio: rawSnapshot.isRadio == true, isMusicVideo: playingMusicVideo,
-                                            duration: rawSnapshot.duration))
+                                            bundleID: rawSnapshot.bundleIdentifier, duration: rawSnapshot.duration))
         var snapshot = rawSnapshot
         // reAMP、VOX 的电台流同样没有曲长,起点推算过(`PlayerTitleSplit.streamClockKnown`)的才拿缓存里的曲长建锚点;
         // 缓存里没有曲长时退到歌词判决记下的那首的时长(引擎不给它回填)。

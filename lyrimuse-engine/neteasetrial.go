@@ -13,8 +13,8 @@ import (
 const (
 	neteaseTrialMinSecs = 29.0
 	neteaseTrialMaxSecs = 31.0
-	// neteaseTrialMinGap:整首至少比报的长这么多才算试听。
-	neteaseTrialMinGap = 15.0
+	// trialMinGapSecs:整首至少比报的长这么多才算试听(网易云、QQ 音乐共用)。
+	trialMinGapSecs = 15.0
 )
 
 // neteaseTrialFull 判这一拍是不是网易云试听,是就给出整首时长。full 只在时长落在试听范围里时才调。纯函数。
@@ -23,13 +23,21 @@ func neteaseTrialFull(bundle string, duration float64, full func() float64) (flo
 		return 0, false
 	}
 	f := full()
-	if f-duration < neteaseTrialMinGap {
+	if f-duration < trialMinGapSecs {
 		return 0, false
 	}
 	return f, true
 }
 
-// liveNeteaseTrialFull:appPlaybackJudge.neteaseTrial 的实现,入参是 App 报的原始标签。
+// liveTrialFull:appPlaybackJudge.trial 的实现,入参是 App 报的原始标签。网易云、QQ 音乐各按各的试听长度认。
+func liveTrialFull(bundle, title, artist, album string, duration float64) (float64, bool) {
+	if full, ok := liveNeteaseTrialFull(bundle, title, artist, album, duration); ok {
+		return full, true
+	}
+	return liveQQTrialFull(bundle, title, artist, album, duration)
+}
+
+// liveNeteaseTrialFull:liveTrialFull 的网易云那一支。
 func liveNeteaseTrialFull(bundle, title, artist, album string, duration float64) (float64, bool) {
 	return neteaseTrialFull(bundle, duration, func() float64 {
 		if d := neteaseLocalFullDuration(context.Background(), artist, title, album); d > 0 {
@@ -53,25 +61,40 @@ func neteaseLocalFullDuration(ctx context.Context, artist, title, album string) 
 	return neteaseLocalPickFullDuration(ents, album)
 }
 
-// neteaseLocalPickFullDuration:同名的几条里有专辑对得上的取那一条;没有就要几条的时长都差不多(3% 以内)才取,否则不猜。
+// neteaseLocalPickFullDuration:网易云本地曲库的几条记录(时长是毫秒)交给 pickFullDuration 挑。
 func neteaseLocalPickFullDuration(ents []neteaseLocalTrack, album string) float64 {
+	cands := make([]fullDurationCand, 0, len(ents))
+	for _, e := range ents {
+		cands = append(cands, fullDurationCand{album: e.Album.Name, secs: e.Duration / 1000})
+	}
+	return pickFullDuration(cands, album)
+}
+
+// fullDurationCand:本地曲库里同名同歌手的一条记录,secs 为 0 = 没记时长。
+type fullDurationCand struct {
+	album string
+	secs  float64
+}
+
+// pickFullDuration:同名的几条里有专辑对得上的取那一条;没有就要几条的时长都差不多(3% 以内)才取,否则不猜。
+func pickFullDuration(cands []fullDurationCand, album string) float64 {
 	if album != "" {
-		for _, e := range ents {
-			if e.Duration > 0 && e.Album.Name != "" && normLoose(e.Album.Name) == normLoose(album) {
-				return e.Duration / 1000
+		for _, c := range cands {
+			if c.secs > 0 && c.album != "" && normLoose(c.album) == normLoose(album) {
+				return c.secs
 			}
 		}
 	}
 	lo, hi := math.Inf(1), 0.0
-	for _, e := range ents {
-		if e.Duration > 0 {
-			lo, hi = math.Min(lo, e.Duration), math.Max(hi, e.Duration)
+	for _, c := range cands {
+		if c.secs > 0 {
+			lo, hi = math.Min(lo, c.secs), math.Max(hi, c.secs)
 		}
 	}
 	if hi <= 0 || (hi-lo)/hi > 0.03 {
 		return 0
 	}
-	return hi / 1000
+	return hi
 }
 
 // cachedFullDuration:歌词缓存里这一首记下的时长,取条目时长与解析时用的时长里大的那个;没有这一首返回 0。

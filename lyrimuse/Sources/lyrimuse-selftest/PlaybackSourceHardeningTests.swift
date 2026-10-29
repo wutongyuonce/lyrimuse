@@ -72,10 +72,21 @@ private func playbackStateTests() {
     expectEqual(M.failureWithoutFallbackTarget(targetConfirmedGone: false), nil,
                 "焦点宽限: 从没有过回退目标时不改失败原因")
 
-    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: true, duration: 245), nil,
+    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: true, bundleID: nil, duration: 245), nil,
                 "查歌词时长: MV 当未知(引擎只用基条目,不建时长变体)")
-    expectEqual(P.lyricsLookupDuration(isRadio: true, isMusicVideo: false, duration: 3390), nil, "查歌词时长: 电台当未知")
-    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: false, duration: 200), 200, "查歌词时长: 普通曲目照报")
+    expectEqual(P.lyricsLookupDuration(isRadio: true, isMusicVideo: false, bundleID: nil, duration: 3390), nil,
+                "查歌词时长: 电台当未知")
+    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: false, bundleID: nil, duration: 200), 200,
+                "查歌词时长: 普通曲目照报")
+    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: false,
+                                       bundleID: PlaybackPlayer.qqMusic.bundleIdentifier, duration: 60), nil,
+                "查歌词时长: QQ 音乐试听段(60 秒)当未知,用整首那条")
+    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: false,
+                                       bundleID: PlaybackPlayer.qqMusic.bundleIdentifier, duration: 324), 324,
+                "查歌词时长: QQ 音乐整首照报")
+    expectEqual(P.lyricsLookupDuration(isRadio: false, isMusicVideo: false,
+                                       bundleID: PlaybackPlayer.netease.bundleIdentifier, duration: 60), 60,
+                "查歌词时长: 别的播放器报 60 秒照报")
 
     let t0 = Date(timeIntervalSince1970: 1_790_400_000)
     expectEqual(P.freshResumeSignalAge(signalAt: t0, now: t0.addingTimeInterval(0.4)).map { abs($0 - 0.4) < 0.001 }, true,
