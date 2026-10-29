@@ -12,6 +12,30 @@ import (
 	"testing"
 )
 
+// 三套预设的模板跟共用样例 presets.json 一字不差(App 编辑器照 Core 那份显示,两边要一致)。
+func TestDigestPresetTemplatesMatchSample(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "shared", "testdata", "notify", "presets.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sample map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &sample); err != nil {
+		t.Fatal(err)
+	}
+	for _, style := range []string{digestStyleFull, digestStyleBrief, digestStyleOverview} {
+		var want digestTemplate
+		if err := json.Unmarshal(sample[style], &want); err != nil {
+			t.Fatal(style, err)
+		}
+		if got := digestPresetTemplates[style]; got != want {
+			t.Errorf("%s preset = %+v, want %+v", style, got, want)
+		}
+	}
+	if len(digestPresetTemplates) != 3 {
+		t.Errorf("presets = %d, want 3", len(digestPresetTemplates))
+	}
+}
+
 func TestChannelDigestStyle(t *testing.T) {
 	legacy := digestTemplate{Body: "旧的 {plays}"}
 	own := &digestTemplate{Body: "我的 {plays}"}
@@ -100,7 +124,7 @@ func TestDigestPushPerChannelStyle(t *testing.T) {
 	for _, e := range entries {
 		byChannel[e.Channel] = e
 	}
-	if e := byChannel["tg"]; e.Style != digestStyleBrief || !strings.HasPrefix(e.Body, "共播放 7 次\n最常听的歌手：A&B（4）") || e.Custom {
+	if e := byChannel["tg"]; e.Style != digestStyleBrief || !strings.HasPrefix(e.Body, "共播放 7 次\n最常听的歌手：A&B\n") || e.Custom {
 		t.Errorf("推送记录: 精简记下 style 和那一套的纯文本, got %+v", e)
 	}
 	if e := byChannel["bk"]; !e.Custom || e.Key != "🎧 今日听歌报告（10-22）" {

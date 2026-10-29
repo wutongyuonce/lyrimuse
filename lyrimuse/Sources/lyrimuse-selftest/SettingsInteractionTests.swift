@@ -443,6 +443,21 @@ func runSettingsInteractionTests() {
         expectEqual([pinned.digestStyle, pinned.digestTemplate.body, plain.pinningDigestStyle(legacy: DigestTemplate()).digestStyle,
                      styled.pinningDigestStyle(legacy: oldTpl).digestTemplate.body],
                     ["custom", "旧的 {plays}", "full", "嗨 {plays}"], "报告内容: 编辑弹窗把沿用的那一套写明,选过的不动")
+        // 三套预设写成模板(15 章决策 91):跟共用样例 presets.json 一字不差;编辑器里按内容认是哪一套。
+        let presetsSample = (try? Data(contentsOf: samples.appendingPathComponent("presets.json")))
+            .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
+        for style in [DigestStyle.full, .brief, .overview] {
+            let s = presetsSample[style.rawValue] as? [String: String] ?? [:]
+            expectEqual(DigestTemplate.preset(style), DigestTemplate(title: s["title"] ?? "?", body: s["body"] ?? "?"),
+                        "报告内容: \(style.rawValue) 的模板同引擎")
+        }
+        expectEqual(DigestTemplate.preset(.custom) == nil, true, "报告内容: 自定义没有预设模板")
+        let briefTpl = DigestTemplate.preset(.brief) ?? DigestTemplate()
+        expectEqual([DigestStyle.matching(DigestTemplate()), .matching(DigestTemplate(title: "{title}", body: "{body}")),
+                     .matching(briefTpl), .matching(DigestTemplate(title: "{title}", body: briefTpl.body + "\r\n")),
+                     .matching(DigestTemplate(title: "嗨", body: briefTpl.body)), .matching(DigestTemplate(body: "{plays}"))],
+                    [.full, .full, .brief, .brief, .custom, .custom],
+                    "报告内容: 没改默认算完整,跟预设一样(换行写法不同也算)就是那一套,改了标题或正文就是自定义")
 
         // 粘贴地址认平台
         typealias D = NotificationPlatformDetector

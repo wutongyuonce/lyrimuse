@@ -1,0 +1,15 @@
+{
+  "_comment": "听歌报告三套预设(渠道「报告内容」的完整、精简、概况)写成模板的样子:标题都是默认标题(这里写空 = {title}),正文见各条。引擎 digestPresetTemplates、Core DigestTemplate.preset 各读一遍对照。见 15 章决策 91",
+  "full": {
+    "title": "",
+    "body": "{summary}\n\nTop 歌手：\n{top_artists}\n\nTop 专辑：\n{top_albums}\n\nTop 歌曲：\n{top_tracks}\n\n新听了 {new_artists} 位歌手：{new_artist_names}"
+  },
+  "brief": {
+    "title": "",
+    "body": "{summary}\n最常听的歌手：{top_artist}\n最常听的专辑：{top_album}\n最常听的歌曲：{top_track}\n新听了 {new_artists} 位歌手：{new_artist_names}"
+  },
+  "overview": {
+    "title": "",
+    "body": "{summary}\n新听了 {new_artists} 位歌手"
+  }
+}

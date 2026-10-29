@@ -1,9 +1,62 @@
 import LyrimuseCore
 import SwiftUI
 
-// 推送渠道「报告内容」选了自定义时的模板编辑器:标题和正文四档报告共用(Core `DigestTemplate`,引擎 digesttemplate.go),
-// 存进那个渠道(`NotificationChannel.digestTemplate`)。点一个占位符插到正在编辑的那一栏的光标处(PlaceholderTextView),
-// 右边按这一期的真实数据(取不到时用测试数据)实时预览。见 15 章决策 84、90。
+// 推送渠道「报告内容」的模板编辑器:标题和正文四档报告共用(Core `DigestTemplate`,引擎 digesttemplate.go)。顶上一排
+// 完整 / 精简 / 概况 / 自定义,点预设就把它的模板填进来,改了任何一处就算自定义(`DigestStyle.matching`)。点一个占位符
+// 插到正在编辑的那一栏的光标处(PlaceholderTextView),右边按这一期的真实数据(取不到时用测试数据)实时预览。
+// 见 15 章决策 84、90、91。
+
+extension DigestStyle {
+    var label: String {
+        switch self {
+        case .full: return L10n.t("完整")
+        case .brief: return L10n.t("精简")
+        case .overview: return L10n.t("概况")
+        case .custom: return L10n.t("自定义")
+        }
+    }
+
+    var note: String {
+        switch self {
+        case .full: return L10n.t("概况、三份榜单和新听的歌手")
+        case .brief: return L10n.t("概况和歌手、专辑、歌曲各自的第一名")
+        case .overview: return L10n.t("只有播放次数、时长和新听了几位歌手")
+        case .custom: return L10n.t("按你写的模板，以纯文本推送")
+        }
+    }
+}
+
+/// 只读显示一份模板:标题一行、正文照写,认得的占位符同编辑器的画法(强调色加淡底)。高度固定、放不下的在框里滚,
+/// 换档时弹窗不跳。
+struct DigestTemplateExpression: View {
+    let template: DigestTemplate
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(Self.highlighted(template.editableTitle)).fontWeight(.semibold)
+                Text(Self.highlighted(template.editableBody))
+            }
+            .font(.system(size: 11.5))
+            .textSelection(.enabled)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(8)
+        }
+        .frame(height: 118)
+        .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.primary.opacity(0.04)))
+        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Color.primary.opacity(0.08)))
+    }
+
+    static func highlighted(_ text: String) -> AttributedString {
+        var out = AttributedString(text)
+        for token in DigestTemplate.tokens(in: text) where token.known {
+            guard let r = Range(token.range, in: text), let ar = Range(r, in: out) else { continue }
+            out[ar].foregroundColor = .accentColor
+            out[ar].backgroundColor = Color.accentColor.opacity(0.12)
+        }
+        return out
+    }
+}
 
 /// 编辑标题和正文:左边两个输入框和一排占位符,右边按这一期的数据实时预览。保存时跟默认一样的那一段存成空
 /// (`DigestTemplate.resolved`)。
@@ -19,6 +72,8 @@ struct DigestTemplateEditor: View {
     @State private var kind: NotificationPreview.Kind = .daily
     @State private var loaded: [NotificationPreview.Kind: NotificationPreviewLoader.State] = [:]
     @State private var loading: Set<NotificationPreview.Kind> = []
+    /// 从自定义换到某套预设之前写的内容,点回「自定义」时还原。
+    @State private var keptCustom: DigestTemplate?
     private let now = Date()
 
     init(original: DigestTemplate, onSave: @escaping (DigestTemplate) -> Void, onCancel: @escaping () -> Void) {
@@ -30,6 +85,17 @@ struct DigestTemplateEditor: View {
     }
 
     private var draft: DigestTemplate { DigestTemplate.resolved(title: title, body: bodyText) }
+
+    private var style: DigestStyle { DigestStyle.matching(draft) }
+
+    /// 点预设:填进它的模板;点自定义:还原换走之前写的那份(没有时这一档点不了)。
+    private func apply(_ next: DigestStyle) {
+        guard next != style else { return }
+        if style == .custom { keptCustom = draft }
+        guard let filled = DigestTemplate.preset(next) ?? keptCustom else { return }
+        title = filled.editableTitle
+        bodyText = filled.editableBody
+    }
 
     private static let editorHeight: CGFloat = 230
 
@@ -48,11 +114,6 @@ struct DigestTemplateEditor: View {
             }
             Divider()
             HStack {
-                Button(L10n.t("恢复默认")) {
-                    title = DigestTemplate.defaultTitle
-                    bodyText = DigestTemplate.defaultBody
-                }
-                .disabled(!draft.isCustom)
                 Spacer()
                 Button(L10n.t("取消")) { onCancel() }
                     .keyboardShortcut(.cancelAction)
@@ -69,6 +130,10 @@ struct DigestTemplateEditor: View {
 
     private var editorColumn: some View {
         VStack(alignment: .leading, spacing: 10) {
+            SettingsGlassTabPicker(selection: Binding(get: { style }, set: apply), options: DigestStyle.allCases,
+                                   label: \.label, compact: true,
+                                   isDisabled: { $0 == .custom && style != .custom && keptCustom == nil })
+                .fixedSize()
             fieldLabel(L10n.t("标题"))
             PlaceholderTextView(text: $title, singleLine: true, controller: insertion, field: .title)
                 .frame(height: 26)
@@ -161,8 +226,8 @@ struct DigestTemplateEditor: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(10)
             }
-            // 跟左边标题、正文两栏加中间的标签对齐。
-            .frame(height: Self.editorHeight + 26 + 26)
+            // 跟左边档位一排、标题、正文两栏加中间的标签对齐。
+            .frame(height: Self.editorHeight + 26 + 26 + 38)
             .settingsCardBackground(cornerRadius: 10, inSheet: true)
             VStack(alignment: .leading, spacing: 3) {
                 Group {
@@ -177,7 +242,7 @@ struct DigestTemplateEditor: View {
                         Text(L10n.t("测试数据"))
                     }
                 }
-                Text(draft.isCustom ? L10n.t("自定义内容按纯文本推送，不套用各平台的卡片排版")
+                Text(style == .custom ? L10n.t("自定义内容按纯文本推送，不套用各平台的卡片排版")
                                     : L10n.t("默认内容推送时按各平台的格式排版，这里只显示文字"))
                     .fixedSize(horizontal: false, vertical: true)
             }

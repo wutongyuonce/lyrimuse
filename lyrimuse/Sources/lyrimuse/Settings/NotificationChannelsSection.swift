@@ -529,8 +529,9 @@ struct DigestTopNStepper: View {
 
 /// 添加 / 编辑一个渠道的表单。添加时先选平台(平铺,悬停有说明),再填字段;也可以直接粘一整段地址,认出平台就切过去。
 /// 编辑已有的渠道只出这个平台自己的字段,不列别的平台:平台定了就不换,要换平台删掉再添加。
-/// 字段从上到下:名称、地址(Telegram 另有 Chat ID)、密钥(有的平台才有)、报告内容、启用。报告内容选自定义时弹模板编辑器
-/// (`DigestTemplateEditor`),模板存进这个渠道;没写模板就关掉编辑器时退回原来那一套。
+/// 字段从上到下:名称、地址(Telegram 另有 Chat ID)、密钥(有的平台才有)、报告内容、启用。报告内容每一档下面显示它的模板
+/// (`DigestTemplateExpression`),「编辑模板…」从这一档的模板改起(`DigestTemplateEditor`);存下来的跟哪套预设一样就是那一套,
+/// 否则是自定义、模板存进这个渠道。选自定义时还没有模板就直接弹编辑器,没写就关掉时退回原来那一套。
 /// 「发送测试」用表单里此刻的内容(还没保存也行)推一条示例消息,结果就地显示,表单不关;「预览」不用填地址,
 /// 弹出这一期的推送效果(`NotificationPreviewCard`),跟着选的平台、填的名称变。
 struct NotificationChannelEditor: View {
@@ -553,7 +554,14 @@ struct NotificationChannelEditor: View {
     @State private var testTask: Task<Void, Never>?
     @State private var confirmingDelete = false
     @State private var previewing = false
-    @State private var editingTemplate = false
+    /// 正开着的模板编辑器和填进去的那份模板。模板跟着这个值一起传进 sheet:另存一个状态再用 `sheet(isPresented:)` 的话,
+    /// 那个状态只在 sheet 闭包里读,SwiftUI 拿旧值建编辑器。
+    @State private var templateEdit: TemplateEdit?
+
+    private struct TemplateEdit: Identifiable {
+        let id = UUID()
+        let seed: DigestTemplate
+    }
     /// 选自定义之前是哪一套:模板没写就关掉编辑器时退回它。
     @State private var styleBeforeCustom: DigestStyle = .full
 
@@ -583,12 +591,14 @@ struct NotificationChannelEditor: View {
         .padding(20)
         .frame(width: 480)
         .onDisappear { testTask?.cancel() }
-        .sheet(isPresented: $editingTemplate, onDismiss: templateEditorClosed) {
-            DigestTemplateEditor(original: draft.digestTemplate) { saved in
-                draft.digestTemplate = saved
-                editingTemplate = false
+        .sheet(item: $templateEdit, onDismiss: templateEditorClosed) { edit in
+            DigestTemplateEditor(original: edit.seed) { saved in
+                let style = DigestStyle.matching(saved)
+                if style == .custom { draft.digestTemplate = saved }
+                draft.digestStyle = style.rawValue
+                templateEdit = nil
             } onCancel: {
-                editingTemplate = false
+                templateEdit = nil
             }
         }
         .confirmationDialog(String(format: L10n.t("删除「%@」？"), original.displayName), isPresented: $confirmingDelete) {
@@ -735,19 +745,18 @@ struct NotificationChannelEditor: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
                         SettingsGlassTabPicker(selection: Binding(get: { digestStyle }, set: selectDigestStyle),
-                                               options: DigestStyle.allCases, label: Self.styleLabel, compact: true)
+                                               options: DigestStyle.allCases, label: \.label, compact: true)
                             .fixedSize()
-                        if digestStyle == .custom {
-                            Button(L10n.t("编辑模板…")) { editingTemplate = true }
-                                .controlSize(.small)
-                                .settingsGlassButtons()
-                                .buttonBorderShape(.capsule)
-                        }
+                        Button(L10n.t("编辑模板…")) { openTemplateEditor(shownTemplate) }
+                            .controlSize(.small)
+                            .settingsGlassButtons()
+                            .buttonBorderShape(.capsule)
                     }
-                    Text(Self.styleNote(digestStyle))
+                    Text(digestStyle.note)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+                    DigestTemplateExpression(template: shownTemplate)
                 }
             }
             // 跟列表行右边的开关是同一个(渠道的 enabled)。新渠道默认开着,保存后四档报告都推它(NotificationRouting.adding)。
@@ -772,30 +781,23 @@ struct NotificationChannelEditor: View {
 
     private var digestStyle: DigestStyle { DigestStyle(rawValue: draft.digestStyle) ?? .full }
 
-    private static func styleLabel(_ style: DigestStyle) -> String {
-        switch style {
-        case .full: return L10n.t("完整")
-        case .brief: return L10n.t("精简")
-        case .overview: return L10n.t("概况")
-        case .custom: return L10n.t("自定义")
-        }
+    /// 这一档的模板:预设是它自己那份,自定义是渠道存的那份。
+    private var shownTemplate: DigestTemplate {
+        DigestTemplate.preset(digestStyle) ?? draft.digestTemplate
     }
 
-    private static func styleNote(_ style: DigestStyle) -> String {
-        switch style {
-        case .full: return L10n.t("概况、三份榜单和新听的歌手")
-        case .brief: return L10n.t("概况和歌手、专辑、歌曲各自的第一名")
-        case .overview: return L10n.t("只有播放次数、时长和新听了几位歌手")
-        case .custom: return L10n.t("按你写的模板，以纯文本推送")
-        }
+    private func openTemplateEditor(_ seed: DigestTemplate) {
+        templateEdit = TemplateEdit(seed: seed)
     }
 
+    /// 选自定义时还没有模板:从原来那一档的模板改起。
     private func selectDigestStyle(_ style: DigestStyle) {
         guard style != digestStyle else { return }
         if style == .custom {
             styleBeforeCustom = digestStyle
+            let from = shownTemplate
             draft.digestStyle = style.rawValue
-            if !draft.digestTemplate.isCustom { editingTemplate = true }
+            if !draft.digestTemplate.isCustom { openTemplateEditor(from) }
             return
         }
         draft.digestStyle = style.rawValue

@@ -200,25 +200,15 @@ public enum NotificationPreview {
         }
     }
 
-    /// 同引擎 digestBodyStyled:精简是第一行加各类第一名、新听的歌手;概况是第一行加新听了几位歌手,这两套不空行。
-    /// 自定义按完整拼(模板里的 `{body}` 就是它)。
+    /// 同引擎 digestBodyStyled:精简、概况渲染各自的预设模板(`DigestTemplate.preset`);完整和自定义按默认正文拼
+    /// (模板里的 `{body}` 就是它)。
     public static func body(_ stats: Stats, topN: Int, style: DigestStyle = .full) -> String {
-        switch style {
-        case .brief:
-            var out = summaryLine(stats)
-            let lines = topOnes(stats) { label, t in
-                "最常听的\(label)：" + (t.sub.isEmpty ? t.name : "\(t.sub) - \(t.name)") + "（\(t.count)）"
-            }
-            if !lines.isEmpty { out += "\n" + lines.joined(separator: "\n") }
-            let line = newArtistsLine(stats)
-            if !line.isEmpty { out += "\n" + line }
-            return out
-        case .overview:
-            let line = newArtistsLine(stats, style: .overview)
-            return summaryLine(stats) + (line.isEmpty ? "" : "\n" + line)
-        case .full, .custom:
-            break
-        }
+        let full = fullBody(stats, topN: topN)
+        guard style == .brief || style == .overview, let preset = DigestTemplate.preset(style) else { return full }
+        return preset.render(defaultTitle: "", defaultBody: full, stats: stats, topN: topN).body
+    }
+
+    private static func fullBody(_ stats: Stats, topN: Int) -> String {
         let n = DigestTopN.resolved(topN)
         var out = summaryLine(stats) + "\n"
         func section(_ heading: String, _ list: [Tally]) {

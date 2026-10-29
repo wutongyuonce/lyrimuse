@@ -124,6 +124,19 @@ public struct DigestTemplate: Equatable, Sendable {
         return text
     }
 
+    /// 三套预设写成模板的样子(标题都是默认标题,存成空),编辑器照它显示、从它改起;精简、概况的纯文本正文就是渲染它。
+    /// 同引擎 digestPresetTemplates,共用样例 shared/testdata/notify/presets.json。自定义返回 nil。见 15 章决策 91。
+    public static func preset(_ style: DigestStyle) -> DigestTemplate? {
+        switch style {
+        case .full: return DigestTemplate(body: expandedDefaultBody)
+        case .brief:
+            return DigestTemplate(body: "{summary}\n最常听的歌手：{top_artist}\n最常听的专辑：{top_album}\n最常听的歌曲：{top_track}\n"
+                                  + "新听了 {new_artists} 位歌手：{new_artist_names}")
+        case .overview: return DigestTemplate(body: "{summary}\n新听了 {new_artists} 位歌手")
+        case .custom: return nil
+        }
+    }
+
     /// 多行的占位符:插进正文时单独占一行,标题里不插。
     public static let multilinePlaceholders: Set<String> = ["body", "top_artists", "top_albums", "top_tracks"]
 

@@ -4034,8 +4034,10 @@ func runSourceContractSettingsTests() {
                     true, "推送内容: 听歌报告卡里不再有共用的那一行,features.json 的 digest_template 照旧读回、给没选过的渠道沿用(15 章决策 84、90)")
         expectEqual(sourceHas(section, "original: channel.pinningDigestStyle(legacy: FeatureSettingsStore.shared.digestTemplate),")
                         && sourceHas(section, "let digest = channel.resolvedDigest(legacy: FeatureSettingsStore.shared.digestTemplate)")
-                        && sourceHas(section, "DigestTemplateEditor(original: draft.digestTemplate)")
-                        && sourceHas(section, ".sheet(isPresented: $editingTemplate, onDismiss: templateEditorClosed)")
+                        && sourceHas(section, ".sheet(item: $templateEdit, onDismiss: templateEditorClosed) { edit in")
+                        && sourceHas(section, "DigestTemplateEditor(original: edit.seed)")
+                        && sourceHas(section, "DigestTemplateExpression(template: shownTemplate)")
+                        && sourceHas(section, "let style = DigestStyle.matching(saved)")
                         && sourceHas(section, "signed: !cleaned.secret.isEmpty, style: digestStyle, template: draft.digestTemplate)"),
                     true, "报告内容: 渠道编辑弹窗写明沿用的那一套、自定义开模板编辑器,收起(含按 Esc)时没模板退回;两处预览按渠道那一套画(15 章决策 90)")
         // 推送记录展开全部时高度封顶、在卡里滚;这一页的下拉 / 步进器 / 按钮用设计系统的玻璃件(15 章决策 83)。

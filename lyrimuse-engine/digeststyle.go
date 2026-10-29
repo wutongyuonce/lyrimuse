@@ -1,15 +1,13 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 // 听歌报告推到每个渠道时用哪一套内容(渠道的 digest_style):完整、精简、概况三套预设,各平台照旧按自己的格式排版
-// (notifyrich.go);自定义按这个渠道自己的模板出标题正文、按纯文本推(digesttemplate.go)。
+// (notifyrich.go);自定义按这个渠道自己的模板出标题正文、按纯文本推(digesttemplate.go)。三套预设各自也写成一份模板
+// (digestPresetTemplates),App 编辑器里照它显示、从它改起;精简、概况的纯文本正文就是渲染这份模板。
 // 渠道没选过(digest_style 为空)时沿用 features.json 里四档共用的那份模板:自定义过就按它,没有就是完整。
 // App 侧同一套规则在 Core `DigestStyle` / `NotificationPreview`,两边对得上靠共用样例 shared/testdata/notify/preview.json。
-// 见 15 章决策 90。
+// 见 15 章决策 90、91。
 
 const (
 	digestStyleFull     = "full"
@@ -17,6 +15,17 @@ const (
 	digestStyleOverview = "overview"
 	digestStyleCustom   = "custom"
 )
+
+// digestPresetTemplates:三套预设写成模板的样子(标题都是默认标题),同 Core `DigestTemplate.preset`,两边对得上靠
+// 共用样例 shared/testdata/notify/presets.json。完整这份渲染出来跟默认正文一样(只有一条的榜单照列、新歌手那句不带「等」
+// 两处除外),真推完整时仍用 digestBody。
+var digestPresetTemplates = map[string]digestTemplate{
+	digestStyleFull: {Body: "{summary}\n\nTop 歌手：\n{top_artists}\n\nTop 专辑：\n{top_albums}\n\nTop 歌曲：\n{top_tracks}\n\n" +
+		"新听了 {new_artists} 位歌手：{new_artist_names}"},
+	digestStyleBrief: {Body: "{summary}\n最常听的歌手：{top_artist}\n最常听的专辑：{top_album}\n最常听的歌曲：{top_track}\n" +
+		"新听了 {new_artists} 位歌手：{new_artist_names}"},
+	digestStyleOverview: {Body: "{summary}\n新听了 {new_artists} 位歌手"},
+}
 
 // digestStyle:这个渠道这一期按哪一套推;自定义时另返回要用的模板。legacy 是 features.json 里四档共用的那份。
 // 选了自定义却没写模板(或写的跟默认一样)按完整推;认不出的值按完整推。
@@ -53,31 +62,14 @@ func (m notifyMessage) forChannel(ch notifyChannel) notifyMessage {
 	return m
 }
 
-// digestBodyStyled:纯文本正文。精简是第一行加各类第一名、新听的歌手;概况是第一行加新听了几位歌手(不列名字)。
-// 这两套不空行(Bark 锁屏只显示前几行)。其余按完整(digestBody)。
+// digestBodyStyled:纯文本正文。精简、概况渲染各自的预设模板(这两套不空行,Bark 锁屏只显示前几行);其余按完整(digestBody)。
 func digestBodyStyled(s digestStats, style string) string {
+	body := digestBody(s)
 	switch style {
-	case digestStyleBrief:
-		var b strings.Builder
-		b.WriteString(digestSummaryLine(s))
-		lines := digestTopOnes(s, func(label, name string, count int) string {
-			return fmt.Sprintf("最常听的%s：%s（%d）", label, name, count)
-		}, func(t digestTally) string { return t.Sub + " - " + t.Name }, func(v string) string { return v })
-		if len(lines) > 0 {
-			b.WriteString("\n" + strings.Join(lines, "\n"))
-		}
-		if line := digestNewArtistsLine(s); line != "" {
-			b.WriteString("\n" + line)
-		}
-		return b.String()
-	case digestStyleOverview:
-		out := digestSummaryLine(s)
-		if line := digestNewArtistsCount(s); line != "" {
-			out += "\n" + line
-		}
-		return out
+	case digestStyleBrief, digestStyleOverview:
+		_, body = renderDigestTemplate(digestPresetTemplates[style], "", body, s, digestTopN())
 	}
-	return digestBody(s)
+	return body
 }
 
 // digestTopOnes:歌手、专辑、歌曲各自的第一名,一类一行;某类没有就不写。sub 拼专辑、歌曲的那一段(带歌手),esc 是平台转义。

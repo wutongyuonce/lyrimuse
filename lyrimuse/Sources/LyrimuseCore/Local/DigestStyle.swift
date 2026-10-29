@@ -6,6 +6,18 @@ import Foundation
 /// 正文怎么拼见 `NotificationPreview.body` / `richSections` / `newArtistsLine`。见 15 章决策 90。
 public enum DigestStyle: String, CaseIterable, Sendable {
     case full, brief, overview, custom
+
+    /// 编辑器里这份模板算哪一套:跟某套预设一样(首尾空白不算)就是那一套,没改过默认(`{title}` / `{body}`)算完整,
+    /// 其余是自定义。
+    public static func matching(_ template: DigestTemplate) -> DigestStyle {
+        func trimmed(_ t: DigestTemplate) -> DigestTemplate {
+            DigestTemplate(title: t.title.trimmingCharacters(in: .whitespacesAndNewlines),
+                           body: t.body.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        let t = DigestTemplate.resolved(title: template.title, body: template.body)
+        guard t.isCustom else { return .full }
+        return [.full, .brief, .overview].first { DigestTemplate.preset($0).map(trimmed) == trimmed(t) } ?? .custom
+    }
 }
 
 extension NotificationChannel {
