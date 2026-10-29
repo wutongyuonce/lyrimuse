@@ -26,9 +26,9 @@ New / 新功能
 - Added VOX and Pine Player as built-in players, bringing the total to
   thirteen
   新增内置播放器 VOX 与 Pine Player，内置播放器增至 13 款
-- Added support for the iPad version of NetEase Cloud Music on Apple
-  silicon Macs
-  支持在 Apple 芯片 Mac 上运行的 iPad 版网易云音乐
+- Added support for the iPad versions of NetEase Cloud Music and QQ Music
+  on Apple silicon Macs
+  支持在 Apple 芯片 Mac 上运行的 iPad 版网易云音乐与 QQ 音乐
 - Added PetitLyrics as the fifteenth lyric source, for word-by-word
   Japanese lyrics
   新增歌词源 PetitLyrics，补充日语歌的逐字歌词，歌词源增至 15 个
@@ -228,7 +228,7 @@ Fixed / 修复
 Not sure which one? Check your chip under **About This Mac**.
 不确定该下哪个？打开「关于本机」看芯片是 Apple M… 还是 Intel Core…
 
-336 commits since v1.11.0.
+338 commits since v1.11.0.
 
 **Full Changelog**: https://github.com/Yudaotor/lyrimuse/compare/v1.11.0...v1.12.0
 
