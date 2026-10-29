@@ -189,12 +189,14 @@ final class SettingsSearchRouter: ObservableObject {
         case "menuBar.centerIdle": return !MenuBarPlacementRow.centerInUse(s)
         case "menuBar.showsLyrics": return s.menuBarLyricsContent == .lyrics
         case "menuBar.fillColorShown": return s.menuBarLyricsKaraoke || s.menuBarLyricsIconPosition != .off
+        case "menuBar.colorRowsShown": return !s.menuBarLyricsRainbow || s.menuBarLyricsIconPosition != .off
         case "notch.showLyrics": return s.notchShowLyrics
         case "notch.lyricRowArtwork": return s.notchLyricRowShowsArtwork
         case "notch.expandedNextLine": return !s.notchSecondaryLine.hidesExpandedNextLinePreview
         case "notch.lyricList": return s.notchExpandedLyricList
         case "notch.lyricListOff": return !s.notchExpandedLyricList
         case "overlay.karaoke": return s.overlayLyricsKaraoke
+        case "overlay.notRainbow": return !s.overlayRainbow
         case "overlay.stroke": return s.textStrokeEnabled
         case "overlay.glass": return s.overlayBackgroundGlass
         case "touchBar.artwork": return s.touchBarShowsArtwork

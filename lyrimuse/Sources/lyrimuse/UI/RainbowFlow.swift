@@ -4,18 +4,18 @@ import SwiftUI
 
 /// 彩虹歌词(`RainbowLyrics`)的流动渐变:一组 `CAGradientLayer` 铺满 `width` 再多一圈,由一条无限循环的 `position.x` 动画
 /// 从 −一圈平移到 0(从左往右流),装好之后由渲染服务播,主线程不参与。同一组里的几层同一条动画、同一个起点,颜色对得上。
-/// 全进程从同一个零相位起算(`epoch`),各展示面、各行、换句前后颜色接得上;停着(暂停、减弱动态效果)时定在停下那一刻的
-/// 相位,再走时接着走(`RainbowLyrics.FlowClock`)。见 17 章决策 54。
+/// 全进程从同一个零相位起算(`epoch`)、从不冻住(`RainbowLyrics.phase`),各展示面、各行、换句前后颜色始终一致;停着
+/// (暂停、看不见、系统开了「减弱动态效果」)时停在此刻的全局相位上,再走时直接回到全局相位。见 17 章决策 54。
 @MainActor
 final class RainbowGradientDriver {
     static let animationKey = "lyrimuse.rainbow-flow"
     /// 全进程的零相位。
     static let epoch = CACurrentMediaTime()
 
-    private var clock = RainbowLyrics.FlowClock(epoch: RainbowGradientDriver.epoch)
     private var configured: (cycles: Int, stops: [RainbowLyrics.RGB])?
 
-    /// 按一圈 `period` 摆好 `layers`:宽 = 铺满 `width` 再多一圈,高 = `height`;`flowing` 时装流动动画,否则停在此刻的相位。
+    /// 按一圈 `period` 摆好 `layers`:宽 = 铺满 `width` 再多一圈,高 = `height`;`flowing` 时(且系统没开「减弱动态效果」)
+    /// 装流动动画,否则停在此刻的全局相位。
     /// `stops` 是一圈的色标,浅色底上传压暗的那组(`RainbowLyrics.lightBackgroundCycleStops`)。
     func apply(to layers: [CAGradientLayer], period: CGFloat, width: CGFloat, height: CGFloat, flowing: Bool,
                stops: [RainbowLyrics.RGB] = RainbowLyrics.cycleStops) {
@@ -24,9 +24,9 @@ final class RainbowGradientDriver {
             return
         }
         let now = CACurrentMediaTime()
-        if flowing { clock.resume(at: now) } else { clock.freeze(at: now) }
+        let animates = flowing && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         let cycles = Int((width / period).rounded(.up)) + 1
-        let x = -period + CGFloat(clock.phase(at: now)) * period
+        let x = -period + CGFloat(RainbowLyrics.phase(at: now, epoch: Self.epoch)) * period
         let colors = configured.map { $0.cycles == cycles && $0.stops == stops } == true
             ? nil : Self.colors(cycles: cycles, stops: stops)
         CATransaction.begin()
@@ -45,14 +45,14 @@ final class RainbowGradientDriver {
         }
         CATransaction.commit()
         configured = (cycles, stops)
-        guard flowing else { return }
+        guard animates else { return }
         for g in layers {
             let flow = CABasicAnimation(keyPath: "position.x")
             flow.fromValue = -period
             flow.toValue = 0
-            flow.duration = clock.cycle
+            flow.duration = RainbowLyrics.cycleSeconds
             flow.repeatCount = .infinity
-            flow.beginTime = g.convertTime(clock.epoch, from: nil)
+            flow.beginTime = g.convertTime(Self.epoch, from: nil)
             g.add(flow, forKey: Self.animationKey)
         }
     }

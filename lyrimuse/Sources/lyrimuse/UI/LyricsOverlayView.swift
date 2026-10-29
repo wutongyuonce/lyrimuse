@@ -82,8 +82,9 @@ private final class OverlayPlayback: ObservableObject {
     /// (那份保留给设置页预览等别处),这里预组合成单个去重值:三个输入(动态高亮色/
     /// "跟随封面"开关/手选前景色)任何一个变了才发一次。
     @Published private(set) var displayForegroundColor: Color = .white
-    /// 字换成流动彩虹(`AppSettings.overlayRainbow`)。开着时上下两个显示色是白色和白色打未唱的折,只当蒙版的深浅用,
-    /// 颜色由彩虹给:图层行带 `Spec.rainbow`,SwiftUI 画字的地方套 `.rainbowFill`。
+    /// 字换成流动彩虹(`AppSettings.overlayRainbow`)。只管歌词:图层行带 `Spec.rainbow`(字用 `LyricsOverlayView.karaokeFillInk` /
+    /// `karaokeUnsungInk` 画),SwiftUI 画歌词的地方套 `LyricStrokeRainbow`(只看透明度)。上下两个显示色不变,状态文案、提示、
+    /// 间奏三点照旧用它们。
     @Published private(set) var rainbow = false
     // ---- 来自 AppSettings(只挑悬浮窗读的这一小片) ----
     @Published private(set) var lockPosition = false
@@ -223,8 +224,8 @@ private final class OverlayPlayback: ObservableObject {
                 .map { raw, markers in raw?.isMarked(in: markers) ?? false }
                 .removeDuplicates()
                 .sink { [weak self] in self?.inMarkedInterlude = $0 },
-            Publishers.CombineLatest4(p.$artworkAccentColor, s.$followsCoverArt, s.$foregroundColor, s.$overlayRainbow)
-                .map { accent, follows, fg, rainbow in rainbow ? .white : ((follows ? accent : nil) ?? fg) }
+            Publishers.CombineLatest3(p.$artworkAccentColor, s.$followsCoverArt, s.$foregroundColor)
+                .map { accent, follows, fg in (follows ? accent : nil) ?? fg }
                 .removeDuplicates()
                 .sink { [weak self] in self?.displayForegroundColor = $0 },
             s.$overlayRainbow.removeDuplicates().sink { [weak self] in self?.rainbow = $0 },
@@ -254,11 +255,9 @@ private final class OverlayPlayback: ObservableObject {
             // 进度效果直接消失。这里补一次 dimOpacity,复现"未唱比已唱调暗"的观感,只是源头
             // 从固定 fg 换成了动态 accent。固定色(fixed,没开跟随封面时手选或迁移种下的那个)
             // 已经在存的时候就带着期望的深浅,不再额外调暗。
-            Publishers.CombineLatest4(p.$artworkAccentColor, s.$karaokeUnsungFollowsCoverArt, s.$karaokeUnsungColor,
-                                      s.$overlayRainbow)
-                .map { accent, follows, fixed, rainbow in
-                    rainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)
-                        : ((follows ? accent?.opacity(WordKaraokeGradient.dimOpacity) : nil) ?? fixed)
+            Publishers.CombineLatest3(p.$artworkAccentColor, s.$karaokeUnsungFollowsCoverArt, s.$karaokeUnsungColor)
+                .map { accent, follows, fixed in
+                    (follows ? accent?.opacity(WordKaraokeGradient.dimOpacity) : nil) ?? fixed
                 }
                 .removeDuplicates()
                 .sink { [weak self] in self?.displayKaraokeUnsungColor = $0 },
@@ -983,13 +982,13 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
                 romaGap: perWordReadingGap,
                 font: playback.overlayNSFonts.main,
                 romaFont: playback.overlayNSFonts.romanization,
-                baseColor: NSColor(playback.displayKaraokeUnsungColor),
-                fillColor: NSColor(playback.displayForegroundColor),
+                baseColor: karaokeUnsungInk,
+                fillColor: karaokeFillInk,
                 // 罗马音那一行的两色跟 SwiftUI 那边的 romaPalette 逐字一致:已唱是前景色打
                 // 0.75 折,未唱跟主行同一个未唱色(**不**跟着打折 —— 那条折扣只对"同一色调暗"
                 // 那套派生关系才有意义)。
-                romaBaseColor: NSColor(playback.displayKaraokeUnsungColor),
-                romaFillColor: NSColor(playback.displayForegroundColor.opacity(0.75)),
+                romaBaseColor: karaokeUnsungInk,
+                romaFillColor: karaokeFillInk.withAlphaComponent(karaokeFillInk.alphaComponent * 0.75),
                 strokeColor: playback.textStrokeEnabled ? NSColor(playback.textStrokeColor) : nil,
                 alignment: duetSide,
                 // 跟 SwiftUI 那条逐字染色的 TimelineView 同一条 paused 判据。
@@ -1029,10 +1028,10 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
             romaGap: perWordReadingGap,
             font: playback.overlayNSFonts.main,
             romaFont: playback.overlayNSFonts.romanization,
-            baseColor: NSColor(playback.displayKaraokeUnsungColor),
-            fillColor: NSColor(playback.displayForegroundColor),
-            romaBaseColor: NSColor(playback.displayKaraokeUnsungColor),
-            romaFillColor: NSColor(playback.displayForegroundColor.opacity(0.75)),
+            baseColor: karaokeUnsungInk,
+            fillColor: karaokeFillInk,
+            romaBaseColor: karaokeUnsungInk,
+            romaFillColor: karaokeFillInk.withAlphaComponent(karaokeFillInk.alphaComponent * 0.75),
             strokeColor: playback.textStrokeEnabled ? NSColor(playback.textStrokeColor) : nil,
             rowAlignment: rowAlignment,
             paused: !playback.lyricsClockRunning || playback.currentLineFillSettled || !surfaceVisible,
@@ -1116,6 +1115,14 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
 
     /// 彩虹流不流:时钟在走、悬浮窗看得见时流。不跟逐字填色那条「唱完一句就停表」走,两句之间照样流。
     private var rainbowFlowing: Bool { playback.lyricsClockRunning && surfaceVisible }
+
+    /// 逐字图层行的已唱 / 未唱色:彩虹时字只当蒙版,白色和白色打 `RainbowLyrics.unsungOpacity` 的折(主题自己的未唱色
+    /// 可能不透明,不能拿来当深浅);否则就是两个显示色。
+    private var karaokeFillInk: NSColor { playback.rainbow ? .white : NSColor(playback.displayForegroundColor) }
+    private var karaokeUnsungInk: NSColor {
+        playback.rainbow ? NSColor.white.withAlphaComponent(CGFloat(RainbowLyrics.unsungOpacity))
+            : NSColor(playback.displayKaraokeUnsungColor)
+    }
 
     /// 按显示时长配速的图层行。不填色(整行一个颜色),描边、对齐、停走跟跟唱那条同一套。
     private func pacedLayerRow(
@@ -2066,8 +2073,6 @@ private struct OptionalTextStroke<MaskSource: View>: ViewModifier {
     }
 }
 
-// internal(而不是 private):设置页顶部的实时预览要用同一个描边实现渲染同一段歌词 ——
-// 预览和真窗口各写一份描边最终一定会漂,而描边是这一页最难凭想象判断效果的一项。
 /// 歌词文字的描边,外加彩虹:开着彩虹时内容只当蒙版(`rainbowFill`),描边的剪影另拿一份内容本身画
 /// (剪影画不出彩虹底下那块 AppKit 视图)。没开彩虹时就是 `lyricsTextStroke`。
 struct LyricStrokeRainbow: ViewModifier {
@@ -2087,6 +2092,8 @@ struct LyricStrokeRainbow: ViewModifier {
     }
 }
 
+// internal(而不是 private):设置页顶部的实时预览要用同一个描边实现渲染同一段歌词 ——
+// 预览和真窗口各写一份描边最终一定会漂,而描边是这一页最难凭想象判断效果的一项。
 extension View {
     func lyricsTextStroke(_ enabled: Bool, color: Color) -> some View {
         modifier(OptionalTextStroke<EmptyView>(enabled: enabled, color: color, maskSource: nil))

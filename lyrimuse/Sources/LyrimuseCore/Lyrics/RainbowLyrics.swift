@@ -91,37 +91,11 @@ public enum RainbowLyrics {
         return 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s
     }
 
-    /// 流动的相位(0..<1)。走着时按墙钟从 `epoch` 起算;停着时(暂停、减弱动态效果)定在停下那一刻,
-    /// 再走时从定住的相位接着走,不跳色。
-    public struct FlowClock: Equatable, Sendable {
-        /// 相位为 0 的那一刻(墙钟秒)。
-        public private(set) var epoch: Double
-        /// 非 nil = 停着,定在这个相位。
-        public private(set) var frozenPhase: Double?
-        public let cycle: Double
-
-        public init(epoch: Double, cycle: Double = RainbowLyrics.cycleSeconds) {
-            self.epoch = epoch
-            self.cycle = cycle > 0 ? cycle : RainbowLyrics.cycleSeconds
-        }
-
-        public func phase(at now: Double) -> Double {
-            if let frozenPhase { return frozenPhase }
-            let t = (now - epoch).truncatingRemainder(dividingBy: cycle)
-            return (t < 0 ? t + cycle : t) / cycle
-        }
-
-        /// 停住;已经停着时不动(重复调用不改相位)。
-        public mutating func freeze(at now: Double) {
-            guard frozenPhase == nil else { return }
-            frozenPhase = phase(at: now)
-        }
-
-        /// 接着走:把 `epoch` 挪到「此刻正好是定住的那个相位」;本来就在走时不动。
-        public mutating func resume(at now: Double) {
-            guard let frozen = frozenPhase else { return }
-            epoch = now - frozen * cycle
-            frozenPhase = nil
-        }
+    /// 流动的相位(0..<1):全进程从 `epoch` 起按墙钟走,从不冻住 —— 各展示面、各行、换句前后颜色始终一致;停着的行停在
+    /// 此刻的全局相位上,再走时直接回到全局相位(暂停后继续那一下颜色跳一格)。
+    public static func phase(at now: Double, epoch: Double, cycle: Double = cycleSeconds) -> Double {
+        let c = cycle > 0 ? cycle : cycleSeconds
+        let t = (now - epoch).truncatingRemainder(dividingBy: c)
+        return (t < 0 ? t + c : t) / c
     }
 }

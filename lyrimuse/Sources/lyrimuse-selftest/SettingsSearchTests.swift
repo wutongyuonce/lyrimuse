@@ -438,6 +438,11 @@ func runSettingsSearchTests() {
         }
         expectEqual(gate(["歌词", "语言"], "翻译语言包", false: ["translation.machine"]), "无译文时自动翻译",
                     "搜索门: 语言包落到「无译文时自动翻译」")
+        let menuBarColor = ["歌词显示", "菜单栏", "颜色"]
+        expectEqual(gate(menuBarColor, "文字颜色", false: ["menuBar.colorRowsShown"]), "彩虹",
+                    "搜索门: 彩虹且没开图标时菜单栏文字颜色落到「彩虹」")
+        expectEqual(gate(overlay, "未唱颜色", false: ["overlay.notRainbow"]), "文字颜色",
+                    "搜索门: 彩虹时悬浮歌词未唱颜色落到「文字颜色」")
         // 表里每一条:那一行和落点在目录里同一段都有登记(点亮得到),条件在 App 侧有对应分支(认不出的名字会被当真、门失效)。
         let search = source("Settings/SettingsSearch.swift")
         for rule in SettingsSearchCatalog.rowGates {
@@ -458,6 +463,8 @@ func runSettingsSearchTests() {
                     && sourceHas(search, "case \"menuBar.centerSelected\": return s.menuBarLyricsPlacement == .screenCenter")
                     && sourceHas(search, "case \"menuBar.centerIdle\": return !MenuBarPlacementRow.centerInUse(s)")
                     && sourceHas(search, "case \"menuBar.fillColorShown\": return s.menuBarLyricsKaraoke || s.menuBarLyricsIconPosition != .off")
+                    && sourceHas(stage, "if !settings.menuBarLyricsRainbow || settings.menuBarLyricsIconPosition != .off {")
+                    && sourceHas(search, "case \"menuBar.colorRowsShown\": return !s.menuBarLyricsRainbow || s.menuBarLyricsIconPosition != .off")
                     && sourceHas(search, "highlightedTitles = hit.highlightTitles.union(Self.gateTitles(for: hit.entry))"),
                     true, "搜索门: 菜单栏各行显隐条件与搜索喂的条件同步")
     }

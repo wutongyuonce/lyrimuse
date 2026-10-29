@@ -403,10 +403,10 @@ final class AppSettings: ObservableObject {
         static let notchExpandedCornerRadius = "np:notchExpandedCornerRadius"
         static let foregroundColorHex = "np:foregroundColorHex"
         static let backgroundColorHex = "np:backgroundColorHex"
-        // 悬浮歌词背景毛玻璃。np: 前缀 = 随配置导出/搬家走(这是偏好,不是机器状态)。
-        static let overlayBackgroundGlass = "np:overlayBackgroundGlass"
         // 悬浮歌词的字换成流动彩虹(配色主题的一项,`ColorTheme.rainbow`)。
         static let overlayRainbow = "np:overlayRainbow"
+        // 悬浮歌词背景毛玻璃。np: 前缀 = 随配置导出/搬家走(这是偏好,不是机器状态)。
+        static let overlayBackgroundGlass = "np:overlayBackgroundGlass"
         // 毛玻璃「浓淡」档位。只在上面那颗开着时才生效,但键本身独立存——关着玻璃再打开,
         // 浓淡该停在用户上次选的档,不因为玻璃关过一次就丢。
         static let overlayGlassIntensity = "np:overlayGlassIntensity"
@@ -2172,15 +2172,15 @@ final class AppSettings: ObservableObject {
             backgroundIsVisible = Self.backgroundVisible(hex: backgroundColorHex, glass: overlayBackgroundGlass)
         }
     }
-    // 悬浮歌词背景毛玻璃(默认关)。开着时卡片底下垫一层系统材质(.regularMaterial,
-    // 跟灵动岛「磨砂玻璃」风格同一种材质语言),上面的 backgroundColorHex 变成盖在玻璃上的
-    // 着色:背景色全透明就是纯玻璃,alpha 越高越接近纯色卡片。关着时就是透明或纯色卡片。
-    // 不塞进 ColorTheme:用户自存主题与 hasSameColors 判定都不用迁移。
     /// 悬浮歌词的字换成沿行流动的彩虹(`RainbowLyrics`):已唱全亮、未唱打 `RainbowLyrics.unsungOpacity` 的折,
     /// 文字色和未唱色(含跟随封面)这时只是备用。配色主题的一项(`ColorTheme.rainbow`),OBS 网页跟着它。见 04 章决策 78。
     @Published var overlayRainbow: Bool {
         didSet { defaults.set(overlayRainbow, forKey: Keys.overlayRainbow) }
     }
+    // 悬浮歌词背景毛玻璃(默认关)。开着时卡片底下垫一层系统材质(.regularMaterial,
+    // 跟灵动岛「磨砂玻璃」风格同一种材质语言),上面的 backgroundColorHex 变成盖在玻璃上的
+    // 着色:背景色全透明就是纯玻璃,alpha 越高越接近纯色卡片。关着时就是透明或纯色卡片。
+    // 不塞进 ColorTheme:用户自存主题与 hasSameColors 判定都不用迁移。
     @Published var overlayBackgroundGlass: Bool {
         didSet {
             defaults.set(overlayBackgroundGlass, forKey: Keys.overlayBackgroundGlass)

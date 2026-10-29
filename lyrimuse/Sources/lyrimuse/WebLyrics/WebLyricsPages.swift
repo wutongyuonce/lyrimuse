@@ -863,12 +863,13 @@ enum WebLyricsPages {
         #card.stroked .tx { filter: url(#lmStroke); }
         .w { -webkit-background-clip: text; background-clip: text; color: transparent;
              background-image: linear-gradient(90deg, var(--sung) 0, var(--sung) var(--p, 0%), var(--unsung) var(--p, 0%), var(--unsung) 100%); }
-        #card.rainbow .tx, #card.rainbow .w { -webkit-background-clip: text; background-clip: text; color: transparent;
+        #card.rainbow .rb, #card.rainbow .w { -webkit-background-clip: text; background-clip: text; color: transparent !important;
              background-image: var(--rb); background-size: var(--rbw) 100%; background-repeat: repeat-x; background-attachment: fixed;
              animation: lmRainbow var(--rbs) linear infinite; }
         #card.rainbow .w { -webkit-mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%);
              mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%); }
-        #card.rainbow.paused .tx, #card.rainbow.paused .w { animation-play-state: paused; }
+        #card.rainbow.paused .rb, #card.rainbow.paused .w { animation-play-state: paused; }
+        @media (prefers-reduced-motion: reduce) { #card.rainbow .rb, #card.rainbow .w { animation: none; } }
         @keyframes lmRainbow { from { background-position-x: 0; } to { background-position-x: var(--rbw); } }
         .dots { display: flex; gap: .3em; padding-top: .25em; }
         .dots > i { width: .32em; height: .32em; border-radius: 50%; background: var(--sung); }
@@ -1028,10 +1029,12 @@ enum WebLyricsPages {
             return { key: 'l' + idx, line: idx, next: idx + 1 < lines.length ? idx + 1 : -1 };
           }
           function color(pct) { return `color-mix(in srgb, var(--sung) ${pct}%, transparent)`; }
-          // 彩虹时字是透明的(颜色由流动渐变给),副行打的折改用整行不透明度(`pct`)。
+          // 彩虹时字是透明的(颜色由流动渐变给),副行打的折改用整行不透明度(`pct`)。渐变只铺在没有逐字片段的行上(`rb`):
+          // 铺在含逐字片段的行上会从半透明的未唱字底下透上来,逐字的已唱 / 未唱就看不出了;那种行由每个逐字片段自己铺。
           function row(inner, o) {
             const fade = style.rainbow && o.pct ? `opacity:${o.pct / 100};` : '';
-            return `<div class="row tx${o.cls ? ' ' + o.cls : ''}" data-side="${o.side || ''}" style="font-size:${o.em}em;font-weight:${o.weight};` +
+            const rb = inner.includes('class="w"') ? '' : ' rb';
+            return `<div class="row tx${rb}${o.cls ? ' ' + o.cls : ''}" data-side="${o.side || ''}" style="font-size:${o.em}em;font-weight:${o.weight};` +
               `color:${o.color};${fade}margin-top:${(o.top || 0) * unit()}px"><span class="in${o.cols ? ' cols' : ''}">${inner}</span></div>`;
           }
           function perWord(line) { return !!(style.karaoke && style.roma && line.w && line.g); }

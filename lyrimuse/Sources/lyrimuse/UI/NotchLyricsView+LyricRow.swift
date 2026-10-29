@@ -324,7 +324,9 @@ extension NotchLyricsView {
                 groups: nil,
                 font: playback.mainNSFont,
                 romaFont: playback.mainNSFont,
-                baseColor: fg.withAlphaComponent(fg.alphaComponent * WordKaraokeGradient.dimOpacity),
+                // 未唱:彩虹时打 `RainbowLyrics.unsungOpacity` 的折(同悬浮歌词、网页),否则 `WordKaraokeGradient.dimOpacity`。
+                baseColor: fg.withAlphaComponent(fg.alphaComponent
+                    * (lyricsRainbow ? RainbowLyrics.unsungOpacity : WordKaraokeGradient.dimOpacity)),
                 fillColor: fg,
                 romaBaseColor: fg,
                 romaFillColor: fg,

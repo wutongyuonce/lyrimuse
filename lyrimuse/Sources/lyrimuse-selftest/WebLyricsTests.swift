@@ -745,19 +745,21 @@ func runWebLyricsTests() {
                     "网页歌词: 间奏点离屏时也装动画")
         let pagesSource = app("WebLyrics/WebLyricsPages.swift")
         // 彩虹(04 章决策 78):按整页坐标铺(逐字分段颜色连得上)、未唱按透明度打折、副行整行打折、暂停时停住;
-        // App 那边彩虹时只给白色两档、彩虹开关一变就重发样式。
+        // App 那边两色照旧发(歌名卡、三点用),彩虹开关一变就重发样式。
         expectEqual(sourceBytes(pagesSource, contain: "background-image: var(--rb); background-size: var(--rbw) 100%; background-repeat: repeat-x; background-attachment: fixed;")
                         && sourceBytes(pagesSource, contain: "rgba(0,0,0,var(--rbu)) var(--p, 0%)")
                         && sourceBytes(pagesSource, contain: "const fade = style.rainbow && o.pct ? `opacity:${o.pct / 100};` : '';")
+                        && sourceBytes(pagesSource, contain: "#card.rainbow .rb, #card.rainbow .w { -webkit-background-clip: text; background-clip: text; color: transparent !important;")
+                        && sourceBytes(pagesSource, contain: "const rb = inner.includes('class=\"w\"') ? '' : ' rb';")
+                        && sourceBytes(pagesSource, contain: "@media (prefers-reduced-motion: reduce) { #card.rainbow .rb, #card.rainbow .w { animation: none; } }")
                         && sourceBytes(pagesSource, contain: "card.classList.toggle('paused', !playing);")
                         && sourceBytes(pagesSource, contain: "card.classList.toggle('rainbow', !!style.rainbow);"), true,
-                    "网页歌词: OBS 彩虹按整页坐标铺、未唱和副行按透明度打折、暂停停住")
+                    "网页歌词: OBS 彩虹按整页坐标铺、只铺在没有逐字片段的行和逐字片段上、强制字透明、未唱和副行按透明度打折、暂停和减弱动态效果时停住")
         let obsFeed = app("WebLyrics/WebLyricsObsFeed.swift")
-        expectEqual(sourceBytes(obsFeed, contain: "let sung = s.overlayRainbow ? Color.white :")
-                        && sourceBytes(obsFeed, contain: "let unsung = s.overlayRainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)")
+        expectEqual(sourceBytes(obsFeed, contain: "let sung = (s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor")
                         && sourceBytes(obsFeed, contain: "rainbow: s.overlayRainbow))")
                         && sourceBytes(obsFeed, contain: "s.$overlayRainbow.map { _ in () }.eraseToAnyPublisher(),"), true,
-                    "网页歌词: OBS 跟悬浮歌词的彩虹,开关一变就重发样式")
+                    "网页歌词: OBS 跟悬浮歌词的彩虹,歌名卡照旧用原色,开关一变就重发样式")
         expectEqual(sourceBytes(pagesSource, contain: "ws.send(JSON.stringify({ ptr: [phase,"), true, "网页歌词: 副屏把按下、拖动、抬起发回 App")
         expectEqual(sourceBytes(pagesSource, contain: "if (downLink && linkAt(u, v) === downLink) window.open(downLink, '_blank', 'noopener');"),
                     true, "网页歌词: 平台页在手指抬起那一刻由网页自己打开(等 App 回话再开会被浏览器拦掉)")

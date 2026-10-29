@@ -156,6 +156,8 @@ public enum SettingsSearchCatalog {
             RowGate(menuBar, "对齐方式", "menuBar.centerIdle", "歌词位置"),
             RowGate(menuBar, "副行", "menuBar.showsLyrics", "显示内容"),
             RowGate(menuBar, "已唱颜色", "menuBar.fillColorShown", "卡拉OK效果"),
+            RowGate(menuBar, "文字颜色", "menuBar.colorRowsShown", "彩虹"),
+            RowGate(menuBar, "已唱颜色", "menuBar.colorRowsShown", "彩虹"),
         ]
         // 灵动岛「歌词行」组:收起时不显示歌词时整组藏起(`NotchLyricRowSettingsRows`)。
         for title in ["对齐方式", "歌词颜色", "副行", "高度", "卡拉OK效果", "显示封面", "封面位置"] {
@@ -171,6 +173,7 @@ public enum SettingsSearchCatalog {
             RowGate(notch, "展开时预览下一句", "notch.expandedNextLine", "副行"),
             RowGate(notch, "行数", "notch.lyricList", "多行歌词"),
             RowGate(overlay, "未唱颜色", "overlay.karaoke", "卡拉OK效果"),
+            RowGate(overlay, "未唱颜色", "overlay.notRainbow", "文字颜色"),
             RowGate(overlay, "描边颜色", "overlay.stroke", "文字描边"),
             RowGate(overlay, "玻璃浓淡", "overlay.glass", "毛玻璃背景"),
             RowGate(touchBar, "封面位置", "touchBar.artwork", "显示封面"),

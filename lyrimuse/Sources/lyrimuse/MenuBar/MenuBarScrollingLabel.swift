@@ -431,6 +431,8 @@ final class MenuBarScrollingLabel: NSView {
         applyProgressFill()
         // 三点同理:换档 / 换间奏窗口都要按存底时钟重装。
         applyGapDots()
+        // 彩虹一圈的上限是槽宽:只换槽宽、不重排位图时也要重摆(全局相位,重装不跳色)。
+        if bitmapsUnchanged { applyRainbow() }
         needsLayout = true
     }
 
@@ -537,6 +539,7 @@ final class MenuBarScrollingLabel: NSView {
         iconBaseClipLayer.removeAnimation(forKey: Self.iconBasePositionAnimationKey)
         iconBaseClipLayer.removeAnimation(forKey: Self.iconBaseBoundsAnimationKey)
         removeGapDotsAnimations()
+        removeRainbowAnimations()
         preparedIcon = nil
         preparedSecondary = nil
         CATransaction.begin()
@@ -570,6 +573,7 @@ final class MenuBarScrollingLabel: NSView {
         guard plan != nil else { return }
         plan = nil
         prepared = nil
+        removeRainbowAnimations()
         contentLayer.removeAnimation(forKey: Self.scrollAnimationKey)
         fillClipLayer.removeAnimation(forKey: Self.fillAnimationKey)
         baseClipLayer.removeAnimation(forKey: Self.basePositionAnimationKey)
@@ -1092,6 +1096,13 @@ final class MenuBarScrollingLabel: NSView {
         let secondaryOpacity = MenuBarLyricRows.secondaryOpacity(for: plan.secondaryKind)
         secondaryRainbowHost.opacity = on ? secondaryOpacity : 1
         secondaryTextLayer.opacity = on ? 1 : secondaryOpacity
+    }
+
+    /// 彩虹三条无限动画摘掉:字收起时别留着空转(同 `clear` 里别的几条)。
+    private func removeRainbowAnimations() {
+        for g in [baseRainbow, fillRainbow, secondaryRainbow] {
+            g.removeAnimation(forKey: RainbowGradientDriver.animationKey)
+        }
     }
 
     /// 副行横向挪的那一层:彩虹时是宿主,否则是字本身。

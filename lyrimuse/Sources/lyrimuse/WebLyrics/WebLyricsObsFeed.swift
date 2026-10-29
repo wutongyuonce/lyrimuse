@@ -161,11 +161,10 @@ final class WebLyricsObsFeed {
     private static func makeStyle() -> String {
         let p = PlaybackCoordinator.shared
         let s = AppSettings.shared
-        // 彩虹时两色只给透明度(白、白打未唱的折),颜色由网页里的流动渐变给,同悬浮歌词。
-        let sung = s.overlayRainbow ? Color.white : ((s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor)
-        let unsung = s.overlayRainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)
-            : ((s.karaokeUnsungFollowsCoverArt ? p.artworkAccentColor?.opacity(WordKaraokeGradient.dimOpacity) : nil)
-                ?? s.karaokeUnsungColor)
+        // 彩虹时歌词的颜色由网页里的流动渐变给(style 带 `rainbow`),这两色照旧发,歌名卡、间奏三点用它们。
+        let sung = (s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor
+        let unsung = (s.karaokeUnsungFollowsCoverArt ? p.artworkAccentColor?.opacity(WordKaraokeGradient.dimOpacity) : nil)
+            ?? s.karaokeUnsungColor
         let duet = WebLyricsObsPayload.duetInsets(overlayWidth: s.overlayWidth, fontSize: s.fontSize)
         return WebLyricsObsPayload.style(.init(
             fontFamily: s.fontFamilyName, fontSize: s.fontSize, weights: WebLyricsObsPayload.cssWeights(s.overlayFontWeight),

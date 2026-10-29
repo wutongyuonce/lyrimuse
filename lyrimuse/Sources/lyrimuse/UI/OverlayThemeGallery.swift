@@ -5,7 +5,6 @@ import SwiftUI
 // 描边颜色写一行示例歌词,点一下就套用。管理逻辑(存、改名、覆盖、删除)在 OverlayThemeSettingsRows。
 
 enum ThemeGalleryMetrics {
-    /// 自适应列宽:编辑台「主题」浮层(720pt)一行排下全部 7 个内置预设;抽屉是整列宽(上限 600pt),排 6 列。
     /// 固定 8 列:八套内置主题一行排完(自适应列在抽屉的卡片宽度下放不下,最后一套会单独掉到第二行)。
     /// 窄到一格放不下示例字时,示例字自己缩(`ThemeSampleLyric` 的 minimumScaleFactor)。
     static let columns = Array(repeating: GridItem(.flexible(minimum: 50, maximum: 150), spacing: 8, alignment: .top), count: 8)

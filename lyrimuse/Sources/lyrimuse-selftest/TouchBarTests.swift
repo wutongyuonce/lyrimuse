@@ -238,7 +238,7 @@ func runTouchBarTests() {
         expectEqual(M.resolved(stored: "rainbow", legacyFollowsCover: true, fallback: .cover), .rainbow, "触控栏歌词颜色: 彩虹存得住")
     }
 
-    // ---- 彩虹(17 章决策 54):一圈亮度一致、都在 sRGB 色域里、首尾同色;流动时钟停住定相位、再走接着走 ----
+    // ---- 彩虹(17 章决策 54):一圈亮度一致、都在 sRGB 色域里、首尾同色;相位全进程一份、按墙钟走 ----
     do {
         typealias R = RainbowLyrics
         let stops = R.cycleStops
@@ -258,20 +258,11 @@ func runTouchBarTests() {
         let blue = R.inGamut(hue: 260)
         expectEqual(abs(R.oklabLightness(blue) - R.lightness) < 0.01, true, "彩虹: 越界的色相收彩度、不降亮度")
 
-        var clock = R.FlowClock(epoch: 100, cycle: 6)
-        expectEqual(abs(clock.phase(at: 103) - 0.5) < 1e-9, true, "彩虹时钟: 走到半圈相位 0.5")
-        expectEqual(abs(clock.phase(at: 107.5) - 0.25) < 1e-9, true, "彩虹时钟: 过了一圈从头算")
-        expectEqual(abs(clock.phase(at: 98.5) - 0.75) < 1e-9, true, "彩虹时钟: 早于起点也落在 0..<1")
-        clock.freeze(at: 103)
-        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 停住后相位不动")
-        clock.freeze(at: 104)
-        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 停着时再停一次不改相位")
-        clock.resume(at: 200)
-        expectEqual(abs(clock.phase(at: 200) - 0.5) < 1e-9, true, "彩虹时钟: 再走时从定住的相位接着走,不跳色")
-        expectEqual(abs(clock.phase(at: 201.5) - 0.75) < 1e-9, true, "彩虹时钟: 接着走之后照常前进")
-        let epoch = clock.epoch
-        clock.resume(at: 300)
-        expectEqual(clock.epoch, epoch, "彩虹时钟: 本来就在走时再走一次不挪起点")
+        expectEqual(abs(R.phase(at: 103, epoch: 100, cycle: 6) - 0.5) < 1e-9, true, "彩虹相位: 走到半圈是 0.5")
+        expectEqual(abs(R.phase(at: 107.5, epoch: 100, cycle: 6) - 0.25) < 1e-9, true, "彩虹相位: 过了一圈从头算")
+        expectEqual(abs(R.phase(at: 98.5, epoch: 100, cycle: 6) - 0.75) < 1e-9, true, "彩虹相位: 早于起点也落在 0..<1")
+        expectEqual(abs(R.phase(at: 103, epoch: 100, cycle: 0) - R.phase(at: 103, epoch: 100)) < 1e-9, true,
+                    "彩虹相位: 一圈秒数不合法时按默认")
         expectEqual(R.unsungOpacity > 0 && R.unsungOpacity < 1, true, "彩虹: 未唱的透明度在 0~1 之间")
         let lightStops = R.lightBackgroundCycleStops
         expectEqual(lightStops.count == stops.count && lightStops.first == lightStops.last
@@ -848,9 +839,11 @@ func runTouchBarTests() {
                         && overlayView.components(separatedBy: "rainbowPaused: !rainbowFlowing").count - 1 >= 2
                         && overlayView.components(separatedBy: "lyricStroke(").count - 1 >= 7, true,
                     "悬浮歌词彩虹: 逐字 / 换行 / 配速三条图层行带彩虹,SwiftUI 画歌词的几处走 lyricStroke")
-        expectEqual(overlayView.contains("rainbow ? .white : ((follows ? accent : nil) ?? fg)")
-                        && overlayView.contains("rainbow ? Color.white.opacity(RainbowLyrics.unsungOpacity)"), true,
-                    "悬浮歌词彩虹: 彩虹时显示色是白色两档,只当蒙版的深浅")
+        expectEqual(sourceHas(overlayView, "private var karaokeFillInk: NSColor { playback.rainbow ? .white : NSColor(playback.displayForegroundColor) }")
+                        && sourceHas(overlayView, "playback.rainbow ? NSColor.white.withAlphaComponent(CGFloat(RainbowLyrics.unsungOpacity))")
+                        && overlayView.components(separatedBy: "baseColor: karaokeUnsungInk,").count - 1 >= 2
+                        && !overlayView.contains("rainbow ? .white : ((follows"), true,
+                    "悬浮歌词彩虹: 只有逐字图层行换成白色两档当蒙版,显示色不变(状态文案、提示不变白)")
         let wrapped = code(appDir.appendingPathComponent("UI/WrappedKaraokeRows.swift")) ?? ""
         expectEqual(sourceHas(wrapped, "rainbow: spec.rainbow,\nrainbowPaused: spec.rainbowPaused)"), true,
                     "悬浮歌词彩虹: 换行模式每一行都带上彩虹")
