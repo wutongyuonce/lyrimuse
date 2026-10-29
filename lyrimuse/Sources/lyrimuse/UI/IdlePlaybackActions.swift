@@ -22,13 +22,13 @@ enum IdlePlaybackActions {
     }
 
     /// 有没有真的「继续播放」可给:AM / Spotify 有 AppleScript(AM = 三段式,Spotify 自带恢复上下文);酷狗、QQ、网易云、
-    /// Pine 按它菜单里的播放 / 暂停,冷启动后按也放上次那首(`resumeViaMenu`);洛雪直接发给它本体。reAMP、VOX、汽水一启动就
+    /// Pine 按它菜单里的播放 / 暂停、foobar2000 按 Play,冷启动后按也放上次那首(`resumeViaMenu`);洛雪直接发给它本体。reAMP、VOX、汽水一启动就
     /// 自己跳到前台,Kaset 冷启动后不到前台开不了播(隐藏或不激活启动时内嵌网页播放器一直停在加载,见 02 章决策 190),都不给;别的只能「打开」。
     /// 最近那份会话是 iPad 版报的(`PlayerProcess.sessionIsOtherClient`)也不给:它没有本体那份菜单,按了会把本体放起来。
     static func canResume(_ player: PlaybackPlayer) -> Bool {
         guard !PlayerProcess.sessionIsOtherClient(bundleID: player.bundleIdentifier) else { return false }
         return switch player {
-        case .appleMusic, .spotify, .kugou, .qqMusic, .netease, .pinePlayer, .lxMusic: true
+        case .appleMusic, .spotify, .kugou, .qqMusic, .netease, .pinePlayer, .foobar2000, .lxMusic: true
         default: false
         }
     }
@@ -49,7 +49,7 @@ enum IdlePlaybackActions {
                 }
             case .spotify:
                 ok = MusicPlaybackController.resumeSpotifyPlayback()
-            case .kugou, .qqMusic, .netease, .pinePlayer:
+            case .kugou, .qqMusic, .netease, .pinePlayer, .foobar2000:
                 ok = await resumeViaMenu(player)
             case .lxMusic:
                 ok = LXMusicOpenAPI.shared.sendDirect("play", arguments: [])
@@ -80,8 +80,13 @@ enum IdlePlaybackActions {
                 default: return true
                 }
             }
-            let outcome = PlaybackMenuControl.press(.playPause, for: player)
+            let outcome = PlaybackMenuControl.pressStart(for: player)
             if outcome == .pressed {
+                // foobar2000 列表是空的时候按了 Play 也还停着:隔一会儿 Stop 还打勾就算没放起来,交给调用方打开它。
+                if PlaybackMenuControl.isStopped(for: player) != nil {
+                    try? await Task.sleep(nanoseconds: 1_500_000_000)
+                    return PlaybackMenuControl.isStopped(for: player) == false
+                }
                 guard PlaybackMenuControl.titleShowsState(player) else { return true }
                 presses += 1
                 continue

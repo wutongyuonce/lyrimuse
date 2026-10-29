@@ -81,6 +81,8 @@ func runFoobarTests() {
                     ["toggle-play-pause", "nil", "next-track", "previous-track", "nil", "nil"],
                     "foobar 菜单: 播放 / 暂停只按 Pause(暂停着按也是接着放),Play 不认")
         expectEqual(PMC.players.contains(.foobar2000), true, "foobar 菜单: 失焦时能按菜单")
+        expectEqual([PMC.startTitle(for: .foobar2000), PMC.startTitle(for: .pinePlayer), PMC.startTitle(for: .qqMusic)], ["Play", nil, nil],
+                    "foobar 菜单: 停住 / 冷启动后开播按 Play(Pause 不理),别家照旧按播放 / 暂停")
         expectEqual(MusicPlaybackController.controlRoute(exclusivelyAppleMusic: false, focusFallback: nil, focusHeldElsewhere: true,
                                                          directQueryFallback: .foobar2000, mediaControlCommand: "next-track"),
                     .menuAccessibility(.foobar2000, .nextTrack), "foobar 菜单: 焦点被占时下一首按它的菜单")
@@ -122,6 +124,11 @@ func runFoobarTests() {
                     true, "foobar 接线: 重报判定排在「位置逐毫秒相等」那道之前")
         expectEqual(sourceHas(client, "if bundleID == PinePlayerInfo.bundleID || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"),
                     true, "foobar 接线: 推的是光盘时先找同目录的图")
+        let idle = sourceText("lyrimuse/UI/IdlePlaybackActions.swift")
+        expectEqual(sourceHas(idle, "let outcome = PlaybackMenuControl.pressStart(for: player)"), true,
+                    "foobar 接线: 停播页「继续播放」按开播那一项")
+        expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,
+                    "foobar 接线: 按了还停着(列表是空的)就算没放起来,退回打开它")
         let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
         expectEqual(sourceHas(openFile, "acceptsBaseName: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
                     "foobar 接线: 认当前文件时没写标签的按不带扩展名的文件名拆")

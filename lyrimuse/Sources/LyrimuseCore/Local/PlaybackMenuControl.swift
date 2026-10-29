@@ -117,6 +117,32 @@ public enum PlaybackMenuControl {
         }
     }
 
+    /// 停着的播放器开播时按哪一项(标题):foobar2000 停住或冷启动后按 Pause 什么都不做,按 Play 才开播(冷启动后放上次那首);
+    /// 别的播放器为 nil,照旧按播放 / 暂停那一项。纯函数,selftest 覆盖。
+    public static func startTitle(for player: PlaybackPlayer) -> String? { player == .foobar2000 ? "Play" : nil }
+
+    /// 停着的播放器开播:有 `startTitle` 的按那一项,其余按播放 / 暂停。会阻塞跨进程调用,不要在主线程调。
+    public static func pressStart(for player: PlaybackPlayer) -> Outcome {
+        guard let title = startTitle(for: player) else { return press(.playPause, for: player) }
+        return withTransportItem(.playPause, titled: title, for: player) { item, _, inBudget in
+            guard inBudget() else { return .menuUnavailable }
+            let result = AXUIElementPerformAction(item, kAXPressAction as CFString)
+            return result == .success ? .pressed : .pressFailed(code: result.rawValue)
+        }
+    }
+
+    /// foobar2000 此刻是不是停住(菜单 Stop 那一项打勾;列表是空的时候按了 Play 也还停着)。别的播放器、读不到为 nil。
+    /// 会阻塞跨进程调用,不要在主线程调。
+    public static func isStopped(for player: PlaybackPlayer) -> Bool? {
+        guard player == .foobar2000 else { return nil }
+        var stopped: Bool?
+        _ = withTransportItem(.playPause, titled: "Stop", requireEnabled: false, for: player) { item, attribute, _ in
+            stopped = !((attribute(item, "AXMenuItemMarkChar") as? String) ?? "").isEmpty
+            return .pressed
+        }
+        return stopped
+    }
+
     /// 播放 / 暂停那一项此刻的标题,只读不按;读不到为 nil。QQ、网易云在放时是「暂停」、停着时是「播放」,按下去之后靠它确认
     /// 真的放起来了。会阻塞跨进程调用,不要在主线程调。
     public static func playPauseTitle(for player: PlaybackPlayer) -> String? {
@@ -128,10 +154,10 @@ public enum PlaybackMenuControl {
         return title
     }
 
-    /// 在播放控制那个菜单里找 `command` 那一项(要启用着),交给 `body`;找不到、没授权、播放器没在跑时不调 `body`,按原因返回。
-    /// `body` 拿到读属性的函数(同一份读取预算)和「预算还没用完」。
+    /// 在播放控制那个菜单里找 `command` 那一项(`titled` 给了就找标题是它的那一项;`requireEnabled` 时要启用着),交给 `body`;
+    /// 找不到、没授权、播放器没在跑时不调 `body`,按原因返回。`body` 拿到读属性的函数(同一份读取预算)和「预算还没用完」。
     private static func withTransportItem(
-        _ command: Command, for player: PlaybackPlayer,
+        _ command: Command, titled: String? = nil, requireEnabled: Bool = true, for player: PlaybackPlayer,
         body: (AXUIElement, (AXUIElement, String) -> AnyObject?, () -> Bool) -> Outcome
     ) -> Outcome {
         guard player == .qqMusic || player == .netease || player == .kugou || player == .pinePlayer || player == .reamp
@@ -171,8 +197,11 @@ public enum PlaybackMenuControl {
                     return (command, item)
                 }
                 guard isTransportMenu(found.map(\.command)) else { continue }
-                guard let item = found.first(where: { $0.command == command })?.element,
-                      attribute(item, kAXEnabledAttribute) as? Bool == true, inBudget() else { return .menuUnavailable }
+                let picked = titled.map { want in
+                    children(menu).prefix(32).first { (attribute($0, kAXTitleAttribute) as? String)?.trimmingCharacters(in: .whitespaces) == want }
+                } ?? found.first(where: { $0.command == command })?.element
+                guard let item = picked, !requireEnabled || attribute(item, kAXEnabledAttribute) as? Bool == true,
+                      inBudget() else { return .menuUnavailable }
                 return body(item, attribute, inBudget)
             }
         }
