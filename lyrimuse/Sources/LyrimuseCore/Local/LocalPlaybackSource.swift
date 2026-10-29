@@ -1039,10 +1039,12 @@ public final class LocalPlaybackSource: ObservableObject {
     /// Pine Player 的位置是 `PinePlayhead` 从它恢复那份锚点起算的(暂停前的位置接上,或进度条校准过),同样原样采信。
     /// iPad 版网易云(`client`:这份会话实际是谁报的)恢复那一拍的锚点对真值在 0.01 秒上下,换歌开播那一拍补过提前量
     /// (`NetEaseIPadNowPlaying.bareStartLead` / `fullStartLead`),同样原样采信,不然提前量被削成信号至今那一截。见 02 章决策 198。
+    /// iPad 版 QQ 音乐开播后那一帧改写帧带着准的进度,常正好落在速率翻 1 那一拍,同样原样采信。见 02 章决策 204。
     /// 别的播放器照旧削。纯函数,selftest 覆盖。
     public nonisolated static func resumeReadingNeverLeads(bundleID: String?, client: String? = nil) -> Bool {
         bundleID == PlaybackPlayer.kaset.bundleIdentifier || bundleID == PlaybackPlayer.vox.bundleIdentifier
             || bundleID == PlaybackPlayer.pinePlayer.bundleIdentifier || client == NetEaseIPadNowPlaying.bundleID
+            || client == QQIPadNowPlaying.bundleID
     }
 
     /// 冻结检测:曲目/广告结尾 Spotify 会把 MediaRemote 锚点冻住 ——
@@ -1594,10 +1596,12 @@ public final class LocalPlaybackSource: ObservableObject {
     /// 每拍半秒的几次小跳),和位置是 `PinePlayhead` 那块表的 Pine Player(进度条校准改的零点几秒要当拍到屏上)。
     /// iPad 版网易云(`client`:这份会话实际是谁报的)也是:「锁屏歌词」开着时它每换一句都带着准的进度重报一次,开播那个锚点却
     /// 早晚不定(实测早 0.1~0.3 秒或晚 0.45 秒),按网易云 Mac 版那档(只往前纠)早了的整首纠不回来。见 02 章决策 198。
+    /// iPad 版 QQ 音乐也是:开播那一帧有时比紧跟的改写帧早 0.58 秒,改写帧和之后的重报才准。见 02 章决策 204。
     /// 只管伺服这一处;暂停锚点判旧等 KKBOX 专属的规则仍只看 `followsRepublishedAnchors`。纯函数,selftest 直接覆盖。
     public nonisolated static func snapsToReportedPosition(bundleID: String?, client: String? = nil) -> Bool {
         followsRepublishedAnchors(bundleID: bundleID) || bundleID == PlaybackPlayer.amazonMusic.bundleIdentifier
             || bundleID == PlaybackPlayer.pinePlayer.bundleIdentifier || client == NetEaseIPadNowPlaying.bundleID
+            || client == QQIPadNowPlaying.bundleID
     }
 
     /// 跟随重发锚点的播放器,偏差 EMA 过了这个值就对齐读数。

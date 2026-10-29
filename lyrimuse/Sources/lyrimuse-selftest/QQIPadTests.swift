@@ -134,6 +134,11 @@ func runQQIPadTests() {
                     [false, false, false], "iPad QQ 位置: 放完归零、暂停着开播、恢复跳回开头那几条不套")
         expectEqual(L.qqLateZeroAnchorLead(bundleID: ipad, anchorElapsed: 0, rawReported: 0, resumeSignalAge: 1), 0,
                     "iPad QQ 位置: 晚到的 0 锚点不补")
+        expectEqual([L.snapsToReportedPosition(bundleID: mac, client: Q.bundleID), L.snapsToReportedPosition(bundleID: mac, client: mac),
+                     L.snapsToReportedPosition(bundleID: mac)], [true, false, false],
+                    "iPad QQ 位置: 偏差过门槛就对齐它报的进度(开播那一帧有时早,改写帧才准),Mac 版照旧")
+        expectEqual([L.resumeReadingNeverLeads(bundleID: mac, client: Q.bundleID), L.resumeReadingNeverLeads(bundleID: mac, client: mac)],
+                    [true, false], "iPad QQ 位置: 速率翻 1 那一拍的读数原样采信(改写帧常落在这一拍),Mac 版照旧削")
     }
 
     // ---- 接线契约 ----
