@@ -1280,7 +1280,7 @@ Every setting in the Settings window, by where it lives: 293 in all. Type a name
 - **Push Time**
 - **Listening Digests**
 - **Data Source**
-- **Items per List**
+- **Items per List**: How many top artists, albums, and tracks to list
 - **Weekly Listening Digest**
 - **Daily Listening Report**
 - **Monthly Listening Digest**

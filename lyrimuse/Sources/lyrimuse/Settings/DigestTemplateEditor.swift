@@ -116,6 +116,7 @@ struct DigestTemplateEditor: View {
             HStack {
                 Spacer()
                 Button(L10n.t("取消")) { onCancel() }
+                    .settingsGlassButtons(inSheet: true)
                     .keyboardShortcut(.cancelAction)
                 Button(L10n.t("保存")) { onSave(draft) }
                     .keyboardShortcut(.defaultAction)
@@ -130,10 +131,10 @@ struct DigestTemplateEditor: View {
 
     private var editorColumn: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SettingsGlassTabPicker(selection: Binding(get: { style }, set: apply), options: DigestStyle.allCases,
-                                   label: \.label, compact: true,
-                                   isDisabled: { $0 == .custom && style != .custom && keptCustom == nil })
-                .fixedSize()
+            // sheet 里画不出激活态的玻璃,几选一用胶囊分段(11 章决策 57)。
+            SettingsPillSegmentedControl(selection: Binding(get: { style }, set: apply), options: DigestStyle.allCases,
+                                         label: \.label, minWidth: 0,
+                                         isDisabled: { $0 == .custom && style != .custom && keptCustom == nil })
             fieldLabel(L10n.t("标题"))
             PlaceholderTextView(text: $title, singleLine: true, controller: insertion, field: .title)
                 .frame(height: 26)

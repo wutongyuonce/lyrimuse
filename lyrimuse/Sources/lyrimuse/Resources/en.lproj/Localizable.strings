@@ -788,6 +788,7 @@
 "唯一的差异是胜者在「%1$@」一项多 %2$d 分" = "The only difference: the winner scored %2$d more on “%1$@”";
 "喜欢" = "Favorite";
 "喜欢/取消喜欢" = "Favorite/Remove Favorite";
+"四档共用" = "Shared by All Four";
 "四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送" = "Shared by all four reports. Click a placeholder below to insert it at the cursor; a line is left out when none of its placeholders has data";
 "回到逐句编辑" = "Back to Line Editing";
 "因网络不可用已停止" = "Stopped: no connection";

@@ -318,7 +318,7 @@ struct NotificationChannelsCard: View {
         .help(status.help ?? "")
     }
 
-    /// 行里第二行字:平台,加上次推送的结果。
+    /// 行里第二行字:平台(起了名字时)、报告内容选的那一档,加上次推送的结果。
     private func rowStatus(_ channel: NotificationChannel, platform: NotificationPlatform?) -> (text: String, tint: Color, help: String?) {
         let platformName = platform?.displayName ?? channel.platform
         let prefix = channel.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "" : platformName + " · "
@@ -327,14 +327,15 @@ struct NotificationChannelsCard: View {
             let missing = channel.platform == "telegram" && !channel.url.isEmpty ? L10n.t("还没填 Chat ID") : L10n.t("还没填地址")
             return (prefix + missing, .orange, nil)
         }
-        guard let last = log.latestByChannel[channel.id] else { return (prefix + L10n.t("还没推送过"), .secondary, nil) }
+        let lead = prefix + channel.resolvedDigest(legacy: FeatureSettingsStore.shared.digestTemplate).style.label + " · "
+        guard let last = log.latestByChannel[channel.id] else { return (lead + L10n.t("还没推送过"), .secondary, nil) }
         let when = notificationTimeText(last.date)
         guard let failure = last.failure else {
-            return (prefix + String(format: L10n.t("%@ 已送达"), when), .secondary, last.title)
+            return (lead + String(format: L10n.t("%@ 已送达"), when), .secondary, last.title)
         }
         let reason = NotificationFailureText.summary(failure, platform: platform)
         let advice = NotificationFailureText.advice(failure, platform: platform)
-        return (prefix + String(format: L10n.t("%1$@ 失败 · %2$@"), when, reason), .red,
+        return (lead + String(format: L10n.t("%1$@ 失败 · %2$@"), when, reason), .red,
                 [reason, advice, failure.detail].compactMap { $0 }.joined(separator: "\n"))
     }
 
@@ -353,14 +354,14 @@ struct NotificationChannelsCard: View {
 
 // MARK: - 推送时间
 
-/// 「听歌报告」卡里的「推送时间」:四档报告都在这个时刻推(引擎 digestschedule.go)。时刻按这台 Mac 当前的时区算,副标题写明是哪个时区;
-/// 换了时区(出差、手动改)界面和引擎都跟着变。改了立刻落盘,引擎按 mtime 热重读。见 15 章决策 77。
-struct DigestPushTimeRow: View {
+/// 「听歌报告」卡「四档共用」里的「推送时间」:四档报告都在这个时刻推(引擎 digestschedule.go)。时刻按这台 Mac 当前的时区算,
+/// ⓘ 里写明是哪个时区;换了时区(出差、手动改)界面和引擎都跟着变。改了立刻落盘,引擎按 mtime 热重读。见 15 章决策 77。
+struct DigestPushTimeCell: View {
     @ObservedObject private var features = FeatureSettingsStore.shared
 
     var body: some View {
-        SettingsRow(icon: "clock", title: L10n.t("推送时间"),
-                    subtitle: String(format: L10n.t("按这台 Mac 当前的时区（%@）"), DigestPushTime.timeZoneText(.autoupdatingCurrent))) {
+        SettingsControlCell(icon: "clock", title: L10n.t("推送时间"),
+                            help: String(format: L10n.t("按这台 Mac 当前的时区（%@）"), DigestPushTime.timeZoneText(.autoupdatingCurrent))) {
             NotificationClockField(label: L10n.t("推送时间"), minutes: Binding(
                 get: { features.digestPushMinutes },
                 set: { value in
@@ -370,7 +371,6 @@ struct DigestPushTimeRow: View {
                 }
             ))
         }
-        .settingsSearchHighlight(title: L10n.t("推送时间"))
     }
 }
 
@@ -579,13 +579,15 @@ struct NotificationChannelEditor: View {
 
     private var canSave: Bool { draft.isComplete }
 
+    /// 字段收在一张 sheet 用的卡片底里(sheet 里的玻璃一直画失焦那一档,卡片和按钮都传 `inSheet`,见 11 章决策 57)。
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             header
             if isNew { platformGrid }
             fields
+                .padding(14)
+                .settingsCardBackground(cornerRadius: 12, inSheet: true)
             testResult
-            Divider()
             footer
         }
         .padding(20)
@@ -654,7 +656,7 @@ struct NotificationChannelEditor: View {
                 .foregroundStyle(selected ? Color.accentColor : .primary)
                 .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SettingsGlassHoverButtonStyle(showsFill: !selected))
         // 自绘气泡,不用 .help():系统提示要停约 2 秒才弹,设置窗不在前台时还不弹(见 HoverNote 头注)。
         .hoverNote(p.summary)
     }
@@ -744,12 +746,11 @@ struct NotificationChannelEditor: View {
                 Text(L10n.t("报告内容"))
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 8) {
-                        SettingsGlassTabPicker(selection: Binding(get: { digestStyle }, set: selectDigestStyle),
-                                               options: DigestStyle.allCases, label: \.label, compact: true)
-                            .fixedSize()
+                        SettingsPillSegmentedControl(selection: Binding(get: { digestStyle }, set: selectDigestStyle),
+                                                     options: DigestStyle.allCases, label: \.label, minWidth: 0)
                         Button(L10n.t("编辑模板…")) { openTemplateEditor(shownTemplate) }
                             .controlSize(.small)
-                            .settingsGlassButtons()
+                            .settingsGlassButtons(inSheet: true)
                             .buttonBorderShape(.capsule)
                     }
                     Text(digestStyle.note)
@@ -860,22 +861,27 @@ struct NotificationChannelEditor: View {
         }
     }
 
+    /// 底部一排:左边三颗是 sheet 里的玻璃按钮,右边「取消」同款,「保存」是系统默认按钮(回车触发、强调色)。
     private var footer: some View {
         HStack {
-            Button(L10n.t("发送测试")) { runTest() }
-                .disabled(!draft.isComplete || testing)
-            Button(L10n.t("预览")) { previewing.toggle() }
-                .help(L10n.t("用这一期的真实数据看看推送在这个平台上的样子"))
-                .popover(isPresented: $previewing, arrowEdge: .top) {
-                    NotificationPreviewCard(platform: platform, senderName: cleaned.name.isEmpty ? platform.displayName : cleaned.name,
-                                            signed: !cleaned.secret.isEmpty, style: digestStyle, template: draft.digestTemplate)
+            Group {
+                Button(L10n.t("发送测试")) { runTest() }
+                    .disabled(!draft.isComplete || testing)
+                Button(L10n.t("预览")) { previewing.toggle() }
+                    .help(L10n.t("用这一期的真实数据看看推送在这个平台上的样子"))
+                    .popover(isPresented: $previewing, arrowEdge: .top) {
+                        NotificationPreviewCard(platform: platform, senderName: cleaned.name.isEmpty ? platform.displayName : cleaned.name,
+                                                signed: !cleaned.secret.isEmpty, style: digestStyle, template: draft.digestTemplate)
+                    }
+                if !isNew {
+                    Button(L10n.t("删除…"), role: .destructive) { confirmingDelete = true }
                 }
-            if !isNew {
-                Button(L10n.t("删除…"), role: .destructive) { confirmingDelete = true }
             }
+            .settingsGlassButtons(inSheet: true)
             Spacer()
             Button(L10n.t("取消")) { dismiss() }
                 .keyboardShortcut(.cancelAction)
+                .settingsGlassButtons(inSheet: true)
             Button(L10n.t("保存")) { onSave(cleaned) }
                 .keyboardShortcut(.defaultAction)
                 .disabled(!canSave)
@@ -907,7 +913,7 @@ struct NotificationChannelEditor: View {
 // MARK: - 推送记录
 
 /// 「推送记录」卡:最近几次推送,没成的写原因、可以重发;点一行展开看推出去的完整内容和渠道、耗时、平台返回。
-/// 平时列最近 6 条;点「全部」后列出引擎留着的全部记录(最多 100 条),高度封顶、在卡里滚,不把页面越撑越长。
+/// 每条收起时只占一行。平时列最近 4 条;点「全部」后列出引擎留着的全部记录(最多 100 条),高度封顶、在卡里滚,不把页面越撑越长。
 /// 没有记录时整张卡不出现。
 struct NotificationLogCard: View {
     @ObservedObject var config: ConfigStore
@@ -921,9 +927,9 @@ struct NotificationLogCard: View {
     /// 刚点开的那条:列表在滚时把它展开的内容滚进来。
     @State private var revealing: String?
 
-    private static let collapsedCount = 6
-    /// 「全部」时列表的最高高度,约 8 条收起的记录。
-    private static let expandedMaxHeight: CGFloat = 440
+    private static let collapsedCount = 4
+    /// 「全部」时列表的最高高度,约 10 条收起的记录。
+    private static let expandedMaxHeight: CGFloat = 320
 
     var body: some View {
         if !log.entries.isEmpty {
@@ -985,13 +991,17 @@ struct NotificationLogCard: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 92, alignment: .leading)
             VStack(alignment: .leading, spacing: 2) {
-                Text(entry.title ?? "")
-                    .font(.system(size: 12))
-                    .lineLimit(1)
-                Text(channelName)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                // 标题和渠道排一行:收起时每条只占一行,失败原因、重发结果才另起一行。
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(entry.title ?? "")
+                        .font(.system(size: 12))
+                        .lineLimit(1)
+                        .layoutPriority(1)
+                    Text(channelName)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
                 if let failure = entry.failure {
                     Text(NotificationFailureText.summary(failure, platform: platform))
                         .font(.system(size: 11))

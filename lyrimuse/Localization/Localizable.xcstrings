@@ -57360,6 +57360,29 @@
           }
         }
       }
+    },
+    "四档共用" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shared by All Four"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "四档共用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "四檔共用"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

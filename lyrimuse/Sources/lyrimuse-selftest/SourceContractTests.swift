@@ -3997,11 +3997,11 @@ func runSourceContractSettingsTests() {
         let fieldsBody = sourceBody("private var fields: some View {", in: section)
         expectEqual((fieldsBody.range(of: "Text(L10n.t(\"名称\"))")?.lowerBound).map { $0 < (fieldsBody.range(of: "Text(platform.fieldLabel)")?.lowerBound ?? $0) },
                     true, "推送渠道: 编辑表单第一行是名称")
-        let pushRow = sourceBody("struct DigestPushTimeRow: View {", in: section)
+        let pushRow = sourceBody("struct DigestPushTimeCell: View {", in: section)
         expectEqual(sourceHas(pushRow, "features.digestPushMinutes = value Task { await features.save() }")
                         && sourceHas(pushRow, "DigestPushTime.timeZoneText(.autoupdatingCurrent)")
-                        && sourceHas(tab, "DigestPushTimeRow()") && !card.contains("DigestPushTimeRow"),
-                    true, "推送时间: 那一行在听歌报告卡里(不在渠道卡),写明时区,改了就落盘")
+                        && sourceHas(tab, "DigestPushTimeCell()") && !card.contains("DigestPushTimeCell"),
+                    true, "推送时间: 那一块在听歌报告卡的「四档共用」里(不在渠道卡),ⓘ 写明时区,改了就落盘")
         expectEqual(sourceHas(tab, "if digestSourcesChoosable {")
                         && sourceHas(tab, "config.lastfmBridgeMissingHint() == nil && config.isListenBrainzReadable"),
                     true, "推送提醒第二期: 两个账号都能读统计时才给选数据源(分段和右键都是)")
@@ -4013,11 +4013,20 @@ func runSourceContractSettingsTests() {
         let events = ["dailyDigest", "weeklyDigest", "monthlyDigest", "yearlyDigest"]
         expectEqual(events.map { tab.contains("event: NotificationRouting.\($0), enabled: \\.\($0),") }, [true, true, true, true],
                     "推送提醒第二期: 四档行各把自己的事件名传给下拉")
-        expectEqual(sourceHas(sourceBody("private func digestRow(", in: tab), "NotificationRoutePicker(config: config, event: event)"), true,
-                    "推送提醒第二期: 下拉在每档行尾、开关左边")
-        expectEqual(sourceHas(tab, "SettingsRow(icon: \"list.number\", title: L10n.t(\"每类列出\"), subtitle: L10n.t(\"歌手、专辑、歌曲各列前几名\")) {")
+        expectEqual(sourceHas(sourceBody("private func digestTile(", in: tab), "NotificationRoutePicker(config: config, event: event)"), true,
+                    "推送提醒第二期: 下拉在每档小块里、开关左边")
+        expectEqual(sourceHas(tab, "SettingsControlCell(icon: \"list.number\", title: L10n.t(\"每类列出\"), help: L10n.t(\"歌手、专辑、歌曲各列前几名\")) {")
                         && sourceHas(tab, "features.digestTopN = next Task { await features.save() }"), true,
-                    "推送提醒第二期: 「每类列出」一行接到 features.digestTopN 并落盘")
+                    "推送提醒第二期: 「每类列出」那一块接到 features.digestTopN 并落盘")
+        // 推送提醒页收紧(15 章决策 92):四档是两列开关小块,三项共用设置是一组控件小块;两个弹窗里的几选一用胶囊分段、按钮用 sheet 里的玻璃。
+        let editorSource = read("Sources/lyrimuse/Settings/DigestTemplateEditor.swift")
+        expectEqual(sourceHas(tab, "SettingsTileGrid(title: L10n.t(\"四档共用\"), columns: 1) {")
+                        && sourceHas(sourceBody("private func digestTile(", in: tab), "SettingsToggleTile(icon: icon, title: title, detail: subtitle,")
+                        && !section.contains("SettingsGlassTabPicker") && !editorSource.contains("SettingsGlassTabPicker")
+                        && sourceHas(section, ".settingsCardBackground(cornerRadius: 12, inSheet: true)")
+                        && sourceHas(section, ".settingsGlassButtons(inSheet: true)")
+                        && sourceHas(editorSource, ".settingsGlassButtons(inSheet: true)"), true,
+                    "推送提醒页: 四档小块、四档共用一组;弹窗里不用玻璃分段,卡片和按钮画 sheet 替身")
         expectEqual(sourceHas(store, "if !notificationRoutes.isEmpty { fields[\"notification_routes\"] = notificationRoutes }")
                         && sourceHas(store, "knownKeys: Set(fields.keys).union([\"notification_routes\"])")
                         && sourceHas(store, "notificationRoutes = NotificationRouting.routes(fromConfig: raw)")
@@ -4027,7 +4036,7 @@ func runSourceContractSettingsTests() {
                         && sourceHas(featureStore, "digestTopN = DigestTopN.resolved(f.digestTopN) digestPushMinutes = DigestPushTime.resolved(f.digestPushTime)")
                         && sourceHas(featureStore, "case digestPushTime = \"digest_push_time\""),
                     true, "推送时间: 每类列出、推送时间进 features.json 的整份快照、加载时读回")
-        expectEqual(sourceHas(tab, "DigestPushTimeRow()") && !tab.contains("DigestTemplateRow()")
+        expectEqual(sourceHas(tab, "DigestPushTimeCell()") && !tab.contains("DigestTemplateRow()")
                         && sourceHas(featureStore, "digestTemplate: DigestTemplateFile(digestTemplate),")
                         && sourceHas(featureStore, "digestTemplate = DigestTemplate.resolved(title: f.digestTemplate?.title, body: f.digestTemplate?.body)")
                         && sourceHas(featureStore, "case digestTemplate = \"digest_template\""),

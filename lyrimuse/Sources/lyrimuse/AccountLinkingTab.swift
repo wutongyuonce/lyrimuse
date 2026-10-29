@@ -772,10 +772,10 @@ struct AccountLinkingTab: View {
         source == "listenbrainz" ? "ListenBrainz" : "Last.fm"
     }
 
-    /// 「听歌报告」卡里的一档:图标、名字、什么时候推、开关。这一档的数据源跟顶上那一行不一样时副标题注明;
+    /// 「听歌报告」卡里的一档(开关小块):图标、名字、什么时候推、开关。这一档的数据源跟「四档共用」那一项不一样时小字注明;
     /// 右键单独换这一档的数据源(绝大多数人四档用同一个源,单独换的入口不占地方)。有两个以上推送渠道时开关左边多一个
     /// 「推到哪些渠道」的小下拉(NotificationRoutePicker,event 是引擎的事件名,见 Core `NotificationRouting`)。
-    private func digestRow(
+    private func digestTile(
         icon: String, title: String, schedule: String, event: String,
         enabled: ReferenceWritableKeyPath<FeatureSettingsStore, Bool>,
         source: ReferenceWritableKeyPath<FeatureSettingsStore, String>
@@ -784,11 +784,8 @@ struct AccountLinkingTab: View {
         let subtitle = own.isEmpty || own == sharedDigestSource
             ? schedule
             : schedule + " · " + String(format: L10n.t("数据来源：%@"), Self.digestSourceName(own))
-        return SettingsRow(icon: icon, title: title, subtitle: subtitle) {
-            HStack(spacing: 8) {
-                NotificationRoutePicker(config: config, event: event)
-                Toggle("", isOn: digestEnabledBinding(enabled, source: source))
-            }
+        return SettingsToggleTile(icon: icon, title: title, detail: subtitle, isOn: digestEnabledBinding(enabled, source: source)) {
+            NotificationRoutePicker(config: config, event: event)
         }
         .contentShape(Rectangle())
         .contextMenu {
@@ -2058,66 +2055,69 @@ struct AccountLinkingTab: View {
     // 一个跳转提示。实际推送的是 Top 歌手 / 专辑 / 歌曲各 N 条(「每类列出」,默认 3)+总播放次数(见 lyrimuse-engine/digest.go
     // 的 digestBody),别跟另一个不相关的功能"历史 Top10 歌手统计"搞混——那是网页上
     // 的常驻榜单,数据来源不同。
+    /// 推送提醒页三张卡:推送渠道、听歌报告、推送记录。听歌报告卡上面是四档的开关小块(两列),下面一组「四档共用」的
+    /// 数据来源、每类列出、推送时间。见 15 章决策 92。
     @ViewBuilder
     private var barkFields: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 12) {
             NotificationChannelsCard(config: config)
 
             // 数据源可选——Last.fm 的周榜接口(user.getWeekly*Chart)接受任意 from/to,不是只认官方周边界,所以每一档都能
-            // 用自己的数据源。界面上合成顶上一行「数据来源」(一次改四档),单独换某一档右键那一行,见 digestRow。
+            // 用自己的数据源。界面上合成「四档共用」里的「数据来源」(一次改四档),单独换某一档右键那一块,见 digestTile。
             SettingsCard(cornerRadius: 18) {
                 SettingsCardHeader(title: L10n.t("听歌报告"))
-                SettingsRow(icon: "cylinder.split.1x2", title: L10n.t("数据来源")) {
-                    // 两个账号都能读统计时才给选;只连了一个就直接写那个名字,不摆一个点了也换不过去的分段。
-                    if digestSourcesChoosable {
-                        SettingsPillSegmentedControl(
-                            selection: sharedDigestSourceBinding,
-                            options: ["lastfm", "listenbrainz"],
-                            label: { Self.digestSourceName($0) },
-                            minWidth: 0
-                        )
-                    } else if !sharedDigestSource.isEmpty {
-                        Text(Self.digestSourceName(sharedDigestSource))
-                            .font(.system(size: 13))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text(L10n.t("未连接 Last.fm 或 ListenBrainz"))
-                            .font(.system(size: 13))
-                            .foregroundStyle(.secondary)
+                let time = DigestPushTime.clockText(features.digestPushMinutes)
+                SettingsTileGrid(columns: 2) {
+                    digestTile(icon: "sun.max", title: L10n.t("每日听歌报告"),
+                               schedule: DigestPushTime.dailyCoversSameDay(features.digestPushMinutes)
+                                   ? String(format: L10n.t("每天 %@ 推送当天的报告"), time)
+                                   : String(format: L10n.t("每天 %@ 推送前一天的报告"), time),
+                               event: NotificationRouting.dailyDigest, enabled: \.dailyDigest, source: \.dailyDigestSource)
+                    digestTile(icon: "calendar", title: L10n.t("每周听歌小结"), schedule: String(format: L10n.t("一周结束后的 %@ 推送上一周的小结"), time),
+                               event: NotificationRouting.weeklyDigest, enabled: \.weeklyDigest, source: \.weeklyDigestSource)
+                    digestTile(icon: "calendar.badge.clock", title: L10n.t("每月听歌小结"), schedule: String(format: L10n.t("每月 1 日 %@ 推送上个月的小结"), time),
+                               event: NotificationRouting.monthlyDigest, enabled: \.monthlyDigest, source: \.monthlyDigestSource)
+                    digestTile(icon: "trophy", title: L10n.t("年度听歌小结"), schedule: String(format: L10n.t("每年 1 月 1 日 %@ 推送上一年的小结"), time),
+                               event: NotificationRouting.yearlyDigest, enabled: \.yearlyDigest, source: \.yearlyDigestSource)
+                }
+                // 「数据来源」的分段宽,单独占一行;另两项并排。
+                VStack(spacing: 6) {
+                    SettingsTileGrid(title: L10n.t("四档共用"), columns: 1) {
+                        SettingsControlCell(icon: "cylinder.split.1x2", title: L10n.t("数据来源")) {
+                            // 两个账号都能读统计时才给选;只连了一个就直接写那个名字,不摆一个点了也换不过去的分段。
+                            if digestSourcesChoosable {
+                                SettingsPillSegmentedControl(
+                                    selection: sharedDigestSourceBinding,
+                                    options: ["lastfm", "listenbrainz"],
+                                    label: { Self.digestSourceName($0) },
+                                    minWidth: 0
+                                )
+                            } else {
+                                Text(sharedDigestSource.isEmpty ? L10n.t("未连接 Last.fm 或 ListenBrainz") : Self.digestSourceName(sharedDigestSource))
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                    SettingsTileGrid(columns: 2) {
+                        // 引擎 digest.go 的 digestTopN。
+                        SettingsControlCell(icon: "list.number", title: L10n.t("每类列出"), help: L10n.t("歌手、专辑、歌曲各列前几名")) {
+                            DigestTopNStepper(value: Binding(
+                                get: { features.digestTopN },
+                                set: { value in
+                                    let next = DigestTopN.resolved(value)
+                                    guard next != features.digestTopN else { return }
+                                    features.digestTopN = next
+                                    Task { await features.save() }
+                                }
+                            ))
+                        }
+                        DigestPushTimeCell()
                     }
                 }
-                CardDivider()
-                // 四档共用,跟「数据来源」一样放卡顶(引擎 digest.go 的 digestTopN)。
-                SettingsRow(icon: "list.number", title: L10n.t("每类列出"), subtitle: L10n.t("歌手、专辑、歌曲各列前几名")) {
-                    DigestTopNStepper(value: Binding(
-                        get: { features.digestTopN },
-                        set: { value in
-                            let next = DigestTopN.resolved(value)
-                            guard next != features.digestTopN else { return }
-                            features.digestTopN = next
-                            Task { await features.save() }
-                        }
-                    ))
-                }
-                CardDivider()
-                // 四档共用的推送时刻,跟「数据来源」「每类列出」一样放卡顶;下面四档的副标题按它写什么时候推。
-                DigestPushTimeRow()
-                CardDivider()
-                let time = DigestPushTime.clockText(features.digestPushMinutes)
-                digestRow(icon: "sun.max", title: L10n.t("每日听歌报告"),
-                          schedule: DigestPushTime.dailyCoversSameDay(features.digestPushMinutes)
-                              ? String(format: L10n.t("每天 %@ 推送当天的报告"), time)
-                              : String(format: L10n.t("每天 %@ 推送前一天的报告"), time),
-                          event: NotificationRouting.dailyDigest, enabled: \.dailyDigest, source: \.dailyDigestSource)
-                CardDivider()
-                digestRow(icon: "calendar", title: L10n.t("每周听歌小结"), schedule: String(format: L10n.t("一周结束后的 %@ 推送上一周的小结"), time),
-                          event: NotificationRouting.weeklyDigest, enabled: \.weeklyDigest, source: \.weeklyDigestSource)
-                CardDivider()
-                digestRow(icon: "calendar.badge.clock", title: L10n.t("每月听歌小结"), schedule: String(format: L10n.t("每月 1 日 %@ 推送上个月的小结"), time),
-                          event: NotificationRouting.monthlyDigest, enabled: \.monthlyDigest, source: \.monthlyDigestSource)
-                CardDivider()
-                digestRow(icon: "trophy", title: L10n.t("年度听歌小结"), schedule: String(format: L10n.t("每年 1 月 1 日 %@ 推送上一年的小结"), time),
-                          event: NotificationRouting.yearlyDigest, enabled: \.yearlyDigest, source: \.yearlyDigestSource)
+                .padding(.top, 10)
+                .padding(.bottom, 10)
             }
 
             NotificationLogCard(config: config)

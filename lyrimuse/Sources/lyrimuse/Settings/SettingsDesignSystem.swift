@@ -853,11 +853,13 @@ struct SettingsControlCell<Control: View>: View {
     }
 }
 
-/// 一个开关小块:图标 + 名字(+ ⓘ)+ 可选的附加按钮 + 小号开关,圆角淡底。名字最多两行。
+/// 一个开关小块:图标 + 名字(+ ⓘ)+ 可选的附加按钮 + 小号开关,圆角淡底。名字最多两行;`detail` 是名字下面一行小字
+/// (什么时候推这类状态),最多两行。
 struct SettingsToggleTile<Accessory: View>: View {
     var icon: String?
     let title: String
     var help: String?
+    var detail: String?
     let isOn: Binding<Bool>
     @ViewBuilder var accessory: () -> Accessory
 
@@ -869,10 +871,19 @@ struct SettingsToggleTile<Accessory: View>: View {
                     .environment(\.locale, Locale(identifier: "en"))
                     .frame(width: 16)
             }
-            Text(title)
-                .font(.system(size: 12.5))
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.system(size: 12.5))
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let detail {
+                    Text(detail)
+                        .font(.system(size: 10.5))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
             if let help { HelpButton(text: help) }
             Spacer(minLength: 4)
             // 附加按钮(「试用」、浓淡下拉)按自身宽度画,不跟名字分压缩量。
@@ -892,8 +903,8 @@ struct SettingsToggleTile<Accessory: View>: View {
 }
 
 extension SettingsToggleTile where Accessory == EmptyView {
-    init(icon: String? = nil, title: String, help: String? = nil, isOn: Binding<Bool>) {
-        self.init(icon: icon, title: title, help: help, isOn: isOn) { EmptyView() }
+    init(icon: String? = nil, title: String, help: String? = nil, detail: String? = nil, isOn: Binding<Bool>) {
+        self.init(icon: icon, title: title, help: help, detail: detail, isOn: isOn) { EmptyView() }
     }
 }
 
@@ -2263,12 +2274,15 @@ struct SettingsPillSegmentedControl<T: Hashable>: View {
     let label: (T) -> String
     var minWidth: CGFloat = 52
     var fillsWidth = false
+    /// 暂时不能选的档:变灰、点不了,位置照留(理由同 `SettingsGlassTabPicker.isDisabled`)。
+    var isDisabled: (T) -> Bool = { _ in false }
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 2) {
             ForEach(options, id: \.self) { option in
                 let isSelected = selection == option
+                let disabled = isDisabled(option)
                 Button {
                     selection = option
                 } label: {
@@ -2281,8 +2295,9 @@ struct SettingsPillSegmentedControl<T: Hashable>: View {
                         .contentShape(Capsule())
                 }
                 .buttonStyle(SettingsGlassHoverButtonStyle(showsFill: !isSelected))
-                .foregroundStyle(isSelected ? Color.white : Color.primary)
+                .foregroundStyle(isSelected ? AnyShapeStyle(Color.white) : disabled ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.primary))
                 .background(Capsule().fill(isSelected ? Color.accentColor : Color.clear))
+                .disabled(disabled)
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
         }
