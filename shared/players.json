@@ -373,11 +373,11 @@
       "ignoresSeekCommand": false,
       "needsAutomationPermission": false,
       "needsFullDiskAccess": false,
-      "needsAccessibilityPermission": false,
+      "needsAccessibilityPermission": true,
       "tint": {"rgb": [0.6, 0.6, 0.62]},
       "fallbackSymbol": "music.note",
       "bundledIcon": "Foobar2000Icon",
-      "note": "foobar2000 的 Mac 版,本地音乐播放器,不带沙盒,没有 AppleScript 字典、没有 URL scheme,走 media-control。系统会话字段齐全:歌名、歌手、专辑分开报,时长精确到毫秒,没写标签时歌名是不带扩展名的文件名、歌手和专辑不报;GBK / Big5 标签照 Latin-1 读成乱码。锚点只在开播、暂停、恢复、跳转、换歌时发,跟真实出声差 0.02~0.06 秒,归 precise。文件有封面时开播先报它自己的光盘占位图(KnownPlaceholderArtwork),约 0.5 秒后换上真封面,同时把开播锚点重报一遍(位置 0 或零点几秒、时刻换成那一刻),这一份晚了约半秒,第一份才准,所以 republishesZeroAnchor 为 true,不为 0 的那种另按 MediaControlClient.isFoobarArtworkRepublish 认。列表放完、停住时整个撤掉会话。App 侧按进程号找它开着的当前文件(PlayerOpenFile)。nativeLyricSource 填 localfile:正在放的文件同目录同名的 .lrc 与内嵌歌词(localfilelyrics.go)。processName 10 字节。"
+      "note": "foobar2000 的 Mac 版,本地音乐播放器,不带沙盒,没有 AppleScript 字典、没有 URL scheme,走 media-control。系统会话字段齐全:歌名、歌手、专辑分开报,时长精确到毫秒,没写标签时歌名是不带扩展名的文件名、歌手和专辑不报;GBK / Big5 标签照 Latin-1 读成乱码。锚点只在开播、暂停、恢复、跳转、换歌时发,跟真实出声差 0.02~0.06 秒,归 precise。文件有封面时开播先报它自己的光盘占位图(KnownPlaceholderArtwork),约 0.5 秒后换上真封面,同时把开播锚点重报一遍(位置 0 或零点几秒、时刻换成那一刻),这一份晚了约半秒,第一份才准,所以 republishesZeroAnchor 为 true,不为 0 的那种另按 MediaControlClient.isFoobarArtworkRepublish 认。列表放完、停住时整个撤掉会话。App 侧按进程号找它开着的当前文件(PlayerOpenFile),没写标签时按不带扩展名的文件名拆歌手歌名;随机、循环读写菜单 Playback › Order 的勾(FoobarMenuControl),音量读写窗口里的滑块(FoobarVolume),焦点被别的 App 占着时按 Playback 菜单的 Pause / Next / Previous,都要辅助功能权限;播放列表由 App 代读给预解析(FoobarPlaylist)。nativeLyricSource 填 localfile:正在放的文件同目录同名的 .lrc 与内嵌歌词(localfilelyrics.go)。processName 10 字节。"
     },
     {
       "id": "auto",

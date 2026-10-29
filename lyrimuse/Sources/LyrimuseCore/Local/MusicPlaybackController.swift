@@ -384,18 +384,19 @@ public enum MusicPlaybackController {
     /// Apple Music 和 Spotify 有可写的 AppleScript 属性,Kaset 有切换随机 / 循环、设音量的命令,VOX 有可写的循环和音量(没有随机);QQ 音乐只有模式,走它菜单栏
     /// 「播放模式」那三项(`QQMusicMenuControl`,要辅助功能权限),没有音量;Amazon Music 只有模式,按它播放条上的键、读它的日志
     /// (`AmazonMusicModeControl`);reAMP 只有随机和列表循环,按它菜单栏 Play 里的两个开关(`ReampMenuControl`);Pine Player 只有循环,
-    /// 按它菜单栏「重复模式」子菜单(`PineMenuControl`)。网易云、酷狗等没有
+    /// 按它菜单栏「重复模式」子菜单(`PineMenuControl`);foobar2000 有随机和两种循环,按它菜单栏「Order」子菜单(`FoobarMenuControl`),
+    /// 音量读写它窗口里的滑块(`FoobarVolume`)。网易云、酷狗等没有
     /// .sdef(不可脚本化),而
     /// media-control 走的系统级 MediaRemote 只有播放控制 —— 对它们只能不显示这些控件(各家实测见 07 章决策 130)。
     public static func supportsExtendedControls(_ player: PlaybackPlayer) -> Bool {
         player == .appleMusic || player == .spotify || player == .kaset || player == .qqMusic || player == .amazonMusic
-            || player == .reamp || player == .lxMusic || player == .vox || player == .pinePlayer
+            || player == .reamp || player == .lxMusic || player == .vox || player == .pinePlayer || player == .foobar2000
     }
 
     /// 这个播放器的循环档位里有没有「单曲循环」。见 MusicPlaybackMode.nextRepeat。
     public static func supportsRepeatOne(_ player: PlaybackPlayer) -> Bool {
         player == .appleMusic || player == .kaset || player == .qqMusic || player == .amazonMusic || player == .vox
-            || player == .pinePlayer
+            || player == .pinePlayer || player == .foobar2000
     }
 
     /// 这个播放器有没有「喜欢」:Apple Music(收藏)、Kaset(YouTube Music 的赞)、QQ 音乐、网易云音乐和酷狗音乐(菜单栏「喜欢歌曲」)、
@@ -729,6 +730,11 @@ public enum MusicPlaybackController {
                                          mode: PineMenuControl.readMode()
                                              .map { PlaybackModeState(mode: $0, options: PineMenuControl.options) },
                                          volume: PineVolume.read())
+        case .foobar2000:
+            return ExtendedControlsState(favorited: nil,
+                                         mode: FoobarMenuControl.readMode()
+                                             .map { PlaybackModeState(mode: $0, options: FoobarMenuControl.options) },
+                                         volume: FoobarVolume.read())
         case .vox:
             guard let c = voxControls() else { return .empty }
             return ExtendedControlsState(favorited: nil,
@@ -851,6 +857,8 @@ public enum MusicPlaybackController {
             return ReampMenuControl.readMode().map { PlaybackModeState(mode: $0, options: ReampMenuControl.options) }
         case .pinePlayer:
             return PineMenuControl.readMode().map { PlaybackModeState(mode: $0, options: PineMenuControl.options) }
+        case .foobar2000:
+            return FoobarMenuControl.readMode().map { PlaybackModeState(mode: $0, options: FoobarMenuControl.options) }
         case .vox:
             return voxControls().flatMap { voxPlaybackMode(repeatState: $0.repeatState) }
                 .map { PlaybackModeState(mode: $0, options: voxModeOptions) }
@@ -935,6 +943,8 @@ public enum MusicPlaybackController {
             return ReampMenuControl.setMode(mode)
         case .pinePlayer:
             return PineMenuControl.setMode(mode)
+        case .foobar2000:
+            return FoobarMenuControl.setMode(mode)
         case .vox:
             guard let state = voxRepeatState(for: mode) else { return false }
             return runAppleScriptCapturing(voxRunningGuard + #"tell application "VOX" to set repeat state to "# + String(state)) != nil
@@ -972,6 +982,8 @@ public enum MusicPlaybackController {
             return ReampVolume.read()
         case .pinePlayer:
             return PineVolume.read()
+        case .foobar2000:
+            return FoobarVolume.read()
         case .vox:
             return voxControls()?.volume
         case .lxMusic: // 开放 API 开着才有,没开时 nil(胶囊换成说明怎么打开)。
@@ -1003,6 +1015,8 @@ public enum MusicPlaybackController {
             return ReampVolume.set(v)
         case .pinePlayer:
             return PineVolume.set(v)
+        case .foobar2000:
+            return FoobarVolume.set(v)
         case .vox:
             return runAppleScriptCapturing(voxRunningGuard + #"tell application "VOX" to set player volume to \#(v)"#) != nil
         case .lxMusic:
@@ -1101,7 +1115,7 @@ public enum MusicPlaybackController {
         case kasetScript
         case voxScript
         case mediaControl
-        /// QQ / 网易云 / 酷狗 / Pine Player / reAMP 失焦时只按目标进程的播放菜单,汽水按它播放条上的键;跳转不走这条。
+        /// QQ / 网易云 / 酷狗 / Pine Player / reAMP / foobar2000 失焦时只按目标进程的播放菜单,汽水按它播放条上的键;跳转不走这条。
         case menuAccessibility(PlaybackPlayer, PlaybackMenuControl.Command)
         /// 跳转定向发给 Kaset 本体那份会话(`NowPlayingClientsProbe.sendSeek`),不发给系统当前会话。只有跳转走这条,见 `seekRoute`。
         case kasetDirect
@@ -1114,7 +1128,7 @@ public enum MusicPlaybackController {
         case withheld
     }
 
-    /// 按实际回退目标决定控制通路。QQ / 网易云 / 酷狗 / 汽水 / Pine Player / reAMP 直查回退只允许三个已验证的 AX 动作;
+    /// 按实际回退目标决定控制通路。QQ / 网易云 / 酷狗 / 汽水 / Pine Player / reAMP / foobar2000 直查回退只允许三个已验证的 AX 动作;
     /// 其它无定向通路的命令仍不发。选择列表和前台窗口不能充当回退目标。
     public static func controlRoute(exclusivelyAppleMusic: Bool, focusFallback: PlaybackPlayer?,
                                     focusHeldElsewhere: Bool = false, directQueryFallback: PlaybackPlayer? = nil,

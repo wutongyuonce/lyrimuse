@@ -45,6 +45,7 @@ func runPlayerQueryTests() {
     expectEqual(S.decide(request("playback_mode", bundle: PlaybackPlayer.qqMusic.bundleIdentifier), now: now),
                 .run(.playbackMode(.qqMusic)), "查询: 某一家的播放模式")
     expectEqual(S.decide(request("reamp_queue"), now: now), .run(.reampQueue), "查询: reAMP 播放列表")
+    expectEqual(S.decide(request("foobar_queue"), now: now), .run(.foobarQueue), "查询: foobar2000 播放列表")
     for bad in [nil, "com.example.none", PlaybackPlayer.kugou.bundleIdentifier, PlaybackPlayer.auto.bundleIdentifier] {
         expectEqual(S.decide(request("playback_mode", bundle: bad), now: now), .fail("unsupported player"),
                     "查询: 播放模式只问认得、能读模式的播放器(\(bad ?? "nil"))")
@@ -109,10 +110,11 @@ func runPlayerQueryTests() {
                        "PinePlaylist.queueReply().flatMap { Self.encodedReply($0) }",
                        "MusicPlaybackController.playbackMode(for: player).flatMap { Self.encodedReply(PlayerQueryMode(mode: $0.mode.rawValue)) }",
                        "ReampPlaylist.queueReply().flatMap { Self.encodedReply($0) }",
+                       "FoobarPlaylist.queueReply().flatMap { Self.encodedReply($0) }",
                        "output.map(site.parse)", "KasetPlayerInfo.queueReply(fromScriptOutput:"] {
             expectEqual(server.contains(needle), true, "查询(契约): 输出整理成结构再交(\(needle))")
         }
-        expectEqual(S.Kind.allCases.count, 10, "查询: 十种,跟引擎的 appQuery 常量一一对应")
+        expectEqual(S.Kind.allCases.count, 11, "查询: 十一种,跟引擎的 appQuery 常量一一对应")
     }
 
     // ---- 盯配置目录:原子写(临时文件改名)触发回调;目录本身删掉报告失效(09 章决策 175)----

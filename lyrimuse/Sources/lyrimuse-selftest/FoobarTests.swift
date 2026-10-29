@@ -1,7 +1,8 @@
 import Foundation
 import LyrimuseCore
 
-/// foobar2000:开播锚点随封面重报那一份不采信、按开着的文件认当前文件、光盘占位图、没封面时用匹配到的、接线契约。
+/// foobar2000:开播锚点随封面重报那一份不采信、按开着的文件认当前文件、光盘占位图、没封面时用匹配到的、播放顺序与音量、
+/// 失焦时的菜单、播放列表、没写标签的文件名、接线契约。
 /// 锚点照真机录到的数(media-control `--micros`,咔哒文件 2 秒一声,第一份锚点跟出声差 0.03~0.06 秒)。
 @MainActor
 func runFoobarTests() {
@@ -49,6 +50,67 @@ func runFoobarTests() {
         expectEqual(TornTrackHold.arrivesWhole(bundle: foobar), true, "foobar 换歌: 一帧报齐,不按撕裂快照按住")
     }
 
+    // ---- 播放顺序、音量、失焦时的菜单 ----
+    do {
+        typealias F = FoobarMenuControl
+        expectEqual(["Default", "Repeat (playlist)", "Repeat (track)", "Random", "Shuffle (tracks)", "Shuffle (albums)",
+                     "Shuffle (folders)", "Stop After Current"].map { F.mode(checkedTitle: $0)?.rawValue ?? "nil" },
+                    ["list", "repeatAll", "repeatOne", "shuffle", "shuffle", "shuffle", "shuffle", "nil"],
+                    "foobar 顺序: Order 七项对到四档,Random 和三种 Shuffle 都是随机")
+        expectEqual(F.titleToPress(for: .shuffle, current: .list), "Shuffle (tracks)", "foobar 顺序: 开随机按 Shuffle (tracks)")
+        expectEqual(F.titleToPress(for: .shuffle, current: .shuffle), nil, "foobar 顺序: 已经是随机(哪一种都算)不按")
+        expectEqual(F.titleToPress(for: .list, current: .repeatOne), "Default", "foobar 顺序: 关循环按 Default")
+        expectEqual(F.titleToPress(for: .repeatOne, current: nil), "Repeat (track)", "foobar 顺序: 读不出当前档也按")
+        let t0 = Date(timeIntervalSince1970: 1_000)
+        expectEqual(F.effective(read: .list, pending: (.repeatAll, t0), now: t0.addingTimeInterval(1)), .repeatAll,
+                    "foobar 顺序: 刚按过 1 秒内以按下去的为准(勾 0.9 秒后才跟上)")
+        expectEqual(F.effective(read: .list, pending: (.repeatAll, t0), now: t0.addingTimeInterval(3.5)), .list,
+                    "foobar 顺序: 过了 3 秒照读到的勾")
+        expectEqual(F.options, [.shuffle, .repeatAll, .repeatOne], "foobar 顺序: 随机、列表循环、单曲循环都有")
+        let sliders = [PineVolume.Slider(min: 0, max: 223.453, value: 8), PineVolume.Slider(min: 0, max: 100, value: 10)]
+        expectEqual(FoobarVolume.volumeIndex(sliders), 1, "foobar 音量: 取值 0~100 的那根")
+        expectEqual(FoobarVolume.volumeIndex([PineVolume.Slider(min: 0, max: 100, value: 3), PineVolume.Slider(min: 0, max: 100, value: 10)]),
+                    nil, "foobar 音量: 这首恰好 100 秒、两根都是 0~100 时不猜")
+        expectEqual([FoobarVolume.percent(10.00000048932983), FoobarVolume.percent(-1), FoobarVolume.percent(130)], [10, 0, 100],
+                    "foobar 音量: 四舍五入、越界夹住")
+        expectEqual(MusicPlaybackController.supportsExtendedControls(.foobar2000), true, "foobar 顺序: 歌词窗口出随机、循环、音量")
+        expectEqual(MusicPlaybackController.supportsRepeatOne(.foobar2000), true, "foobar 顺序: 有单曲循环")
+        expectEqual(PlaybackPlayer.foobar2000.accessibilityUse == .pressesPlayMode, true, "foobar 权限: 跟 reAMP 同一条说明")
+        typealias PMC = PlaybackMenuControl
+        expectEqual(["Pause", "Play", "Next", "Previous", "Stop", "Random"].map { PMC.command(forMenuTitle: $0, player: .foobar2000)?.rawValue ?? "nil" },
+                    ["toggle-play-pause", "nil", "next-track", "previous-track", "nil", "nil"],
+                    "foobar 菜单: 播放 / 暂停只按 Pause(暂停着按也是接着放),Play 不认")
+        expectEqual(PMC.players.contains(.foobar2000), true, "foobar 菜单: 失焦时能按菜单")
+        expectEqual(MusicPlaybackController.controlRoute(exclusivelyAppleMusic: false, focusFallback: nil, focusHeldElsewhere: true,
+                                                         directQueryFallback: .foobar2000, mediaControlCommand: "next-track"),
+                    .menuAccessibility(.foobar2000, .nextTrack), "foobar 菜单: 焦点被占时下一首按它的菜单")
+    }
+
+    // ---- 播放列表、没写标签的文件 ----
+    do {
+        typealias PL = FoobarPlaylist
+        let text = "\u{FEFF}file:///Users/a/Music/Lyrimuse测试/reAMP/Click A.wav\nfile:///Users/a/Music/100%/b.flac\n\nhttp://x/y.mp3\n/Users/a/c.mp3\n"
+        expectEqual(PL.paths(fplite: text), ["/Users/a/Music/Lyrimuse测试/reAMP/Click A.wav", "/Users/a/Music/100%/b.flac", "/Users/a/c.mp3"],
+                    "foobar 列表: 去掉 BOM 和 file://,空格、中文、百分号原样留,网络地址跳过")
+        let lists = [["/a/1.mp3", "/a/2.mp3"], ["/b/1.mp3", "/b/2.mp3", "/b/3.mp3"]]
+        expectEqual(PL.pick(lists, current: "/b/2.mp3")?.count, 3, "foobar 列表: 挑含着当前文件的那一份")
+        expectEqual(PL.pick(lists, current: "/c/9.mp3") == nil && PL.pick(lists, current: nil) == nil, true,
+                    "foobar 列表: 哪份都不含、不知道当前文件时不交")
+        let tagged = PL.track(path: "/m/x.mp3", tags: LocalAudioFileTags(title: "稻香", artist: "周杰伦", album: "魔杰座", duration: 223.4))
+        expectEqual("\(tagged.title)|\(tagged.artist)|\(tagged.album)", "稻香|周杰伦|魔杰座", "foobar 列表: 有标签用标签")
+        let untagged = PL.track(path: "/m/无标签 Mezzamo - Happy Boy.mp3", tags: LocalAudioFileTags(title: "", artist: "", album: "", duration: 40))
+        expectEqual("\(untagged.title)|\(untagged.artist)|\(untagged.duration)", "Happy Boy|无标签 Mezzamo|40.0",
+                    "foobar 列表: 没写标签的按文件名拆,跟真放到时同一份")
+        expectEqual([PL.repeating(.shuffle), PL.repeating(.repeatAll), PL.repeating(.repeatOne), PL.repeating(.list), PL.repeating(nil)],
+                    ["shuffle", "all", "one", "off", nil], "foobar 列表: 菜单的档交给引擎的写法")
+        let id = PlayerOpenFile.fileNameIdentity(reportedArtist: "", reportedTitle: "无标签 Mezzamo - Happy Boy",
+                                                 fileName: "无标签 Mezzamo - Happy Boy.mp3", duration: 40, acceptsBaseName: true)
+        expectEqual("\(id?.artist ?? "nil")|\(id?.title ?? "nil")", "无标签 Mezzamo|Happy Boy", "foobar 没写标签: 不带扩展名的文件名也拆")
+        expectEqual(PlayerOpenFile.fileNameIdentity(reportedArtist: "", reportedTitle: "无标签 Mezzamo - Happy Boy",
+                                                    fileName: "无标签 Mezzamo - Happy Boy.mp3", duration: 40) == nil, true,
+                    "foobar 没写标签: 别的播放器照旧只认带扩展名的")
+    }
+
     // ---- 接线契约 ----
     do {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
@@ -60,5 +122,8 @@ func runFoobarTests() {
                     true, "foobar 接线: 重报判定排在「位置逐毫秒相等」那道之前")
         expectEqual(sourceHas(client, "if bundleID == PinePlayerInfo.bundleID || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"),
                     true, "foobar 接线: 推的是光盘时先找同目录的图")
+        let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
+        expectEqual(sourceHas(openFile, "acceptsBaseName: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
+                    "foobar 接线: 认当前文件时没写标签的按不带扩展名的文件名拆")
     }
 }

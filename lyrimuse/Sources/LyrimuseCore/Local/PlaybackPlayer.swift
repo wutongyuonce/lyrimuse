@@ -233,7 +233,8 @@ extension PlaybackPlayer {
         /// 播放键(`SodaMusicControl`)。都没有模式键。
         case controlsPlayback
         /// 读、按菜单栏 Play 里的随机 / 循环(reAMP `ReampMenuControl`),读写音量滑块(`ReampVolume`),失焦时按同一个菜单里的
-        /// 暂停、上一首、下一首(`PlaybackMenuControl`)。
+        /// 暂停、上一首、下一首(`PlaybackMenuControl`)。foobar2000 同样:菜单「Order」(`FoobarMenuControl`)、音量滑块
+        /// (`FoobarVolume`)、失焦时按 Playback 菜单。
         case pressesPlayMode
         /// 读界面进度条把整秒的位置补准(Pine Player `PinePlayhead`),读播放列表给预解析(`PinePlaylist`),按菜单切循环(`PineMenuControl`),
         /// 读写音量滑块(`PineVolume`),失焦时按播放控制菜单(`PlaybackMenuControl`)。
@@ -247,7 +248,7 @@ extension PlaybackPlayer {
         case .qqMusic: return .switchesPlayMode
         case .netease, .kugou, .soda: return .controlsPlayback
         case .amazonMusic: return .calibratesProgress
-        case .reamp: return .pressesPlayMode
+        case .reamp, .foobar2000: return .pressesPlayMode
         case .pinePlayer: return .refinesProgress
         default: return nil
         }

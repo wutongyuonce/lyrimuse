@@ -34,7 +34,7 @@ public enum PlaybackPlayer: String, CaseIterable, Identifiable, Codable, Hashabl
     case vox = "vox"
     /// DigiPine 出的本地音乐播放器(Mac App Store 版,带沙盒),没有 AppleScript 字典,走 media-control。系统会话里歌手和专辑拼成一栏「歌手∙专辑」(U+2219,两边不空格)、专辑那栏空着;只有歌名时歌手一栏填的也是歌名,没写标签时歌名是带扩展名的文件名、歌手是一个空格。App 侧按进程号在它开着的音频文件里找标签对得上的那个,换回歌手、专辑和精确时长,找不到再拆这一栏(PinePlayerInfo)。位置锚点只到整秒(下取整),开播连发两份 0 秒锚点、后一份才是真起播点;位置换成 PinePlayhead 那块表:跳转、恢复之后按界面进度条跳秒的时刻补回小数(要辅助功能权限),读不到时按暂停前的位置接上或补半秒,所以归 precise。nativeLyricSource 填 localfile:正在放的文件同目录同名的 .lrc 与内嵌歌词(localfilelyrics.go)。processName 11 字节。
     case pinePlayer = "pine_player"
-    /// foobar2000 的 Mac 版,本地音乐播放器,不带沙盒,没有 AppleScript 字典、没有 URL scheme,走 media-control。系统会话字段齐全:歌名、歌手、专辑分开报,时长精确到毫秒,没写标签时歌名是不带扩展名的文件名、歌手和专辑不报;GBK / Big5 标签照 Latin-1 读成乱码。锚点只在开播、暂停、恢复、跳转、换歌时发,跟真实出声差 0.02~0.06 秒,归 precise。文件有封面时开播先报它自己的光盘占位图(KnownPlaceholderArtwork),约 0.5 秒后换上真封面,同时把开播锚点重报一遍(位置 0 或零点几秒、时刻换成那一刻),这一份晚了约半秒,第一份才准,所以 republishesZeroAnchor 为 true,不为 0 的那种另按 MediaControlClient.isFoobarArtworkRepublish 认。列表放完、停住时整个撤掉会话。App 侧按进程号找它开着的当前文件(PlayerOpenFile)。nativeLyricSource 填 localfile:正在放的文件同目录同名的 .lrc 与内嵌歌词(localfilelyrics.go)。processName 10 字节。
+    /// foobar2000 的 Mac 版,本地音乐播放器,不带沙盒,没有 AppleScript 字典、没有 URL scheme,走 media-control。系统会话字段齐全:歌名、歌手、专辑分开报,时长精确到毫秒,没写标签时歌名是不带扩展名的文件名、歌手和专辑不报;GBK / Big5 标签照 Latin-1 读成乱码。锚点只在开播、暂停、恢复、跳转、换歌时发,跟真实出声差 0.02~0.06 秒,归 precise。文件有封面时开播先报它自己的光盘占位图(KnownPlaceholderArtwork),约 0.5 秒后换上真封面,同时把开播锚点重报一遍(位置 0 或零点几秒、时刻换成那一刻),这一份晚了约半秒,第一份才准,所以 republishesZeroAnchor 为 true,不为 0 的那种另按 MediaControlClient.isFoobarArtworkRepublish 认。列表放完、停住时整个撤掉会话。App 侧按进程号找它开着的当前文件(PlayerOpenFile),没写标签时按不带扩展名的文件名拆歌手歌名;随机、循环读写菜单 Playback › Order 的勾(FoobarMenuControl),音量读写窗口里的滑块(FoobarVolume),焦点被别的 App 占着时按 Playback 菜单的 Pause / Next / Previous,都要辅助功能权限;播放列表由 App 代读给预解析(FoobarPlaylist)。nativeLyricSource 填 localfile:正在放的文件同目录同名的 .lrc 与内嵌歌词(localfilelyrics.go)。processName 10 字节。
     case foobar2000 = "foobar2000"
     /// 不是一个具体 App——把「谁在报 Now Playing」交给系统仲裁。bundleID 空字符串是刻意的,调用方据此 no-op 掉需要具体 App 的联动。
     case auto = "auto"
@@ -146,6 +146,7 @@ public enum PlaybackPlayer: String, CaseIterable, Identifiable, Codable, Hashabl
         case .amazonMusic: return true
         case .reamp: return true
         case .pinePlayer: return true
+        case .foobar2000: return true
         default: return false
         }
     }

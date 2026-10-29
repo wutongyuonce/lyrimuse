@@ -238,7 +238,7 @@ func runPlayerIdentityTests() {
             expectEqual(shown(menuRoute, true, false, false), false, "播放键反馈: 菜单连按第二下按显示的翻回去")
             expectEqual(shown(menuRoute, true, false, true), true, "播放键反馈: 菜单回报前回读已到 → 跟真值,不再翻")
             expectEqual(shown(menuRoute, false, true, false), false, "播放键反馈: 回读先到的是暂停 → 跟真值")
-            expectEqual(PlaybackMenuControl.players, [.qqMusic, .netease, .kugou, .soda, .pinePlayer, .reamp],
+            expectEqual(PlaybackMenuControl.players, [.qqMusic, .netease, .kugou, .soda, .pinePlayer, .reamp, .foobar2000],
                         "失焦按界面控制: QQ 音乐、网易云、酷狗、Pine Player、reAMP 按菜单,汽水按播放条")
             for command in [Command.playPause, .nextTrack, .previousTrack] {
                 expectEqual(MusicPlaybackController.controlRoute(exclusivelyAppleMusic: false, focusFallback: nil,
@@ -1139,7 +1139,7 @@ func runPlayerIdentityTests() {
             .vox: (nil, [.controlScript, .appleScriptSnapshot, .channelFallback, .extendedControls, .repeatOne,
                          .learnsAnchorLag, .arrivesWhole]),
             .pinePlayer: (nil, [.extendedControls, .repeatOne, .resume, .snapsToReportedPosition, .arrivesWhole]),
-            .foobar2000: (nil, [.learnsAnchorLag, .arrivesWhole]),
+            .foobar2000: (nil, [.extendedControls, .repeatOne, .learnsAnchorLag, .arrivesWhole]),
         ]
         expectEqual(PlaybackPlayer.allCases.count, table.count + 1,
                     "决定表: 新增播放器要在这里补一行,逐项决定它走哪条路(+1 是 .auto)")
@@ -1391,15 +1391,15 @@ func runPlayerIdentityTests() {
     do {
         typealias P = Set<PlaybackPlayer>
         expectEqual(PlaybackPlayer.allCases.filter(\.needsAccessibilityPermission),
-                    [.qqMusic, .netease, .kugou, .soda, .amazonMusic, .reamp, .pinePlayer],
+                    [.qqMusic, .netease, .kugou, .soda, .amazonMusic, .reamp, .pinePlayer, .foobar2000],
                     "辅助功能判据: 读界面的 Amazon Music / Pine Player、按菜单控制的 QQ 音乐/网易云/酷狗/reAMP、按播放条控制的汽水(改 shared/players.json 的 needsAccessibilityPermission)")
         expectEqual(PlaybackPlayer.allCases.compactMap(\.accessibilityUse),
                     [.switchesPlayMode, .controlsPlayback, .controlsPlayback, .controlsPlayback, .calibratesProgress, .pressesPlayMode,
-                     .refinesProgress],
+                     .refinesProgress, .pressesPlayMode],
                     "辅助功能判据: QQ 音乐是切模式、网易云/酷狗/汽水是喜欢加失焦播放、Amazon Music 是读进度加随机循环、reAMP 只有随机循环、Pine Player 是读进度条补位置加失焦播放,授权说明和体检提示按这个分开写")
         expectEqual(PlaybackPlayer.allCases.compactMap(\.automationUse), [.refinesProgress, .refinesProgress, .readsTrack, .readsTrack],
                     "自动化判据: Apple Music、Spotify 只让进度更准,Kaset、VOX 的曲目整份靠它,引导页和设置页的说明按这个分开写")
-        expectEqual(P([.auto]).playersNeedingAccessibility, [.qqMusic, .netease, .kugou, .soda, .amazonMusic, .reamp, .pinePlayer],
+        expectEqual(P([.auto]).playersNeedingAccessibility, [.qqMusic, .netease, .kugou, .soda, .amazonMusic, .reamp, .pinePlayer, .foobar2000],
                     "辅助功能判据: 纯 auto 按超集算")
         expectEqual(P([.kugou]).playersNeedingAccessibility, [.kugou], "酷狗单选也显示 AX 授权入口(喜欢键、失焦播放控制要它)")
         expectEqual(P([.netease]).playersNeedingAccessibility, [.netease], "网易云单选也显示 AX 授权入口")

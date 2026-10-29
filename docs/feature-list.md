@@ -593,7 +593,7 @@ Players not on the list can be added to your trusted players from Applications, 
 
 ### Permissions, only where needed
 
-Apple Music, Spotify, Kaset and VOX need Automation permission to read what is playing. QQ Music, NetEase Cloud Music and Kugou need Full Disk Access for their saved lyrics and queues, and Soda Music and VOX for their queues. Progress calibration for Amazon Music and Pine Player, Pine Player's playlist, the shuffle, repeat and like buttons of QQ Music, NetEase Cloud Music, Kugou Music, Soda Music, Amazon Music, reAMP and Pine Player, and the playback buttons of QQ Music, NetEase Cloud Music, Soda Music and Pine Player while another app holds Now Playing need Accessibility. Web players need Automation for the browser and its Allow JavaScript from Apple Events option. The other players need nothing. Settings shows the current state of each.
+Apple Music, Spotify, Kaset and VOX need Automation permission to read what is playing. QQ Music, NetEase Cloud Music and Kugou need Full Disk Access for their saved lyrics and queues, and Soda Music and VOX for their queues. Progress calibration for Amazon Music and Pine Player, Pine Player's playlist, the shuffle, repeat and like buttons of QQ Music, NetEase Cloud Music, Kugou Music, Soda Music, Amazon Music, reAMP, Pine Player and foobar2000, the volume of foobar2000, and the playback buttons of QQ Music, NetEase Cloud Music, Soda Music, Pine Player and foobar2000 while another app holds Now Playing need Accessibility. Web players need Automation for the browser and its Allow JavaScript from Apple Events option. The other players need nothing. Settings shows the current state of each.
 
 - Settings: Player › Permissions & Services › Automation Permission
 - Settings: Player › Permissions & Services › Full Disk Access
@@ -603,7 +603,7 @@ Apple Music, Spotify, Kaset and VOX need Automation permission to read what is p
 
 ### Playback controls and seeking
 
-Play, pause, skip and drag the progress bar from the lyrics window or the expanded notch. Shuffle, repeat, like and volume depend on the player: Apple Music, Spotify, Kaset, QQ Music, Amazon Music, reAMP, VOX, Pine Player and YouTube Music in a browser each support some or all of them, and NetEase Cloud Music, Kugou Music, Soda Music and LX Music have like, with LX Music volume too once Open API is on in its settings. Play, pause, skipping and like can have global shortcuts. While something like a browser video holds Now Playing, play, pause and skipping for QQ Music, NetEase Cloud Music, Soda Music and Pine Player go through their own menus or play bar, and seeking isn't available.
+Play, pause, skip and drag the progress bar from the lyrics window or the expanded notch. Shuffle, repeat, like and volume depend on the player: Apple Music, Spotify, Kaset, QQ Music, Amazon Music, reAMP, VOX, Pine Player, foobar2000 and YouTube Music in a browser each support some or all of them, and NetEase Cloud Music, Kugou Music, Soda Music and LX Music have like, with LX Music volume too once Open API is on in its settings. Play, pause, skipping and like can have global shortcuts. While something like a browser video holds Now Playing, play, pause and skipping for QQ Music, NetEase Cloud Music, Soda Music, Pine Player and foobar2000 go through their own menus or play bar, and seeking isn't available.
 
 - Settings: Lyrics Display › Notch › Expanded State › Show Playback Controls
 - Settings: Keyboard Shortcuts › Play/Pause

@@ -2,11 +2,11 @@ import AppKit
 import ApplicationServices
 import Foundation
 
-/// QQ / 网易云 / 酷狗 / Pine Player / reAMP 失去系统媒体焦点时,只按目标进程菜单栏里的播放 / 暂停、上一首、下一首;汽水的菜单栏里没有这几项,
+/// QQ / 网易云 / 酷狗 / Pine Player / reAMP / foobar2000 失去系统媒体焦点时,只按目标进程菜单栏里的播放 / 暂停、上一首、下一首;汽水的菜单栏里没有这几项,
 /// 按它底部播放条上的键(`SodaMusicControl.press`)。不激活 App、不模拟按键,不回落到全局媒体控制,没有跳转。
 public enum PlaybackMenuControl {
     /// 失焦时能这样控制的播放器。路由(`MusicPlaybackController.controlRoute`)和 `press` 都按它,selftest 覆盖。
-    public static let players: Set<PlaybackPlayer> = [.qqMusic, .netease, .kugou, .soda, .pinePlayer, .reamp]
+    public static let players: Set<PlaybackPlayer> = [.qqMusic, .netease, .kugou, .soda, .pinePlayer, .reamp, .foobar2000]
 
     public enum Command: String, Equatable, Sendable {
         case playPause = "toggle-play-pause"
@@ -25,7 +25,8 @@ public enum PlaybackMenuControl {
 
     /// 菜单项标题 → 哪个控制。播放 / 暂停是同一项,标题随状态变,按下去都是切换。QQ 只有中文界面(简繁两套),
     /// 网易云只有简体和英文两套,标题取自它自己的语言包;酷狗只有简体,「播放/暂停」标题不随状态变。reAMP(英文、俄文两套)
-    /// 的播放和暂停是两项:「暂停」在放着和暂停着时按下去都是切换,播放 / 暂停只按它,不认「播放」。纯函数,selftest 覆盖。
+    /// 的播放和暂停是两项:「暂停」在放着和暂停着时按下去都是切换,播放 / 暂停只按它,不认「播放」;foobar2000(只有英文)同样只按
+    /// Pause。纯函数,selftest 覆盖。
     public static func command(forMenuTitle title: String, player: PlaybackPlayer) -> Command? {
         let title = title.trimmingCharacters(in: .whitespaces)
         switch player {
@@ -55,6 +56,13 @@ public enum PlaybackMenuControl {
             case "Pause", "Пауза": return .playPause
             case "Next", "Следующий": return .nextTrack
             case "Previous", "Предыдущий": return .previousTrack
+            default: return nil
+            }
+        case .foobar2000:
+            switch title {
+            case "Pause": return .playPause
+            case "Next": return .nextTrack
+            case "Previous": return .previousTrack
             default: return nil
             }
         default:
@@ -126,7 +134,8 @@ public enum PlaybackMenuControl {
         _ command: Command, for player: PlaybackPlayer,
         body: (AXUIElement, (AXUIElement, String) -> AnyObject?, () -> Bool) -> Outcome
     ) -> Outcome {
-        guard player == .qqMusic || player == .netease || player == .kugou || player == .pinePlayer || player == .reamp else {
+        guard player == .qqMusic || player == .netease || player == .kugou || player == .pinePlayer || player == .reamp
+            || player == .foobar2000 else {
             return .menuUnavailable
         }
         guard AXIsProcessTrusted() else { return .notTrusted }

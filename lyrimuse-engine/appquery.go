@@ -32,6 +32,7 @@ const (
 	appQueryPineQueue             = "pine_queue"
 	appQueryPlaybackMode          = "playback_mode"
 	appQueryReampQueue            = "reamp_queue"
+	appQueryFoobarQueue           = "foobar_queue"
 
 	appQuerySchema = 2
 
