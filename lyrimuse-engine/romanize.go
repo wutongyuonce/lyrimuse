@@ -170,11 +170,29 @@ func (e *enrichEntry) shouldGenerateHelperRoma() bool {
 		return true
 	}
 	// 英文行占多数的韩文歌:主体文字判成拉丁(有假名的 dominantScript 已经判成日文),带谚文的那几行照样要读音
-	// (导出的 .roma.lrc)。只有汉字不算:英文歌里一行中文署名不值得起子进程。
-	if strings.ContainsFunc(e.Lyrics.String(), func(r rune) bool { return unicode.Is(unicode.Hangul, r) }) {
+	// (导出的 .roma.lrc)。汉字要满 helperRomaMinHan 个:英文歌里一行中文署名不值得起子进程,而中文歌配了一长串
+	// 英文署名(「Strings Arrangement」「Mastering Studio」)时字母数会超过正文的汉字数,不能因此不生成(10 章决策 64)。
+	lyrics := e.Lyrics.String()
+	if strings.ContainsFunc(lyrics, func(r rune) bool { return unicode.Is(unicode.Hangul, r) }) {
 		return true
 	}
-	return hasWorldReadingScript(e.Lyrics.String())
+	return hasHelperRomaHan(lyrics) || hasWorldReadingScript(lyrics)
+}
+
+// helperRomaMinHan:主体文字判成拉丁的歌,汉字至少要有这么多才值得起 helper(跟 worldReadingMinLetters 同一个量级)。
+const helperRomaMinHan = 20
+
+func hasHelperRomaHan(lyrics string) bool {
+	n := 0
+	for _, r := range lyrics {
+		if unicode.Is(unicode.Han, r) {
+			n++
+			if n >= helperRomaMinHan {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // maybeGenerateRoma 是罗马音兜底的**唯一入口**,顺序固定:

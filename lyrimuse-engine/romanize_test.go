@@ -37,6 +37,10 @@ func TestShouldGenerateHelperRoma(t *testing.T) {
 			enrichEntry{Lyrics: bt("[00:01.00]Come on everybody dance tonight\n[00:02.00]Feel the rhythm of the night\n[00:03.00]Shake it baby shake it all\n[00:04.00]사랑해")}, true},
 		{"英文歌里一行中文署名 → 只有汉字不起 helper",
 			enrichEntry{Lyrics: bt("[00:01.00]Come on everybody dance tonight\n[00:02.00]Feel the rhythm of the night\n[00:03.00]Shake it baby shake it all\n[00:04.00]作词 某人")}, false},
+		{"中文歌配了一长串英文署名 → 字母比汉字多也要生成",
+			enrichEntry{Lyrics: bt("[00:01.00]String Arrangement Strings Supervisor Recording Engineer Mixing Engineer Mastering Studio\n[00:02.00]想当星辰 却像路灯\n[00:03.00]不起眼也要发亮\n[00:04.00]陪你走过漫长")}, true},
+		{"英文歌里一行稍长的中文署名 → 不满 20 个汉字不起 helper",
+			enrichEntry{Lyrics: bt("[00:01.00]Come on everybody dance tonight\n[00:02.00]Feel the rhythm of the night\n[00:03.00]作词 某人 作曲 某人 编曲 某人 制作人 某人")}, false},
 		{"粤语歌 → 只认粤拼,不起 helper",
 			enrichEntry{Lyrics: bt("[00:01.00]我愛你"), SongLanguage: songLanguageCantonese}, false},
 	}
