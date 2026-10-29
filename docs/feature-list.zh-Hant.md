@@ -4,7 +4,7 @@
 
 [English](feature-list.md) · [简体中文](feature-list.zh-CN.md) · 繁體中文
 
-Lyrimuse 是一款開源（GPL-3.0）的 macOS 逐字歌詞 App，支援 macOS 14 及以上版本，相容 Apple Silicon 和 Intel 晶片。它為 Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、KKBOX、Amazon Music、洛雪音樂、Kaset、reAMP、VOX、Pine Player，以及瀏覽器中的 YouTube Music 和 Spotify 網頁版顯示逐字同步的歌詞：可顯示在桌面浮動歌詞、動態島、選單列、觸控列和歌詞視窗中，並提供譯文和讀音標註（拼音、粵拼、日文羅馬拼音、韓文羅馬字），還可將聆聽記錄打卡到 Last.fm 和 ListenBrainz，並在 Discord 上顯示正在聆聽的歌曲。介面支援簡體中文、繁體中文和英文。
+Lyrimuse 是一款開源（GPL-3.0）的 macOS 逐字歌詞 App，支援 macOS 14 及以上版本，相容 Apple Silicon 和 Intel 晶片。它為 Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、KKBOX、Amazon Music、洛雪音樂、Kaset、reAMP、VOX、Pine Player、foobar2000，以及瀏覽器中的 YouTube Music 和 Spotify 網頁版顯示逐字同步的歌詞：可顯示在桌面浮動歌詞、動態島、選單列、觸控列和歌詞視窗中，並提供譯文和讀音標註（拼音、粵拼、日文羅馬拼音、韓文羅馬字），還可將聆聽記錄打卡到 Last.fm 和 ListenBrainz，並在 Discord 上顯示正在聆聽的歌曲。介面支援簡體中文、繁體中文和英文。
 
 這份清單列出 Lyrimuse 的每一項功能：做什麼、在設定的哪裡、安裝後預設開著還是關著；最後附上設定視窗裡的全部設定項目。清單跟程式碼一起維護，功能有增減時同步更新。
 
@@ -121,7 +121,7 @@ Lyrimuse 是一款開源（GPL-3.0）的 macOS 逐字歌詞 App，支援 macOS 1
 
 ### 直接使用播放器儲存在本機的歌詞
 
-Apple Music、Spotify、酷狗音樂、KKBOX、Amazon Music 和洛雪音樂儲存在本機的歌詞可直接使用，與播放器顯示的版本一致，速度也更快（Apple Music 和 Spotify 只有在播放器中顯示過歌詞的歌曲才有）；QQ 音樂和網易雲音樂依本機曲庫認出正在播放的是哪一首，省去搜尋，直接取用同一版本的歌詞；reAMP、VOX 和 Pine Player 播放時，以及 Apple Music 播放資料庫中的本機檔案、洛雪音樂播放本機列表中的歌曲時，使用檔案內嵌的歌詞或同名 .lrc 檔案。QQ 音樂、網易雲音樂、酷狗音樂需要在系統設定中為 Lyrimuse 開啟「完整磁碟取用權限」；未授權時仍可連線尋找歌詞。
+Apple Music、Spotify、酷狗音樂、KKBOX、Amazon Music 和洛雪音樂儲存在本機的歌詞可直接使用，與播放器顯示的版本一致，速度也更快（Apple Music 和 Spotify 只有在播放器中顯示過歌詞的歌曲才有）；QQ 音樂和網易雲音樂依本機曲庫認出正在播放的是哪一首，省去搜尋，直接取用同一版本的歌詞；reAMP、VOX、Pine Player 和 foobar2000 播放時，以及 Apple Music 播放資料庫中的本機檔案、洛雪音樂播放本機列表中的歌曲時，使用檔案內嵌的歌詞或同名 .lrc 檔案。QQ 音樂、網易雲音樂、酷狗音樂需要在系統設定中為 Lyrimuse 開啟「完整磁碟取用權限」；未授權時仍可連線尋找歌詞。
 
 - 預設關閉
 - 設定位置：播放器 › 權限與服務 › 完整磁碟取用權限
@@ -554,9 +554,9 @@ Apple Music、QQ 音樂或網易雲音樂上帶動態封面的專輯，在完整
 
 <a id="feature-players"></a>
 
-### 十三款播放器，可多選或自動辨識
+### 十四款播放器，可多選或自動辨識
 
-Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、洛雪音樂、KKBOX、Amazon Music、仿 Winamp 的 reAMP、主打無損和高解析音質的本機播放器 VOX、免費且格式支援很全的本機播放器 Pine Player，以及 YouTube Music 用戶端 Kaset。可同時選擇多個，也可保持自動辨識，跟隨 macOS「正在播放」中的播放器。支援 Apple Music 電台，主持人講話時顯示電台名稱和台標。
+Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、洛雪音樂、KKBOX、Amazon Music、仿 Winamp 的 reAMP、主打無損和高解析音質的本機播放器 VOX、免費且格式支援很全的本機播放器 Pine Player、從 Windows 移植來的老牌本機播放器 foobar2000，以及 YouTube Music 用戶端 Kaset。可同時選擇多個，也可保持自動辨識，跟隨 macOS「正在播放」中的播放器。支援 Apple Music 電台，主持人講話時顯示電台名稱和台標。
 
 - 設定位置：播放器 › 音樂 App
 

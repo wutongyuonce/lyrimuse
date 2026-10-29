@@ -104,6 +104,9 @@ func upcomingFromQueue(artist, title, album, bundleID string, durationSecs float
 	case pinePlayerBundleID:
 		// 没有脚本接口、列表不落盘,App 经辅助功能读它界面上的播放列表(pinequeue.go)。
 		return pineUpcoming(artist, title, n)
+	case foobar2000BundleID:
+		// 播放列表不读,退回同专辑预取(02 章决策 206)。
+		return nil, false
 	case lxMusicBundleID:
 		return lxMusicUpcoming(artist, title, n)
 	}

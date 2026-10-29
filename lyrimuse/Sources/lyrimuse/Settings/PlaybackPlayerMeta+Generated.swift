@@ -25,6 +25,7 @@ extension PlaybackPlayer {
         case .lxMusic: return L10n.t("洛雪音乐")
         case .vox: return "VOX"
         case .pinePlayer: return "Pine Player"
+        case .foobar2000: return "foobar2000"
         case .auto: return L10n.t("自动识别")
         }
     }
@@ -46,6 +47,7 @@ extension PlaybackPlayer {
         case .lxMusic: return Color(red: 0.37, green: 0.84, blue: 0.6)
         case .vox: return Color(red: 0.96, green: 0.62, blue: 0.07)
         case .pinePlayer: return Color(red: 0.36, green: 0.66, blue: 0.24)
+        case .foobar2000: return Color(red: 0.6, green: 0.6, blue: 0.62)
         case .auto: return .secondary
         }
     }
@@ -65,6 +67,7 @@ extension PlaybackPlayer {
         case .lxMusic: return "music.note"
         case .vox: return "hifispeaker"
         case .pinePlayer: return "music.note"
+        case .foobar2000: return "music.note"
         case .auto: return "wand.and.stars"
         }
     }
@@ -86,11 +89,12 @@ extension PlaybackPlayer {
         case .lxMusic: return "LXMusicIcon"
         case .vox: return "VoxIcon"
         case .pinePlayer: return "PinePlayerIcon"
+        case .foobar2000: return "Foobar2000Icon"
         case .auto: return nil
         }
     }
 
-    public static let displayOrderForSimplifiedChinese: [PlaybackPlayer] = [.appleMusic, .qqMusic, .netease, .kugou, .soda, .lxMusic, .kkbox, .spotify, .amazonMusic, .kaset, .reamp, .vox, .pinePlayer, .auto]
+    public static let displayOrderForSimplifiedChinese: [PlaybackPlayer] = [.appleMusic, .qqMusic, .netease, .kugou, .soda, .lxMusic, .kkbox, .spotify, .amazonMusic, .kaset, .reamp, .vox, .pinePlayer, .foobar2000, .auto]
 
-    public static let displayOrderDefault: [PlaybackPlayer] = [.appleMusic, .spotify, .amazonMusic, .kaset, .kkbox, .qqMusic, .netease, .kugou, .soda, .lxMusic, .reamp, .vox, .pinePlayer, .auto]
+    public static let displayOrderDefault: [PlaybackPlayer] = [.appleMusic, .spotify, .amazonMusic, .kaset, .kkbox, .qqMusic, .netease, .kugou, .soda, .lxMusic, .reamp, .vox, .pinePlayer, .foobar2000, .auto]
 }

@@ -25,6 +25,7 @@ var knownPlaceholderArtwork = []knownPlaceholder{
 	{byteCount: 35427, sha256Hex: "56301adc2c97955b3af286bb51f109cab83278da94b9bdb101374159fc866996", player: "com.kugou.mac.Music"},
 	{byteCount: 2345, sha256Hex: "eaaca16f077893e67c4481a8ad11e2069995d1ebe678a21ecb720597ea665a63", player: "com.netease.163music"},
 	{byteCount: 49212, sha256Hex: "b71cf70491ffe471dec46e7508ecf443bea0a9dbdf1f62a8e69e7c10e8197ea1", player: "com.digipine.pineplayer"},
+	{byteCount: 26589, sha256Hex: "f7eba3498cb8a17499731a5ddb1c6f3d2c87b33c7e2c1e5e0c33266c187913fd", player: "com.foobar2000.mac"},
 }
 
 // isKnownPlaceholderCoverURL:设备封面落盘的文件名是内容 SHA-256 的前 8 字节(见 saveDeviceArtwork),

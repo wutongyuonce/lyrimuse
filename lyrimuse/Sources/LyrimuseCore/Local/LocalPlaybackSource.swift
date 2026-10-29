@@ -3192,10 +3192,10 @@ public final class LocalPlaybackSource: ObservableObject {
     /// 暂停时也按播放档轮询的那一段有多长。
     public nonisolated static let fastPausedPollWindow: TimeInterval = 600
 
-    /// 恢复播放只有 media-control 事件流一条即时信号的播放器:VOX 的通知只在换歌时发,reAMP、Pine、汽水、KKBOX 不发
+    /// 恢复播放只有 media-control 事件流一条即时信号的播放器:VOX 的通知只在换歌时发,reAMP、Pine、汽水、KKBOX、foobar2000 不发
     /// 分布式通知(16 章第 21 节各自的 A4)。见 02 章决策 179。
     nonisolated static let singleResumeSignalBundleIDs: Set<String> = [
-        PlaybackPlayer.vox, .reamp, .pinePlayer, .soda, .kkbox,
+        PlaybackPlayer.vox, .reamp, .pinePlayer, .soda, .kkbox, .foobar2000,
     ].reduce(into: []) { $0.insert($1.bundleIdentifier) }
 
     /// 刚暂停的这一段要不要按播放档(2 秒)轮询:只对 `singleResumeSignalBundleIDs`,事件流漏了也在 2 秒内认出恢复,

@@ -521,7 +521,7 @@ func runPineTests() {
         expectEqual(KnownPlaceholderArtwork.entries.contains {
             $0.player == P.bundleID && $0.byteCount == 49212 && $0.sha256Hex.hasPrefix("b71cf70491ffe471")
         }, true, "Pine 接线: 没封面时推的那张图标登记成占位图")
-        expectEqual(sourceHas(client, "if bundleID == PinePlayerInfo.bundleID, KnownPlaceholderArtwork.isPlaceholder(imageData),"), true,
+        expectEqual(sourceHas(client, "if bundleID == PinePlayerInfo.bundleID || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
                     "Pine 接线: 系统那份是占位图时先找同目录的图")
     }
 }

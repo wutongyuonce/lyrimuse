@@ -524,6 +524,7 @@ func runPlayerIdentityTests() {
             .lxMusic: ("lx_music", "cn.toside.music.desktop"),
             .vox: ("vox", "com.coppertino.Vox"),
             .pinePlayer: ("pine_player", "com.digipine.pineplayer"),
+            .foobar2000: ("foobar2000", "com.foobar2000.mac"),
         ]
         for (player, want) in expected {
             expectEqual(player.rawValue, want.raw, "播放器契约: \(player) 的 rawValue")
@@ -1138,6 +1139,7 @@ func runPlayerIdentityTests() {
             .vox: (nil, [.controlScript, .appleScriptSnapshot, .channelFallback, .extendedControls, .repeatOne,
                          .learnsAnchorLag, .arrivesWhole]),
             .pinePlayer: (nil, [.extendedControls, .repeatOne, .resume, .snapsToReportedPosition, .arrivesWhole]),
+            .foobar2000: (nil, [.learnsAnchorLag, .arrivesWhole]),
         ]
         expectEqual(PlaybackPlayer.allCases.count, table.count + 1,
                     "决定表: 新增播放器要在这里补一行,逐项决定它走哪条路(+1 是 .auto)")

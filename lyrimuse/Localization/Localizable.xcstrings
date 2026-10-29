@@ -57475,6 +57475,29 @@
           }
         }
       }
+    },
+    "从 Windows 移植来的老牌本地音乐播放器" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The classic local music player from Windows, ported to Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 Windows 移植来的老牌本地音乐播放器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從 Windows 移植來的老牌本機音樂播放器"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

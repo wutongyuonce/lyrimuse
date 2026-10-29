@@ -431,6 +431,7 @@
 "今日、近 7 天，以及收听最多的歌手和歌曲" = "Today, the last 7 days, and your top artists and tracks";
 "今日已收听 %@ 次" = "%@ plays today";
 "今日已收听 %@ 次#one" = "%@ play today";
+"从 Windows 移植来的老牌本地音乐播放器" = "The classic local music player from Windows, ported to Mac";
 "从「%@」导出的备份" = "Backup exported from “%@”";
 "从「应用程序」中选择，无需等待其开始播放" = "Pick one from Applications — no need to wait until it’s playing";
 "从上到下" = "Top to Bottom";

@@ -43,6 +43,7 @@ func TestPlayersNeedFullDiskAccessMatchesClientPaths(t *testing.T) {
 		playerReamp:       "",
 		playerVox:         "vox",
 		playerPinePlayer:  "",
+		playerFoobar2000:  "",
 		playerLXMusic:     "lxmusic",
 	}
 	paths := localCacheClientPaths()

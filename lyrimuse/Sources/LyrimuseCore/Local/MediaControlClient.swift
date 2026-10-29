@@ -2492,8 +2492,9 @@ public enum MediaControlClient {
                 ?? "without artwork"
             return (nil, prefix + "\(bundleID) reports \(raw.title ?? "") \(artwork)")
         }
-        // Pine Player 文件没有封面时推的是它自己的图标(登记在 KnownPlaceholderArtwork):先找正在放的文件同目录的图。
-        if bundleID == PinePlayerInfo.bundleID, KnownPlaceholderArtwork.isPlaceholder(imageData),
+        // Pine Player 文件没有封面时推的是它自己的图标、foobar2000 推一张光盘(都登记在 KnownPlaceholderArtwork):先找正在放的文件同目录的图。
+        if bundleID == PinePlayerInfo.bundleID || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,
+           KnownPlaceholderArtwork.isPlaceholder(imageData),
            let path = filePath, let cover = PlayerTitleSplit.folderCover(forAudioFile: path) {
             return ((cover.data, cover.mimeType,
                      PlayerArtistFix.correctedTrackKey(bundle: bundleID, artist: keyArtist, title: keyTitle)), nil)
@@ -3312,9 +3313,9 @@ public enum MediaControlClient {
         last: PlayingAnchor?, track: String, elapsed: Double?, timestamp: String?, duration: Double?,
         bundleID: String?, now: Date
     ) -> Bool {
-        guard let last, let elapsed, let timestamp,
-              last.track == track, last.elapsed == elapsed, last.timestamp != timestamp
-        else { return false }
+        guard let last, let elapsed, let timestamp, last.track == track, last.timestamp != timestamp else { return false }
+        if isFoobarArtworkRepublish(last: last, elapsed: elapsed, timestamp: timestamp, bundleID: bundleID) { return true }
+        guard last.elapsed == elapsed else { return false }
         if elapsed <= 0 {
             guard PlaybackPlayer.builtin(forBundleID: bundleID)?.republishesZeroAnchor == true else { return false }
             if republishGapSeconds(last: last, timestamp: timestamp, now: now) > zeroAnchorRepublishWindowSecs {
@@ -3326,6 +3327,23 @@ public enum MediaControlClient {
         }
         return true
     }
+
+    /// foobar2000 拿到这一首的封面时把整份会话重设一遍,开播锚点跟着重报:位置是 0 或零点几秒,时刻换成那一刻,
+    /// 推出来的起播点比第一份晚约半秒,第一份才对得上出声。位置为 0 的那种由 `republishesZeroAnchor` 那条认,
+    /// 这里认不为 0 的:上一份是开播锚点(0 秒),这一份位置不到 `foobarRepublishMaxElapsed`、推出来的起播点晚了
+    /// 不到 `foobarRepublishMaxShift`。只对 foobar2000,见 02 章决策 206。纯函数,selftest 覆盖。
+    public nonisolated static func isFoobarArtworkRepublish(last: PlayingAnchor, elapsed: Double, timestamp: String,
+                                                            bundleID: String?) -> Bool {
+        guard bundleID == PlaybackPlayer.foobar2000.bundleIdentifier, last.elapsed <= 0, elapsed > 0,
+              elapsed < foobarRepublishMaxElapsed,
+              let newTS = parseTimestamp(timestamp), let oldTS = parseTimestamp(last.timestamp) else { return false }
+        let shift = newTS.timeIntervalSince(oldTS) - elapsed
+        return shift > 0 && shift < foobarRepublishMaxShift
+    }
+
+    /// 见 `isFoobarArtworkRepublish`。实测重报那份的位置 0~0.08 秒、推出的起播点晚 0.54~0.55 秒。
+    public static let foobarRepublishMaxElapsed: Double = 0.3
+    public static let foobarRepublishMaxShift: TimeInterval = 1.5
 
     /// 这次重发离**原**锚点多久。两个时间戳都解得出就按它们算(整秒,而要分开的两簇差着两个
     /// 数量级,够用);解不出才退回墙钟 —— 后者把轮询延迟也算进来,只当兜底。
