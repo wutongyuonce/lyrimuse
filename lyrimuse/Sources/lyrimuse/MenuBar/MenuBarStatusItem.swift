@@ -1458,13 +1458,16 @@ final class MenuBarStatusItem: NSObject {
             // 换歌重置那一刻的目标同样"还不作数" —— 理由见 MenuBarSlotFloor.didResetOnLastCall。
             let provisional = placeholderNow || slotFloor.didResetOnLastCall
             let fillPath = visible == text ? karaokeFillPath(for: text) : nil
+            // 歌词格宽按地板撑开后的槽宽反推,别用 textW:地板撑着时多出来的那截要算进歌词格,
+            // 「对齐方式」才是在整格里落位,否则靠右也会在右边空出一截(06 章决策 75)。
+            let slotTextW = max(textW, w - reserved - Self.lyricsSlotPadding)
             // 判据跟设置页预览共用(`MenuBarSlotPolicy.adaptiveDrawsWithLayers`)。
             if MenuBarSlotPolicy.adaptiveDrawsWithLayers(
                 hasFillPath: fillPath != nil, hasIcon: icon != nil, twoRows: rowState.twoRows,
-                windowWidth: textW, textWidth: mainW,
+                windowWidth: slotTextW, textWidth: mainW,
                 inlineTranslation: rowState.inlineTranslationStart != nil) {
                 // 逐字染色画不进 button.title(那条路是 AppKit 自绘的单色文字,没有图层
-                // 可以叠强调色),所以走图层渲染,窗口宽取歌词格宽 textW:槽宽公式跟上面
+                // 可以叠强调色),所以走图层渲染,窗口宽取歌词格宽 slotTextW:槽宽公式跟上面
                 // 完全一致,footprint 不变,只是画的人是 scrollingLabel 而不是按钮。
                 // **进度图标也走这条岔路**,理由一样:要按进度半染色的图标同样塞不进
                 // button.title/image 那条 AppKit 自绘的路。**双排也走**:button.title 只能画一行。
@@ -1473,7 +1476,7 @@ final class MenuBarStatusItem: NSObject {
                 present(class: "text", length: w, collapseDelay: 0,
                         dwellSeconds: dwell, targetIsProvisional: provisional,
                         interim: { [weak self] in self?.renderInterimLyrics($0, text: text) }) {
-                    showFixedWidth($0, text: text, windowWidth: textW,
+                    showFixedWidth($0, text: text, windowWidth: slotTextW,
                                    pacing: nil, fillPath: fillPath, icon: icon,
                                    gapWindow: gapWindow(for: text))
                 }

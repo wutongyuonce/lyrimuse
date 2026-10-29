@@ -115,6 +115,12 @@ func runSourceContractTests() {
         expectEqual(sourceHas(label, "alignment: alignmentOverride\n?? Self.restingAlignment(setting: AppSettings.shared.menuBarLyricsAlignment),")
                         && !label.contains("widthMode == .fixed ? setting : .leading"), true,
                     "菜单栏对齐: 两种宽度模式都按「对齐方式」(正中那份标签固定居中)")
+        // 自适应的地板撑着时,歌词格宽按撑开后的槽宽反推,对齐在整格里落位(06 章决策 75)。
+        let item = (try? String(contentsOfFile: menuBar.appendingPathComponent("MenuBarStatusItem.swift").path, encoding: .utf8)) ?? ""
+        expectEqual(item.contains("let slotTextW = max(textW, w - reserved - Self.lyricsSlotPadding)")
+                        && item.contains("windowWidth: slotTextW, textWidth: mainW,")
+                        && item.contains("showFixedWidth($0, text: text, windowWidth: slotTextW,"), true,
+                    "菜单栏对齐: 地板撑宽的那截算进歌词格(判图层和画图层都用 slotTextW)")
     }
 
     // 音符 / 歌词列表 / 三连音符 / 麦克风的摇摆绕图标中心转:挂裸图层 movingPart,不挂 imageView 的背板层

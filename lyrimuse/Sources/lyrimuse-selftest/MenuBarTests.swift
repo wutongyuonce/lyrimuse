@@ -1390,8 +1390,8 @@ func runMenuBarTests() {
             // 反推内容宽的两处必须跟申请用**同一个**常量,差一截就是
             // 「点暂停生效上一首」的形状。
             let lyricsUses = text.components(separatedBy: "Self.lyricsSlotPadding").count - 1
-            expectEqual(lyricsUses, 7,
-                        "内边距: 歌词态七处(text 申请 / fixed 申请 / 两处反推 / 菜单栏正中两处 / 正中悬停三键反推)同源,实际 \(lyricsUses)")
+            expectEqual(lyricsUses, 8,
+                        "内边距: 歌词态八处(text 申请 / fixed 申请 / 两处反推 / 地板槽宽反推歌词格 / 菜单栏正中两处 / 正中悬停三键反推)同源,实际 \(lyricsUses)")
             let iconUses = text.components(separatedBy: "Self.fixedSlotPadding").count - 1
             expectEqual(iconUses, 1, "内边距: 图标态只剩那一处申请,实际 \(iconUses)")
         } else {
