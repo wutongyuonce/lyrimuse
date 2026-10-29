@@ -46,6 +46,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Step aside during ads](#feature-hide-during-ads) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide During Ads |
 | [Notch on the Lock Screen](#feature-notch-show-on-lock-screen) | Settings › Lyrics Display › Notch › Behavior › Show on Lock Screen |
 | [Floating lyrics step aside in full screen](#feature-overlay-hide-in-full-screen) | Settings › Lyrics Display › Floating Lyrics › Behavior › Hide in Full Screen |
+| [Fade the notch lyric row on hover](#feature-notch-lyric-row-fade) | Settings › Lyrics Display › Notch › Lyric Row › Fade on Hover |
 | [Web lyrics: a phone or tablet as a second screen, or an OBS browser source](#feature-web-lyrics) | Settings › Lyrics Display › Lyrics Window › Web Lyrics |
 | [YouTube Music and Spotify Web in your browser](#feature-web-players) | Settings › Player › Web |
 | [Skip YouTube Music ads automatically](#feature-skip-youtube-ads) | Settings › Player › Web › Skip YouTube Music Ads Automatically |
@@ -525,6 +526,15 @@ With the pointer over the notch, swipe left or right with two fingers to change 
 - On by default
 - Settings: Lyrics Display › Notch › Behavior › Trackpad Gestures
 
+<a id="feature-notch-lyric-row-fade"></a>
+
+### Fade the notch lyric row on hover
+
+With the pointer on the notch's lyric row, the row fades instead of expanding and clicks pass through to the window below; the notch expands only from the notch itself or its sides.
+
+- Off by default
+- Settings: Lyrics Display › Notch › Lyric Row › Fade on Hover
+
 <a id="feature-notch-multiline-lyrics"></a>
 
 ### Multi-line lyrics in the expanded notch
@@ -847,7 +857,7 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 295 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 296 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1011,6 +1021,7 @@ Every setting in the Settings window, by where it lives: 295 in all. Type a name
 - **Karaoke Effect**
 - **Show Artwork**
 - **Artwork Position**
+- **Fade on Hover**
 
 ### Lyrics Display › Notch › Font
 

@@ -737,15 +737,8 @@ func runNotchTests() {
         expectEqual(H.region(point: CGPoint(x: 120, y: 150), cardWidth: 482, cardHeight: 191, passThroughBelow: nil),
                     .card, "灵动岛命中: 展开态往下够三键、进度条")
 
-        // 洞所在的方块:以指针为中心、边长两倍半径,裁到只显示的那一截以内。
-        typealias Hole = NotchPassThroughHole
-        let r = Hole.radius
-        expectEqual(Hole.rect(pointer: CGPoint(x: 127, y: 55), bandTop: top, cardWidth: steady.w, cardHeight: steady.h),
-                    CGRect(x: 127 - r, y: top, width: r * 2, height: steady.h - top), "灵动岛洞: 不越过顶行、不出卡片下沿")
-        expectEqual(Hole.rect(pointer: CGPoint(x: 10, y: 55), bandTop: top, cardWidth: steady.w, cardHeight: steady.h)?.minX,
-                    0, "灵动岛洞: 贴着卡片左沿时裁掉卡片外那一截")
-        expectEqual(Hole.rect(pointer: CGPoint(x: 127, y: -60), bandTop: top, cardWidth: steady.w, cardHeight: steady.h),
-                    nil, "灵动岛洞: 跟只显示那一截不相交时没有洞")
+        // 「悬浮淡化」淡到的值跟悬浮歌词同一档。
+        expectEqual(NotchPassThroughFade.opacity, 0.15, "灵动岛悬浮淡化: 淡到 15%,同悬浮歌词")
     }
 
     // ---- 广告态:「跳过广告」+ 头部让位----
@@ -2744,19 +2737,23 @@ func runNotchTests() {
                     && sourceHas(ctrl, "guard AppSettings.shared.notchGestures, hasTrack, passThroughHit(at: point)?.region == .card else {\n scrollGesture.invalidate()"),
                     true, "灵动岛五项: 手势关着、没有曲目、事件不落在卡片上时不认,这一次滑动作废;位置取事件自己带的")
 
-        // 稳态顶行以下那一截只显示、不接指针(歌词行穿透):视图按区域分流,控制器切窗口穿透,洞挂在 layer 上、只在穿透期间存在。
+        // 「悬浮淡化」开着时稳态顶行以下那一截只显示、不接指针:视图按区域分流,控制器切窗口穿透,淡化挂在 layer 上、只在穿透期间存在。
         let root = src("NotchWindowRoot.swift"), pass = src("NotchLyricRowPassThrough.swift")
         expectEqual(sourceHas(root, "updateHover(inside: region == .card, point: point)\n if region == .passThrough { controller.beginLyricPassThrough() }"),
                     true, "歌词行穿透: 视图只把接指针的部分算进卡片,落在只显示那一截交给控制器")
-        expectEqual(sourceHas(ctrl, "isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset"), true,
-                    "歌词行穿透: 展开态、没有曲目、广告时整张卡都接指针")
+        expectEqual(sourceHas(ctrl, "!fadesLyricRowOnHover || isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset"), true,
+                    "歌词行穿透: 开关关着、展开态、没有曲目、广告时整张卡都接指针")
+        expectEqual(sourceHas(ctrl, "self?.fadesLyricRowOnHover = fades\n if !fades { self?.passThrough?.end() }"), true,
+                    "歌词行穿透: 关掉开关时立刻退出穿透")
+        expectEqual(app("Settings/AppSettings.swift").contains("static let defaultNotchFadeLyricRowOnHover = false"), true,
+                    "歌词行穿透: 「悬浮淡化」默认关")
         expectEqual(sourceHas(sourceBody("func begin()", in: pass), "window.ignoresMouseEvents = true")
                         && sourceHas(sourceBody("func end()", in: pass), "window?.ignoresMouseEvents = false")
                         && sourceHas(sourceBody("func end()", in: pass), "monitors.forEach(NSEvent.removeMonitor)"), true,
                     "歌词行穿透: 进来时整扇窗穿透、装监听,离开时恢复、卸监听")
         expectEqual(sourceHas(sourceBody("private func installMask(on layer: CALayer)", in: pass), "layer.mask = container")
                         && !root.contains(".mask"), true,
-                    "歌词行穿透: 洞只在穿透期间挂在 layer 上,SwiftUI 里不常驻遮罩")
+                    "歌词行穿透: 淡化只在穿透期间挂在 layer 上,SwiftUI 里不常驻遮罩")
         expectEqual(sourceHas(sourceBody("private func resetHoverAfterHide()", in: ctrl), "passThrough?.end()"), true,
                     "歌词行穿透: 窗口收走时退出穿透")
         expectEqual(ctrl.contains("LyrimuseActionRunner.perform(.nextTrackHotkey)")

@@ -57498,6 +57498,29 @@
           }
         }
       }
+    },
+    "指针在歌词行上时不展开，歌词行淡化，点按穿透到下层窗口" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With the pointer on the lyric row, the row fades instead of expanding, and clicks pass through to the window below"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指针在歌词行上时不展开，歌词行淡化，点按穿透到下层窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指標在歌詞行上時不展開，歌詞行淡化，按一下將穿透到下層視窗"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -418,6 +418,9 @@ struct NotchEditorStage: View {
         if settings.notchLyricRowShowsArtwork {
             parts.append("\(NotchEarModule.artwork.displayName) · \(settings.notchLyricRowArtworkPosition.displayName)")
         }
+        if settings.notchShowLyrics, settings.notchFadeLyricRowOnHover {
+            parts.append(NotchBehaviorItem.lyricRowFade.title)
+        }
         guard !parts.isEmpty else { return L10n.t("全部关闭") }
         return L10n.list(parts)
     }

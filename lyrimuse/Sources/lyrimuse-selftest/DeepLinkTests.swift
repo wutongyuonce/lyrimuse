@@ -219,6 +219,9 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/notch-behavior?show-lyrics=0"),
                     .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: false)),
                     "debug: 只关灵动岛显示歌词")
+        expectEqual(link("lyrimuse://debug/notch-behavior?lyric-row-fade=1"),
+                    .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, lyricRowFade: true)),
+                    "debug: 只开灵动岛悬浮淡化")
         expectEqual(link("lyrimuse://debug/notch-pass-through?off=1"), .debug(.notchPassThroughOff), "debug: 灵动岛结束模拟指针")
         expectEqual(link("lyrimuse://debug/notch-pass-through?x=200"), nil, "debug: 灵动岛模拟指针缺 y 不认")
         expectEqual(link("lyrimuse://debug/notch-behavior?progress-line=Ears"),
@@ -386,6 +389,7 @@ func runDeepLinkTests() {
             .debug(.notchStyle(style: nil, expanded: "same")),
             .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: true)),
+            .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, lyricRowFade: false)),
             .debug(.knockout(leg: .voxScript, on: false)), .debug(.knockout(leg: .systemArtwork, on: true)),
             .debug(.menuBarCenter(center: true, ignoreNotch: true)), .debug(.menuBarCenter(center: false, ignoreNotch: nil)),
             .debug(.menuBarCenter(center: nil, ignoreNotch: false)),

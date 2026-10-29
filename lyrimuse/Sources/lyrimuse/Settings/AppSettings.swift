@@ -440,6 +440,7 @@ final class AppSettings: ObservableObject {
         // 换歌时显示歌名:新歌名从刘海里掉出来(NotchTrackDropStrip)。耳朵里的封面那一翻一直开,不看设置。
         static let notchShowsTrackDrop = "np:notchShowsTrackDrop"
         static let notchGestures = "np:notchGestures"
+        static let notchFadeLyricRowOnHover = "np:notchFadeLyricRowOnHover"
         static let notchShowsProgressLine = "np:notchShowsProgressLine"
         static let notchProgressLineStyle = "np:notchProgressLineStyle"
         static let overlayFadeOnHover = "np:overlayFadeOnHover"
@@ -640,6 +641,7 @@ final class AppSettings: ObservableObject {
     static let defaultNotchShowsTrackDrop = true
     /// 默认开:指针在灵动岛上时,两指左右滑切歌、上下滑调系统音量。
     static let defaultNotchGestures = true
+    static let defaultNotchFadeLyricRowOnHover = false
     /// 默认开、沿耳朵画(卡片不为它变高)。
     static let defaultNotchShowsProgressLine = true
     static let defaultNotchProgressLineStyle: NotchProgressLineStyle = .ears
@@ -1450,6 +1452,11 @@ final class AppSettings: ObservableObject {
     /// 灵动岛窗口收到滚动事件时现读。
     @Published var notchGestures: Bool {
         didSet { defaults.set(notchGestures, forKey: Keys.notchGestures) }
+    }
+    /// 悬浮淡化:指针压在灵动岛稳态的歌词行上时不展开,那一截整条淡化、点击穿透到下层窗口(`NotchLyricRowPassThrough`)。
+    /// 关着时整张卡悬停展开。灵动岛控制器订阅它。
+    @Published var notchFadeLyricRowOnHover: Bool {
+        didSet { defaults.set(notchFadeLyricRowOnHover, forKey: Keys.notchFadeLyricRowOnHover) }
     }
     /// 进度线:没展开时卡片底边画一根细进度线(关着歌词行时卡片为它多长 `NotchMetrics.progressLineStrip`)。
     @Published var notchShowsProgressLine: Bool {
@@ -2690,6 +2697,8 @@ final class AppSettings: ObservableObject {
         notchShowsTrackDrop = (defaults.object(forKey: Keys.notchShowsTrackDrop) as? Bool)
             ?? Self.defaultNotchShowsTrackDrop
         notchGestures = (defaults.object(forKey: Keys.notchGestures) as? Bool) ?? Self.defaultNotchGestures
+        notchFadeLyricRowOnHover = (defaults.object(forKey: Keys.notchFadeLyricRowOnHover) as? Bool)
+            ?? Self.defaultNotchFadeLyricRowOnHover
         notchShowsProgressLine = (defaults.object(forKey: Keys.notchShowsProgressLine) as? Bool)
             ?? Self.defaultNotchShowsProgressLine
         notchProgressLineStyle = defaults.string(forKey: Keys.notchProgressLineStyle)

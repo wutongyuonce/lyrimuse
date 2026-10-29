@@ -65,6 +65,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     @Published private(set) var transientBannerActive = false
     /// 要不要画底边那根进度线,真值在 `AppSettings.notchShowsProgressLine`,镜像理由同 `showsEqualizer`。
     @Published private(set) var showsProgressLine: Bool = AppSettings.shared.notchShowsProgressLine
+    /// 「悬浮淡化」,真值在 `AppSettings.notchFadeLyricRowOnHover`,镜像理由同 `showsEqualizer`。
+    @Published private(set) var fadesLyricRowOnHover: Bool = AppSettings.shared.notchFadeLyricRowOnHover
     @Published private(set) var progressLineStyle: NotchProgressLineStyle = AppSettings.shared.notchProgressLineStyle
     /// `isExpanded` 的两个输入(拆开):hover 那一路的兑现结果,和「发现新播放器」主动提醒的
     /// 撑开(`NotchUnknownPlayerPrompt.isAlerting` 的镜像)。任一为 true 卡片就是展开的,见 refreshExpanded ——
@@ -490,6 +492,11 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
             self?.showsProgressLine = shows
         }
         .store(in: &subscriptions)
+        AppSettings.shared.$notchFadeLyricRowOnHover.removeDuplicates().sink { [weak self] fades in
+            self?.fadesLyricRowOnHover = fades
+            if !fades { self?.passThrough?.end() }
+        }
+        .store(in: &subscriptions)
         AppSettings.shared.$notchProgressLineStyle.removeDuplicates().sink { [weak self] style in
             self?.progressLineStyle = style
         }
@@ -835,10 +842,10 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 控制器此刻认不认为指针在卡片上。`NotchWindowRoot.updateHover` 拿它跟自己的边沿记忆对账。
     var isCardHovered: Bool { cardHovered }
 
-    /// 只显示那一截的上沿(卡片局部 y,即顶行下沿);nil = 整张卡都接指针:展开态(从顶行展开后要往下够三键、进度条)、
-    /// 没有曲目、广告(那一格右端有「跳过广告」键)。见 05 章决策 121。
+    /// 只显示那一截的上沿(卡片局部 y,即顶行下沿);nil = 整张卡都接指针:「悬浮淡化」关着、展开态(从顶行展开后要往下够
+    /// 三键、进度条)、没有曲目、广告(那一格右端有「跳过广告」键)。见 05 章决策 121。
     var passThroughBandTop: CGFloat? {
-        isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset
+        !fadesLyricRowOnHover || isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset
     }
 
     /// 窗口这一侧报指针进了只显示的那一截。
@@ -854,7 +861,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         let top = passThroughBandTop
         return NotchLyricRowPassThrough.Hit(
             region: NotchHoverHit.region(point: local, cardWidth: frame.width, cardHeight: frame.height, passThroughBelow: top),
-            local: local, cardSize: frame.size, bandTop: top)
+            cardSize: frame.size, bandTop: top)
     }
 
     /// `debug/notch-pass-through`:当作指针停在卡片这一点上(卡片局部坐标),nil 交还真指针。

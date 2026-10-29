@@ -74,8 +74,9 @@ enum DebugDeepLinks {
         case let .stall(ms):
             logger.notice("debug stall: blocking main thread \(ms, privacy: .public) ms")
             usleep(UInt32(ms) * 1000)
-        case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics):
+        case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics, lyricRowFade):
             if let showLyrics { AppSettings.shared.notchShowLyrics = showLyrics }
+            if let lyricRowFade { AppSettings.shared.notchFadeLyricRowOnHover = lyricRowFade }
             if let collapse { AppSettings.shared.notchCollapsesWhenPaused = collapse }
             if let allScreens { AppSettings.shared.notchAllScreens = allScreens }
             if let hide { AppSettings.shared.notchHideWhenNotPlaying = hide }
@@ -83,7 +84,7 @@ enum DebugDeepLinks {
                 if let style = progressLine.style { AppSettings.shared.notchProgressLineStyle = style }
                 AppSettings.shared.notchShowsProgressLine = progressLine.shows
             }
-            logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public)")
+            logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public) lyricRowFade=\(String(describing: lyricRowFade), privacy: .public)")
         case let .notchStyle(style, expanded):
             if let style, let parsed = NotchCardStyle(rawValue: style) { AppSettings.shared.notchCardStyle = parsed }
             if let expanded {

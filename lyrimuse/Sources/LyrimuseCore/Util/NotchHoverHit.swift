@@ -37,18 +37,8 @@ public enum NotchHoverHit {
     }
 }
 
-/// 只显示那一截上光标周围挖的洞:半径内由透明渐变到不透明,`clearFraction` 以内全透明。
-public enum NotchPassThroughHole {
-    public static let radius: CGFloat = 40
-    public static let clearFraction: CGFloat = 0.35
-    /// 洞出现 / 合上的渐变时长。
-    public static let fadeDuration: Double = 0.15
-
-    /// 洞所在的方块(卡片局部坐标):以指针为中心、边长两倍半径,裁到只显示的那一截以内;跟那一截不相交时为 nil。
-    public static func rect(pointer: CGPoint, bandTop: CGFloat, cardWidth: CGFloat, cardHeight: CGFloat) -> CGRect? {
-        let square = CGRect(x: pointer.x - radius, y: pointer.y - radius, width: radius * 2, height: radius * 2)
-        let band = CGRect(x: 0, y: bandTop, width: cardWidth, height: max(0, cardHeight - bandTop))
-        let hit = square.intersection(band)
-        return hit.isNull || hit.isEmpty ? nil : hit
-    }
+/// 只显示那一截在指针压上来时淡到多少、多久淡完。跟悬浮歌词「悬浮淡化」同一个值。
+public enum NotchPassThroughFade {
+    public static let opacity: Float = 0.15
+    public static let duration: Double = 0.15
 }

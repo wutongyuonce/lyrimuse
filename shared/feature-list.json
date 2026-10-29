@@ -1396,6 +1396,31 @@
           ]
         },
         {
+          "id": "notch-lyric-row-fade",
+          "title": {
+            "zh-Hans": "灵动岛歌词行悬浮淡化",
+            "en": "Fade the notch lyric row on hover",
+            "zh-Hant": "動態島歌詞行指向時淡化"
+          },
+          "desc": {
+            "zh-Hans": "指针移到灵动岛的歌词行上时不展开，整行淡化，点按穿透到下层窗口；移到刘海或两侧才展开。",
+            "en": "With the pointer on the notch's lyric row, the row fades instead of expanding and clicks pass through to the window below; the notch expands only from the notch itself or its sides.",
+            "zh-Hant": "指標移到動態島的歌詞行上時不展開，整行淡化，按一下將穿透到下層視窗；移到瀏海或兩側才展開。"
+          },
+          "default": "off",
+          "check": {
+            "appSetting": "notchFadeLyricRowOnHover"
+          },
+          "settings": [
+            [
+              "歌词显示",
+              "灵动岛",
+              "歌词行",
+              "悬浮淡化"
+            ]
+          ]
+        },
+        {
           "id": "notch-multiline-lyrics",
           "title": {
             "zh-Hans": "灵动岛展开时显示多行歌词",

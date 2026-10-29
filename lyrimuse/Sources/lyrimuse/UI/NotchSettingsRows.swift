@@ -310,6 +310,7 @@ enum NotchStyleDefaults {
         settings.notchListenMilestones = AppSettings.defaultNotchListenMilestones
         settings.notchShowsTrackDrop = AppSettings.defaultNotchShowsTrackDrop
         settings.notchGestures = AppSettings.defaultNotchGestures
+        settings.notchFadeLyricRowOnHover = AppSettings.defaultNotchFadeLyricRowOnHover
         settings.notchShowsProgressLine = AppSettings.defaultNotchShowsProgressLine
         settings.notchProgressLineStyle = AppSettings.defaultNotchProgressLineStyle
     }

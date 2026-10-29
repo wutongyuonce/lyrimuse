@@ -2,20 +2,19 @@ import AppKit
 import LyrimuseCore
 import QuartzCore
 
-/// 灵动岛稳态顶行以下那一截(歌词行、掉歌名条、横幅条)只显示、不接指针:指针压上来时整扇窗切成 `ignoresMouseEvents`,
-/// 点击、滚动落到下层窗口,光标周围挖一个渐隐的洞露出底下的内容;指针离开这一截就恢复接收。见 05 章决策 121。
+/// 灵动岛「悬浮淡化」(`AppSettings.notchFadeLyricRowOnHover`):稳态顶行以下那一截(歌词行、掉歌名条、横幅条)只显示、不接指针。
+/// 指针压上来时整扇窗切成 `ignoresMouseEvents`,点击、滚动落到下层窗口,这一截整条淡下去露出底下的内容;指针离开这一截就恢复接收。
+/// 见 05 章决策 121、124。
 ///
 /// 穿透期间这扇窗收不到任何指针事件,SwiftUI 的悬停也就不来了:指针去哪由全局 / 本地监听器跟踪(只在穿透期间装着,
 /// 平时不让全系统的指针移动经 IPC 送进本进程),再加一个低频兜底,监听器漏了事件也能及时退出。
 ///
-/// 洞挂在 hosting view 的 layer 上(`CALayer.mask`),只在穿透期间存在。别改成 SwiftUI 里常驻的 `.mask`:灵动岛的逐字填色
+/// 淡化挂在 hosting view 的 layer 上(`CALayer.mask`),只在穿透期间存在。别改成 SwiftUI 里常驻的 `.mask`:灵动岛的逐字填色
 /// 一直在动,常驻遮罩让整卡每帧多一次离屏合成;按条件挂又会换掉卡片的视图身份、重置里面的状态。
 @MainActor
 final class NotchLyricRowPassThrough {
     struct Hit {
         var region: NotchHoverHit.Region
-        /// 指针的卡片局部坐标(原点在卡片左上角)。
-        var local: CGPoint
         var cardSize: CGSize
         /// 只显示那一截的上沿(卡片局部 y);nil = 此刻整张卡都接指针。
         var bandTop: CGFloat?
@@ -31,9 +30,10 @@ final class NotchLyricRowPassThrough {
     private var monitors: [Any] = []
     private var fallbackTimer: Timer?
     private var maskLayer: CALayer?
-    private var maskShape: CAShapeLayer?
-    private var holeClip: CALayer?
-    private var holeGradient: CAGradientLayer?
+    /// 顶行那一块,一直不透明。
+    private var maskTop: CALayer?
+    /// 只显示那一截,透明度在 1 与 `NotchPassThroughFade.opacity` 之间渐变。
+    private var maskBand: CALayer?
 
     /// 兜底复查的间隔:指针移到本 App 别的窗口上时两个监听器都可能收不到。
     private static let fallbackInterval: TimeInterval = 0.25
@@ -88,7 +88,7 @@ final class NotchLyricRowPassThrough {
         fallbackTimer?.invalidate()
         fallbackTimer = nil
         window?.ignoresMouseEvents = false
-        closeHole()
+        unfade()
         NotchLyricsWindowController.hoverLog.notice("pass-through end")
     }
 
@@ -104,12 +104,12 @@ final class NotchLyricRowPassThrough {
             onExit(hit.region)
             return
         }
-        showHole(at: hit.local, bandTop: bandTop, cardSize: hit.cardSize)
+        fade(bandTop: bandTop, cardSize: hit.cardSize)
     }
 
-    // MARK: - 洞
+    // MARK: - 淡化
 
-    private func showHole(at pointer: CGPoint, bandTop: CGFloat, cardSize: CGSize) {
+    private func fade(bandTop: CGFloat, cardSize: CGSize) {
         guard let hostView, let layer = hostView.layer else { return }
         let opening = maskLayer == nil
         if opening { installMask(on: layer) }
@@ -117,95 +117,60 @@ final class NotchLyricRowPassThrough {
         CATransaction.setDisableActions(true)
         let bounds = layer.bounds
         maskLayer?.frame = bounds
-        maskShape?.frame = bounds
-        let hole = NotchPassThroughHole.rect(pointer: pointer, bandTop: bandTop,
-                                             cardWidth: cardSize.width, cardHeight: cardSize.height)
-            .map { viewRect(cardRect: $0, cardWidth: cardSize.width, in: hostView) }
-        let path = CGMutablePath()
-        path.addRect(bounds)
-        if let hole { path.addRect(hole) }
-        maskShape?.path = path
-        if let hole {
-            holeClip?.isHidden = false
-            holeClip?.frame = hole
-            let r = NotchPassThroughHole.radius
-            let center = viewPoint(cardPoint: pointer, cardWidth: cardSize.width, in: hostView)
-            holeGradient?.frame = CGRect(x: center.x - r - hole.minX, y: center.y - r - hole.minY,
-                                         width: r * 2, height: r * 2)
-        } else {
-            holeClip?.isHidden = true
-        }
+        // 卡片贴着窗口顶边,上沿那条线以上是顶行(整宽都算:卡片两侧本来就是透明区)。
+        let lineY = hostView.isFlipped ? bandTop : bounds.height - bandTop
+        let top = hostView.isFlipped
+            ? CGRect(x: 0, y: 0, width: bounds.width, height: lineY)
+            : CGRect(x: 0, y: lineY, width: bounds.width, height: bounds.height - lineY)
+        let band = hostView.isFlipped
+            ? CGRect(x: 0, y: lineY, width: bounds.width, height: bounds.height - lineY)
+            : CGRect(x: 0, y: 0, width: bounds.width, height: lineY)
+        maskTop?.frame = top
+        maskBand?.frame = band
         CATransaction.commit()
-        if opening { fadeHole(open: true) }
+        // 正在淡回(刚离开又压回来)时模型值已经是 1,接着从当前样子淡下去。
+        if opening || maskBand?.opacity != NotchPassThroughFade.opacity { animateBand(to: NotchPassThroughFade.opacity) }
     }
 
     private func installMask(on layer: CALayer) {
         let container = CALayer()
-        let shape = CAShapeLayer()
-        shape.fillRule = .evenOdd
-        shape.fillColor = NSColor.black.cgColor
-        let clip = CALayer()
-        clip.masksToBounds = true
-        let gradient = CAGradientLayer()
-        gradient.type = .radial
-        gradient.startPoint = CGPoint(x: 0.5, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1, y: 1)
-        gradient.locations = [0, NSNumber(value: Double(NotchPassThroughHole.clearFraction)), 1]
-        gradient.colors = Self.closedColors
-        clip.addSublayer(gradient)
-        container.addSublayer(shape)
-        container.addSublayer(clip)
+        let top = CALayer()
+        top.backgroundColor = NSColor.black.cgColor
+        let band = CALayer()
+        band.backgroundColor = NSColor.black.cgColor
+        container.addSublayer(top)
+        container.addSublayer(band)
         layer.mask = container
         maskLayer = container
-        maskShape = shape
-        holeClip = clip
-        holeGradient = gradient
+        maskTop = top
+        maskBand = band
     }
 
-    private static let closedColors = [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.black.cgColor]
-    private static let openColors = [NSColor.clear.cgColor, NSColor.clear.cgColor, NSColor.black.cgColor]
-
-    private func fadeHole(open: Bool, completion: (() -> Void)? = nil) {
-        guard let gradient = holeGradient else { completion?(); return }
-        let target = open ? Self.openColors : Self.closedColors
+    private func animateBand(to opacity: Float, completion: (() -> Void)? = nil) {
+        guard let band = maskBand else { completion?(); return }
         CATransaction.begin()
-        CATransaction.setAnimationDuration(NotchPassThroughHole.fadeDuration)
         CATransaction.setCompletionBlock(completion)
-        let animation = CABasicAnimation(keyPath: "colors")
-        animation.fromValue = gradient.presentation()?.colors ?? gradient.colors
-        animation.toValue = target
-        animation.duration = NotchPassThroughHole.fadeDuration
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = band.presentation()?.opacity ?? band.opacity
+        animation.toValue = opacity
+        animation.duration = NotchPassThroughFade.duration
         animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-        gradient.colors = target
-        gradient.add(animation, forKey: "fade")
+        band.opacity = opacity
+        band.add(animation, forKey: "fade")
         CATransaction.commit()
     }
 
-    /// 合上之后才摘遮罩:直接摘掉洞会一下子跳没。合上途中又穿透了就接着用这一份。
-    private func closeHole() {
+    /// 淡回不透明之后才摘遮罩:直接摘掉会一下子跳回来。淡回途中又穿透了就接着用这一份。
+    private func unfade() {
         guard let container = maskLayer else { return }
-        fadeHole(open: false) { [weak self] in
+        animateBand(to: 1) { [weak self] in
             MainActor.assumeIsolated {
                 guard let self, !self.isActive, self.maskLayer === container else { return }
                 self.hostView?.layer?.mask = nil
                 self.maskLayer = nil
-                self.maskShape = nil
-                self.holeClip = nil
-                self.holeGradient = nil
+                self.maskTop = nil
+                self.maskBand = nil
             }
         }
-    }
-
-    /// 卡片贴着窗口顶边、水平居中(同控制器 `cardScreenFrame`)。卡片局部坐标原点在左上角、y 向下。
-    private func viewPoint(cardPoint: CGPoint, cardWidth: CGFloat, in view: NSView) -> CGPoint {
-        let x = (view.bounds.width - cardWidth) / 2 + cardPoint.x
-        let y = view.isFlipped ? cardPoint.y : view.bounds.height - cardPoint.y
-        return CGPoint(x: x, y: y)
-    }
-
-    private func viewRect(cardRect: CGRect, cardWidth: CGFloat, in view: NSView) -> CGRect {
-        let a = viewPoint(cardPoint: CGPoint(x: cardRect.minX, y: cardRect.minY), cardWidth: cardWidth, in: view)
-        let b = viewPoint(cardPoint: CGPoint(x: cardRect.maxX, y: cardRect.maxY), cardWidth: cardWidth, in: view)
-        return CGRect(x: min(a.x, b.x), y: min(a.y, b.y), width: abs(b.x - a.x), height: abs(b.y - a.y))
     }
 }

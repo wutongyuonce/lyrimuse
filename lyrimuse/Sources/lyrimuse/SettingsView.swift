@@ -3789,6 +3789,8 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
     case trackDrop
     /// 触控板手势(`AppSettings.notchGestures`)。归「行为」。
     case gestures
+    /// 悬浮淡化(`AppSettings.notchFadeLyricRowOnHover`)。归「歌词行」。
+    case lyricRowFade
     case lyricRowArtwork
     case expandedNextLine
     case expandedShowsControls
@@ -3812,6 +3814,7 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .listenMilestones: return "trophy"
         case .trackDrop: return "rectangle.topthird.inset.filled"
         case .gestures: return "hand.draw"
+        case .lyricRowFade: return "cursorarrow.motionlines"
         case .lyricRowArtwork: return "photo"
         case .expandedNextLine: return "text.bubble"
         case .expandedShowsControls: return "playpause.fill"
@@ -3834,6 +3837,7 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .listenMilestones: return L10n.t("收听里程碑")
         case .trackDrop: return L10n.t("换歌时显示歌名")
         case .gestures: return L10n.t("触控板手势")
+        case .lyricRowFade: return L10n.t("悬浮淡化")
         case .lyricRowArtwork: return L10n.t("显示封面")
         // 标题里要把"只在展开时"说出来,否则跟上一行「副行 · 下一句」读起来像同一个开关的两种写法。
         case .expandedNextLine: return L10n.t("展开时预览下一句")
@@ -3863,6 +3867,8 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
             return L10n.t("切歌时新歌名从刘海下方滑出，数秒后收回")
         case .gestures:
             return L10n.t("指针停在灵动岛上时，双指左右滑动切歌，上下滑动调节音量")
+        case .lyricRowFade:
+            return L10n.t("指针在歌词行上时不展开，歌词行淡化，点按穿透到下层窗口")
         case .expandedShowsQuickActions:
             return L10n.t("展开时在曲目信息右侧显示喜欢、搜索歌词、设置等按钮")
         default: return nil
@@ -3894,6 +3900,8 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
                             set: { settings.notchShowsTrackDrop = $0 })
         case .gestures:
             return Binding(get: { settings.notchGestures }, set: { settings.notchGestures = $0 })
+        case .lyricRowFade:
+            return Binding(get: { settings.notchFadeLyricRowOnHover }, set: { settings.notchFadeLyricRowOnHover = $0 })
         case .lyricRowArtwork:
             return Binding(get: { settings.notchLyricRowShowsArtwork },
                             set: { settings.notchLyricRowShowsArtwork = $0 })
@@ -4161,7 +4169,7 @@ private struct NotchLyricRowHeightRow: View {
 struct NotchLyricRowSettingsRows: View {
     @ObservedObject private var settings = AppSettings.shared
 
-    // 开关排成两列小块(显示歌词 / 卡拉OK / 封面 / 预览下一句),其余带下拉、分段、滑杆的行一框。
+    // 开关排成两列小块(显示歌词 / 卡拉OK / 封面 / 悬浮淡化 / 预览下一句),其余带下拉、分段、滑杆的行一框。
     var body: some View {
         SettingsRowGroupStack {
             SettingsTileGrid {
@@ -4169,6 +4177,7 @@ struct NotchLyricRowSettingsRows: View {
                 if settings.notchShowLyrics {
                     NotchBehaviorToggleTile(item: .karaoke)
                     NotchBehaviorToggleTile(item: .lyricRowArtwork)
+                    NotchBehaviorToggleTile(item: .lyricRowFade)
                 }
                 if !settings.notchSecondaryLine.hidesExpandedNextLinePreview, !settings.notchExpandedLyricList {
                     NotchBehaviorToggleTile(item: .expandedNextLine)

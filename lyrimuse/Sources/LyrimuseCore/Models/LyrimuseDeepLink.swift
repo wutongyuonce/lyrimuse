@@ -127,11 +127,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case stall(ms: Int)
         /// 灵动岛摆一次报喜,跟设置页「收听里程碑」旁那颗「试用」走同一条路(`debug/milestone-preview`)。
         case milestonePreview
-        /// 灵动岛「暂停时收起」「暂停时隐藏」「进度线」「所有屏幕」「显示歌词」,跟设置页那几项走同一个设置:
-        /// `debug/notch-behavior?collapse-when-paused=1&hide-when-not-playing=0&progress-line=off|bottom|ears&all-screens=1&show-lyrics=1`,
+        /// 灵动岛「暂停时收起」「暂停时隐藏」「进度线」「所有屏幕」「显示歌词」「悬浮淡化」,跟设置页那几项走同一个设置:
+        /// `debug/notch-behavior?collapse-when-paused=1&hide-when-not-playing=0&progress-line=off|bottom|ears&all-screens=1&show-lyrics=1&lyric-row-fade=1`,
         /// 至少带一个。
         case notchBehavior(collapseWhenPaused: Bool?, hideWhenNotPlaying: Bool?, progressLine: NotchProgressLineChoice? = nil,
-                           allScreens: Bool? = nil, showLyrics: Bool? = nil)
+                           allScreens: Bool? = nil, showLyrics: Bool? = nil, lyricRowFade: Bool? = nil)
         /// 灵动岛「风格」里的「背景」「展开背景」,跟设置页走同两个设置:`debug/notch-style?style=coverArt&expanded=solidBlack|same`
         /// (值是 `NotchCardStyle` 的 rawValue,`same` = 展开背景「同上」),至少带一个。认不认得这个值由 App 判。
         case notchStyle(style: String?, expanded: String?)
@@ -287,9 +287,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             let progressLine = value("progress-line").flatMap { NotchProgressLineChoice(rawValue: $0.lowercased()) }
             let allScreens = value("all-screens").flatMap(Self.parseBool)
             let showLyrics = value("show-lyrics").flatMap(Self.parseBool)
-            guard collapse != nil || hide != nil || progressLine != nil || allScreens != nil || showLyrics != nil else { return nil }
+            let lyricRowFade = value("lyric-row-fade").flatMap(Self.parseBool)
+            guard collapse != nil || hide != nil || progressLine != nil || allScreens != nil || showLyrics != nil
+                    || lyricRowFade != nil else { return nil }
             self = .debug(.notchBehavior(collapseWhenPaused: collapse, hideWhenNotPlaying: hide, progressLine: progressLine,
-                                         allScreens: allScreens, showLyrics: showLyrics))
+                                         allScreens: allScreens, showLyrics: showLyrics, lyricRowFade: lyricRowFade))
         case ("debug", "/notch-style"):
             let style = value("style").flatMap { $0.isEmpty ? nil : $0 }
             let expanded = value("expanded").flatMap { $0.isEmpty ? nil : $0 }
@@ -450,13 +452,16 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 if let secondary { items.append(URLQueryItem(name: "secondary", value: secondary)) }
                 if let alignment { items.append(URLQueryItem(name: "alignment", value: alignment)) }
                 components.queryItems = items
-            case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics):
+            case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics, lyricRowFade):
                 components.path = "/notch-behavior"
-                components.queryItems = (collapse.map { [URLQueryItem(name: "collapse-when-paused", value: $0 ? "1" : "0")] } ?? [])
-                    + (hide.map { [URLQueryItem(name: "hide-when-not-playing", value: $0 ? "1" : "0")] } ?? [])
-                    + (progressLine.map { [URLQueryItem(name: "progress-line", value: $0.rawValue)] } ?? [])
-                    + (allScreens.map { [URLQueryItem(name: "all-screens", value: $0 ? "1" : "0")] } ?? [])
-                    + (showLyrics.map { [URLQueryItem(name: "show-lyrics", value: $0 ? "1" : "0")] } ?? [])
+                var items: [URLQueryItem] = []
+                if let collapse { items.append(URLQueryItem(name: "collapse-when-paused", value: collapse ? "1" : "0")) }
+                if let hide { items.append(URLQueryItem(name: "hide-when-not-playing", value: hide ? "1" : "0")) }
+                if let progressLine { items.append(URLQueryItem(name: "progress-line", value: progressLine.rawValue)) }
+                if let allScreens { items.append(URLQueryItem(name: "all-screens", value: allScreens ? "1" : "0")) }
+                if let showLyrics { items.append(URLQueryItem(name: "show-lyrics", value: showLyrics ? "1" : "0")) }
+                if let lyricRowFade { items.append(URLQueryItem(name: "lyric-row-fade", value: lyricRowFade ? "1" : "0")) }
+                components.queryItems = items
             case let .notchStyle(style, expanded):
                 components.path = "/notch-style"
                 components.queryItems = (style.map { [URLQueryItem(name: "style", value: $0)] } ?? [])
