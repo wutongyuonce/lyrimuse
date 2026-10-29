@@ -230,6 +230,11 @@ func runDeepLinkTests() {
                     "debug: 灵动岛只开所有屏幕")
         expectEqual(link("lyrimuse://debug/menubar-center?screen=auto"),
                     .debug(.menuBarCenter(center: nil, ignoreNotch: nil, screen: "auto")), "debug: 只改正中放哪几块屏")
+        expectEqual(link("lyrimuse://debug/notch-style?expanded=solidBlack"),
+                    .debug(.notchStyle(style: nil, expanded: "solidBlack")), "debug: 只改灵动岛展开背景")
+        expectEqual(link("lyrimuse://debug/notch-style?style=coverArt&expanded=same"),
+                    .debug(.notchStyle(style: "coverArt", expanded: "same")), "debug: 背景、展开背景一起设")
+        expectEqual(link("lyrimuse://debug/notch-style"), nil, "debug: 灵动岛风格什么都没带不认")
         expectEqual(link("lyrimuse://debug/japanese-reading?style=Kana"), .debug(.japaneseReading(.kana)),
                     "debug: 日语读音切到假名,大小写不敏感")
         expectEqual(link("lyrimuse://debug/japanese-reading?style=furigana") == nil
@@ -377,6 +382,8 @@ func runDeepLinkTests() {
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, progressLine: .off)),
             .debug(.notchBehavior(collapseWhenPaused: true, hideWhenNotPlaying: nil, progressLine: .bottom)),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, allScreens: false)),
+            .debug(.notchStyle(style: "solidBlack", expanded: "coverArt")),
+            .debug(.notchStyle(style: nil, expanded: "same")),
             .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: true)),
             .debug(.knockout(leg: .voxScript, on: false)), .debug(.knockout(leg: .systemArtwork, on: true)),

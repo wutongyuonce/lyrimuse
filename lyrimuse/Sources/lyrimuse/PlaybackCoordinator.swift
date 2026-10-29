@@ -1310,18 +1310,23 @@ final class PlaybackCoordinator: ObservableObject {
             // 但 coverArt 风格的背景亮度正比于封面本身的亮度——亮封面(比如黄底)叠 45% 黑之后依然不暗,
             // 固定的文字亮度地板量不出这种情况,文字会跟背景撞色(实测 WCAG 对比度只有 2.78;灵动岛字号
             // 9~13.5pt 够不上 WCAG 大号文字那档,门槛该是 4.5)。只在这个风格下多算一步
-            // accentForCoverArtBackground,纯黑/深色渐变两种风格背景是真的暗,不需要多算。
+            // accentForCoverArtBackground,纯黑/深色渐变两种风格背景是真的暗,不需要多算。未展开、展开两种风格里有一种是
+            // 「跟随封面」就多算:这份颜色只在那一态用得上(另一态前景是白,见 NotchPlayback.accent / expandedAccent)。
             // 背景亮区(`notchBackdropTone`)到了就按它查:歌词落在封面亮区时看得清看不清取决于那一块,均值会估低;
             // 背景压暗也随亮区加深,两者配套传。还没烘出来时按均值和固定压暗查。
-            Publishers.CombineLatest4(s.$artworkAverageHex, $highResAverageHex, settings.$notchCardStyle, $notchBackdropTone)
-                .map { systemHex, highResHex, cardStyle, tone -> Color? in
+            Publishers.CombineLatest4(
+                s.$artworkAverageHex, $highResAverageHex,
+                settings.$notchCardStyle.combineLatest(settings.$notchExpandedCardStyle)
+                    .map { $0 == .coverArt || $1 == .coverArt },
+                $notchBackdropTone)
+                .map { systemHex, highResHex, usesCoverArt, tone -> Color? in
                     guard let hex = highResHex ?? systemHex,
                           let ns = NSColor(hexStringWithAlpha: hex) else { return nil }
                     let rawR = ns.redComponent, rawG = ns.greenComponent, rawB = ns.blueComponent
                     let base = LocalPlaybackSource.brightenedAccent(r: rawR, g: rawG, b: rawB)
                     var lifted = LocalPlaybackSource.accentForDarkBackdrop(
                         r: base.r, g: base.g, b: base.b)
-                    if cardStyle == .coverArt {
+                    if usesCoverArt {
                         lifted = LocalPlaybackSource.accentForCoverArtBackground(
                             r: lifted.r, g: lifted.g, b: lifted.b,
                             rawR: tone?.r ?? rawR, rawG: tone?.g ?? rawG, rawB: tone?.b ?? rawB,

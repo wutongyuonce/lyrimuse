@@ -119,6 +119,24 @@ struct NotchStyleSettingsRows: View {
                         compact: true
                     )
                 }
+                // 指针停在这两行上时编辑台预览摆成对应那一态,同圆角两行(NotchCornerLive.hover)。
+                .onHover { inside in corners.hover(.collapsed, inside: inside) }
+                CardDivider()
+                SettingsRow(icon: "paintbrush.fill", title: L10n.t("展开背景")) {
+                    // nil = 同上(跟未展开时一样),排在四种风格前面。
+                    SettingsGlassMenuPicker(
+                        selection: Binding(
+                            get: { settings.notchExpandedCardStyle },
+                            set: { style in
+                                guard settings.notchExpandedCardStyle != style else { return }
+                                settings.notchExpandedCardStyle = style
+                            }),
+                        options: [nil] + NotchCardStyle.allCases.map(Optional.some),
+                        label: { $0?.displayName ?? L10n.t("同上") },
+                        compact: true
+                    )
+                }
+                .onHover { inside in corners.hover(.expanded, inside: inside) }
                 CardDivider()
                 cornerRadiusRow(icon: "square.bottomhalf.filled", title: L10n.t("圆角"), slot: .collapsed,
                                 cardHeight: card.cardHeight(expanded: false))
@@ -245,6 +263,7 @@ enum NotchStyleDefaults {
     static func restoreDefaults() {
         let settings = AppSettings.shared
         settings.notchCardStyle = AppSettings.defaultNotchCardStyle
+        settings.notchExpandedCardStyle = AppSettings.defaultNotchExpandedCardStyle
         settings.notchCornerRadius = AppSettings.defaultNotchCornerRadius
         settings.notchExpandedCornerRadius = AppSettings.defaultNotchExpandedCornerRadius
         settings.notchLeftEar = AppSettings.defaultNotchLeftEar

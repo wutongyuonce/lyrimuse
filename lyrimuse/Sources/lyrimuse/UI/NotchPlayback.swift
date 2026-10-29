@@ -104,10 +104,14 @@ final class NotchPlayback: ObservableObject {
     /// 封面、前景是封面主色),选另外三种风格 = 前景恒为白。取不到封面主色时 `notchAccentColor` 为 nil,自动落回白色,跟
     /// `.coverArt` 背景在没有封面时退回纯黑是同一种兜底。
     @Published private(set) var accent: Color = .white
+    /// 展开时的那一份:按展开风格(`notchExpandedCardStyle ?? notchCardStyle`)判,其余同 `accent`。
+    @Published private(set) var expandedAccent: Color = .white
     // ---- 来自 AppSettings ----
     // 灵动岛只读这一项:它既决定卡片背景(见 NotchCardStyle.backdrop / backgroundLayer),
     // 也决定前景取不取封面主色(折进上面的 accent)。
     @Published private(set) var notchCardStyle: NotchCardStyle = .coverArt
+    /// hover 展开时的风格;nil = 同 `notchCardStyle`。
+    @Published private(set) var notchExpandedCardStyle: NotchCardStyle?
     /// 稳态/展开那一行两只耳朵各显示什么(见 NotchEarModule)。
     @Published private(set) var leftEar: NotchEarModule = .title
     @Published private(set) var rightEar: NotchEarModule = .artist
@@ -364,7 +368,12 @@ final class NotchPlayback: ObservableObject {
                 .map { accent, style in style == .coverArt ? (accent ?? .white) : .white }
                 .removeDuplicates()
                 .sink { [weak self] in self?.accent = $0 },
+            Publishers.CombineLatest3(p.$notchAccentColor, s.$notchCardStyle, s.$notchExpandedCardStyle)
+                .map { accent, style, expanded in (expanded ?? style) == .coverArt ? (accent ?? .white) : .white }
+                .removeDuplicates()
+                .sink { [weak self] in self?.expandedAccent = $0 },
             s.$notchCardStyle.removeDuplicates().sink { [weak self] in self?.notchCardStyle = $0 },
+            s.$notchExpandedCardStyle.removeDuplicates().sink { [weak self] in self?.notchExpandedCardStyle = $0 },
             s.$notchLeftEar.removeDuplicates().sink { [weak self] in self?.leftEar = $0 },
             s.$notchRightEar.removeDuplicates().sink { [weak self] in self?.rightEar = $0 },
             Publishers.CombineLatest(p.$highResArtworkImage, p.$artworkImage)

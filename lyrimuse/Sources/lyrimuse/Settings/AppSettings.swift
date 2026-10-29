@@ -467,6 +467,7 @@ final class AppSettings: ObservableObject {
         static let classicOverlayEnabled = "np:classicOverlayEnabled"
         static let notchOverlayEnabled = "np:notchOverlayEnabled"
         static let notchCardStyle = "np:notchCardStyle"
+        static let notchExpandedCardStyle = "np:notchExpandedCardStyle"
         static let notchShowLyrics = "np:notchShowLyrics"
         static let motionCoverEnabled = "np:motionCoverEnabled"
         static let spotifyCanvasEnabled = "np:spotifyCanvasEnabled"
@@ -602,6 +603,8 @@ final class AppSettings: ObservableObject {
     // 这批默认值按作者在用的配置整体校准过。改默认值改的是"这个键没存过时用什么" —— 动过的人键早已
     // 落盘、升级后一字不变;跟着变的是新装用户和存量里从没动过某一项的人。详见 05 章「默认值的一次整体校准」。
     static let defaultNotchCardStyle = NotchCardStyle.coverArt
+    /// nil = 展开时跟未展开时同一种风格。
+    static let defaultNotchExpandedCardStyle: NotchCardStyle? = nil
     // 灵动岛稳态宽 / 展开宽的默认值(是两个键)。hover 展开比稳态宽本来就是这对设置存在的意义
     // (读侧的 max 只保证展开不比稳态窄,没规定必须相等);两行紧挨着写,改一个时别漏另一个。
     static let defaultNotchContentWidth: Double = 252
@@ -1625,6 +1628,17 @@ final class AppSettings: ObservableObject {
     // didSet 里连带调用某个单例的方法。
     @Published var notchCardStyle: NotchCardStyle {
         didSet { defaults.set(notchCardStyle.rawValue, forKey: Keys.notchCardStyle) }
+    }
+    /// 灵动岛 hover 展开时的风格;nil = 跟 `notchCardStyle` 一样(「同上」,不存键)。背景和前景取色都按展开与否取这两者之一,
+    /// 见 05 章决策 123。
+    @Published var notchExpandedCardStyle: NotchCardStyle? {
+        didSet {
+            if let style = notchExpandedCardStyle {
+                defaults.set(style.rawValue, forKey: Keys.notchExpandedCardStyle)
+            } else {
+                defaults.removeObject(forKey: Keys.notchExpandedCardStyle)
+            }
+        }
     }
     /// 灵动岛要不要画歌词行。关掉之后卡片**只保留菜单栏那条高度**(顶行那一条),歌词行连同它的高度
     /// 一起不渲染 —— 于是灵动岛退化成一条贴着刘海的状态栏,不遮任何东西,给想看播放状态、又不想有
@@ -2728,6 +2742,8 @@ final class AppSettings: ObservableObject {
         notchOverlayEnabled = notchOn
         notchCardStyle = defaults.string(forKey: Keys.notchCardStyle)
             .flatMap(NotchCardStyle.init(rawValue:)) ?? Self.defaultNotchCardStyle
+        notchExpandedCardStyle = defaults.string(forKey: Keys.notchExpandedCardStyle)
+            .flatMap(NotchCardStyle.init(rawValue:)) ?? Self.defaultNotchExpandedCardStyle
         notchShowLyrics = (defaults.object(forKey: Keys.notchShowLyrics) as? Bool) ?? Self.defaultNotchShowLyrics
         motionCoverEnabled = (defaults.object(forKey: Keys.motionCoverEnabled) as? Bool) ?? Self.defaultMotionCoverEnabled
         spotifyCanvasEnabled = (defaults.object(forKey: Keys.spotifyCanvasEnabled) as? Bool) ?? Self.defaultSpotifyCanvasEnabled

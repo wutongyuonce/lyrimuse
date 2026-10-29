@@ -454,6 +454,7 @@ public enum SettingsSearchCatalog {
         // ---- 歌词显示 › 灵动岛 ----
         surface(.notch, "灵动岛歌词", sub: "紧贴屏幕顶部的刘海显示", kw: ["开关", "刘海", "总开关"], inDrawer: false),
         surface(.notch, "风格", kw: ["纯黑", "毛玻璃", "磨砂玻璃", "深色渐变", "跟随封面", "背景", "强调色"]),
+        surface(.notch, "展开背景", kw: ["展开态", "背景", "纯黑", "毛玻璃", "深色渐变", "跟随封面", "渐变"], group: "风格"),
         surface(.notch, "圆角", kw: ["弧度", "圆弧", "收起", "跟随刘海", "pt"], group: "风格"),
         surface(.notch, "展开圆角", kw: ["弧度", "圆弧", "展开态", "跟随刘海", "pt"], group: "风格"),
         surface(.notch, "进度线", kw: ["进度条", "播放进度", "底边", "细线"], group: "风格"),

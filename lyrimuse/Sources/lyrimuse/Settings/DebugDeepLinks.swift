@@ -84,6 +84,16 @@ enum DebugDeepLinks {
                 AppSettings.shared.notchShowsProgressLine = progressLine.shows
             }
             logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public)")
+        case let .notchStyle(style, expanded):
+            if let style, let parsed = NotchCardStyle(rawValue: style) { AppSettings.shared.notchCardStyle = parsed }
+            if let expanded {
+                if expanded == "same" {
+                    AppSettings.shared.notchExpandedCardStyle = nil
+                } else if let parsed = NotchCardStyle(rawValue: expanded) {
+                    AppSettings.shared.notchExpandedCardStyle = parsed
+                }
+            }
+            logger.notice("debug notch style style=\(style ?? "nil", privacy: .public) expanded=\(expanded ?? "nil", privacy: .public)")
         case let .notchPassThrough(x, y):
             NotchLyricsWindowController.shared.simulatePassThrough(at: CGPoint(x: x, y: y))
             logger.notice("debug notch pass-through x=\(x, privacy: .public) y=\(y, privacy: .public)")

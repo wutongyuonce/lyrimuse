@@ -847,7 +847,7 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 294 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 295 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -991,6 +991,7 @@ Every setting in the Settings window, by where it lives: 294 in all. Type a name
 
 ### Lyrics Display › Notch › Style
 
+- **Expanded Background**
 - **Corners**
 - **Expanded Corners**
 - **Progress Line**: Shows playback progress when not expanded

@@ -6,8 +6,8 @@ import os
 
 // 灵动岛卡片的内容视图。顶行(高 = contentTopInset)中间给物理刘海让出 notchWidth 宽的空当,空当里只有一枚截屏 / 录屏时才露面的
 // 品牌胶囊(notchSeam),两侧是两只可配的耳朵;顶行以下是歌词行,hover 展开时再长出曲目信息头部、下一句 / 多行歌词、进度条和
-// 播放控制(cardBodyLayer)。卡片只在底部两角做圆角、顶边贴着屏幕顶(NotchHangingShape)。背景按「风格」设置(NotchCardStyle),
-// 前景色跟着封面主色(NotchPlayback.accent)。
+// 播放控制(cardBodyLayer)。卡片只在底部两角做圆角、顶边贴着屏幕顶(NotchHangingShape)。背景按「风格」设置(NotchCardStyle,
+// 展开时可另选一种),前景色跟着封面主色(NotchPlayback.accent / expandedAccent)。
 struct NotchLyricsView<Chrome: NotchChromeSource>: View {
     @ObservedObject var controller: Chrome
 
@@ -50,7 +50,7 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
         GeometryReader { proxy in
             let earWidth = controller.earWidth(cardWidth: proxy.size.width)
             ZStack(alignment: .top) {
-                backgroundLayer(size: proxy.size)
+                backgroundLayers(size: proxy.size)
                 // 这几种时候铺一层纯黑盖住卡片样式自己的底,底色只剩"像不像刘海"一个标准:
                 // - 收起态(没在播放、没 hover):卡片就是挂在真刘海边上的一小块,深色渐变/磨砂/封面模糊底在真刘海的纯黑旁边都是
                 //   "看得出来的一块灰",收起就该和机器刘海一个颜色;
@@ -227,14 +227,29 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
     // `rebakeBlurredArtwork`),裁剪边界的约束见 NotchCrossfadeBackdrop 的头注。
     //
     // 没有封面数据(这首歌还没解析出封面/引擎还没查到/本来就没有)时退回纯黑(`NotchCardStyle.coverArt.backdrop`),跟机器刘海融成一块。
+    //
+    // 展开时另选了一种风格(`notchExpandedCardStyle`)就叠一层展开那种在上面,按展开与否淡入淡出;两种相同时只画一层。
+    // 两层都常驻、只切透明度:展开时现建封面那层的话,模糊图要重新铺,淡入那几帧是空的。见 05 章决策 123。
     @ViewBuilder
-    private func backgroundLayer(size: CGSize) -> some View {
+    private func backgroundLayers(size: CGSize) -> some View {
+        let resting = playback.notchCardStyle
+        let expanded = playback.notchExpandedCardStyle ?? resting
+        backgroundLayer(style: resting, size: size)
+        if expanded != resting {
+            backgroundLayer(style: expanded, size: size)
+                .opacity(controller.isExpanded ? 1 : 0)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: controller.isExpanded)
+        }
+    }
+
+    @ViewBuilder
+    private func backgroundLayer(style: NotchCardStyle, size: CGSize) -> some View {
         // 优先用高清替代(highResArtworkImage):系统那份对网易云永远只有 100×100,云盘没匹配上的歌还是灰底音符占位图,缓存里
         // 解析到真封面时背景该铺真封面。nil 时回落系统那份,跟歌词窗口封面卡同一套取舍(见 highResArtworkImage 的注释)。
         // 铺的是 PlaybackCoordinator 预烘焙好的模糊图(源同样是 highResArtworkImage ?? artworkImage),不在视图层挂活滤镜:那是
         // 合成期滤镜,这个窗口播放期间因逐字填色/音浪/跑马灯几乎永动,GPU 每次重合成都对同一张图重算同一个模糊。clampedToExtent
         // 让边缘实心,打底层只为烘焙空窗(封面刚到、模糊图晚几十 ms)兜底。
-        if playback.notchCardStyle == .coverArt,
+        if style == .coverArt,
            let image = playback.blurredArtworkImage {
             ZStack {
                 // 不透明打底,烘焙空窗期(封面刚到、模糊图晚几十 ms)先露它,见上。
@@ -254,7 +269,7 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
             // (05 章决策 114)。背景平时不变,合成一次就一直用。
             .compositingGroup()
         } else {
-            playback.notchCardStyle.backdrop
+            style.backdrop
         }
     }
 
@@ -368,8 +383,8 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
     /// 风格下要给浅色封面兜一圈可见轮廓),前景都走这里:状态文字跟正常歌词在同一个 Group 里,一处写死白色,同一行就会出现
     /// "有歌词时跟着封面色、一旦变成「暂无歌词」就突然跳回白"的闪动。
     var accentOrWhite: Color {
-        // 组合逻辑(风格是不是「跟随封面」× 动态主色)已下沉进 NotchPlayback.accent 预组合去重,这里只是个语义化的别名。
-        playback.accent
+        // 组合逻辑(风格是不是「跟随封面」× 动态主色)已下沉进 NotchPlayback.accent / expandedAccent 预组合去重,这里按展开与否二选一。
+        controller.isExpanded ? playback.expandedAccent : playback.accent
     }
 
     /// 歌词选了彩虹(`NotchLyricsColor.rainbow`):歌词字(主行、副行、展开态「下一句」)用白色当蒙版、颜色由流动彩虹给。

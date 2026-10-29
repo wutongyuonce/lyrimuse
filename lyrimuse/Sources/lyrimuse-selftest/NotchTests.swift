@@ -1443,9 +1443,20 @@ func runNotchTests() {
                         "顶行边距契约: 顶行的 padding、耳宽公式、音浪居中、编辑台耳朵热区读同一个 topRowPadding")
             expectEqual(v.contains("NotchCardClip(enabled: !hostClipsCard, outline: controller.cardOutline)"), true,
                         "外轮廓契约: 卡片裁剪的肩膀按这块屏的刘海高度、圆角按设置")
-            expectEqual(v.contains("        } else {\n            playback.notchCardStyle.backdrop\n")
+            expectEqual(v.contains("        } else {\n            style.backdrop\n")
                         && !v.contains("$0.fill(playback.notchCardStyle"), true,
                         "背景契约: 卡片风格的底是不套形状的整块视图,圆角交给外层裁剪(05 章决策 98)")
+            let notchPlaybackBgSrc = (try? String(contentsOf: uiDir.appendingPathComponent("NotchPlayback.swift"),
+                                                  encoding: .utf8)) ?? ""
+            let coordinatorBgSrc = (try? String(contentsOf: uiDir.deletingLastPathComponent()
+                .appendingPathComponent("PlaybackCoordinator.swift"), encoding: .utf8)) ?? ""
+            expectEqual(sourceHas(v, "let expanded = playback.notchExpandedCardStyle ?? resting\nbackgroundLayer(style: resting, size: size)\nif expanded != resting {\nbackgroundLayer(style: expanded, size: size)\n.opacity(controller.isExpanded ? 1 : 0)")
+                        && v.contains("backgroundLayers(size: proxy.size)"), true,
+                        "展开背景契约: 展开风格不同时叠一层、按展开与否淡入淡出,相同时只画一层(05 章决策 123)")
+            expectEqual(v.contains("controller.isExpanded ? playback.expandedAccent : playback.accent")
+                        && notchPlaybackBgSrc.contains("(expanded ?? style) == .coverArt ? (accent ?? .white) : .white")
+                        && coordinatorBgSrc.contains(".map { $0 == .coverArt || $1 == .coverArt }"), true,
+                        "展开背景契约: 前景按展开与否取那一态的风格;两态有一态跟随封面就按封面背景调对比度")
             expectEqual(reveal.contains("return NotchHangingShape.card(notchHeight: notchHeight, corner: corner).path(in: visible)"), true,
                         "外轮廓契约: 出场裁剪终态与卡片同形(真窗口里只留这一道)")
             expectEqual(reveal.contains("notchHeight: outline.notchHeight, corner: outline.corner(live))"), true,

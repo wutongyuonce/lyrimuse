@@ -132,6 +132,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 至少带一个。
         case notchBehavior(collapseWhenPaused: Bool?, hideWhenNotPlaying: Bool?, progressLine: NotchProgressLineChoice? = nil,
                            allScreens: Bool? = nil, showLyrics: Bool? = nil)
+        /// 灵动岛「风格」里的「背景」「展开背景」,跟设置页走同两个设置:`debug/notch-style?style=coverArt&expanded=solidBlack|same`
+        /// (值是 `NotchCardStyle` 的 rawValue,`same` = 展开背景「同上」),至少带一个。认不认得这个值由 App 判。
+        case notchStyle(style: String?, expanded: String?)
         /// 当作指针停在灵动岛卡片的这一点上(卡片局部坐标,原点左上角),走真指针那一条判区域:落在只显示的那一截就穿透、挖洞
         /// (`debug/notch-pass-through?x=200&y=50`)。不动真鼠标验穿透和洞的位置。
         case notchPassThrough(x: Double, y: Double)
@@ -287,6 +290,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             guard collapse != nil || hide != nil || progressLine != nil || allScreens != nil || showLyrics != nil else { return nil }
             self = .debug(.notchBehavior(collapseWhenPaused: collapse, hideWhenNotPlaying: hide, progressLine: progressLine,
                                          allScreens: allScreens, showLyrics: showLyrics))
+        case ("debug", "/notch-style"):
+            let style = value("style").flatMap { $0.isEmpty ? nil : $0 }
+            let expanded = value("expanded").flatMap { $0.isEmpty ? nil : $0 }
+            guard style != nil || expanded != nil else { return nil }
+            self = .debug(.notchStyle(style: style, expanded: expanded))
         case ("debug", "/notch-pass-through"):
             if value("off").flatMap(Self.parseBool) == true {
                 self = .debug(.notchPassThroughOff)
@@ -449,6 +457,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                     + (progressLine.map { [URLQueryItem(name: "progress-line", value: $0.rawValue)] } ?? [])
                     + (allScreens.map { [URLQueryItem(name: "all-screens", value: $0 ? "1" : "0")] } ?? [])
                     + (showLyrics.map { [URLQueryItem(name: "show-lyrics", value: $0 ? "1" : "0")] } ?? [])
+            case let .notchStyle(style, expanded):
+                components.path = "/notch-style"
+                components.queryItems = (style.map { [URLQueryItem(name: "style", value: $0)] } ?? [])
+                    + (expanded.map { [URLQueryItem(name: "expanded", value: $0)] } ?? [])
             case let .notchPassThrough(x, y):
                 components.path = "/notch-pass-through"
                 components.queryItems = [URLQueryItem(name: "x", value: String(x)), URLQueryItem(name: "y", value: String(y))]
