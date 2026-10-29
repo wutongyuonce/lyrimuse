@@ -20,6 +20,218 @@ each version's git tag annotation and on its
   完整流程见 docs/releasing.md。
 -->
 
+## v1.12.0
+
+New / 新功能
+- Added VOX and Pine Player as built-in players, bringing the total to
+  thirteen
+  新增内置播放器 VOX 与 Pine Player，内置播放器增至 13 款
+- Added support for the iPad version of NetEase Cloud Music on Apple
+  silicon Macs
+  支持在 Apple 芯片 Mac 上运行的 iPad 版网易云音乐
+- Added PetitLyrics as the fifteenth lyric source, for word-by-word
+  Japanese lyrics
+  新增歌词源 PetitLyrics，补充日语歌的逐字歌词，歌词源增至 15 个
+- Added readings for 18 more languages, including Russian, Greek, Thai,
+  Hindi and Tamil, following each language's official romanization
+  新增俄语、希腊语、泰语、印地语、泰米尔语等 18 种语言的读音，按各自的官方转写标准
+- Added kana readings for Japanese: hiragana above kanji, in place of
+  romaji
+  日语读音可改为只给汉字标注平假名
+- Added background-vocal lines split out of parentheses for every
+  word-timed lyric source
+  所有带逐字的歌词源，括号里的和声都会拆成单独的背景人声行
+- Added a menu bar center position for lyrics, with a choice of displays
+  菜单栏歌词新增「菜单栏正中」位置，可选择显示在哪几块屏幕
+- Added a song-title mode to the menu bar, with or without the artist
+  菜单栏可以只显示歌名，或歌名加歌手
+- You can now use the current album art as the menu bar icon and choose
+  the icon size
+  菜单栏图标可换成当前专辑封面，并可调整图标大小
+- You can now show only the translation in the menu bar, or put it on
+  the same line as the lyrics
+  菜单栏可以只显示译文，或把译文接在原文后排成一行
+- Added multi-line lyrics to the expanded notch; click a line to jump to it
+  灵动岛展开时可显示多行歌词，点一句即可跳到这一句
+- Added a progress line to the notch that traces the ear edges, on by
+  default
+  灵动岛新增沿两侧外沿走的进度线，默认开启
+- Added trackpad gestures on the notch: swipe sideways to skip, up or
+  down for volume
+  在灵动岛上双指左右滑动切歌，上下滑动调节音量
+- Added play count and player modules for the notch ears, and a shortcut
+  to peek at the notch
+  灵动岛两侧新增「收听次数」「播放器」模块，以及临时展开灵动岛的快捷键
+- Added an option for the notch to follow the display of the active window
+  灵动岛可以显示在当前窗口所在的屏幕上
+- Added separate switches to hide floating lyrics and collapse the notch
+  during ads
+  悬浮歌词与灵动岛新增「广告时隐藏」「广告时收起」开关
+- Added lyric sharing: pick up to four lines and save or share them as
+  an image card
+  新增分享歌词：选 1～4 句生成图片卡片，可拷贝、保存或分享
+- Added Spotify Canvas as a lyrics window background, for songs played
+  in Spotify
+  歌词窗口可用 Spotify Canvas 循环短片当背景，限在 Spotify 中放过的歌
+- Added animated album covers from QQ Music, NetEase Cloud Music and
+  Kugou Music
+  新增来自 QQ 音乐、网易云音乐与酷狗音乐的动态封面
+- Added artist bios from Spotify, and album notes and artist bios from
+  Kuwo and Kugou
+  新增 Spotify 的歌手简介，以及酷我、酷狗的专辑简介与歌手简介
+- You can now use lyrics beside local files played in Apple Music,
+  Spotify, QQ Music, NetEase, Kugou and LX Music
+  这些播放器放本机文件时，可用文件旁的 .lrc 和文件里内嵌的歌词
+- You can now choose the word-timed lyric file format: TTML, YRC,
+  Enhanced LRC, QRC or KRC
+  歌词文件夹的逐字歌词可选存为 TTML、YRC、增强 LRC、QRC 或 KRC
+- Added a proxy setting that retries overseas lyric sources when direct
+  connections fail
+  新增代理设置，直连失败时经系统代理、本机代理或指定代理重试海外歌词源
+- Added a title card to the OBS page, and a second QR code with the IP
+  link for Android phones
+  OBS 页新增歌名卡；网页歌词新增 IP 链接的二维码，方便安卓手机扫码
+- You can now pick a full, brief or summary listening report per
+  channel, or write your own with placeholders
+  听歌报告可按渠道选完整、精简、概况三套内容，或用占位符自己写
+- Added a Clean Up button in Settings to clear re-downloadable caches
+  设置中新增清理缓存，删除可重新获取的封面与查询结果
+
+Improved / 改进
+- Moved data to ~/Library/Application Support, caches to ~/Library/Caches
+  and logs to ~/Library/Logs
+  数据移至 ~/Library/Application Support，缓存与日志分别移至 Caches 与 Logs
+- Moved account credentials from the settings file into the login
+  Keychain
+  账号凭据从配置文件移入登录钥匙串
+- Improved listening reports with comparisons, new artists, estimated
+  listening time and per-platform layouts
+  听歌报告新增与上期对比、新听的歌手、估算时长，并按各平台的格式排版
+- Improved push settings: a push time in your time zone, per-report
+  channels and a preview with real data
+  推送提醒可设推送时间、按档选渠道，并用这一期的真实数据预览
+- Improved Japanese readings by borrowing kana annotations from other
+  lyric sources
+  日语读音会借用其他歌词源的假名标注，读音更准
+- Improved Korean readings: one syllable per word cell, with more
+  standard pronunciation rules
+  韩语逐词读音改为一个音节一格，并补齐标准发音规则
+- Improved readings for Cantonese lyrics written colloquially, and for
+  Chinese lines in Japanese songs
+  粤语口语歌词改标粤拼，日文歌里的中文行按中文读
+- Improved lyrics by filling masked words from other sources and
+  removing credit lines and theme-song notes
+  被打码的词会用其他源的原词补回，开头的署名行与影视说明行会被去掉
+- Improved matching for Spotify, QQ Music and songs whose title notes
+  the version after a dash
+  改进 Spotify、QQ 音乐的歌词匹配，以及歌名在「 - 」后注明版本的歌曲
+- Improved local file matching using the NetEase song ID stored in
+  downloaded files
+  放网易云下载的文件时，按文件里记录的歌曲 ID 匹配歌词
+- Improved prefetching of upcoming songs for VOX, Pine Player, reAMP,
+  KKBOX and QQ Music
+  VOX、Pine Player、reAMP、KKBOX 与 QQ 音乐会按播放列表和循环模式预先解析接下来的歌
+- Extended the idle page's Resume button to Kugou, QQ Music, NetEase
+  Cloud Music, LX Music and Pine Player
+  停播页的「继续播放」新增支持酷狗、QQ 音乐、网易云音乐、洛雪音乐与 Pine Player
+- Improved Spotify Web playback position to millisecond precision
+  Spotify 网页版的播放进度精确到毫秒
+- Improved control of Kugou and reAMP while another app holds media
+  focus, and added reAMP volume
+  媒体焦点被其他 App 占用时也能控制酷狗与 reAMP，并可调节 reAMP 音量
+- Improved Kugou audiobooks and crosstalk so they are treated as spoken
+  audio, not songs
+  酷狗听书中的有声书和相声按语音内容处理，不再当作歌曲
+- Improved web lyrics on phones: full-screen layout and the player above
+  the lyrics in portrait
+  网页歌词在手机上铺满全屏，竖放时播放器在上、歌词在下
+- Improved web lyrics in Firefox and Chrome over a local network with
+  smoother video
+  在 Firefox 与 Chrome 中从局域网打开网页歌词时画面更流畅
+- Improved Settings by warning when the firewall blocks other devices
+  from web lyrics
+  系统防火墙挡住其他设备打开网页歌词时，设置中会给出提示
+- Reorganized the Lyrics settings page by purpose and split Language
+  into three cards
+  歌词设置页按用途重新分组，「语言」拆成译文、简繁与读音三张卡片
+- Removed the lyric source health warnings from the sources grid
+  歌词来源格上不再显示近况提醒
+- Improved the notch with smoother curved edges and better alignment in
+  the expanded view
+  灵动岛边缘的弧线更平滑，展开态的各块内容对齐
+- Improved the lyrics manager preview with smoother scrolling and word
+  fill from the first word
+  歌词管理预览的滚动更平滑，逐字染色从第一个字开始
+- Improved the menu bar editor: click the preview to open settings, and
+  alignment in adaptive width
+  菜单栏编辑台的预览可点开对应设置，自适应宽度下也能选对齐方式
+- Added readings to background-vocal lines in the lyrics window
+  歌词窗口的背景人声行也会标注读音
+- Re-search songs without lyrics right away when you turn on a lyric
+  source
+  开启新的歌词源后，没有歌词的歌曲会立即补搜
+
+Fixed / 修复
+- Fixed a repeated prompt asking to access other apps' data after
+  updating to 1.11.0
+  修复升级到 1.11.0 后反复弹窗请求读取其他 App 数据的问题
+- Fixed Lyrimuse not quitting with the player when that option is on
+  修复开启「跟随播放器退出」后 Lyrimuse 不退出的问题
+- Fixed Spotify, Apple Music or Kaset reopening right after you quit them
+  修复退出 Spotify、Apple Music 或 Kaset 后又被重新打开的问题
+- Fixed the website builds of NetEase, QQ Music and Soda Music not being
+  read, and wrong disk access prompts
+  修复读不到官网版网易云、QQ 音乐、汽水音乐，以及误报要开完全磁盘访问的问题
+- Fixed Apple Music library songs not using Apple Music's own lyrics
+  修复 Apple Music 从资料库播放的歌曲用不上 Apple Music 自家歌词的问题
+- Fixed lyric timing for Dolby Atmos songs in Apple Music
+  修复 Apple Music 杜比全景声歌曲的歌词时间不准
+- Fixed the wrong player taking over when system focus sat on a paused
+  player
+  修复系统焦点停在暂停的播放器上时，正在播放的播放器反而被忽略的问题
+- Fixed lyrics occasionally being swapped for a live or different
+  version in the background
+  修复歌词偶尔在后台被换成现场版等其他版本的问题
+- Fixed title and artist header lines showing as the first lyric line
+  修复「歌曲名」「歌手名」抬头行被显示成第一句歌词的问题
+- Fixed right-to-left lyrics running left to right in word-by-word mode
+  修复阿拉伯语、希伯来语等从右往左的歌词在逐字模式下方向反了
+- Fixed stacked Thai tone marks and wide glyphs being clipped in
+  word-by-word lines
+  修复逐字歌词行里泰文叠加的声调符号等字形被削掉
+- Fixed per-word readings not lining up under the words, in the app and
+  on the OBS page
+  修复逐词读音在歌词与 OBS 页面上对不齐的问题
+- Fixed local bilingual .lrc files showing only the translation
+  修复中外文双语的本地 .lrc 文件只显示译文
+- Fixed word-timed LRC files showing their timestamps as text
+  修复逐字写法的 LRC 文件把时间标记显示成文字
+- Fixed garbled Traditional Chinese .lrc files saved in Big5
+  修复 Big5 编码的繁体本地歌词文件显示乱码
+- Fixed a false unsaved-changes prompt in the lyrics manager
+  修复歌词管理误报「有未保存的修改」
+- Fixed menu bar lyrics pausing while a menu was open
+  修复菜单打开时菜单栏歌词停住不换句
+- Fixed the close button on other displays' notches and lines without
+  word timing jumping back
+  修复其他屏幕上的灵动岛关不掉，以及无逐字时间的长句跳回句首
+- Fixed Touch Bar and web lyrics running on briefly after pausing
+  修复暂停后触控栏和网页歌词还会多走一小段
+- Fixed Settings sometimes opening as an invisible window
+  修复设置窗口偶尔打开后看不见的问题
+
+| Chip / 芯片 | dmg | zip |
+|---|---|---|
+| **Apple Silicon** (M1 and later, recommended) / **Apple M 系列**（推荐） | [Lyrimuse-v1.12.0-macos.dmg](https://github.com/Yudaotor/lyrimuse/releases/download/v1.12.0/Lyrimuse-v1.12.0-macos.dmg) | [Lyrimuse-v1.12.0-macos.zip](https://github.com/Yudaotor/lyrimuse/releases/download/v1.12.0/Lyrimuse-v1.12.0-macos.zip) |
+| **Intel** / **Intel 芯片**（也能在 Apple Silicon 上跑，但体积更大、没必要） | [Lyrimuse-v1.12.0-macos-intel.dmg](https://github.com/Yudaotor/lyrimuse/releases/download/v1.12.0/Lyrimuse-v1.12.0-macos-intel.dmg) | [Lyrimuse-v1.12.0-macos-intel.zip](https://github.com/Yudaotor/lyrimuse/releases/download/v1.12.0/Lyrimuse-v1.12.0-macos-intel.zip) |
+
+Not sure which one? Check your chip under **About This Mac**.
+不确定该下哪个？打开「关于本机」看芯片是 Apple M… 还是 Intel Core…
+
+336 commits since v1.11.0.
+
+**Full Changelog**: https://github.com/Yudaotor/lyrimuse/compare/v1.11.0...v1.12.0
+
 ## v1.11.0
 
 New / 新功能
