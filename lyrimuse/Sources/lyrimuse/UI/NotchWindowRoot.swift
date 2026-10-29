@@ -203,11 +203,13 @@ struct NotchWindowRoot: View {
                 // x 被约束在卡片宽内,但 y 覆盖整扇窗(191pt,为容纳展开态常驻最大尺寸,
                 // 卡片下面全是透明区,卡片本身只有 77pt 高)——上面那道 contentShape
                 // 只管住了横向,纵向的命中区仍是整扇窗。判据与实测数据见 NotchHoverHit。
+                //
+                // 稳态顶行以下那一截只显示、不接指针:落在那里不算进卡片,交给控制器切穿透(见 NotchLyricRowPassThrough)。
                 case .active(let point):
-                    updateHover(inside: NotchHoverHit.isInside(point: point,
-                                                               cardWidth: cardWidth,
-                                                               cardHeight: cardHeight),
-                                point: point)
+                    let region = NotchHoverHit.region(point: point, cardWidth: cardWidth, cardHeight: cardHeight,
+                                                      passThroughBelow: controller.passThroughBandTop)
+                    updateHover(inside: region == .card, point: point)
+                    if region == .passThrough { controller.beginLyricPassThrough() }
                 case .ended: updateHover(inside: false, point: nil)
                 }
             }
@@ -220,6 +222,10 @@ struct NotchWindowRoot: View {
             // 收起/弹出时内容整块淡入淡出,由同一条弹簧驱动,跟尺寸变化同步。
             .animation(cardAnimation, value: controller.isCollapsed)
             .onChange(of: controller.isExpanded) { _, expanded in wasExpanded = expanded }
+            // 指针没动、卡片变了(展开、广告开始、行高变了):穿透中的话按指针此刻的位置复查。
+            .onChange(of: controller.passThroughBandTop) { _, _ in controller.refreshLyricPassThrough() }
+            .onChange(of: cardHeight) { _, _ in controller.refreshLyricPassThrough() }
+            .onChange(of: cardWidth) { _, _ in controller.refreshLyricPassThrough() }
             .onChange(of: controller.trackDrop != nil) { _, dropping in wasDropping = dropping }
             // 窗口收走(看不见)时把边沿记忆也清掉,跟控制器那边的 resetHoverAfterHide 配对:不清的话下次露面
             // 指针正好在卡片上,移动时不再有「进入」这条边沿,卡片就一直不展开。

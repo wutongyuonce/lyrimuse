@@ -74,7 +74,8 @@ enum DebugDeepLinks {
         case let .stall(ms):
             logger.notice("debug stall: blocking main thread \(ms, privacy: .public) ms")
             usleep(UInt32(ms) * 1000)
-        case let .notchBehavior(collapse, hide, progressLine, allScreens):
+        case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics):
+            if let showLyrics { AppSettings.shared.notchShowLyrics = showLyrics }
             if let collapse { AppSettings.shared.notchCollapsesWhenPaused = collapse }
             if let allScreens { AppSettings.shared.notchAllScreens = allScreens }
             if let hide { AppSettings.shared.notchHideWhenNotPlaying = hide }
@@ -82,7 +83,13 @@ enum DebugDeepLinks {
                 if let style = progressLine.style { AppSettings.shared.notchProgressLineStyle = style }
                 AppSettings.shared.notchShowsProgressLine = progressLine.shows
             }
-            logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public)")
+            logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public)")
+        case let .notchPassThrough(x, y):
+            NotchLyricsWindowController.shared.simulatePassThrough(at: CGPoint(x: x, y: y))
+            logger.notice("debug notch pass-through x=\(x, privacy: .public) y=\(y, privacy: .public)")
+        case .notchPassThroughOff:
+            NotchLyricsWindowController.shared.simulatePassThrough(at: nil)
+            logger.notice("debug notch pass-through off")
         case .milestonePreview:
             ListenMilestoneCenter.shared.preview()
             logger.notice("debug milestone preview")
@@ -157,6 +164,7 @@ enum DebugDeepLinks {
                         == ProcessInfo.processInfo.processIdentifier],
             "windows": windows,
             "menuBarCenter": MenuBarStatusItem.shared.centerDebugState,
+            "notch": NotchLyricsWindowController.shared.debugState,
             "menuBarPanel": ["open": MenuBarStatusItem.shared.isPanelOpen,
                              "quick": MenuBarPanelDebugState.quickTarget.map { $0 as Any } ?? NSNull()],
             "knockedOut": SourceKnockout.knockedOut,

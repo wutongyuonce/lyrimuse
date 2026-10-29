@@ -127,11 +127,16 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case stall(ms: Int)
         /// 灵动岛摆一次报喜,跟设置页「收听里程碑」旁那颗「试用」走同一条路(`debug/milestone-preview`)。
         case milestonePreview
-        /// 灵动岛「暂停时收起」「暂停时隐藏」「进度线」「所有屏幕」,跟设置页那几项走同一个设置:
-        /// `debug/notch-behavior?collapse-when-paused=1&hide-when-not-playing=0&progress-line=off|bottom|ears&all-screens=1`,
+        /// 灵动岛「暂停时收起」「暂停时隐藏」「进度线」「所有屏幕」「显示歌词」,跟设置页那几项走同一个设置:
+        /// `debug/notch-behavior?collapse-when-paused=1&hide-when-not-playing=0&progress-line=off|bottom|ears&all-screens=1&show-lyrics=1`,
         /// 至少带一个。
         case notchBehavior(collapseWhenPaused: Bool?, hideWhenNotPlaying: Bool?, progressLine: NotchProgressLineChoice? = nil,
-                           allScreens: Bool? = nil)
+                           allScreens: Bool? = nil, showLyrics: Bool? = nil)
+        /// 当作指针停在灵动岛卡片的这一点上(卡片局部坐标,原点左上角),走真指针那一条判区域:落在只显示的那一截就穿透、挖洞
+        /// (`debug/notch-pass-through?x=200&y=50`)。不动真鼠标验穿透和洞的位置。
+        case notchPassThrough(x: Double, y: Double)
+        /// 结束上面那条模拟,交还真指针(`debug/notch-pass-through?off=1`)。
+        case notchPassThroughOff
     }
 
     /// `debug/stall` 的上限(毫秒)。再长就是把 App 卡死了。
@@ -278,9 +283,18 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             let hide = value("hide-when-not-playing").flatMap(Self.parseBool)
             let progressLine = value("progress-line").flatMap { NotchProgressLineChoice(rawValue: $0.lowercased()) }
             let allScreens = value("all-screens").flatMap(Self.parseBool)
-            guard collapse != nil || hide != nil || progressLine != nil || allScreens != nil else { return nil }
+            let showLyrics = value("show-lyrics").flatMap(Self.parseBool)
+            guard collapse != nil || hide != nil || progressLine != nil || allScreens != nil || showLyrics != nil else { return nil }
             self = .debug(.notchBehavior(collapseWhenPaused: collapse, hideWhenNotPlaying: hide, progressLine: progressLine,
-                                         allScreens: allScreens))
+                                         allScreens: allScreens, showLyrics: showLyrics))
+        case ("debug", "/notch-pass-through"):
+            if value("off").flatMap(Self.parseBool) == true {
+                self = .debug(.notchPassThroughOff)
+                break
+            }
+            guard let x = value("x").flatMap(Double.init), let y = value("y").flatMap(Double.init),
+                  x.isFinite, y.isFinite else { return nil }
+            self = .debug(.notchPassThrough(x: x, y: y))
         case ("debug", "/japanese-reading"):
             guard let style = value("style").flatMap({ JapaneseReadingStyle(rawValue: $0.lowercased()) }) else { return nil }
             self = .debug(.japaneseReading(style))
@@ -428,12 +442,19 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 if let secondary { items.append(URLQueryItem(name: "secondary", value: secondary)) }
                 if let alignment { items.append(URLQueryItem(name: "alignment", value: alignment)) }
                 components.queryItems = items
-            case let .notchBehavior(collapse, hide, progressLine, allScreens):
+            case let .notchBehavior(collapse, hide, progressLine, allScreens, showLyrics):
                 components.path = "/notch-behavior"
                 components.queryItems = (collapse.map { [URLQueryItem(name: "collapse-when-paused", value: $0 ? "1" : "0")] } ?? [])
                     + (hide.map { [URLQueryItem(name: "hide-when-not-playing", value: $0 ? "1" : "0")] } ?? [])
                     + (progressLine.map { [URLQueryItem(name: "progress-line", value: $0.rawValue)] } ?? [])
                     + (allScreens.map { [URLQueryItem(name: "all-screens", value: $0 ? "1" : "0")] } ?? [])
+                    + (showLyrics.map { [URLQueryItem(name: "show-lyrics", value: $0 ? "1" : "0")] } ?? [])
+            case let .notchPassThrough(x, y):
+                components.path = "/notch-pass-through"
+                components.queryItems = [URLQueryItem(name: "x", value: String(x)), URLQueryItem(name: "y", value: String(y))]
+            case .notchPassThroughOff:
+                components.path = "/notch-pass-through"
+                components.queryItems = [URLQueryItem(name: "off", value: "1")]
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]

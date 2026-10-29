@@ -721,6 +721,31 @@ func runNotchTests() {
             expectEqual(H.isInside(point: p, cardWidth: 482, cardHeight: 191),
                         true, "灵动岛命中: 展开后同一个点算在里面(展开卡片包含稳态卡片)")
         }
+
+        // 稳态顶行以下那一截只显示、不接指针:顶行(刘海、两只耳朵)照旧展开,歌词行穿透;展开态整张卡都接指针。
+        let top = CGFloat(32)
+        expectEqual(H.region(point: CGPoint(x: 127, y: 20), cardWidth: steady.w, cardHeight: steady.h, passThroughBelow: top),
+                    .card, "灵动岛命中: 顶行接指针")
+        expectEqual(H.region(point: CGPoint(x: 127, y: 32), cardWidth: steady.w, cardHeight: steady.h, passThroughBelow: top),
+                    .card, "灵动岛命中: 顶行下沿那条线算顶行")
+        expectEqual(H.region(point: CGPoint(x: 127, y: 50), cardWidth: steady.w, cardHeight: steady.h, passThroughBelow: top),
+                    .passThrough, "灵动岛命中: 歌词行只显示")
+        expectEqual(H.region(point: CGPoint(x: 127, y: 140), cardWidth: steady.w, cardHeight: steady.h, passThroughBelow: top),
+                    .outside, "灵动岛命中: 卡片下方透明区不算")
+        expectEqual(H.region(point: CGPoint(x: 127, y: 50), cardWidth: steady.w, cardHeight: steady.h, passThroughBelow: nil),
+                    .card, "灵动岛命中: 不给上沿时整张卡都接指针")
+        expectEqual(H.region(point: CGPoint(x: 120, y: 150), cardWidth: 482, cardHeight: 191, passThroughBelow: nil),
+                    .card, "灵动岛命中: 展开态往下够三键、进度条")
+
+        // 洞所在的方块:以指针为中心、边长两倍半径,裁到只显示的那一截以内。
+        typealias Hole = NotchPassThroughHole
+        let r = Hole.radius
+        expectEqual(Hole.rect(pointer: CGPoint(x: 127, y: 55), bandTop: top, cardWidth: steady.w, cardHeight: steady.h),
+                    CGRect(x: 127 - r, y: top, width: r * 2, height: steady.h - top), "灵动岛洞: 不越过顶行、不出卡片下沿")
+        expectEqual(Hole.rect(pointer: CGPoint(x: 10, y: 55), bandTop: top, cardWidth: steady.w, cardHeight: steady.h)?.minX,
+                    0, "灵动岛洞: 贴着卡片左沿时裁掉卡片外那一截")
+        expectEqual(Hole.rect(pointer: CGPoint(x: 127, y: -60), bandTop: top, cardWidth: steady.w, cardHeight: steady.h),
+                    nil, "灵动岛洞: 跟只显示那一截不相交时没有洞")
     }
 
     // ---- 广告态:「跳过广告」+ 头部让位----
@@ -2209,8 +2234,9 @@ func runNotchTests() {
         expectEqual(cursorBody.contains("cardCursorTimer?.invalidate()")
                         && cursorBody.contains("BackgroundCursor.setEnabled(false, for: ObjectIdentifier(self))"), true,
                     "光标契约: 放手时停定时器、放掉后台光标")
-        expectEqual(cursorBody.contains("guard onCard || onPanel else { releaseCardCursor(); return }"), true,
-                    "光标契约: 定时器发现指针已不在卡片 / 浮框上就放手")
+        expectEqual(cursorBody.contains("if hit?.region == .card || onPanel {")
+                        && cursorBody.contains("releaseCardCursor()\n        if cardHovered {"), true,
+                    "光标契约: 定时器发现指针已不在卡片接指针的部分 / 浮框上就放手,悬停一起放掉")
         expectEqual(sourceHas(controller, "cardHovered = expanded\n        syncCardCursor()\n        applyHoverIntent()")
                         && sourceHas(controller, "editorialHovered = hovered\n        syncCardCursor()\n        applyHoverIntent()"), true,
                     "光标契约: 进出卡片 / 浮框当场同步光标,不等进入延迟")
@@ -2704,8 +2730,24 @@ func runNotchTests() {
                     && ctrl.contains("panel.onScrollWheel = { [weak self] event in self?.handleScrollWheel(event) }"), true,
                     "灵动岛五项: 窗口把滚动事件交给控制器,照常往下发")
         expectEqual(sourceHas(ctrl, "let point = event.window.map { $0.convertPoint(toScreen: event.locationInWindow) } ?? NSEvent.mouseLocation")
-                    && sourceHas(ctrl, "guard AppSettings.shared.notchGestures, hasTrack, cardScreenFrame?.contains(point) ?? false else {\n scrollGesture.invalidate()"),
+                    && sourceHas(ctrl, "guard AppSettings.shared.notchGestures, hasTrack, passThroughHit(at: point)?.region == .card else {\n scrollGesture.invalidate()"),
                     true, "灵动岛五项: 手势关着、没有曲目、事件不落在卡片上时不认,这一次滑动作废;位置取事件自己带的")
+
+        // 稳态顶行以下那一截只显示、不接指针(歌词行穿透):视图按区域分流,控制器切窗口穿透,洞挂在 layer 上、只在穿透期间存在。
+        let root = src("NotchWindowRoot.swift"), pass = src("NotchLyricRowPassThrough.swift")
+        expectEqual(sourceHas(root, "updateHover(inside: region == .card, point: point)\n if region == .passThrough { controller.beginLyricPassThrough() }"),
+                    true, "歌词行穿透: 视图只把接指针的部分算进卡片,落在只显示那一截交给控制器")
+        expectEqual(sourceHas(ctrl, "isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset"), true,
+                    "歌词行穿透: 展开态、没有曲目、广告时整张卡都接指针")
+        expectEqual(sourceHas(sourceBody("func begin()", in: pass), "window.ignoresMouseEvents = true")
+                        && sourceHas(sourceBody("func end()", in: pass), "window?.ignoresMouseEvents = false")
+                        && sourceHas(sourceBody("func end()", in: pass), "monitors.forEach(NSEvent.removeMonitor)"), true,
+                    "歌词行穿透: 进来时整扇窗穿透、装监听,离开时恢复、卸监听")
+        expectEqual(sourceHas(sourceBody("private func installMask(on layer: CALayer)", in: pass), "layer.mask = container")
+                        && !root.contains(".mask"), true,
+                    "歌词行穿透: 洞只在穿透期间挂在 layer 上,SwiftUI 里不常驻遮罩")
+        expectEqual(sourceHas(sourceBody("private func resetHoverAfterHide()", in: ctrl), "passThrough?.end()"), true,
+                    "歌词行穿透: 窗口收走时退出穿透")
         expectEqual(ctrl.contains("LyrimuseActionRunner.perform(.nextTrackHotkey)")
                     && ctrl.contains("VolumeMonitor.adjustSystemVolume(by: delta)"), true,
                     "灵动岛五项: 切歌走快捷键那一条(先查自动化权限),音量调的是系统音量")

@@ -279,6 +279,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     // recomputeGeometry 里要把 hostingView 的 frame 也显式设一遍,别只信 autoresizingMask:那条隐式路径下
     // AppKit 层的 frame 跟上了,NSHostingView 内部的 SwiftUI 布局树却不重新走一遍,新撑出来的区域什么都不画。
     private var hostingView: NSHostingView<NotchWindowRoot>?
+    /// 稳态顶行以下那一截只显示、不接指针(`NotchLyricRowPassThrough`)。
+    private var passThrough: NotchLyricRowPassThrough?
 
     /// 只有"每块屏各一个"模式下的副本实例才会设(见 NotchMirrorManager),且只在 init
     /// 里设一次。主实例(`.shared`)恒为 nil,跟着 targetScreen() 走。
@@ -324,6 +326,10 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         hosting.sizingOptions = []
         panel.contentView = hosting
         hostingView = hosting
+        passThrough = NotchLyricRowPassThrough(
+            window: panel, hostView: hosting,
+            locate: { [weak self] point in self?.passThroughHit(at: point) },
+            onExit: { [weak self] region in if region == .card { self?.setExpandedFromWindow(true) } })
         panel.onScrollWheel = { [weak self] event in self?.handleScrollWheel(event) }
 
         // 窗口还没 orderFront 时 occlusionState 也是「不可见」,所以初值保持 true;上屏后系统会补一次通知。
@@ -820,6 +826,46 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 控制器此刻认不认为指针在卡片上。`NotchWindowRoot.updateHover` 拿它跟自己的边沿记忆对账。
     var isCardHovered: Bool { cardHovered }
 
+    /// 只显示那一截的上沿(卡片局部 y,即顶行下沿);nil = 整张卡都接指针:展开态(从顶行展开后要往下够三键、进度条)、
+    /// 没有曲目、广告(那一格右端有「跳过广告」键)。见 05 章决策 121。
+    var passThroughBandTop: CGFloat? {
+        isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset
+    }
+
+    /// 窗口这一侧报指针进了只显示的那一截。
+    func beginLyricPassThrough() { passThrough?.begin() }
+
+    /// 卡片尺寸或形态变了,穿透中的话按指针此刻的位置复查。
+    func refreshLyricPassThrough() { passThrough?.refresh() }
+
+    /// 屏幕上这一点落在卡片哪一块。
+    private func passThroughHit(at screenPoint: NSPoint) -> NotchLyricRowPassThrough.Hit? {
+        guard let frame = cardScreenFrame else { return nil }
+        let local = CGPoint(x: screenPoint.x - frame.minX, y: frame.maxY - screenPoint.y)
+        let top = passThroughBandTop
+        return NotchLyricRowPassThrough.Hit(
+            region: NotchHoverHit.region(point: local, cardWidth: frame.width, cardHeight: frame.height, passThroughBelow: top),
+            local: local, cardSize: frame.size, bandTop: top)
+    }
+
+    /// `debug/notch-pass-through`:当作指针停在卡片这一点上(卡片局部坐标),nil 交还真指针。
+    func simulatePassThrough(at cardPoint: CGPoint?) {
+        guard let passThrough else { return }
+        guard let cardPoint, let frame = cardScreenFrame else {
+            passThrough.debugPointer = nil
+            passThrough.end()
+            return
+        }
+        passThrough.debugPointer = NSPoint(x: frame.minX + cardPoint.x, y: frame.maxY - cardPoint.y)
+        if passThrough.isActive { passThrough.refresh() } else { passThrough.begin() }
+    }
+
+    /// `debug/state` 里灵动岛那一节。
+    var debugState: [String: Any] {
+        ["passThrough": passThrough?.isActive ?? false, "ignoresMouseEvents": window?.ignoresMouseEvents ?? false,
+         "expanded": isExpanded, "passThroughBandTop": passThroughBandTop.map { $0 as Any } ?? NSNull()]
+    }
+
     /// 指针在卡片或简介浮框上时光标钉成箭头。App 在后台,不开 `BackgroundCursor` 时 `NSCursor.set()` 不生效,
     /// 光标停在下层前台 App 设的样子(终端上是 I 形);前台 App 重绘又会把它换回去,所以停着期间定时重设。
     /// 跟悬停同一份输入、不等进入延迟:光标跟着卡片的边界走。见 05 章决策 78。
@@ -838,13 +884,22 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         cardCursorTimer = timer
     }
 
-    /// 「离开」事件丢了也不能一直改别人窗口上的光标:指针已经不在卡片和浮框上就放手。
+    /// 「离开」事件丢了也不能一直改别人窗口上的光标:指针已经不在卡片接指针的部分和浮框上就放手,悬停一起放掉
+    /// (穿透结束时控制器自己补的那次进入,视图那边的边沿不一定跟得上);落在只显示的那一截上就转去穿透。
     private func reassertCardCursor() {
         let mouse = NSEvent.mouseLocation
-        let onCard = (window?.isVisible ?? false) && (cardScreenFrame?.contains(mouse) ?? false)
+        let hit = (window?.isVisible ?? false) ? passThroughHit(at: mouse) : nil
         let onPanel = NotchEditorialPanel.shared.frame(ifOwner: window)?.contains(mouse) ?? false
-        guard onCard || onPanel else { releaseCardCursor(); return }
-        NSCursor.arrow.set()
+        if hit?.region == .card || onPanel {
+            NSCursor.arrow.set()
+            return
+        }
+        releaseCardCursor()
+        if cardHovered {
+            cardHovered = false
+            applyHoverIntent()
+        }
+        if hit?.region == .passThrough { passThrough?.begin() }
     }
 
     private func releaseCardCursor() {
@@ -949,7 +1004,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 多长一截。
     private func handleScrollWheel(_ event: NSEvent) {
         let point = event.window.map { $0.convertPoint(toScreen: event.locationInWindow) } ?? NSEvent.mouseLocation
-        guard AppSettings.shared.notchGestures, hasTrack, cardScreenFrame?.contains(point) ?? false else {
+        guard AppSettings.shared.notchGestures, hasTrack, passThroughHit(at: point)?.region == .card else {
             scrollGesture.invalidate()
             return
         }
@@ -1279,6 +1334,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 窗口收走之后指针的「离开」事件不一定会来(点 ✕、暂停时隐藏,指针都还停在卡片上):不清的话下次露面
     /// 卡片直接停在展开态,要把指针移上去再移开才收回。
     private func resetHoverAfterHide() {
+        passThrough?.end()
         pendingHoverWork?.cancel()
         pendingHoverWork = nil
         cardHovered = false
@@ -1519,6 +1575,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         }
         pendingHoverWork?.cancel()
         pendingHoverWork = nil
+        passThrough?.end()
+        passThrough = nil
         window?.contentView = nil
         hostingView = nil
     }
