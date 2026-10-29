@@ -227,6 +227,10 @@ func runDeepLinkTests() {
                     "debug: 日语读音切到假名,大小写不敏感")
         expectEqual(link("lyrimuse://debug/japanese-reading?style=furigana") == nil
                     && link("lyrimuse://debug/japanese-reading") == nil, true, "debug: 认不出的样式、没带都不认")
+        expectEqual(link("lyrimuse://debug/touchbar-display?color=Rainbow"), .debug(.touchBarDisplay(color: .rainbow)),
+                    "debug: 触控栏歌词颜色切彩虹(大小写不敏感)")
+        expectEqual(link("lyrimuse://debug/touchbar-display?color=pink") == nil
+                    && link("lyrimuse://debug/touchbar-display") == nil, true, "debug: 触控栏颜色认不出的、没带都不认")
         expectEqual(LyrimuseDeepLink.wantsBackground(URL(string: "lyrimuse://lyrics-manager?background=1")!), true, "后台开窗: 带了")
         expectEqual(LyrimuseDeepLink.wantsBackground(URL(string: "lyrimuse://lyrics-manager")!), false, "后台开窗: 没带")
         expectEqual(link("lyrimuse://lyrics-manager?background=1"), .lyricsManager, "后台开窗: 不影响认哪条链接")
@@ -366,6 +370,7 @@ func runDeepLinkTests() {
             .debug(.menuBarCenter(center: true, ignoreNotch: nil, screen: "37D8832A-2D66-02CA-B9F7-8F30A301B230")),
             .debug(.menuBarCenter(center: nil, ignoreNotch: nil, hover: false, click: "left")),
             .debug(.japaneseReading(.kana)), .debug(.japaneseReading(.romaji)),
+            .debug(.touchBarDisplay(color: .rainbow)), .debug(.touchBarDisplay(color: .cover)),
             .debug(.menuBarDisplay(artwork: true, content: nil)), .debug(.menuBarDisplay(artwork: nil, content: "title")),
             .debug(.menuBarDisplay(artwork: false, content: "lyrics")),
             .debug(.menuBarDisplay(artwork: nil, content: nil, iconSize: "small")),

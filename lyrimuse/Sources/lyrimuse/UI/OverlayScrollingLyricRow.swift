@@ -501,7 +501,8 @@ final class OverlayLyricScrollView: NSView {
         }
         let running = reinstall && !spec.paused && !spec.still
         applyEdgeFade(viewWidth: viewW, layoutWidth: layoutW, offset: offset, nowMs: nowMs, running: running)
-        applyRainbowFlow(period: pixelAligned(viewW), flowing: !spec.paused && !spec.still)
+        applyRainbowFlow(period: pixelAligned(RainbowLyrics.cycleWidth(textWidth: layoutW, viewWidth: viewW)),
+                         flowing: !spec.paused && !spec.still)
         guard running else { return }
         installFill(nowMs: nowMs)
         installScroll(nowMs: nowMs, restingX: restingX)
@@ -562,7 +563,7 @@ final class OverlayLyricScrollView: NSView {
         fadeCover.add(reveal, forKey: Self.fadeCoverKey)
     }
 
-    /// 彩虹渐变:一圈 = 可视窗宽(`period`),渐变铺满长图再多一圈;从左往右流 = 渐变从 -period 平移到 0 再循环。
+    /// 彩虹渐变:一圈 = `period`(`RainbowLyrics.cycleWidth`),渐变铺满长图再多一圈;从左往右流 = 渐变从 -period 平移到 0 再循环。
     /// 两层渐变同一条动画、同一个起点,已唱和未唱的颜色对得上。停着时定在 `rainbowClock` 停下那一刻的相位。
     private func applyRainbowFlow(period: CGFloat, flowing: Bool) {
         let layers = [baseRainbow, fillRainbow]

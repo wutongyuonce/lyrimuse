@@ -118,6 +118,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                             hoverControls: Bool? = nil, secondary: String? = nil, alignment: String? = nil)
         /// 日语读音标罗马字还是假名,跟设置页「日语读音」走同一条路(`debug/japanese-reading?style=romaji|kana`)。
         case japaneseReading(JapaneseReadingStyle)
+        /// 触控栏「歌词颜色」那一档,跟设置页走同一个设置(`debug/touchbar-display?color=white|cover|custom|rainbow`)。
+        case touchBarDisplay(color: TouchBarLyricsColorMode)
         /// 主线程原地睡这么多毫秒(`debug/stall?ms=`,1…`maxStallMs`):造出「别的窗口把主线程占住」那一下,验动画扛不扛得住。
         case stall(ms: Int)
         /// 灵动岛摆一次报喜,跟设置页「收听里程碑」旁那颗「试用」走同一条路(`debug/milestone-preview`)。
@@ -279,6 +281,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case ("debug", "/japanese-reading"):
             guard let style = value("style").flatMap({ JapaneseReadingStyle(rawValue: $0.lowercased()) }) else { return nil }
             self = .debug(.japaneseReading(style))
+        case ("debug", "/touchbar-display"):
+            guard let color = value("color").flatMap({ TouchBarLyricsColorMode(rawValue: $0.lowercased()) }) else { return nil }
+            self = .debug(.touchBarDisplay(color: color))
         case ("lastfm-auth-callback", _):
             self = .lastfmAuthCallback
         default:
@@ -423,6 +428,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]
+            case let .touchBarDisplay(color):
+                components.path = "/touchbar-display"
+                components.queryItems = [URLQueryItem(name: "color", value: color.rawValue)]
             }
         case .lastfmAuthCallback:
             components.host = "lastfm-auth-callback"

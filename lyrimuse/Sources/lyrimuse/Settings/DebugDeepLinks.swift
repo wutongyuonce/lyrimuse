@@ -118,6 +118,9 @@ enum DebugDeepLinks {
             AppSettings.shared.japaneseReadingStyle = style
             LocalPlaybackSource.shared.japaneseReading = style
             logger.notice("debug japanese reading \(style.rawValue, privacy: .public)")
+        case let .touchBarDisplay(color):
+            AppSettings.shared.touchBarLyricsColorMode = color
+            logger.notice("debug touch bar display color=\(color.rawValue, privacy: .public)")
         }
     }
 

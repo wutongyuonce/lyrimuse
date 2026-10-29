@@ -251,6 +251,10 @@ func runTouchBarTests() {
         expectEqual(Set(stops.dropLast().map { "\(Int($0.r * 20))-\(Int($0.g * 20))-\(Int($0.b * 20))" }).count, R.huesPerCycle,
                     "彩虹: 一圈里的颜色两两不同")
         expectEqual(R.srgb(l: R.lightness, c: 0.3, hue: 250) == nil, true, "彩虹: 色域外的颜色认得出来(蓝紫高彩度)")
+        expectEqual(R.cycleWidth(textWidth: 60, viewWidth: 400), R.minCycleWidth, "彩虹一圈: 短句不小于下限")
+        expectEqual(R.cycleWidth(textWidth: 250, viewWidth: 400), 250, "彩虹一圈: 装得下的句子一圈 = 字宽")
+        expectEqual(R.cycleWidth(textWidth: 900, viewWidth: 400), 400, "彩虹一圈: 要滚的长句一圈 = 可视窗宽")
+        expectEqual(R.cycleWidth(textWidth: 60, viewWidth: 80), 80, "彩虹一圈: 格子比下限还窄时按格宽")
         let blue = R.inGamut(hue: 260)
         expectEqual(abs(R.oklabLightness(blue) - R.lightness) < 0.01, true, "彩虹: 越界的色相收彩度、不降亮度")
 
@@ -822,7 +826,7 @@ func runTouchBarTests() {
                         && rainbowPreview.contains("rainbow: settings.touchBarLyricsColorMode == .rainbow"), true,
                     "触控栏彩虹: 本体和设置页预览都按「歌词颜色」传")
         expectEqual(rainbowRow.contains("mountRainbow(spec?.rainbow == true)")
-                        && rainbowRow.contains("applyRainbowFlow(period: pixelAligned(viewW), flowing: !spec.paused && !spec.still)"), true,
+                        && sourceHas(rainbowRow, "applyRainbowFlow(period: pixelAligned(RainbowLyrics.cycleWidth(textWidth: layoutW, viewWidth: viewW)),\nflowing: !spec.paused && !spec.still)"), true,
                     "触控栏彩虹: 图层行排版时换蒙版、摆位时装流动(暂停 / 减弱动态效果停住)")
         // 自动展开 / 收起(17 章决策 45):启用那一刻先记状态再订阅播放状态(订阅的头一拍丢掉);四项一起防抖;可见状态的变化
         // 跟自己发起的对不上就当成用户动的;工具栏第二行是「行为」加两份占位和「重置 ▾」的占位。漏一处不报错,只表现成

@@ -11,8 +11,17 @@ public enum RainbowLyrics {
     public static let startHue = 20.0
     /// 一圈里取几个色相,首尾不重复;渐变按这些点线性插值。
     public static let huesPerCycle = 9
-    /// 颜色沿歌词流过一圈(一行宽)要几秒。
+    /// 颜色流过一圈要几秒。
     public static let cycleSeconds = 6.0
+    /// 一圈多宽(点)的下限:一圈按这一行字的宽算(`cycleWidth`),只有两三个字的句子不至于挤进一整圈。
+    public static let minCycleWidth = 100.0
+
+    /// 一圈多宽:这一行字的宽,夹在 `minCycleWidth` 和可视窗宽之间。短句也看得到整条彩虹;放不下要滚的长句按
+    /// 可视窗宽一圈,窗里始终是一整圈。
+    public static func cycleWidth(textWidth: Double, viewWidth: Double) -> Double {
+        let upper = max(viewWidth, 1)
+        return min(upper, max(textWidth, min(minCycleWidth, upper)))
+    }
 
     public struct RGB: Equatable, Sendable {
         public var r: Double
