@@ -223,12 +223,15 @@ func prefetchUpcoming(currentArtist, currentTitle, album, bundleID string, durat
 // upcomingQueueStamp 是这家播放器队列文件此刻的改写标记;"" = 这家不按文件变化重读。
 // 只给「放到一半队列会被改写」的播放器:网易云「下一首播放」把歌插进 playingList 并当场重写这份文件,
 // 不重读的话插进来的歌要等它开播才有人去解析。见 09 章决策 224。洛雪是快放完时预加载下一首写了本地库(lxMusicPreloadedNext)。
+// foobar2000 换了列表要开播后 4~5 秒才把它写进 .fplite,开播那一刻读到的是上一份(foobarQueueStamp)。
 func upcomingQueueStamp(bundleID string) string {
 	switch bundleID {
 	case neteaseMusicBundleID:
 		return neteaseQueueStamp()
 	case lxMusicBundleID:
 		return lxMusicQueueStamp()
+	case foobar2000BundleID:
+		return foobarQueueStamp()
 	}
 	return ""
 }

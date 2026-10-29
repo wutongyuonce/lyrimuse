@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -103,5 +104,39 @@ func TestFoobarQueueContract(t *testing.T) {
 	}
 	if !containsCode(string(b), "case foobar2000BundleID:\n") || !containsCode(string(b), "return foobarUpcoming(artist, title, n)\n") {
 		t.Error("upcomingFromQueue 里 foobar2000 没接上读列表")
+	}
+}
+
+// 换了列表要过几秒才落盘:几份 .fplite 里最晚的修改时间一变,标记就变,同一首歌期间据此重读;目录读不到时不按文件变化重读。
+func TestFoobarQueueStampFollowsPlaylistWrites(t *testing.T) {
+	dir := t.TempDir()
+	saved := foobarPlaylistsDir
+	foobarPlaylistsDir = func() string { return dir }
+	t.Cleanup(func() { foobarPlaylistsDir = saved })
+	p := filepath.Join(dir, "playlist-A.fplite")
+	if err := os.WriteFile(p, []byte("\ufefffile:///a/1.mp3\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "playlist-A-props.sqlite"), nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	old := time.Now().Add(-time.Minute)
+	if err := os.Chtimes(p, old, old); err != nil {
+		t.Fatal(err)
+	}
+	before := upcomingQueueStamp(foobar2000BundleID)
+	if before == "" {
+		t.Fatal("目录读得到时应有标记")
+	}
+	now := time.Now()
+	if err := os.Chtimes(p, now, now); err != nil {
+		t.Fatal(err)
+	}
+	if upcomingQueueStamp(foobar2000BundleID) == before {
+		t.Error("列表落盘后标记要变")
+	}
+	foobarPlaylistsDir = func() string { return filepath.Join(dir, "没有这个目录") }
+	if foobarQueueStamp() != "" {
+		t.Error("目录读不到时标记为空")
 	}
 }
