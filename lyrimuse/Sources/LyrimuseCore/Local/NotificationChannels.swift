@@ -2,7 +2,8 @@ import Foundation
 
 /// 推送提醒的渠道(config.json 的 `notification_channels`,引擎 notifychannel.go 的 notifyChannel)。
 /// 想推到几个地方就配几个,各自启用 / 停用。`secret` 按平台是不同的东西:钉钉加签密钥、飞书签名密钥、
-/// ntfy 访问令牌、通用 Webhook 的签名密钥;`chatID` 只有 Telegram 用。
+/// ntfy 访问令牌、通用 Webhook 的签名密钥;`chatID` 只有 Telegram 用。`digestStyle`、`digestTemplate`:听歌报告推到这里
+/// 用哪一套内容、自定义时的模板(见 `DigestStyle`),空 = 没选过。
 ///
 /// 渠道列表之前只有一个渠道,字段散在顶层(`notification_platform`、`bark_url`、`dingtalk_sign_secret`、
 /// `feishu_sign_secret`、`telegram_chat_id`,其余平台的地址在 `notification_webhook_urls`)。读到没有
@@ -17,9 +18,12 @@ public struct NotificationChannel: Equatable, Identifiable, Sendable {
     public var secret: String
     public var chatID: String
     public var enabled: Bool
+    public var digestStyle: String
+    public var digestTemplate: DigestTemplate
 
     public init(id: String = UUID().uuidString.lowercased(), name: String = "", platform: String, url: String = "",
-                secret: String = "", chatID: String = "", enabled: Bool = true) {
+                secret: String = "", chatID: String = "", enabled: Bool = true, digestStyle: String = "",
+                digestTemplate: DigestTemplate = DigestTemplate()) {
         self.id = id
         self.name = name
         self.platform = platform
@@ -27,6 +31,8 @@ public struct NotificationChannel: Equatable, Identifiable, Sendable {
         self.secret = secret
         self.chatID = chatID
         self.enabled = enabled
+        self.digestStyle = digestStyle
+        self.digestTemplate = digestTemplate
     }
 
     /// 从旧的单渠道字段拼出来的那个渠道的 id(引擎 legacyNotifyChannelID)。
@@ -43,6 +49,11 @@ public struct NotificationChannel: Equatable, Identifiable, Sendable {
         if !name.isEmpty { o["name"] = name }
         if !Self.trim(secret).isEmpty { o["secret"] = Self.trim(secret) }
         if !Self.trim(chatID).isEmpty { o["chat_id"] = Self.trim(chatID) }
+        if !digestStyle.isEmpty { o["digest_style"] = digestStyle }
+        var tpl: [String: String] = [:]
+        if !digestTemplate.title.isEmpty { tpl["title"] = digestTemplate.title }
+        if !digestTemplate.body.isEmpty { tpl["body"] = digestTemplate.body }
+        if !tpl.isEmpty { o["digest_template"] = tpl }
         return o
     }
 
@@ -50,7 +61,9 @@ public struct NotificationChannel: Equatable, Identifiable, Sendable {
         guard let id = o["id"] as? String, !id.isEmpty else { return nil }
         self.init(id: id, name: o["name"] as? String ?? "", platform: (o["platform"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "bark",
                   url: o["url"] as? String ?? "", secret: o["secret"] as? String ?? "", chatID: o["chat_id"] as? String ?? "",
-                  enabled: o["enabled"] as? Bool ?? false)
+                  enabled: o["enabled"] as? Bool ?? false, digestStyle: o["digest_style"] as? String ?? "",
+                  digestTemplate: DigestTemplate.resolved(title: (o["digest_template"] as? [String: Any])?["title"] as? String,
+                                                          body: (o["digest_template"] as? [String: Any])?["body"] as? String))
     }
 
     /// config.json 里的渠道列表;没有这个键时为 nil(还是旧配置)。认不出的项跳过。

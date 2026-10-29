@@ -39,9 +39,11 @@ type notifyLogEntry struct {
 	ElapsedMS   int64  `json:"elapsed_ms"`
 	// Digest:听歌报告的那份数,重发时照它重新排版(notifyrich.go)。
 	Digest *digestStats `json:"digest,omitempty"`
-	// Key、Custom 同 notifyMessage:判重认的默认标题(空 = 认 Title)、标题正文是用户自定义的(重发也不排版)。
+	// Key、Custom、Style 同 notifyMessage:判重认的默认标题(空 = 认 Title)、标题正文是用户自定义的(重发也不排版)、
+	// 按平台排版用哪一套(重发照它排)。
 	Key    string `json:"key,omitempty"`
 	Custom bool   `json:"custom,omitempty"`
+	Style  string `json:"style,omitempty"`
 }
 
 type notifyLogFile struct {
@@ -72,7 +74,7 @@ func recordNotifyDelivery(ch notifyChannel, msg notifyMessage, r notifyResult) {
 		ID: newNotifyLogID(), At: time.Now().Unix(), Channel: ch.ID, ChannelName: ch.Name, Platform: ch.Platform,
 		Event: msg.Event, Title: msg.Title, OK: r.OK, Kind: r.Kind, Status: r.Status, Code: r.Code,
 		Body: msg.Body, Detail: r.Detail, ElapsedMS: r.Elapsed.Milliseconds(), Digest: msg.Digest,
-		Custom: msg.Custom,
+		Custom: msg.Custom, Style: msg.Style,
 	}
 	if msg.Key != msg.Title {
 		e.Key = msg.Key

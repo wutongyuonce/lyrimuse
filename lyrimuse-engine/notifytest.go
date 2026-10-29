@@ -143,7 +143,7 @@ func resendTarget(entryID string) (notifyChannel, notifyMessage, notifyResult, b
 	}
 	for _, ch := range configNotifyChannels(liveConfig()) {
 		if ch.ID == e.Channel {
-			return ch, notifyMessage{Event: e.Event, Title: e.Title, Body: e.Body, Digest: e.Digest, Key: e.Key, Custom: e.Custom},
+			return ch, notifyMessage{Event: e.Event, Title: e.Title, Body: e.Body, Digest: e.Digest, Key: e.Key, Custom: e.Custom, Style: e.Style},
 				notifyResult{}, true
 		}
 	}

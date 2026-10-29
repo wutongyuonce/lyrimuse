@@ -218,12 +218,17 @@ struct NotificationChannelsCard: View {
         }
         .sheet(item: $editing) { channel in
             let isNew = !config.notificationChannels.contains { $0.id == channel.id }
+            // 报告内容没选过的渠道按沿用的那一套写明,弹窗里看到的就是它现在推的。
             NotificationChannelEditor(
-                original: channel,
+                original: channel.pinningDigestStyle(legacy: FeatureSettingsStore.shared.digestTemplate),
                 isNew: isNew,
                 onSave: save,
                 onDelete: delete
             )
+        }
+        .onReceive(NotificationCenter.default.publisher(for: DebugDeepLinks.editNotifyChannelNotification)) { note in
+            let id = note.object as? String ?? ""
+            editing = config.notificationChannels.first { id.isEmpty || $0.id == id }
         }
         .alert(
             String(format: L10n.t("删除「%@」？"), pendingDelete?.displayName ?? ""),
@@ -286,8 +291,9 @@ struct NotificationChannelsCard: View {
                 .buttonBorderShape(.capsule)
                 .help(L10n.t("用这一期的真实数据看看推送在这个平台上的样子"))
                 .popover(isPresented: Binding(get: { previewing == channel.id }, set: { if !$0 { previewing = nil } }), arrowEdge: .bottom) {
+                    let digest = channel.resolvedDigest(legacy: FeatureSettingsStore.shared.digestTemplate)
                     NotificationPreviewCard(platform: platform ?? .bark, senderName: channel.displayName,
-                                            signed: !channel.secret.isEmpty)
+                                            signed: !channel.secret.isEmpty, style: digest.style, template: digest.template)
                 }
             Toggle("", isOn: Binding(
                 get: { channel.enabled },
@@ -523,7 +529,8 @@ struct DigestTopNStepper: View {
 
 /// 添加 / 编辑一个渠道的表单。添加时先选平台(平铺,悬停有说明),再填字段;也可以直接粘一整段地址,认出平台就切过去。
 /// 编辑已有的渠道只出这个平台自己的字段,不列别的平台:平台定了就不换,要换平台删掉再添加。
-/// 字段从上到下:名称、地址(Telegram 另有 Chat ID)、密钥(有的平台才有)、启用。
+/// 字段从上到下:名称、地址(Telegram 另有 Chat ID)、密钥(有的平台才有)、报告内容、启用。报告内容选自定义时弹模板编辑器
+/// (`DigestTemplateEditor`),模板存进这个渠道;没写模板就关掉编辑器时退回原来那一套。
 /// 「发送测试」用表单里此刻的内容(还没保存也行)推一条示例消息,结果就地显示,表单不关;「预览」不用填地址,
 /// 弹出这一期的推送效果(`NotificationPreviewCard`),跟着选的平台、填的名称变。
 struct NotificationChannelEditor: View {
@@ -546,6 +553,9 @@ struct NotificationChannelEditor: View {
     @State private var testTask: Task<Void, Never>?
     @State private var confirmingDelete = false
     @State private var previewing = false
+    @State private var editingTemplate = false
+    /// 选自定义之前是哪一套:模板没写就关掉编辑器时退回它。
+    @State private var styleBeforeCustom: DigestStyle = .full
 
     init(original: NotificationChannel, isNew: Bool,
          onSave: @escaping (NotificationChannel) -> Void, onDelete: @escaping (NotificationChannel) -> Void) {
@@ -573,6 +583,14 @@ struct NotificationChannelEditor: View {
         .padding(20)
         .frame(width: 480)
         .onDisappear { testTask?.cancel() }
+        .sheet(isPresented: $editingTemplate, onDismiss: templateEditorClosed) {
+            DigestTemplateEditor(original: draft.digestTemplate) { saved in
+                draft.digestTemplate = saved
+                editingTemplate = false
+            } onCancel: {
+                editingTemplate = false
+            }
+        }
         .confirmationDialog(String(format: L10n.t("删除「%@」？"), original.displayName), isPresented: $confirmingDelete) {
             Button(L10n.t("删除"), role: .destructive) { onDelete(original) }
         } message: {
@@ -712,6 +730,26 @@ struct NotificationChannelEditor: View {
                     }
                 }
             }
+            GridRow {
+                Text(L10n.t("报告内容"))
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        SettingsGlassTabPicker(selection: Binding(get: { digestStyle }, set: selectDigestStyle),
+                                               options: DigestStyle.allCases, label: Self.styleLabel, compact: true)
+                            .fixedSize()
+                        if digestStyle == .custom {
+                            Button(L10n.t("编辑模板…")) { editingTemplate = true }
+                                .controlSize(.small)
+                                .settingsGlassButtons()
+                                .buttonBorderShape(.capsule)
+                        }
+                    }
+                    Text(Self.styleNote(digestStyle))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
             // 跟列表行右边的开关是同一个(渠道的 enabled)。新渠道默认开着,保存后四档报告都推它(NotificationRouting.adding)。
             GridRow {
                 Text(L10n.t("启用"))
@@ -730,6 +768,42 @@ struct NotificationChannelEditor: View {
             }
         }
         .font(.system(size: 13))
+    }
+
+    private var digestStyle: DigestStyle { DigestStyle(rawValue: draft.digestStyle) ?? .full }
+
+    private static func styleLabel(_ style: DigestStyle) -> String {
+        switch style {
+        case .full: return L10n.t("完整")
+        case .brief: return L10n.t("精简")
+        case .overview: return L10n.t("概况")
+        case .custom: return L10n.t("自定义")
+        }
+    }
+
+    private static func styleNote(_ style: DigestStyle) -> String {
+        switch style {
+        case .full: return L10n.t("概况、三份榜单和新听的歌手")
+        case .brief: return L10n.t("概况和歌手、专辑、歌曲各自的第一名")
+        case .overview: return L10n.t("只有播放次数、时长和新听了几位歌手")
+        case .custom: return L10n.t("按你写的模板，以纯文本推送")
+        }
+    }
+
+    private func selectDigestStyle(_ style: DigestStyle) {
+        guard style != digestStyle else { return }
+        if style == .custom {
+            styleBeforeCustom = digestStyle
+            draft.digestStyle = style.rawValue
+            if !draft.digestTemplate.isCustom { editingTemplate = true }
+            return
+        }
+        draft.digestStyle = style.rawValue
+    }
+
+    /// 模板编辑器收起时(保存、取消,或按 Esc 由系统直接收起):模板是空的(没写或恢复了默认)就退回选自定义之前那一套。
+    private func templateEditorClosed() {
+        if digestStyle == .custom, !draft.digestTemplate.isCustom { draft.digestStyle = styleBeforeCustom.rawValue }
     }
 
     private func urlChanged(_ value: String) {
@@ -792,7 +866,7 @@ struct NotificationChannelEditor: View {
                 .help(L10n.t("用这一期的真实数据看看推送在这个平台上的样子"))
                 .popover(isPresented: $previewing, arrowEdge: .top) {
                     NotificationPreviewCard(platform: platform, senderName: cleaned.name.isEmpty ? platform.displayName : cleaned.name,
-                                            signed: !cleaned.secret.isEmpty)
+                                            signed: !cleaned.secret.isEmpty, style: digestStyle, template: draft.digestTemplate)
                 }
             if !isNew {
                 Button(L10n.t("删除…"), role: .destructive) { confirmingDelete = true }

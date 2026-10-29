@@ -725,6 +725,7 @@
 "另有 %d 个文件未能写入歌词文件夹，请检查写入权限和磁盘空间" = "%d more couldn't be written to the lyrics folder. Check write access and disk space";
 "只显示歌词" = "Lyrics only";
 "只显示歌词源自带的读音" = "Shows only romanization supplied by the lyrics source";
+"只有播放次数、时长和新听了几位歌手" = "Just plays, listening time and how many new artists";
 "只给汉字标注平假名" = "Hiragana for kanji only";
 "可以直接粘贴完整地址，会自动识别是哪个平台" = "Paste the full address and the platform is recognized automatically";
 "可同时开启多项" = "You can turn on more than one";
@@ -914,6 +915,7 @@
 "完成" = "Done";
 "完成调整宽度" = "Done Adjusting Width";
 "完成，开始 Scrobble" = "Done — Start Scrobbling";
+"完整" = "Full";
 "完整尺寸" = "Full Size";
 "完整尺寸歌词的对齐；「自动」按对唱声部对齐" = "Lyrics alignment in the full size; Automatic follows the duet parts";
 "完整说明" = "Full Reference";
@@ -1284,6 +1286,7 @@
 "找到 %@ 首" = "%@ Found";
 "把「默认正文」换成概况、三份榜单、新歌手几段，可以逐段删改、调整顺序" = "Replace the default body with its parts (summary, the three charts, new artists) so you can edit, remove or reorder each one";
 "把听歌报告推到手机、群聊或你自己的服务" = "Send listening reports to your phone, group chats or your own service";
+"报告内容" = "Report Content";
 "拆分" = "Split";
 "拆分…" = "Split…";
 "拆分「%@」？" = "Split “%@”?";
@@ -1315,6 +1318,7 @@
 "按专辑分组" = "Group by Album";
 "按住 ⌘ 拖移此图标，可将其移到菜单栏中的任意位置" = "Hold ⌘ and drag this icon to move it anywhere in the menu bar";
 "按住歌词即可拖动位置" = "Hold the lyrics to reposition";
+"按你写的模板，以纯文本推送" = "Uses your template, sent as plain text";
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@" = "Based on your top %1$@ artists, %2$@ of your plays in this period";
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@#one" = "Based on your top %1$@ artist, %2$@ of your plays in this period";
 "按收听最多的前 %@ 位歌手统计" = "Based on your top %@ artists";
@@ -1768,6 +1772,8 @@
 "检测未通过：%@" = "Check failed: %@";
 "检索到的曲目与本条目曲名不符，仅用于合并播放次数，不参与歌词同步" = "The matched track's title differs from this entry, so it only merges play counts and doesn't sync lyrics";
 "概况" = "Summary";
+"概况、三份榜单和新听的歌手" = "Summary, the three charts and new artists";
+"概况和歌手、专辑、歌曲各自的第一名" = "Summary and your top artist, album and track";
 "榜单" = "Charts";
 "榜单链接" = "Chart link";
 "次" = "plays";
@@ -2139,6 +2145,7 @@
 "粤拼" = "Jyutping";
 "粤拼（Jyutping），如 你好 → nei5 hou2" = "Jyutping, e.g. 你好 → nei5 hou2";
 "粤语" = "Cantonese";
+"精简" = "Brief";
 "系统兜底翻译" = "System Fallback Translation";
 "系统功能栏" = "System Control Strip";
 "系统媒体信息通道不可用" = "System media channel unavailable";
@@ -2198,6 +2205,7 @@
 "编辑「%@」" = "Edit “%@”";
 "编辑中" = "Editing";
 "编辑期间这首歌曲的歌词已发生变化，本次未应用；再次编辑将打开最新版本" = "This song's lyrics changed while you were editing, so this save wasn't applied. Click Edit again to open the latest version";
+"编辑模板…" = "Edit Template…";
 "编辑歌词" = "Edit Lyrics";
 "缩小字号" = "Decrease Font Size";
 "缩小悬浮歌词字号" = "Decrease Floating Lyrics Font Size";

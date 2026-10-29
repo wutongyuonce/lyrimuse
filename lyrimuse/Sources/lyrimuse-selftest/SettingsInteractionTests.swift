@@ -422,6 +422,27 @@ func runSettingsInteractionTests() {
         let channelsSample = (try? Data(contentsOf: samples.appendingPathComponent("channels.json")))
             .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] } ?? [:]
         expectEqual(C.list(fromConfig: channelsSample)?.map(\.platform), ["telegram", "ntfy"], "推送渠道: 读得懂共用样例")
+        expectEqual(C.list(fromConfig: channelsSample)?.map { $0.resolvedDigest(legacy: DigestTemplate()).style }, [.brief, .custom],
+                    "报告内容: 读得懂共用样例里每个渠道选的那一套")
+
+        // 报告内容(15 章决策 90):每个渠道选一套,自定义时模板存在渠道里;没选过的沿用 features.json 那份(同引擎 digestStyle)。
+        let styled = C(id: "s", platform: "bark", url: "https://api.day.app/K", digestStyle: "custom",
+                       digestTemplate: DigestTemplate(title: "", body: "嗨 {plays}"))
+        expectEqual(C(jsonObject: styled.jsonObject), styled, "报告内容: 选的那一套和模板落盘再读回来一样")
+        expectEqual(styled.jsonObject["digest_template"] as? [String: String], ["body": "嗨 {plays}"], "报告内容: 模板里没改的那一段不写")
+        let oldTpl = DigestTemplate(title: "", body: "旧的 {plays}")
+        let plain = C(id: "p", platform: "bark")
+        expectEqual([plain.resolvedDigest(legacy: DigestTemplate()).style, plain.resolvedDigest(legacy: oldTpl).style,
+                     C(id: "f", platform: "bark", digestStyle: "full").resolvedDigest(legacy: oldTpl).style,
+                     C(id: "c", platform: "bark", digestStyle: "custom").resolvedDigest(legacy: oldTpl).style,
+                     C(id: "u", platform: "bark", digestStyle: "fancy").resolvedDigest(legacy: oldTpl).style],
+                    [.full, .custom, .full, .full, .full],
+                    "报告内容: 没选过沿用旧模板;选了完整不再沿用;自定义没写模板、认不出的值按完整")
+        expectEqual(plain.resolvedDigest(legacy: oldTpl).template, oldTpl, "报告内容: 沿用时用的是旧模板")
+        let pinned = plain.pinningDigestStyle(legacy: oldTpl)
+        expectEqual([pinned.digestStyle, pinned.digestTemplate.body, plain.pinningDigestStyle(legacy: DigestTemplate()).digestStyle,
+                     styled.pinningDigestStyle(legacy: oldTpl).digestTemplate.body],
+                    ["custom", "旧的 {plays}", "full", "嗨 {plays}"], "报告内容: 编辑弹窗把沿用的那一套写明,选过的不动")
 
         // 粘贴地址认平台
         typealias D = NotificationPlatformDetector
@@ -495,7 +516,9 @@ func runSettingsInteractionTests() {
         for b in bodies {
             let kind = P.Kind(rawValue: b["kind"] as? String ?? "") ?? .daily
             let n = b["top_n"] as? Int ?? 0
-            expectEqual(P.body(P.sample(kind), topN: n), b["body"] as? String ?? "", "渠道预览: \(kind.rawValue) 每类 \(n) 条的正文同引擎")
+            let style = DigestStyle(rawValue: b["style"] as? String ?? "") ?? .full
+            expectEqual(P.body(P.sample(kind), topN: n, style: style), b["body"] as? String ?? "",
+                        "渠道预览: \(kind.rawValue) 每类 \(n) 条的\(style.rawValue)正文同引擎")
         }
         let nowParts = preview["now"] as? [String: Int] ?? [:]
         let previewNow = Calendar.current.date(from: DateComponents(
@@ -516,12 +539,15 @@ func runSettingsInteractionTests() {
         for r in richCases {
             let kind = P.Kind(rawValue: r["kind"] as? String ?? "") ?? .daily
             let n = r["top_n"] as? Int ?? 0
+            let style = DigestStyle(rawValue: r["style"] as? String ?? "") ?? .full
             expectEqual(P.summaryLine(P.sample(kind)), r["summary"] as? String ?? "", "按平台排版: \(kind.rawValue) 第一行同引擎")
-            expectEqual(P.newArtistsLine(P.sample(kind)), r["new_line"] as? String ?? "", "按平台排版: \(kind.rawValue) 新听的歌手同引擎")
+            expectEqual(P.newArtistsLine(P.sample(kind), style: style), r["new_line"] as? String ?? "",
+                        "按平台排版: \(kind.rawValue) \(style.rawValue) 新听的歌手同引擎")
             let want = (r["sections"] as? [[String: Any]] ?? []).map {
-                P.RichSection(heading: $0["heading"] as? String ?? "", lines: $0["lines"] as? [String] ?? [])
+                P.RichSection(heading: $0["heading"] as? String ?? "", title: $0["title"] as? String, lines: $0["lines"] as? [String] ?? [])
             }
-            expectEqual(P.richSections(P.sample(kind), topN: n), want, "按平台排版: \(kind.rawValue) 每类 \(n) 条各行同引擎")
+            expectEqual(P.richSections(P.sample(kind), topN: n, style: style), want,
+                        "按平台排版: \(kind.rawValue) \(style.rawValue) 每类 \(n) 条各行同引擎")
         }
         let wh = preview["webhook_weekly"] as? [String: Any] ?? [:]
         let whJSON = P.webhookJSON(event: "weekly_digest", title: preview["weekly_title"] as? String ?? "",

@@ -67,8 +67,9 @@ func (a *alerter) sendMessage(msg notifyMessage) error {
 			delivered = true
 			continue
 		}
-		r := pushToChannel(ch, msg)
-		recordNotifyDelivery(ch, msg, r)
+		m := msg.forChannel(ch)
+		r := pushToChannel(ch, m)
+		recordNotifyDelivery(ch, m, r)
 		if r.OK {
 			delivered = true
 			continue
@@ -119,12 +120,14 @@ func (a *alerter) push(title, body string) error { return a.send("", title, body
 
 // notifyMessage 是要推的一条消息。Digest:听歌报告的那份数,按平台排版(notifyrich.go)照它排,Body 是纯文本那一份;
 // 其余消息(测一下)为 nil。Key:判「这个渠道收到过这一期没有」用的标题,听歌报告是默认标题,空 = 用 Title。
-// Custom:标题正文是用户自定义的(digesttemplate.go),不套卡片排版。
+// Custom:标题正文是用户自定义的(digesttemplate.go),不套卡片排版。Style:按平台排版时用精简 / 概况那一套
+// (digeststyle.go),空 = 完整。听歌报告进 sendMessage 时是默认标题和完整正文,推到每个渠道前按渠道选的那一套改写(forChannel)。
 type notifyMessage struct {
 	Event, Title, Body string
 	Digest             *digestStats
 	Key                string
 	Custom             bool
+	Style              string
 }
 
 func (m notifyMessage) dedupKey() string {

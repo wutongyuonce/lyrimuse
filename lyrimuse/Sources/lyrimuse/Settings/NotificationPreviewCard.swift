@@ -9,12 +9,16 @@ import SwiftUI
 /// 发件人名字用渠道「名称」,头像用平台图标 —— 群机器人、Telegram Bot 真正的名字和头像是在平台上设的,App 不知道。
 /// 照引擎 notifyrich.go 各平台的排法画:加粗、分栏、卡片;封面用真实数据里的专辑封面
 /// (测试数据、没取到封面时画占位方块),飞书不画(群机器人带不了图)。见 15 章决策 75。
-/// 自定义了推送内容(Core `DigestTemplate`)时按模板出标题正文,画成一条纯文本消息;Bark、ntfy 照旧带封面,通用 Webhook 照旧带 data。
+/// 内容按这个渠道选的那一套(Core `DigestStyle`)画:精简、概况照旧排版;自定义按模板出标题正文,画成一条纯文本消息,
+/// Bark、ntfy 照旧带封面,通用 Webhook 照旧带 data。
 struct NotificationPreviewCard: View {
     let platform: NotificationPlatform
     let senderName: String
     /// 通用 Webhook 填了签名密钥:请求头里多一行签名。
     let signed: Bool
+    let style: DigestStyle
+    /// 自定义时的模板(`style` 是 `.custom` 才用)。
+    let template: DigestTemplate
 
     @ObservedObject private var features = FeatureSettingsStore.shared
     @State private var kind: NotificationPreview.Kind = .daily
@@ -30,14 +34,14 @@ struct NotificationPreviewCard: View {
 
     fileprivate var stats: NotificationPreview.Stats { real?.stats ?? NotificationPreview.sample(kind) }
 
-    private var custom: Bool { features.digestTemplate.isCustom }
+    private var custom: Bool { style == .custom }
 
     var body: some View {
         let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now)
         let defaultText = NotificationPreview.body(stats, topN: features.digestTopN)
         let (title, text) = custom
-            ? features.digestTemplate.render(defaultTitle: defaultTitle, defaultBody: defaultText, stats: stats, topN: features.digestTopN)
-            : (defaultTitle, defaultText)
+            ? template.render(defaultTitle: defaultTitle, defaultBody: defaultText, stats: stats, topN: features.digestTopN)
+            : (defaultTitle, NotificationPreview.body(stats, topN: features.digestTopN, style: style))
         return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Text(L10n.t("预览"))
@@ -282,8 +286,10 @@ extension NotificationPreviewCard {
     }
 
     fileprivate var summary: String { NotificationPreview.summaryLine(stats) }
-    fileprivate var sections: [NotificationPreview.RichSection] { NotificationPreview.richSections(stats, topN: features.digestTopN) }
-    fileprivate var newLine: String { NotificationPreview.newArtistsLine(stats) }
+    fileprivate var sections: [NotificationPreview.RichSection] {
+        NotificationPreview.richSections(stats, topN: features.digestTopN, style: style)
+    }
+    fileprivate var newLine: String { NotificationPreview.newArtistsLine(stats, style: style) }
     fileprivate var linkLabel: String { String(format: L10n.t("在 %@ 上看完整榜单"), stats.sourceName) }
     fileprivate var footerText: String { "Lyrimuse · " + String(format: L10n.t("数据来自 %@"), stats.sourceName) }
 
@@ -319,13 +325,13 @@ extension NotificationPreviewCard {
         .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
     }
 
-    /// 第一行、每类、新听的歌手、链接,按一种字色、链接色排成一列。headingPrefix:小节标题前缀(Telegram「Top 」)。
-    fileprivate func digestColumn(fg: Color, link: Color, boldSummary: Bool, headingPrefix: String = "Top ", showLink: Bool = true) -> some View {
+    /// 第一行、每类(小节名「Top 歌手」)、新听的歌手、链接,按一种字色、链接色排成一列。
+    fileprivate func digestColumn(fg: Color, link: Color, boldSummary: Bool, showLink: Bool = true) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(summary).fontWeight(boldSummary ? .semibold : .regular)
             ForEach(sections, id: \.heading) { sec in
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(headingPrefix + sec.heading).fontWeight(.bold)
+                    Text(sec.title).fontWeight(.bold)
                     ForEach(sec.lines, id: \.self) { Text($0) }
                 }
             }

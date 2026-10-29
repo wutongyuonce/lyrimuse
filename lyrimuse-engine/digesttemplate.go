@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-// 听歌报告的自定义内容(推送提醒页「推送内容」):标题、正文各一段模板,四档共用,用 {占位符} 取这一期的数。
+// 听歌报告的自定义内容:标题、正文各一段模板,四档共用,用 {占位符} 取这一期的数。每个渠道各存一份(渠道的 digest_template,
+// 选了「自定义」时用,见 digeststyle.go);features.json 的 digest_template 是渠道还没选过时沿用的那份。
 // 模板是空的、或者跟默认一字不差(标题 {title}、正文 {body})时按默认推,照旧按平台排版;用了自定义就按纯文本推,
 // 不套各平台的卡片排版(notifyrich.go),Bark / ntfy 照旧带封面和点击跳转,通用 Webhook 照旧带 data。
 // App 侧同一套渲染在 Core `DigestTemplate`,两边对得上靠共用样例 shared/testdata/notify/template.json。见 15 章决策 84。

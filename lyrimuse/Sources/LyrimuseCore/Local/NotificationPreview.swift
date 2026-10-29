@@ -90,13 +90,15 @@ public enum NotificationPreview {
         public var sourceName: String { source == "listenbrainz" ? "ListenBrainz" : "Last.fm" }
     }
 
-    /// 排过版的一类:标题(歌手 / 专辑 / 歌曲)和每一行。
+    /// 排过版的一类:标题(歌手 / 专辑 / 歌曲,分栏的平台当栏名)、单独起一行时的小节名(`title`,「Top 歌手」)和每一行。
     public struct RichSection: Equatable, Sendable {
         public let heading: String
+        public let title: String
         public let lines: [String]
 
-        public init(heading: String, lines: [String]) {
+        public init(heading: String, title: String? = nil, lines: [String]) {
             self.heading = heading
+            self.title = title ?? "Top " + heading
             self.lines = lines
         }
     }
@@ -173,9 +175,11 @@ public enum NotificationPreview {
         return out
     }
 
-    /// 同引擎 digestNewArtistsLine:「新听了 5 位歌手：A、B、C 等」;一位都没有为空。
-    public static func newArtistsLine(_ stats: Stats) -> String {
+    /// 同引擎 digestNewArtistsLine:「新听了 5 位歌手：A、B、C 等」;概况只写「新听了 5 位歌手」(引擎 richDigest.newLine);
+    /// 一位都没有为空。
+    public static func newArtistsLine(_ stats: Stats, style: DigestStyle = .full) -> String {
         guard stats.newArtists > 0 else { return "" }
+        if style == .overview { return "新听了 \(stats.newArtists) 位歌手" }
         var line = "新听了 \(stats.newArtists) 位歌手"
         guard !stats.newArtistNames.isEmpty else { return line }
         line += "：" + stats.newArtistNames.joined(separator: "、")
@@ -189,8 +193,32 @@ public enum NotificationPreview {
         return top.count > 1 || (top.count == 1 && n == 1) ? top : nil
     }
 
-    /// 同引擎 digestBody。
-    public static func body(_ stats: Stats, topN: Int) -> String {
+    /// 歌手、专辑、歌曲各自的第一名,一类一行(引擎 digestTopOnes)。
+    private static func topOnes(_ stats: Stats, _ line: (String, Tally) -> String) -> [String] {
+        [("歌手", stats.artists), ("专辑", stats.albums), ("歌曲", stats.tracks)].compactMap { label, list in
+            list.first.map { line(label, $0) }
+        }
+    }
+
+    /// 同引擎 digestBodyStyled:精简是第一行加各类第一名、新听的歌手;概况是第一行加新听了几位歌手,这两套不空行。
+    /// 自定义按完整拼(模板里的 `{body}` 就是它)。
+    public static func body(_ stats: Stats, topN: Int, style: DigestStyle = .full) -> String {
+        switch style {
+        case .brief:
+            var out = summaryLine(stats)
+            let lines = topOnes(stats) { label, t in
+                "最常听的\(label)：" + (t.sub.isEmpty ? t.name : "\(t.sub) - \(t.name)") + "（\(t.count)）"
+            }
+            if !lines.isEmpty { out += "\n" + lines.joined(separator: "\n") }
+            let line = newArtistsLine(stats)
+            if !line.isEmpty { out += "\n" + line }
+            return out
+        case .overview:
+            let line = newArtistsLine(stats, style: .overview)
+            return summaryLine(stats) + (line.isEmpty ? "" : "\n" + line)
+        case .full, .custom:
+            break
+        }
         let n = DigestTopN.resolved(topN)
         var out = summaryLine(stats) + "\n"
         func section(_ heading: String, _ list: [Tally]) {
@@ -209,8 +237,20 @@ public enum NotificationPreview {
         return out
     }
 
-    /// 同引擎 richSections(不转义):歌手「1. 方大同 · 61」,专辑、歌曲「1. 叶惠美 — 周杰伦 · 21」。
-    public static func richSections(_ stats: Stats, topN: Int) -> [RichSection] {
+    /// 同引擎 richDigest.sections(不转义):完整列三类,歌手「1. 方大同 · 61」,专辑、歌曲「1. 叶惠美 — 周杰伦 · 21」;
+    /// 精简只有一段「最常听」(「歌手：方大同 · 61」「专辑：JTW 西游记 — 方大同 · 29」);概况不列。
+    public static func richSections(_ stats: Stats, topN: Int, style: DigestStyle = .full) -> [RichSection] {
+        switch style {
+        case .brief:
+            let lines = topOnes(stats) { label, t in
+                "\(label)：" + (t.sub.isEmpty ? t.name : "\(t.name) — \(t.sub)") + " · \(t.count)"
+            }
+            return lines.isEmpty ? [] : [RichSection(heading: "最常听", title: "最常听", lines: lines)]
+        case .overview:
+            return []
+        case .full, .custom:
+            break
+        }
         let n = DigestTopN.resolved(topN)
         var out: [RichSection] = []
         for (heading, list) in [("歌手", stats.artists), ("专辑", stats.albums), ("歌曲", stats.tracks)] {

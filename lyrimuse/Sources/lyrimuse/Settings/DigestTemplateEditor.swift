@@ -1,35 +1,9 @@
 import LyrimuseCore
 import SwiftUI
 
-// 「听歌报告」卡里的「推送内容」:四档报告共用的自定义标题和正文(Core `DigestTemplate`,引擎 digesttemplate.go)。
-// 编辑器里点一个占位符插到正在编辑的那一栏的光标处(PlaceholderTextView),右边按这一期的真实数据(取不到时用测试数据)
-// 实时预览。见 15 章决策 84。
-
-/// 「推送内容」那一行:默认 / 已自定义,行尾「编辑…」开编辑器。
-struct DigestTemplateRow: View {
-    @ObservedObject private var features = FeatureSettingsStore.shared
-    @State private var editing = false
-
-    var body: some View {
-        SettingsRow(icon: "text.quote", title: L10n.t("推送内容"),
-                    subtitle: features.digestTemplate.isCustom ? L10n.t("已自定义，按纯文本推送") : L10n.t("默认")) {
-            Button(L10n.t("编辑…")) { editing = true }
-                .controlSize(.small)
-                .buttonBorderShape(.capsule)
-        }
-        .settingsSearchHighlight(title: L10n.t("推送内容"))
-        .sheet(isPresented: $editing) {
-            DigestTemplateEditor(original: features.digestTemplate) { saved in
-                editing = false
-                guard saved != features.digestTemplate else { return }
-                features.digestTemplate = saved
-                Task { await features.save() }
-            } onCancel: {
-                editing = false
-            }
-        }
-    }
-}
+// 推送渠道「报告内容」选了自定义时的模板编辑器:标题和正文四档报告共用(Core `DigestTemplate`,引擎 digesttemplate.go),
+// 存进那个渠道(`NotificationChannel.digestTemplate`)。点一个占位符插到正在编辑的那一栏的光标处(PlaceholderTextView),
+// 右边按这一期的真实数据(取不到时用测试数据)实时预览。见 15 章决策 84、90。
 
 /// 编辑标题和正文:左边两个输入框和一排占位符,右边按这一期的数据实时预览。保存时跟默认一样的那一段存成空
 /// (`DigestTemplate.resolved`)。

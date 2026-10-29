@@ -417,6 +417,12 @@ func TestNotifySharedSamples(t *testing.T) {
 	if len(chs) != 2 || chs[0].ID != "c1" || chs[0].ChatID != "42" || chs[1].Secret != "tk_faketoken" || chs[1].Enabled {
 		t.Errorf("channels = %+v", chs)
 	}
+	if style, _ := chs[0].digestStyle(digestTemplate{}); style != digestStyleBrief {
+		t.Errorf("c1 digest style = %s", style)
+	}
+	if style, tpl := chs[1].digestStyle(digestTemplate{}); style != digestStyleCustom || tpl.Body != "听了 {plays} 次" {
+		t.Errorf("c2 digest = %s %+v", style, tpl)
+	}
 	if routes := configFromBytes(raw).NotificationRoutes; len(routes) != 2 || len(routes[notifyEventWeekly]) != 1 || routes[notifyEventDaily][1] != "c2" {
 		t.Errorf("routes = %+v", routes)
 	}

@@ -11,7 +11,7 @@ import (
 
 // 按平台排版:同一份报告(notifyMessage.Digest),每个平台用它自己支持的格式排 —— Telegram HTML、Discord 卡片(embed)、
 // Slack Block Kit、飞书消息卡片、钉钉 markdown、企业微信 markdown_v2、Server酱 markdown;能放图的放头号专辑封面,
-// 能点的点开去这一期的完整榜单。Bark、ntfy 正文保持纯文本(Bark 锁屏只显示前几行、ntfy 的 markdown iPhone 不认),
+// 能点的点开去这一期的完整榜单。渠道选了精简 / 概况时排的是那一套的内容(richDigest,digeststyle.go)。Bark、ntfy 正文保持纯文本(Bark 锁屏只显示前几行、ntfy 的 markdown iPhone 不认),
 // 只加封面和点击跳转。所有渠道都排,不给开关(用户:「应该是默认都要，不需要可配置」)。
 //
 // 「测一下」那条(Digest 为 nil)也按平台的格式发(标题加粗、卡片),测得出这个渠道收不收排过版的消息。
@@ -23,7 +23,10 @@ const richColor = 0xE5484D
 
 // buildRichPayload 拼排过版的请求体。ok=false 表示这个平台、这条消息不排,用纯文本那份(buildNotifyPayload)。
 func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, contentType string, ok bool, err error) {
-	d := msg.Digest
+	var d *richDigest
+	if msg.Digest != nil {
+		d = &richDigest{digestStats: msg.Digest, style: msg.Style}
+	}
 	if msg.Custom && ch.Platform != platformBark && ch.Platform != "" {
 		return nil, "", false, nil
 	}
@@ -76,9 +79,11 @@ func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, cont
 
 // ---- 共用的几块 ----
 
-// richSection 是榜单的一类:标题(歌手 / 专辑 / 歌曲)和已经排好、按平台转义过的每一行。
+// richSection 是榜单的一类:标题(歌手 / 专辑 / 歌曲,分栏的平台当栏名)、单独起一行时的小节名(「Top 歌手」)和
+// 已经排好、按平台转义过的每一行。
 type richSection struct {
 	heading string
+	title   string
 	lines   []string
 }
 
@@ -90,7 +95,7 @@ func richSections(d *digestStats, esc func(string) string) []richSection {
 		if !digestShown(list) {
 			return
 		}
-		s := richSection{heading: heading}
+		s := richSection{heading: heading, title: "Top " + heading}
 		for i, t := range list {
 			if t.Sub == "" {
 				s.lines = append(s.lines, fmt.Sprintf("%d. %s · %d", i+1, esc(t.Name), t.Count))
@@ -135,22 +140,22 @@ const telegramMaxChars = 4096
 
 // telegramRich:parse_mode HTML。名字里的 & < > 必须转义,不然整条解析失败。封面放在链接预览里(link_preview_options.url
 // 可以跟正文里的链接不是同一个),显示在文字上方;不用 sendPhoto,它的图片说明只有 1024 字,每类列 10 条就放不下。
-func telegramRich(chatID, title, body string, d *digestStats) (any, bool) {
+func telegramRich(chatID, title, body string, d *richDigest) (any, bool) {
 	esc := html.EscapeString
 	var b strings.Builder
 	b.WriteString("<b>" + esc(title) + "</b>\n")
 	if d == nil {
 		b.WriteString(esc(body))
 	} else {
-		b.WriteString(esc(digestSummaryLine(*d)))
-		for _, s := range richSections(d, esc) {
-			b.WriteString("\n\n<b>Top " + s.heading + "</b>\n" + strings.Join(s.lines, "\n"))
+		b.WriteString(esc(digestSummaryLine(*d.digestStats)))
+		for _, s := range d.sections(esc) {
+			b.WriteString("\n\n<b>" + s.title + "</b>\n" + strings.Join(s.lines, "\n"))
 		}
-		if line := digestNewArtistsLine(*d); line != "" {
+		if line := d.newLine(); line != "" {
 			b.WriteString("\n\n🆕 " + esc(line))
 		}
 		if d.Link != "" {
-			b.WriteString("\n\n<a href=\"" + esc(d.Link) + "\">" + esc(richLinkLabel(d)) + "</a>")
+			b.WriteString("\n\n<a href=\"" + esc(d.Link) + "\">" + esc(richLinkLabel(d.digestStats)) + "</a>")
 		}
 	}
 	text := b.String()
@@ -179,20 +184,20 @@ const (
 var discordEscaper = strings.NewReplacer(`\`, `\\`, `*`, `\*`, `_`, `\_`, `~`, `\~`, "`", "\\`", `|`, `\|`, `>`, `\>`, `[`, `\[`, `]`, `\]`)
 
 // discordRich:一张卡片,标题可点(去完整榜单)、右上角封面、歌手 / 专辑 / 歌曲并排三栏。某一栏超过 1024 字时截掉后面的名次。
-func discordRich(title, body string, d *digestStats) (any, bool) {
+func discordRich(title, body string, d *richDigest) (any, bool) {
 	embed := map[string]any{"title": clipRunes(title, discordTitleMax), "color": richColor}
 	if d == nil {
 		embed["description"] = clipRunes(discordEscaper.Replace(body), discordDescMax)
 		embed["footer"] = map[string]string{"text": "Lyrimuse"}
 		return map[string]any{"embeds": []any{embed}}, true
 	}
-	desc := discordEscaper.Replace(digestSummaryLine(*d))
-	if line := digestNewArtistsLine(*d); line != "" {
+	desc := discordEscaper.Replace(digestSummaryLine(*d.digestStats))
+	if line := d.newLine(); line != "" {
 		desc += "\n\n🆕 " + discordEscaper.Replace(line)
 	}
 	embed["description"] = clipRunes(desc, discordDescMax)
 	var fields []any
-	for _, s := range richSections(d, discordEscaper.Replace) {
+	for _, s := range d.sections(discordEscaper.Replace) {
 		lines := s.lines
 		for len(lines) > 1 && utf8.RuneCountInString(strings.Join(lines, "\n")) > discordFieldMax {
 			lines = lines[:len(lines)-1]
@@ -208,7 +213,7 @@ func discordRich(title, body string, d *digestStats) (any, bool) {
 	if d.CoverURL != "" {
 		embed["thumbnail"] = map[string]string{"url": d.CoverURL}
 	}
-	embed["footer"] = map[string]string{"text": richFooter(d)}
+	embed["footer"] = map[string]string{"text": richFooter(d.digestStats)}
 	return map[string]any{"embeds": []any{embed}}, true
 }
 
@@ -222,7 +227,7 @@ const (
 
 // slackRich:大标题、第一段带封面(右边)、每类一段、底部一行来源和链接。text 是通知横幅和不支持 blocks 的客户端显示的那份。
 // 链接写在 context 里,不用按钮:按钮要求这个 Slack App 配了交互地址,Incoming Webhook 点了会报错。
-func slackRich(title, body string, d *digestStats) (any, bool) {
+func slackRich(title, body string, d *richDigest) (any, bool) {
 	header := map[string]any{"type": "header", "text": map[string]any{"type": "plain_text", "text": clipRunes(title, slackHeaderMax), "emoji": true}}
 	section := func(text string) map[string]any {
 		return map[string]any{"type": "section", "text": map[string]string{"type": "mrkdwn", "text": text}}
@@ -234,13 +239,13 @@ func slackRich(title, body string, d *digestStats) (any, bool) {
 		}
 		return map[string]any{"text": slackEscape(title) + "\n" + slackEscape(body), "blocks": []any{header, section(text)}}, true
 	}
-	summary := slackEscape(digestSummaryLine(*d))
-	sections := richSections(d, slackEscape)
+	summary := slackEscape(digestSummaryLine(*d.digestStats))
+	sections := d.sections(slackEscape)
 	blocks := []any{header}
 	first := summary
 	rest := sections
 	if len(sections) > 0 {
-		first += "\n\n*Top " + sections[0].heading + "*\n" + strings.Join(sections[0].lines, "\n")
+		first += "\n\n*" + sections[0].title + "*\n" + strings.Join(sections[0].lines, "\n")
 		rest = sections[1:]
 	}
 	firstBlock := section(first)
@@ -254,16 +259,16 @@ func slackRich(title, body string, d *digestStats) (any, bool) {
 	blocks = append(blocks, firstBlock)
 	texts := []string{first}
 	for _, s := range rest {
-		t := "*Top " + s.heading + "*\n" + strings.Join(s.lines, "\n")
+		t := "*" + s.title + "*\n" + strings.Join(s.lines, "\n")
 		texts = append(texts, t)
 		blocks = append(blocks, section(t))
 	}
-	if line := digestNewArtistsLine(*d); line != "" {
+	if line := d.newLine(); line != "" {
 		blocks = append(blocks, section("🆕 "+slackEscape(line)))
 	}
-	ctx := slackEscape(richFooter(d))
+	ctx := slackEscape(richFooter(d.digestStats))
 	if d.Link != "" {
-		ctx += " · <" + d.Link + "|" + slackEscape(richLinkLabel(d)) + ">"
+		ctx += " · <" + d.Link + "|" + slackEscape(richLinkLabel(d.digestStats)) + ">"
 	}
 	blocks = append(blocks, map[string]any{"type": "context", "elements": []any{map[string]string{"type": "mrkdwn", "text": ctx}}})
 	for _, t := range texts {
@@ -279,7 +284,7 @@ func slackRich(title, body string, d *digestStats) (any, bool) {
 // feishuRichCard:消息卡片(群机器人 webhook 收 msg_type=interactive)。蓝色标题栏、第一行、三栏榜单(窄屏上自动叠成一列)、
 // 新听的歌手、去完整榜单的按钮、来源。名字都放在 plain_text 里,不进 markdown,不用转义。不带封面:卡片里的图片要先用
 // 应用凭据上传换 image_key,群机器人地址做不到。
-func feishuRichCard(title, body string, d *digestStats) map[string]any {
+func feishuRichCard(title, body string, d *richDigest) map[string]any {
 	plain := func(s string) map[string]any {
 		return map[string]any{"tag": "div", "text": map[string]string{"tag": "plain_text", "content": s}}
 	}
@@ -291,9 +296,9 @@ func feishuRichCard(title, body string, d *digestStats) map[string]any {
 		card["elements"] = []any{plain(body)}
 		return card
 	}
-	elements := []any{plain(digestSummaryLine(*d))}
+	elements := []any{plain(digestSummaryLine(*d.digestStats))}
 	var columns []any
-	for _, s := range richSections(d, func(s string) string { return s }) {
+	for _, s := range d.sections(func(s string) string { return s }) {
 		columns = append(columns, map[string]any{
 			"tag": "column", "width": "weighted", "weight": 1, "vertical_align": "top",
 			"elements": []any{
@@ -305,16 +310,16 @@ func feishuRichCard(title, body string, d *digestStats) map[string]any {
 	if len(columns) > 0 {
 		elements = append(elements, map[string]any{"tag": "column_set", "flex_mode": "stretch", "background_style": "default", "columns": columns})
 	}
-	if line := digestNewArtistsLine(*d); line != "" {
+	if line := d.newLine(); line != "" {
 		elements = append(elements, plain("🆕 "+line))
 	}
 	if d.Link != "" {
 		elements = append(elements, map[string]any{"tag": "action", "actions": []any{map[string]any{
 			"tag": "button", "type": "default", "url": d.Link,
-			"text": map[string]string{"tag": "plain_text", "content": richLinkLabel(d)},
+			"text": map[string]string{"tag": "plain_text", "content": richLinkLabel(d.digestStats)},
 		}}})
 	}
-	elements = append(elements, map[string]any{"tag": "note", "elements": []any{map[string]string{"tag": "plain_text", "content": richFooter(d)}}})
+	elements = append(elements, map[string]any{"tag": "note", "elements": []any{map[string]string{"tag": "plain_text", "content": richFooter(d.digestStats)}}})
 	card["elements"] = elements
 	return card
 }
@@ -326,22 +331,22 @@ var markdownEscaper = strings.NewReplacer(`\`, `\\`, "`", "\\`", `*`, `\*`, `_`,
 
 // markdownDigest 拼 markdown 正文的主体:第一行加粗、每类一个小标题和有序列表、新听的歌手、链接。
 // heading 是小节标题的前缀(「#### 」或加粗),br 是行与行之间怎么断(钉钉要行尾两个空格才换行)。
-func markdownDigest(d *digestStats, esc func(string) string, heading func(string) string, br string) string {
+func markdownDigest(d *richDigest, esc func(string) string, heading func(string) string, br string) string {
 	var b strings.Builder
-	b.WriteString("**" + esc(digestSummaryLine(*d)) + "**")
-	for _, s := range richSections(d, esc) {
-		b.WriteString("\n\n" + heading("Top "+s.heading) + "\n\n" + strings.Join(s.lines, br))
+	b.WriteString("**" + esc(digestSummaryLine(*d.digestStats)) + "**")
+	for _, s := range d.sections(esc) {
+		b.WriteString("\n\n" + heading(s.title) + "\n\n" + strings.Join(s.lines, br))
 	}
-	if line := digestNewArtistsLine(*d); line != "" {
+	if line := d.newLine(); line != "" {
 		b.WriteString("\n\n🆕 " + esc(line))
 	}
 	if d.Link != "" {
-		b.WriteString("\n\n[" + richLinkLabel(d) + "](" + d.Link + ")")
+		b.WriteString("\n\n[" + richLinkLabel(d.digestStats) + "](" + d.Link + ")")
 	}
 	return b.String()
 }
 
-func markdownCover(d *digestStats) string {
+func markdownCover(d *richDigest) string {
 	if d == nil || d.CoverURL == "" {
 		return ""
 	}
@@ -350,31 +355,31 @@ func markdownCover(d *digestStats) string {
 
 // dingtalkRich:钉钉 markdown。只支持 markdown 的一个子集,名字不转义(它不认反斜杠转义,转了会原样显示出来);
 // 行尾两个空格才换行。末尾一行「Lyrimuse」:开了「自定义关键词」安全设置的机器人,把关键词设成 Lyrimuse 就能收。
-func dingtalkRich(title, body string, d *digestStats) string {
+func dingtalkRich(title, body string, d *richDigest) string {
 	if d == nil {
 		return "#### " + title + "\n\n" + strings.ReplaceAll(body, "\n", "  \n")
 	}
 	bold := func(s string) string { return "**" + s + "**" }
 	return "#### " + title + "\n\n" + markdownCover(d) + markdownDigest(d, func(s string) string { return s }, bold, "  \n") +
-		"\n\n###### " + richFooter(d)
+		"\n\n###### " + richFooter(d.digestStats)
 }
 
 // wecomMarkdownMaxBytes:企业微信 markdown_v2 的 content 上限。
 const wecomMarkdownMaxBytes = 4096
 
 // wecomRich:企业微信 markdown_v2(标题、图片、列表、链接都认;旧版企业微信 4.1.36 以下会显示成带符号的纯文本)。
-func wecomRich(title, body string, d *digestStats) string {
+func wecomRich(title, body string, d *richDigest) string {
 	if d == nil {
 		return "# " + title + "\n\n" + markdownEscaper.Replace(body)
 	}
 	bold := func(s string) string { return "**" + s + "**" }
-	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n") + "\n\n> " + richFooter(d)
+	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n") + "\n\n> " + richFooter(d.digestStats)
 }
 
 // serverChanRich:Server酱的 desp 按 markdown 渲染(微信里收到标题那条提醒,点进去看的是这一页)。
-func serverChanRich(d *digestStats) string {
+func serverChanRich(d *richDigest) string {
 	h4 := func(s string) string { return "#### " + s }
-	return markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, h4, "\n") + "\n\n> " + richFooter(d)
+	return markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, h4, "\n") + "\n\n> " + richFooter(d.digestStats)
 }
 
 // ---- 通用 Webhook ----

@@ -323,8 +323,8 @@ struct FeatureFlagsFile: Codable, Equatable {
     var digestTopN: Int?
     /// 四档报告的推送时间(推送提醒页「推送时间」),本地时间 "HH:MM",缺失 = 22:00。见 Core `DigestPushTime`、引擎 digestschedule.go。
     var digestPushTime: String?
-    /// 四档报告的自定义标题和正文(推送提醒页「推送内容」),跟默认一样的那一段不写。见 Core `DigestTemplate`、
-    /// 引擎 digesttemplate.go。缺失 = 按默认推。
+    /// 四档报告的自定义标题和正文,跟默认一样的那一段不写。界面上已不再编辑它,渠道「报告内容」还没选过时沿用
+    /// (Core `DigestStyle`、引擎 digeststyle.go)。见 Core `DigestTemplate`、引擎 digesttemplate.go。缺失 = 按默认推。
     var digestTemplate: DigestTemplateFile?
     var lyricsSources: [String]?
     /// **迁移标记,不是开关**,只 App 读。lyrics_sources 是白名单,而老配置写的时候后来加的源还不存在,列表里

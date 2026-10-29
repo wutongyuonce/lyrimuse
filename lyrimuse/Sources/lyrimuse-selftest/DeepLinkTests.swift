@@ -257,6 +257,10 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/volume?percent=35"), .debug(.volume(percent: 35)), "debug: 音量")
         expectEqual(link("lyrimuse://debug/volume?percent=101") == nil && link("lyrimuse://debug/volume") == nil, true,
                     "debug: 音量超出 0…100、没带取值都认不出")
+        expectEqual([link("lyrimuse://debug/notify-channel"), link("lyrimuse://debug/notify-channel?id="),
+                     link("lyrimuse://debug/notify-channel?id=Legacy")],
+                    [.debug(.editNotifyChannel(id: nil)), .debug(.editNotifyChannel(id: nil)), .debug(.editNotifyChannel(id: "Legacy"))],
+                    "debug: 打开渠道编辑弹窗,没带 id 或空的是第一个,id 原样")
         expectEqual(link("lyrimuse://debug/settings-search?q=%E7%BD%91%E9%A1%B5%E6%AD%8C%E8%AF%8D"),
                     .debug(.settingsSearch(query: "网页歌词")), "debug: 设置搜索,搜索词原样(不转小写)")
         expectEqual(link("lyrimuse://debug/settings-search") == nil && link("lyrimuse://debug/settings-search?q=%20") == nil, true,
@@ -370,6 +374,7 @@ func runDeepLinkTests() {
             .debug(.menuBarDisplay(artwork: nil, content: "translation", secondary: "off")),
             .debug(.menuBarDisplay(artwork: nil, content: nil, alignment: "center")),
             .debug(.settingsSearch(query: "OBS 输出")),
+            .debug(.editNotifyChannel(id: nil)), .debug(.editNotifyChannel(id: "Legacy-1")),
             .setPlayMode(.list), .setPlayMode(.shuffle), .setPlayMode(.repeatAll), .setPlayMode(.repeatOne),
         ] + LyrimuseAction.allCases.map { .action($0, on: nil, stepSeconds: nil) }
         for value in all {

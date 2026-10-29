@@ -1,7 +1,8 @@
 import Foundation
 
-/// 听歌报告的自定义内容(推送提醒页「推送内容」):标题、正文各一段模板,四档共用,用 `{占位符}` 取这一期的数。
-/// 存在 features.json 的 `digest_template`(`{title, body}`),跟默认一样的那一段存成空串。真推送由引擎渲染(digesttemplate.go),
+/// 听歌报告的自定义内容:标题、正文各一段模板,四档共用,用 `{占位符}` 取这一期的数。渠道「报告内容」选了自定义时用
+/// 那个渠道的(`NotificationChannel.digestTemplate`);features.json 的 `digest_template` 是渠道还没选过时沿用的那份
+/// (见 `DigestStyle`)。跟默认一样的那一段存成空串。真推送由引擎渲染(digesttemplate.go),
 /// 这里是同一套规则,给编辑器和渠道预览用;两边对得上靠共用样例 shared/testdata/notify/template.json。
 /// 用了自定义就按纯文本推,不套各平台的卡片排版。见 15 章决策 84。
 public struct DigestTemplate: Equatable, Sendable {

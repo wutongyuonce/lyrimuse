@@ -178,7 +178,7 @@ type featureFlagsFile struct {
 	DigestTopN *int `json:"digest_top_n,omitempty"`
 	// DigestPushTime:四档报告的推送时间(推送提醒页「推送时间」),本地时间 "HH:MM",缺失 / 写坏按 22:00,见 digestschedule.go。
 	DigestPushTime string `json:"digest_push_time,omitempty"`
-	// DigestTemplate:四档报告的自定义标题和正文(推送提醒页「推送内容」),见 digesttemplate.go。缺失 = 按默认推。
+	// DigestTemplate:四档报告的自定义标题和正文,渠道还没选过推哪一套时沿用(digeststyle.go),见 digesttemplate.go。缺失 = 按默认推。
 	DigestTemplate *digestTemplate `json:"digest_template,omitempty"`
 	// LyricsSources：启用的歌词源集合(lyricSourceXxx 常量的子集)。nil / 缺失 = 全部启用。
 	// 文件里另有一组 xxx_lyrics 迁移标记(老配置升级后补上新加的源),只 App 读,补完写进这个列表。

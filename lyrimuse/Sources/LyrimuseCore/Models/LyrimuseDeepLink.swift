@@ -94,6 +94,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 设置窗口里搜这个词、打开第一条结果:翻页、切分段、展开抽屉,把那一行高亮并滚进可见区
         /// (`debug/settings-search?q=`)。设置窗口要先开着。
         case settingsSearch(query: String)
+        /// 打开推送提醒页「推送渠道」里这个渠道的编辑弹窗,跟点那一行走同一条路(`debug/notify-channel?id=`,没带 id 是第一个)。
+        /// 设置窗口要先翻到推送提醒页(`settings/account/bark`)。
+        case editNotifyChannel(id: String?)
         /// 账号配置按内存里的样子原样保存一次,跟账号页自动保存走同一条 `ConfigStore.save()`(`debug/config-save`)。
         case saveConfig
         /// 关掉 / 接回一条来源(`debug/knockout?leg=<名字>&on=0|1`,`on=0` 关掉):验证退路撑不撑得住,见 `SourceKnockout`。
@@ -238,6 +241,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case ("debug", "/settings-search"):
             guard let query = value("q")?.trimmingCharacters(in: .whitespaces), !query.isEmpty else { return nil }
             self = .debug(.settingsSearch(query: query))
+        case ("debug", "/notify-channel"):
+            self = .debug(.editNotifyChannel(id: value("id").flatMap { $0.isEmpty ? nil : $0 }))
         case ("debug", "/knockout"):
             guard let leg = value("leg").flatMap({ SourceKnockout.Leg(rawValue: $0.lowercased()) }),
                   let on = value("on").flatMap(Self.parseBool) else { return nil }
@@ -380,6 +385,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case let .settingsSearch(query):
                 components.path = "/settings-search"
                 components.queryItems = [URLQueryItem(name: "q", value: query)]
+            case let .editNotifyChannel(id):
+                components.path = "/notify-channel"
+                if let id { components.queryItems = [URLQueryItem(name: "id", value: id)] }
             case .saveConfig: components.path = "/config-save"
             case let .stall(ms):
                 components.path = "/stall"

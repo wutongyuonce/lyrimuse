@@ -14,6 +14,7 @@ import (
 
 // notifyChannel 是一个推送渠道。Secret 按平台是不同的东西:钉钉加签密钥、飞书签名密钥、ntfy 访问令牌、
 // 通用 Webhook 的签名密钥;其余平台不用。ChatID 只有 Telegram 用。
+// DigestStyle、DigestTemplate:听歌报告推到这里用哪一套内容、自定义时的模板,见 digeststyle.go。
 type notifyChannel struct {
 	ID       string `json:"id"`
 	Name     string `json:"name,omitempty"`
@@ -22,6 +23,9 @@ type notifyChannel struct {
 	Secret   string `json:"secret,omitempty"`
 	ChatID   string `json:"chat_id,omitempty"`
 	Enabled  bool   `json:"enabled"`
+
+	DigestStyle    string          `json:"digest_style,omitempty"`
+	DigestTemplate *digestTemplate `json:"digest_template,omitempty"`
 }
 
 // legacyNotifyChannelID:从旧的单渠道字段拼出来的那个渠道的 id。

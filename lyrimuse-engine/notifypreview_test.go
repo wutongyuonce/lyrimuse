@@ -31,18 +31,22 @@ type notifyPreviewSample struct {
 		NewArtists     int                  `json:"new_artists"`
 		NewArtistNames []string             `json:"new_artist_names"`
 	} `json:"samples"`
+	// Bodies、Rich 的 style:渠道选的那一套(digeststyle.go),空 = 完整。
 	Bodies []struct {
-		Kind string `json:"kind"`
-		TopN int    `json:"top_n"`
-		Body string `json:"body"`
+		Kind  string `json:"kind"`
+		TopN  int    `json:"top_n"`
+		Style string `json:"style"`
+		Body  string `json:"body"`
 	} `json:"bodies"`
 	// Rich:按平台排版时的第一行、每类各行、新听的歌手那句(App 预览画排过版的样子用)。
 	Rich []struct {
 		Kind     string `json:"kind"`
 		TopN     int    `json:"top_n"`
+		Style    string `json:"style"`
 		Summary  string `json:"summary"`
 		Sections []struct {
 			Heading string   `json:"heading"`
+			Title   string   `json:"title"` // 空 = 「Top 」加 heading
 			Lines   []string `json:"lines"`
 		} `json:"sections"`
 		NewLine string `json:"new_line"`
@@ -116,8 +120,8 @@ func TestNotifyPreviewSampleMatchesDigest(t *testing.T) {
 	}
 	for _, b := range s.Bodies {
 		useDigestFeatures(t, featureFlags{DigestTopN: b.TopN})
-		if got := digestBody(s.statsFor(b.Kind, b.TopN)); got != b.Body {
-			t.Errorf("%s top %d body =\n%s\nwant\n%s", b.Kind, b.TopN, got, b.Body)
+		if got := digestBodyStyled(s.statsFor(b.Kind, b.TopN), b.Style); got != b.Body {
+			t.Errorf("%s top %d %s body =\n%s\nwant\n%s", b.Kind, b.TopN, b.Style, got, b.Body)
 		}
 	}
 	if len(s.Rich) == 0 {
@@ -129,15 +133,20 @@ func TestNotifyPreviewSampleMatchesDigest(t *testing.T) {
 		if got := digestSummaryLine(st); got != r.Summary {
 			t.Errorf("%s summary = %q, want %q", r.Kind, got, r.Summary)
 		}
-		if got := digestNewArtistsLine(st); got != r.NewLine {
-			t.Errorf("%s new line = %q, want %q", r.Kind, got, r.NewLine)
+		d := &richDigest{digestStats: &st, style: r.Style}
+		if got := d.newLine(); got != r.NewLine {
+			t.Errorf("%s %s new line = %q, want %q", r.Kind, r.Style, got, r.NewLine)
 		}
-		secs := richSections(&st, func(v string) string { return v })
+		secs := d.sections(func(v string) string { return v })
 		if len(secs) != len(r.Sections) {
 			t.Fatalf("%s sections = %d, want %d", r.Kind, len(secs), len(r.Sections))
 		}
 		for i, sec := range secs {
-			if sec.heading != r.Sections[i].Heading || strings.Join(sec.lines, "\n") != strings.Join(r.Sections[i].Lines, "\n") {
+			title := r.Sections[i].Title
+			if title == "" {
+				title = "Top " + r.Sections[i].Heading
+			}
+			if sec.heading != r.Sections[i].Heading || sec.title != title || strings.Join(sec.lines, "\n") != strings.Join(r.Sections[i].Lines, "\n") {
 				t.Errorf("%s section %d = %s %v, want %s %v", r.Kind, i, sec.heading, sec.lines, r.Sections[i].Heading, r.Sections[i].Lines)
 			}
 		}

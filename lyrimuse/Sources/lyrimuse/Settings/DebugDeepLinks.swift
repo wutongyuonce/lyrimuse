@@ -18,6 +18,8 @@ enum DebugDeepLinks {
     static var isEnabled: Bool { UserDefaults.standard.bool(forKey: enabledKey) }
     /// `debug/settings-search` 的搜索词,设置窗口收到后按搜索结果的第一条跳过去。
     static let settingsSearchNotification = Notification.Name("lyrimuse.debug.settingsSearch")
+    /// `debug/notify-channel` 的渠道 id(空串 = 第一个),推送渠道卡收到后打开那个渠道的编辑弹窗。
+    static let editNotifyChannelNotification = Notification.Name("lyrimuse.debug.editNotifyChannel")
 
     static var outputDir: URL {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
@@ -66,6 +68,9 @@ enum DebugDeepLinks {
         case let .settingsSearch(query):
             NotificationCenter.default.post(name: settingsSearchNotification, object: query)
             logger.notice("debug settings search \(query, privacy: .public)")
+        case let .editNotifyChannel(id):
+            NotificationCenter.default.post(name: editNotifyChannelNotification, object: id ?? "")
+            logger.notice("debug edit notify channel")
         case let .stall(ms):
             logger.notice("debug stall: blocking main thread \(ms, privacy: .public) ms")
             usleep(UInt32(ms) * 1000)
