@@ -37,6 +37,26 @@ func runFoobarTests() {
                     false, "foobar 重报: 位置为 0 的不归这条(归 republishesZeroAnchor 那条)")
     }
 
+    // ---- 单曲循环绕回开头 ----
+    do {
+        func loop(_ position: Double?, playing: Bool? = true, bundle: String? = PlaybackPlayer.foobar2000.bundleIdentifier,
+                  duration: Double? = 12) -> Double? {
+            MC.foobarLoopPosition(bundleID: bundle, playing: playing, position: position, duration: duration)
+        }
+        expectEqual(loop(26.5).map { ($0 * 1000).rounded() / 1000 }, 2.5, "foobar 循环: 第二圈起不再发锚点,越过曲长按曲长取余(实测每圈正好 12.000 秒)")
+        expectEqual(loop(12.1), nil, "foobar 循环: 第一圈它自己会重发锚点(晚 0.07~0.13 秒),余量之内不动")
+        expectEqual(loop(11.9), nil, "foobar 循环: 没越过曲长不动")
+        expectEqual(loop(26.5, playing: false), nil, "foobar 循环: 暂停着不动")
+        expectEqual(loop(26.5, bundle: PlaybackPlayer.pinePlayer.bundleIdentifier), nil, "foobar 循环: 只对 foobar2000")
+        expectEqual(loop(26.5, duration: nil), nil, "foobar 循环: 没有时长(电台)不动")
+        let t = Date(timeIntervalSince1970: 1_000)
+        func check(_ position: Double) -> Double? {
+            MC.foobarLoopCheckAt(bundleID: foobar, playing: true, position: position, duration: 12, now: t).map { $0.timeIntervalSince(t) }
+        }
+        expectEqual(check(11).map { ($0 * 1000).rounded() / 1000 }, 1.15, "foobar 循环: 离曲尾不到 3 秒时排一次补查,刚过绕回点那一刻")
+        expectEqual([check(5), check(12.2)].map { $0 == nil }, [true, true], "foobar 循环: 离曲尾还远、已经过了绕回点都不排")
+    }
+
     // ---- 当前文件、封面、轮询 ----
     do {
         expectEqual(PlayerOpenFile.bundleIDs.contains(foobar), true, "foobar 当前文件: 按它开着的文件认,路径交引擎读 .lrc")
@@ -130,6 +150,10 @@ func runFoobarTests() {
         expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,
                     "foobar 接线: 按了还停着(列表是空的)就算没放起来,退回打开它")
         let openFile = sourceText("LyrimuseCore/Local/PlayerOpenFile.swift")
+        expectEqual(sourceHas(openFile, "out.republishDueBy = snapshot.republishDueBy"), true,
+                    "foobar 接线: 换成标签那份要带上补查时刻,不然曲尾那一查排不上")
+        expectEqual(sourceHas(client, "elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,"), true,
+                    "foobar 接线: 解码那一拍位置换成取余后的")
         expectEqual(sourceHas(openFile, "acceptsBaseName: bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"), true,
                     "foobar 接线: 认当前文件时没写标签的按不带扩展名的文件名拆")
     }

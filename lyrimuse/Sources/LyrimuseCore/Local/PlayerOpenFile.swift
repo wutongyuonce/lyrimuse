@@ -86,6 +86,7 @@ public enum PlayerOpenFile {
         if !file.artist.isEmpty { out = out.withArtist(file.artist) }
         if !file.album.isEmpty { out = out.withAlbum(file.album) }
         if let duration = file.duration { out = out.withDuration(duration) }
+        out.republishDueBy = snapshot.republishDueBy
         return out
     }
 

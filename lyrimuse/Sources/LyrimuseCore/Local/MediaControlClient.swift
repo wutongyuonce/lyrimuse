@@ -3328,6 +3328,31 @@ public enum MediaControlClient {
         return true
     }
 
+    /// foobar2000 单曲循环(或列表只有一首时的列表循环)绕回开头,只有第一圈重发开播锚点,之后不再发,按旧锚点外推一直越过曲长,
+    /// 屏上停在曲尾。它的循环是无缝的(实测每圈正好一个曲长):在放、实时位置越过曲长 `foobarLoopSlackSecs` 以上时按曲长取余。
+    /// 不循环时它会换歌或撤会话,到不了这里;第一圈它自己重发的锚点晚 0.07~0.13 秒,余量留在那之后。只对 foobar2000,
+    /// 见 02 章决策 209。纯函数,selftest 覆盖。
+    public nonisolated static func foobarLoopPosition(bundleID: String?, playing: Bool?, position: Double?,
+                                                      duration: Double?) -> Double? {
+        guard bundleID == PlaybackPlayer.foobar2000.bundleIdentifier, playing == true, let position, let duration,
+              duration > 1, position > duration + foobarLoopSlackSecs else { return nil }
+        return position.truncatingRemainder(dividingBy: duration)
+    }
+
+    /// 见 `foobarLoopPosition`。
+    public static let foobarLoopSlackSecs: Double = 0.15
+
+    /// foobar2000 在放、离曲尾不到 3 秒时,刚过绕回点(曲长加 `foobarLoopSlackSecs`)那一刻补查一次:不然绕回之后要等下一拍
+    /// 轮询才按曲长取余,屏上在曲尾停最多一拍。不循环时这一查看到的是下一首,也无害。纯函数,selftest 覆盖。
+    public nonisolated static func foobarLoopCheckAt(bundleID: String?, playing: Bool?, position: Double?, duration: Double?,
+                                                     now: Date) -> Date? {
+        guard bundleID == PlaybackPlayer.foobar2000.bundleIdentifier, playing == true, let position, let duration,
+              duration > 1 else { return nil }
+        let remaining = duration + foobarLoopSlackSecs - position
+        guard remaining > 0, remaining <= 3 else { return nil }
+        return now.addingTimeInterval(remaining)
+    }
+
     /// foobar2000 拿到这一首的封面时把整份会话重设一遍,开播锚点跟着重报:位置是 0 或零点几秒,时刻换成那一刻,
     /// 推出来的起播点比第一份晚约半秒,第一份才对得上出声。位置为 0 的那种由 `republishesZeroAnchor` 那条认,
     /// 这里认不为 0 的:上一份是开播锚点(0 秒),这一份位置不到 `foobarRepublishMaxElapsed`、推出来的起播点晚了
@@ -3583,13 +3608,14 @@ public enum MediaControlClient {
             ? PinePlayhead.reading(track: trackKey, playing: playing == true, anchorElapsed: raw.elapsedTime,
                                    anchorAt: timestampDate, duration: raw.duration, pid: raw.processIdentifier, now: sampledAt)
             : nil
+        let foobarLoop = Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: elapsed, duration: raw.duration)
         let held = republish.hold != nil || pine?.waiting == true
         var snapshot = MediaControlSnapshot(
             title: raw.title,
             artist: raw.artist,
             album: raw.album,
             duration: raw.duration,
-            elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? elapsed,
+            elapsedTime: amazonPosition ?? radioPosition ?? pine?.position ?? foobarLoop ?? elapsed,
             playing: held ? false : playing,
             playbackRate: held ? 0 : raw.playbackRate,
             // 复用这个字段原本的语义("这是当前选定播放器的一份有效快照",见
@@ -3600,15 +3626,19 @@ public enum MediaControlClient {
             bundleIdentifier: bundleID,
             // 电台把锚点也换成自己那块表:留着原始值会让下游"锚点是不是开播那个"的判定
             // (anchorElapsedTime == 0)按整档节目的钟去解读,自相矛盾。
-            anchorElapsedTime: amazonPosition ?? radioPosition ?? raw.elapsedTime,
+            anchorElapsedTime: amazonPosition ?? radioPosition ?? foobarLoop ?? raw.elapsedTime,
             isRadio: isRadio ? true : nil
         )
         // 读到之后主线程可能要等一两百毫秒才处理(换歌那一刻加载封面 / 歌词,实测 0.21s),位置得按读到的时刻
         // 补到处理那一刻(见 MediaControlSnapshot.capturedAt)。只对实测过的播放器开(02 章决策 41)。
-        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil { snapshot.capturedAt = sampledAt }
+        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil || foobarLoop != nil {
+            snapshot.capturedAt = sampledAt
+        }
         if held { snapshot.isWaitingToPlay = true }
         if pine?.precise == true { snapshot.positionIsPrecise = true }
         snapshot.republishDueBy = republish.dueBy ?? pine?.dueBy
+            ?? Self.foobarLoopCheckAt(bundleID: bundleID, playing: playing, position: foobarLoop ?? elapsed,
+                                      duration: raw.duration, now: sampledAt)
         snapshot.processIdentifier = raw.processIdentifier
         return (snapshot, bundleID)
     }
