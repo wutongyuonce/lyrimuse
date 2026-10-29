@@ -1499,15 +1499,17 @@ func runCreditLineTests() {
         let E = LyricsSyncEngine.self
         // 段落标记:整行一对括号,里面是段落名 + 可选编号,冒号后可以跟演唱者
         for line in ["[Verse 1]", "[Chorus]", "[Chorus:]", "[Pre-Chorus]", "（Bridge）", "（chorus）", "(Verse 1)",
-                     "[Intro]", "[Outro]", "[Verse 1: Conway the Machine]"] {
+                     "[Intro]", "[Outro]", "[Verse 1: Conway the Machine]", "(Speak)", "(Lyrics)", "[speak]"] {
             expectEqual(E.matchesSectionMarkerLine(line), true, "段落标记: \(line)")
         }
         for line in ["(Drop out them horns)", "(Chorus girls in a line)", "[Verse 1] I walked alone", "Verse 1",
-                     "(Bridge over troubled water)", "[Chorus x2]", "[]"] {
+                     "(Bridge over troubled water)", "[Chorus x2]", "[]", "(Music)", "(Talk)", "(Speak to me)"] {
             expectEqual(E.matchesSectionMarkerLine(line), false, "段落标记: 括号里不只是段落名的不认: \(line)")
         }
         expectEqual(E.creditLineDropDecisions(["[Verse 1]", "Miss you so", "[Chorus]", "Oh I miss you so"]),
                     [true, false, true, false], "段落标记: 在哪一行都删,唱的行不动")
+        expectEqual(E.creditLineDropDecisions(["(Speak)", "I wake at 22:22", "(Lyrics)", "Time stays"]),
+                    [true, false, true, false], "段落标记: 念白段、唱词段的标记也删")
 
         // 结束标记:只从最后一行往上认
         for line in ["END", "End", "end", "The end", "The end~", "——END——", "-----end-----", "~~End~~", "（end）",

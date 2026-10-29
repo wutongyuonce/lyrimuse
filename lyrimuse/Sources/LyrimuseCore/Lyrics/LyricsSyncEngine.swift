@@ -1081,9 +1081,9 @@ public final class LyricsSyncEngine {
         return sawNonWhitespace
     }
 
-    /// 段落标记:整行被一对括号包住,括号里是段落名(`LyricDuet.sectionWords`)加可选编号,冒号后面可以跟演唱者
-    /// (「[Verse 1]」「(Chorus)」「[Pre-Chorus]」「[Verse 1: 演唱者]」)。不是唱的内容,在哪一行都删。
-    /// 括号里还有别的词的不认:那是唱出来的括号句。见 08 章决策 52。
+    /// 段落标记:整行被一对括号包住,括号里是段落名(`LyricDuet.sectionWords` 或 `bracketOnlySectionWords`)加可选编号,
+    /// 冒号后面可以跟演唱者(「[Verse 1]」「(Chorus)」「[Pre-Chorus]」「[Verse 1: 演唱者]」「(Speak)」)。不是唱的内容,
+    /// 在哪一行都删。括号里还有别的词的不认:那是唱出来的括号句。见 08 章决策 52、64。
     public static func matchesSectionMarkerLine(_ text: String) -> Bool {
         let t = text.trimmingCharacters(in: .whitespaces)
         let pairs: [Character: Character] = ["[": "]", "(": ")", "（": "）", "【": "】"]
@@ -1091,8 +1091,13 @@ public final class LyricsSyncEngine {
         let inner = t.dropFirst().dropLast()
         guard !inner.contains(where: { pairs.keys.contains($0) || pairs.values.contains($0) }) else { return false }
         let name = inner.split(whereSeparator: { $0 == ":" || $0 == "：" }).first.map(String.init) ?? ""
-        return LyricDuet.sectionWords.contains(name.lowercased().filter { $0.isLetter })
+        let key = name.lowercased().filter { $0.isLetter }
+        return LyricDuet.sectionWords.contains(key) || bracketOnlySectionWords.contains(key)
     }
+
+    /// 只在整行括号里才算段落名的词。不放进 `LyricDuet.sectionWords`:那张表也用来判人名标签,这两个词会出现在艺名里。
+    /// 别收「(Music)」「(Talk)」这类:它们常是跟着上一句唱的回声。
+    private static let bracketOnlySectionWords: Set<String> = ["speak", "lyrics"]
 
     /// 结束标记:整行去掉首尾的标点、符号、空白之后只剩「end」或「the end」(「END」「The end~」「——END——」「（end）」)。
     /// strippingCreditLines 只从最后一行往上认,歌词中间唱的「The end」不动。见 08 章决策 52。
