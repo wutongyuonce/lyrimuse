@@ -1278,8 +1278,8 @@ func runNotchTests() {
                     "音符色: 纯灰封面没有鲜艳色,画白")
         expectEqual(ArtworkVividColor.color(rgba: vividPixels { $0 < vividCount / 100 ? (220, 20, 30) : (40, 40, 40) }) == nil,
                     true, "音符色: 鲜艳的像素不到 2% 不算")
-        // 进度线那档(`Tone.deep`):红占两成的灰封面取到的是不偏白的红,对比只留 2:1(红只占一成时整张算灰,见下面)。
-        let redOnGrayFifth = vividPixels { $0 < vividCount / 5 ? (200, 30, 40) : (120, 118, 115) }
+        // 进度线那档(`Tone.deep`):红占三成五的灰封面取到的是不偏白的红,对比只留 2:1(没颜色的占到七成时整张算灰,见下面)。
+        let redOnGrayFifth = vividPixels { $0 < vividCount * 35 / 100 ? (200, 30, 40) : (120, 118, 115) }
         if let deep = ArtworkVividColor.color(rgba: redOnGrayFifth, tone: .deep),
            let note = ArtworkVividColor.color(rgba: redOnGrayFifth) {
             let maxC = max(deep.r, deep.g, deep.b), minC = min(deep.r, deep.g, deep.b)
@@ -1289,7 +1289,7 @@ func runNotchTests() {
             expectEqual(false, true, "进度线色: 灰封面上一块红,应该取得到")
         }
         // 浅灰底红字:卡片对亮封面压得更深(`NotchBackdropTone.overlayOpacity`),底色按它估,进度线取到的是红、不被提成粉。
-        let redOnWhite = vividPixels { $0 < vividCount * 20 / 100 ? (200, 30, 40) : (200, 200, 200) }
+        let redOnWhite = vividPixels { $0 < vividCount * 35 / 100 ? (200, 30, 40) : (200, 200, 200) }
         if let deep = ArtworkVividColor.color(rgba: redOnWhite, tone: .deep) {
             expectEqual(deep.r > 0.8 && deep.g < 0.2 && deep.b < 0.2, true,
                         "进度线色: 浅灰底红字的封面取到红,不是粉(底色按卡片实际压暗估)")
@@ -1307,8 +1307,8 @@ func runNotchTests() {
         } else {
             expectEqual(false, true, "进度线色: 蓝紫混洋红的封面应该取得到")
         }
-        // 封面大部分没有颜色(染青的黑白照上一小块橙、灰底上一成红):进度线取整张的灰,不挑点缀色;彩色占到一成半以上的
-        // (黑底大块红字)仍取红;深藏青大片配一块肤色仍取蓝。见 05 章决策 115。
+        // 封面七成以上没有颜色(染青的黑白照上一小块橙、灰底上一成红、黑底两成红字、黑白底上零碎的橙和紫):进度线取整张
+        // 带一点色调的灰,不挑点缀色;彩色占到三成五(黑底大块红字)仍取红;深藏青大片配一块肤色仍取蓝。见 05 章决策 115、119。
         let tintedGrayWithOrange = vividPixels { i in
             i < vividCount * 3 / 100 ? (204, 128, 51) : i < vividCount * 30 / 100 ? (38, 62, 62) : (150, 150, 150)
         }
@@ -1323,11 +1323,29 @@ func runNotchTests() {
         } else {
             expectEqual(false, true, "进度线色: 灰底上一成红也给一种灰")
         }
-        let redTextOnBlack = vividPixels { $0 < vividCount * 20 / 100 ? (210, 30, 40) : (18, 18, 20) }
+        let smallRedOnBlack = vividPixels { $0 < vividCount * 20 / 100 ? (210, 30, 40) : (18, 18, 20) }
+        if let deep = ArtworkVividColor.color(rgba: smallRedOnBlack, tone: .deep) {
+            let chroma = max(deep.r, deep.g, deep.b) - min(deep.r, deep.g, deep.b)
+            expectEqual(deep.r > deep.g && deep.r > deep.b && chroma < 0.25, true, "进度线色: 黑底上只占两成的红字,线是偏红的灰")
+        } else {
+            expectEqual(false, true, "进度线色: 黑底两成红字也给一种灰")
+        }
+        let redTextOnBlack = vividPixels { $0 < vividCount * 35 / 100 ? (210, 30, 40) : (18, 18, 20) }
         if let deep = ArtworkVividColor.color(rgba: redTextOnBlack, tone: .deep) {
-            expectEqual(deep.r > deep.g * 2 && deep.r > deep.b * 2, true, "进度线色: 黑底上占两成的红字,仍取红")
+            expectEqual(deep.r > deep.g * 2 && deep.r > deep.b * 2, true, "进度线色: 黑底上占三成五的红字,仍取红")
         } else {
             expectEqual(false, true, "进度线色: 黑底大块红字应该取得到")
+        }
+        // 白边、暗底占七成多,零碎的橙(花、烟雾)和暗紫各占一成上下:按饱和度橙更重,但它只是点缀,线是灰的。
+        let scatteredOrangeAndViolet = vividPixels { i in
+            i < vividCount * 14 / 100 ? (220, 110, 40) : i < vividCount * 25 / 100 ? (90, 60, 150)
+                : i < vividCount * 55 / 100 ? (235, 235, 235) : (20, 18, 24)
+        }
+        if let deep = ArtworkVividColor.color(rgba: scatteredOrangeAndViolet, tone: .deep) {
+            expectEqual(max(deep.r, deep.g, deep.b) - min(deep.r, deep.g, deep.b) < 0.15, true,
+                        "进度线色: 黑白底上零碎的橙和紫,线是灰的,不是橙")
+        } else {
+            expectEqual(false, true, "进度线色: 黑白底上零碎的橙和紫也给一种灰")
         }
         let navyWithSkin = vividPixels { i in
             i < vividCount * 15 / 100 ? (220, 160, 120) : i < vividCount * 50 / 100 ? (25, 35, 75) : (20, 20, 22)

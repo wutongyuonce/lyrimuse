@@ -31,7 +31,8 @@ public enum ArtworkVividColor {
         public var lightness: Double
         public var minContrast: Double
         /// 没有颜色的像素(`neutralChroma`)占到这么多时,取整张的平均色(饱和度最多 `neutralMaxSaturation`、亮度 `lightness`),
-        /// 不挑点缀色:黑白、灰调、暗底配一小块彩色的封面,线是灰的。nil = 不做这一步。见 05 章决策 115。
+        /// 不挑点缀色:黑白、灰调、暗底或白底配一小块彩色、人像照里的肤色,线是带一点原色调的灰。nil = 不做这一步。
+        /// 见 05 章决策 115、119。
         public var neutralShare: Double? = nil
 
         /// 音符色:封面里最鲜艳的那种色相(相邻三格、按饱和度 × 亮度),深底上读得清的亮色(饱和度 0.6~0.92、
@@ -42,7 +43,7 @@ public enum ArtworkVividColor {
         /// 不是最亮的那块洋红。饱和度 0.6~0.75、亮度在纯色那一档(0.5)。对比只留 2:1:提亮是往白里混,3:1 在中灰的
         /// 封面底上就会把红提成粉色;2:1 只在真快看不见时(深蓝在黑底上)提一点。
         public static let deep = Tone(hueSpread: 3, minBrightness: 0.15, weighsBrightness: false,
-                                      saturationRange: 0.6...0.75, lightness: 0.5, minContrast: 2, neutralShare: 0.85)
+                                      saturationRange: 0.6...0.75, lightness: 0.5, minContrast: 2, neutralShare: 0.7)
     }
 
     /// 居中裁方、高质量缩到 `side × side`(`ArtworkThumbnail.squareBitmap`)再取色。建不出来或没有够鲜艳的颜色返回 nil。
