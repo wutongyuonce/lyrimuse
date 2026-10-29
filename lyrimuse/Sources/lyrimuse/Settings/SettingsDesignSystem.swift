@@ -723,11 +723,22 @@ private struct SettingsBoxedGroupsKey: EnvironmentKey {
     static let defaultValue = false
 }
 
+private struct SettingsOutlinedTilesKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
 extension EnvironmentValues {
     /// 当前是不是在 `SettingsPopoverShell` 里。行的纵向边距和 `SettingsRowGroup` 的画法按它分两种。
     var settingsInPopover: Bool {
         get { self[SettingsInPopoverKey.self] }
         set { self[SettingsInPopoverKey.self] = newValue }
+    }
+
+    /// 小块(`SettingsToggleTile` / `SettingsControlCell`)画成极淡的底加一圈细描边,不用默认的灰底。直接铺在设置页卡片上、
+    /// 一次排好几块时用(推送提醒的听歌报告卡):一块块灰底压在白色玻璃卡上发暗发闷。见 15 章决策 93。
+    var settingsOutlinedTiles: Bool {
+        get { self[SettingsOutlinedTilesKey.self] }
+        set { self[SettingsOutlinedTilesKey.self] = newValue }
     }
 
     /// 卡片里也要把 `SettingsRowGroup` 画成圆角分组框(「全部设置」抽屉的各组卡,见 `SettingsGroupCard`)。浮层里恒为框,不用设它。
@@ -823,6 +834,22 @@ struct SettingsTileGrid<Content: View>: View {
     }
 }
 
+/// 小块的圆角底:默认一层灰底;`settingsOutlinedTiles` 时极淡的底加一圈细描边。
+private struct SettingsTileBackground: ViewModifier {
+    @Environment(\.settingsOutlinedTiles) private var outlined
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+        if outlined {
+            content
+                .background(shape.fill(Color.primary.opacity(0.015)))
+                .overlay(shape.strokeBorder(Color.primary.opacity(0.08), lineWidth: 1))
+        } else {
+            content.background(shape.fill(Color.primary.opacity(0.05)))
+        }
+    }
+}
+
 /// 一个控件小块:图标 + 名字(+ ⓘ),右边是控件(下拉、取色块之类),圆角淡底。放进 `SettingsTileGrid`。
 struct SettingsControlCell<Control: View>: View {
     var icon: String?
@@ -848,7 +875,7 @@ struct SettingsControlCell<Control: View>: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.primary.opacity(0.05)))
+        .modifier(SettingsTileBackground())
         .settingsSearchHighlight(title: title)
     }
 }
@@ -897,7 +924,7 @@ struct SettingsToggleTile<Accessory: View>: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.primary.opacity(0.05)))
+        .modifier(SettingsTileBackground())
         .settingsSearchHighlight(title: title)
     }
 }

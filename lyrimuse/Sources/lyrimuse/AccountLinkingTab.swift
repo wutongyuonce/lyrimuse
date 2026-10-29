@@ -2119,6 +2119,7 @@ struct AccountLinkingTab: View {
                 .padding(.top, 10)
                 .padding(.bottom, 10)
             }
+            .environment(\.settingsOutlinedTiles, true)
 
             NotificationLogCard(config: config)
         }

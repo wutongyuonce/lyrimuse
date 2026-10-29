@@ -913,7 +913,7 @@ struct NotificationChannelEditor: View {
 // MARK: - 推送记录
 
 /// 「推送记录」卡:最近几次推送,没成的写原因、可以重发;点一行展开看推出去的完整内容和渠道、耗时、平台返回。
-/// 每条收起时只占一行。平时列最近 4 条;点「全部」后列出引擎留着的全部记录(最多 100 条),高度封顶、在卡里滚,不把页面越撑越长。
+/// 每条收起时只占一行。平时列最近 4 条;点「展开」后列出引擎留着的全部记录(最多 100 条),高度封顶、在卡里滚,不把页面越撑越长。
 /// 没有记录时整张卡不出现。
 struct NotificationLogCard: View {
     @ObservedObject var config: ConfigStore
@@ -928,7 +928,7 @@ struct NotificationLogCard: View {
     @State private var revealing: String?
 
     private static let collapsedCount = 4
-    /// 「全部」时列表的最高高度,约 10 条收起的记录。
+    /// 展开时列表的最高高度,约 10 条收起的记录。
     private static let expandedMaxHeight: CGFloat = 320
 
     var body: some View {
@@ -936,7 +936,7 @@ struct NotificationLogCard: View {
             SettingsCard(cornerRadius: 18) {
                 SettingsCardHeader(title: L10n.t("推送记录")) {
                     if log.entries.count > Self.collapsedCount {
-                        Button(showAll ? L10n.t("收起") : String(format: L10n.t("全部 %d 条"), log.entries.count)) {
+                        Button(showAll ? L10n.t("收起") : L10n.t("展开")) {
                             showAll.toggle()
                         }
                         .controlSize(.small)

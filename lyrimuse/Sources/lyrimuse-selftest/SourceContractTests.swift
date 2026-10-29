@@ -4027,6 +4027,9 @@ func runSourceContractSettingsTests() {
                         && sourceHas(section, ".settingsGlassButtons(inSheet: true)")
                         && sourceHas(editorSource, ".settingsGlassButtons(inSheet: true)"), true,
                     "推送提醒页: 四档小块、四档共用一组;弹窗里不用玻璃分段,卡片和按钮画 sheet 替身")
+        expectEqual(sourceHas(tab, ".environment(\\.settingsOutlinedTiles, true)")
+                        && sourceHas(sourceBody("struct NotificationLogCard: View {", in: section), "Button(showAll ? L10n.t(\"收起\") : L10n.t(\"展开\")) {"), true,
+                    "推送提醒页: 听歌报告卡的小块画淡底加描边,不用默认灰底;推送记录的按钮只写展开 / 收起,不报条数(15 章决策 93)")
         expectEqual(sourceHas(store, "if !notificationRoutes.isEmpty { fields[\"notification_routes\"] = notificationRoutes }")
                         && sourceHas(store, "knownKeys: Set(fields.keys).union([\"notification_routes\"])")
                         && sourceHas(store, "notificationRoutes = NotificationRouting.routes(fromConfig: raw)")
