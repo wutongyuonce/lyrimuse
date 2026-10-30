@@ -29,6 +29,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 |---|---|
 | [Apple Music's own lyrics](#feature-apple-music-lyrics) | Settings › Lyrics › Source › Lyrics Sources |
 | [Use the lyrics your player already saved](#feature-player-local-lyrics) | Settings › Player › Permissions & Services › Full Disk Access |
+| [Prefer lyrics from the song file](#feature-prefer-local-file-lyrics) | Settings › Lyrics › Source › Prefer Lyrics from the Song File |
 | [Lock hand-picked lyrics](#feature-lock-hand-picked) | Settings › Lyrics › Source › Lock Hand-Picked Lyrics |
 | [Translate when none is provided](#feature-machine-translation) | Settings › Lyrics › Language › Translate When None Is Provided |
 | [Split long lines, join short ones](#feature-split-join-lines) | Settings › Lyrics › Timing › Split Long Lines |
@@ -126,6 +127,15 @@ Lyrics that Apple Music, Spotify, Kugou, KKBOX, Amazon Music and LX Music alread
 
 - Off by default
 - Settings: Player › Permissions & Services › Full Disk Access
+
+<a id="feature-prefer-local-file-lyrics"></a>
+
+### Prefer lyrics from the song file
+
+When the song playing is a file on this Mac, its same-name .lrc or embedded lyrics are used first instead of being compared with lyrics found online. It works with any player that plays local files. If those lyrics don't fit this version (for example the length doesn't match), lyrics are found online as usual.
+
+- Off by default
+- Settings: Lyrics › Source › Prefer Lyrics from the Song File
 
 <a id="feature-lock-hand-picked"></a>
 
@@ -857,12 +867,13 @@ Bundles logs, crash reports and app state into one file with credentials and you
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 296 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 297 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
 - **Lyrics Sources**
 - **Matching Algorithm**
+- **Prefer Lyrics from the Song File**: When playing a local file, use its same-name .lrc or embedded lyrics first
 - **Re-Pick After Algorithm Updates**: Re-evaluated in the background after updates; may switch to a better version
 - **Share Lyrics Across Entries of a Song**: One copy for the same recording across players and album versions; edits sync too
 - **Lock Hand-Picked Lyrics**: Auto-matching never replaces lyrics you picked

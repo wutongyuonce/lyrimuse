@@ -1017,6 +1017,8 @@ private struct LyricsSettingsTab: View {
             // 没开的收在下面,不再另起一份顺序列表把同一批来源画第二遍。
             matchingModeRow
             CardDivider()
+            preferLocalFileRow
+            CardDivider()
             if features.lyricsSourceMode == .priority {
                 let visible = orderedEnabledSources
                 ForEach(Array(visible.enumerated()), id: \.element) { index, source in
@@ -1289,6 +1291,21 @@ private struct LyricsSettingsTab: View {
                 label: \.displayName,
                 compact: true
             )
+        }
+    }
+
+    /// 「优先用歌曲文件自带的歌词」:放本机文件时先用同名 .lrc 和文件里内嵌的歌词,两种匹配算法通用。按「这首是不是本机文件」
+    /// 判,不分播放器。闸门在引擎 features.go PreferLocalFileLyrics,见 09 章决策 346。
+    private var preferLocalFileRow: some View {
+        SettingsRow(
+            icon: "doc.text",
+            title: L10n.t("优先用歌曲文件自带的歌词"),
+            subtitle: L10n.t("播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词")
+        ) {
+            Toggle("", isOn: Binding(
+                get: { features.effectivePreferLocalFileLyrics },
+                set: { features.preferLocalFileLyrics = $0; Task { await features.save() } }
+            ))
         }
     }
 

@@ -14,7 +14,7 @@ func withPriorityOrder(t *testing.T, order ...string) {
 		enabled[s] = true
 	}
 	setFeatures(featureFlags{LyricsSources: enabled, LyricsSourceMode: lyricsModePriority, LyricsSourceOrder: order,
-		LyricsAutoUpgrade: true})
+		LyricsAutoUpgrade: true, PreferLocalFileLyrics: resolvePreferLocalFileLyrics(nil, lyricsModePriority)})
 }
 
 // 顺序优先跳过带扣分项的候选(版本不符、末句超过曲长……夹到 1 分也照样跳),各源都带扣分时退回顺序里第一个能用的;

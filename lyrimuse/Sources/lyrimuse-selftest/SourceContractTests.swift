@@ -4118,7 +4118,7 @@ func runSourceContractSettingsTests() {
                                               "launch_lyrimuse_on_music_open"]
             expectEqual(appOnlyLegacy.subtracting(keys), [], "features 键镜像: 四个遗留键还在 CodingKeys 里(读老文件要用)")
             // 以 _lyrics 结尾、却是两侧都认的开关(不是迁移标记)。
-            let sharedLyricsSwitches: Set<String> = ["song_entity_share_lyrics"]
+            let sharedLyricsSwitches: Set<String> = ["song_entity_share_lyrics", "prefer_local_file_lyrics"]
             let appOnly = keys.filter { appOnlyLegacy.contains($0) || ($0.hasSuffix("_lyrics") && !sharedLyricsSwitches.contains($0)) }
             let tagged = { (key: String) in go.contains("json:\"\(key),omitempty\"") || go.contains("json:\"\(key)\"") }
             let missing = keys.filter { !appOnly.contains($0) && !tagged($0) }

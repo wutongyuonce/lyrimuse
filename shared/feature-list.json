@@ -171,6 +171,27 @@
           ]
         },
         {
+          "id": "prefer-local-file-lyrics",
+          "title": {
+            "zh-Hans": "优先用歌曲文件自带的歌词",
+            "en": "Prefer lyrics from the song file",
+            "zh-Hant": "優先使用歌曲檔案附帶的歌詞"
+          },
+          "desc": {
+            "zh-Hans": "播放本机音乐文件时，先用同名 .lrc 或文件里内嵌的歌词，不再跟网上找到的歌词比较；不分播放器，只要正在放的是本机文件就生效。歌词跟这一版对不上（比如时长不符）时照常从网上找。",
+            "en": "When the song playing is a file on this Mac, its same-name .lrc or embedded lyrics are used first instead of being compared with lyrics found online. It works with any player that plays local files. If those lyrics don't fit this version (for example the length doesn't match), lyrics are found online as usual.",
+            "zh-Hant": "播放本機音樂檔案時，先用同名 .lrc 或檔案內嵌的歌詞，不再跟網路上找到的歌詞比較；不分播放器，只要正在播放的是本機檔案就生效。歌詞跟這一版對不上（例如時長不符）時照常從網路尋找。"
+          },
+          "default": "off",
+          "settings": [
+            [
+              "歌词",
+              "来源",
+              "优先用歌曲文件自带的歌词"
+            ]
+          ]
+        },
+        {
           "id": "lock-hand-picked",
           "title": {
             "zh-Hans": "锁定手选歌词",

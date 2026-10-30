@@ -84,6 +84,10 @@ func earlyLyricsVerdict(scored []scoredLyricCandidateResult, picked *scoredLyric
 	if sourceDurationNearMissApplies(*picked, durationSecs) {
 		return earlyLyricsWait
 	}
+	// 文件自带的那份开搜前就读好了,优先用它时不用等别的源(pickLyricCandidate 只在它干净时挑它)。
+	if features().PreferLocalFileLyrics && picked.Source == localFileLyricsSource {
+		return earlyLyricsTrust
+	}
 	if features().LyricsSourceMode == lyricsModePriority {
 		if priorityPickSettled(scored, picked, answered) {
 			return earlyLyricsInOrder

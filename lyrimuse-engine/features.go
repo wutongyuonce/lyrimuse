@@ -190,6 +190,9 @@ type featureFlagsFile struct {
 	// LyricsSourceOrder：只有 LyricsSourceMode == "priority" 时才生效。缺失时按
 	// lyricsSourceDefaultOrder 兜底。
 	LyricsSourceOrder []string `json:"lyrics_source_order,omitempty"`
+	// PreferLocalFileLyrics:放本机文件时先用文件自带的歌词(同名 .lrc、内嵌歌词),两种匹配算法通用。缺失时跟着匹配算法:
+	// 顺序优先为 true(同名 .lrc 一直排第一),智能算法为 false(按分数比)。见 resolvePreferLocalFileLyrics。
+	PreferLocalFileLyrics *bool `json:"prefer_local_file_lyrics,omitempty"`
 	// LyricsDir：歌词文件夹("歌词文件夹作为权威源"读写的那个文件夹)的自定义位置。
 	// 留空则用默认位置(config.json 同目录下的 lyrics/,main.go 里兜底)。
 	LyricsDir string `json:"lyrics_dir,omitempty"`
@@ -315,9 +318,11 @@ type featureFlags struct {
 	// 直接返回空列表)。LyricsSources 早就被 filterEnabledLyricSources 实际读取着;
 	// LyricsSourceMode/Order 在 -pick 模式下也被读(冠军要按用户选的「匹配算法」算)。
 	// 这条错注释误导过一轮设计评审,别再照它推结论。
-	LyricsSources     map[string]bool
-	LyricsSourceMode  string
-	LyricsSourceOrder []string
+	LyricsSources    map[string]bool
+	LyricsSourceMode string
+	// 见 featureFlagsFile.PreferLocalFileLyrics,已按匹配算法补齐缺省。
+	PreferLocalFileLyrics bool
+	LyricsSourceOrder     []string
 	// LyricsDir 空字符串表示"用默认位置",由 main.go 里设置包级变量 lyricsDir() 时兜底,
 	// 不在这里(loadFeatureFlags)展开成绝对路径——那时候 *cfgPath 还没解析完。
 	LyricsDir string
@@ -462,6 +467,7 @@ func buildFeatureFlags(f featureFlagsFile) featureFlags {
 		DigestTemplate:            resolveDigestTemplate(f.DigestTemplate),
 		LyricsSources:             resolveLyricsSources(f.LyricsSources),
 		LyricsSourceMode:          resolveLyricsSourceMode(f.LyricsSourceMode),
+		PreferLocalFileLyrics:     resolvePreferLocalFileLyrics(f.PreferLocalFileLyrics, f.LyricsSourceMode),
 		LyricsSourceOrder:         resolveLyricsSourceOrder(f.LyricsSourceOrder),
 		LyricsDir:                 f.LyricsDir,
 		LyricsWordFormats:         resolveLyricsWordFormats(f.LyricsWordFormats),
@@ -681,6 +687,15 @@ func isPlayerLocalLyricSource(source string) bool {
 	return source == kkboxLocalLyricsSource || source == spotifyLocalLyricsSource || source == amazonLocalLyricsSource ||
 		source == lxMusicLocalLyricsSource ||
 		source == localFileLyricsSource
+}
+
+// resolvePreferLocalFileLyrics:写过就照写的;没写过时顺序优先为 true、智能算法为 false,两种模式里没碰过开关的人行为不变。
+// App 侧 FeatureSettingsStore.effectivePreferLocalFileLyrics 同一条规则。见 09 章决策 346。
+func resolvePreferLocalFileLyrics(p *bool, mode string) bool {
+	if p != nil {
+		return *p
+	}
+	return resolveLyricsSourceMode(mode) == lyricsModePriority
 }
 
 func resolveLyricsSourceMode(mode string) string {

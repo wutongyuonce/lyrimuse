@@ -458,6 +458,7 @@
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "A WeCom group bot. Reports are posted to the group chat; paste its URL to use it";
 "优先在本机翻译，无法翻译时再联网翻译" = "Translates on this Mac first, and online when that isn’t possible";
+"优先用歌曲文件自带的歌词" = "Prefer Lyrics from the Song File";
 "伴奏版，不采用人声歌词" = "Instrumental version; vocal lyrics not used";
 "位于菜单栏" = "In the menu bar";
 "位置" = "Position";
@@ -1397,6 +1398,7 @@
 "播放控制" = "Controls";
 "播放控制位置" = "Controls Position";
 "播放时显示动画，暂停时静止" = "Animates while music plays and stays still when paused";
+"播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词" = "When playing a local file, use its same-name .lrc or embedded lyrics first";
 "播放来源" = "Played In";
 "播放次数" = "Plays";
 "播放歌曲后，歌词将自动显示" = "Play a song and lyrics will appear here";

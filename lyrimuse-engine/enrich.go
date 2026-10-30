@@ -1833,6 +1833,11 @@ func lyricsUpgradeApplies(e enrichEntry, scored []scoredLyricCandidateResult, pi
 			return applies
 		}
 	}
+	if picked != nil && !e.Lyrics.IsZero() && features().LyricsSourceMode != lyricsModePriority {
+		if applies, decided := preferLocalFileUpgradeVerdict(e, picked); decided {
+			return applies
+		}
+	}
 	if picked == nil || !comparable {
 		return false
 	}
@@ -1858,6 +1863,22 @@ func priorityUpgradeVerdict(e enrichEntry, scored []scoredLyricCandidateResult, 
 		return false, true
 	}
 	return !keepsShownLyricsOver(e, picked), true
+}
+
+// preferLocalFileUpgradeVerdict:智能算法下开着「优先用歌曲文件自带的歌词」时换不换(decided 为 false 时照原来的规则判):
+// 这一轮挑中的是文件自带的、现存的不是:换(屏上看不出差别的不换);现存的是文件自带的、这一轮挑中的不是(这一轮没读到文件,
+// 比如换了个不交出文件的播放器放):不换。升级重试和重评两处都调它。
+func preferLocalFileUpgradeVerdict(e enrichEntry, picked *scoredLyricCandidateResult) (applies, decided bool) {
+	if !features().PreferLocalFileLyrics {
+		return false, false
+	}
+	switch {
+	case picked.Source == localFileLyricsSource && e.LyricsSource != localFileLyricsSource:
+		return !keepsShownLyricsOver(e, picked), true
+	case e.LyricsSource == localFileLyricsSource && picked.Source != localFileLyricsSource:
+		return false, true
+	}
+	return false, false
 }
 
 // durationMismatch:这条歌词当初按 resolved 秒校验,现在真播的版本是 actual 秒 ——
@@ -2981,6 +3002,11 @@ func rescoreKeeps(e enrichEntry, scored []scoredLyricCandidateResult, picked *sc
 func rescoreKeepsLyrics(e enrichEntry, scored []scoredLyricCandidateResult, picked *scoredLyricCandidateResult, manual, contradicted bool) bool {
 	if picked == nil || contradicted || lyricsAreCreditsOnly(e.Lyrics.String()) {
 		return false
+	}
+	if features().LyricsSourceMode != lyricsModePriority {
+		if applies, decided := preferLocalFileUpgradeVerdict(e, picked); decided {
+			return !applies
+		}
 	}
 	return rescoreKeeps(e, scored, picked) || (!manual && keepsShownLyricsOver(e, picked))
 }
@@ -4147,6 +4173,12 @@ func pickLyricCandidate(scored []scoredLyricCandidateResult) *scoredLyricCandida
 		}
 		return priorityPick(scored, usable)
 	}
+	// 开着「优先用歌曲文件自带的歌词」:文件自带的那份干净(没带说明是别的版本、时间轴不对的扣分项)、能用就直接用它。
+	if features().PreferLocalFileLyrics {
+		if c := preferredLocalFileCandidate(scored, usable); c != nil {
+			return c
+		}
+	}
 	var picked *scoredLyricCandidateResult
 	bestScore := -1
 	for i := range scored {
@@ -4162,6 +4194,17 @@ func pickLyricCandidate(scored []scoredLyricCandidateResult) *scoredLyricCandida
 	return picked
 }
 
+// preferredLocalFileCandidate:智能算法下「优先用歌曲文件自带的歌词」挑的那一条 —— 文件自带的(localfile)、能用、不带
+// earlyLyricsPenaltyTerms 里的扣分项;只有纯文本的打分是负的,本来就不算能用。没有为 nil。
+func preferredLocalFileCandidate(scored []scoredLyricCandidateResult, usable func(scoredLyricCandidateResult) bool) *scoredLyricCandidateResult {
+	for i := range scored {
+		if scored[i].Source == localFileLyricsSource && usable(scored[i]) && priorityCandidateClean(scored[i]) {
+			return &scored[i]
+		}
+	}
+	return nil
+}
+
 // priorityPick:「顺序优先」按 priorityTiers 的先后,取第一个有 ok 候选的名次里分数最高的那条(scored 已按分数从高到低排)。
 func priorityPick(scored []scoredLyricCandidateResult, ok func(scoredLyricCandidateResult) bool) *scoredLyricCandidateResult {
 	for _, tier := range priorityTiers() {
@@ -4174,24 +4217,38 @@ func priorityPick(scored []scoredLyricCandidateResult, ok func(scoredLyricCandid
 	return nil
 }
 
-// priorityTiers:「顺序优先」实际的取用先后,每一项是占同一个名次的几个来源。reAMP 同名 .lrc 排最前(用户自己放在歌曲旁边的
-// 文件);用户顺序里的歌词源各占一个名次,关掉的跳过;「播放器自带歌词」那一项(lyricsPriorityPlayerLocal)展开成
-// priorityPlayerCacheSources,顺序表里没有那一项时(没经过 resolveLyricsSourceOrder 的数据)排在最后。见 09 章决策 297。
+// priorityTiers:「顺序优先」实际的取用先后,每一项是占同一个名次的几个来源。开着「优先用歌曲文件自带的歌词」时文件自带的
+// 歌词(localfile)排最前,关着时并进「播放器自带歌词」那一项;用户顺序里的歌词源各占一个名次,关掉的跳过;「播放器自带歌词」
+// (lyricsPriorityPlayerLocal)展开成 priorityPlayerLocalTier,顺序表里没有那一项时(没经过 resolveLyricsSourceOrder 的数据)
+// 排在最后。见 09 章决策 297、346。
 func priorityTiers() [][]string {
-	tiers := [][]string{{localFileLyricsSource}}
+	var tiers [][]string
+	prefer := features().PreferLocalFileLyrics
+	if prefer {
+		tiers = append(tiers, []string{localFileLyricsSource})
+	}
+	playerLocal := priorityPlayerLocalTier(prefer)
 	placed := false
 	for _, entry := range features().LyricsSourceOrder {
 		switch {
 		case entry == lyricsPriorityPlayerLocal:
-			tiers, placed = append(tiers, priorityPlayerCacheSources), true
+			tiers, placed = append(tiers, playerLocal), true
 		case lyricSourceEnabled(entry):
 			tiers = append(tiers, []string{entry})
 		}
 	}
 	if !placed {
-		tiers = append(tiers, priorityPlayerCacheSources)
+		tiers = append(tiers, playerLocal)
 	}
 	return tiers
+}
+
+// priorityPlayerLocalTier:「播放器自带歌词」那一个名次包括哪些来源;文件自带的歌词不优先时也在这里。
+func priorityPlayerLocalTier(preferLocalFile bool) []string {
+	if preferLocalFile {
+		return priorityPlayerCacheSources
+	}
+	return append(slices.Clone(priorityPlayerCacheSources), localFileLyricsSource)
 }
 
 // priorityPlayerCacheSources:「播放器自带歌词」那一项包括的播放器本地歌词,同一个名次里按分数挑。

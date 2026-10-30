@@ -343,6 +343,8 @@ public enum SettingsSearchCatalog {
                                       "LyricFind", "酷我音乐", "咪咕音乐", "Deezer", "Apple Music", "汽水音乐",
                                       "测试", "顺序"]),
         lyrics("fetch", "匹配算法", kw: ["智能", "顺序优先", "打分"]),
+        lyrics("fetch", "优先用歌曲文件自带的歌词", sub: "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词",
+               kw: ["本地歌词", "lrc", "内嵌歌词", "本机文件", "同名"]),
         lyrics("fetch", "随匹配算法更新重新选择", sub: "算法更新后在后台重新评估，可能换成更合适的版本",
                kw: ["重打分", "自动升级"]),
         lyrics("fetch", "同曲条目共用歌词", sub: "同一录音在不同播放器和专辑版本下共用一份，手动修改一并同步",

@@ -57521,6 +57521,52 @@
           }
         }
       }
+    },
+    "优先用歌曲文件自带的歌词" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prefer Lyrics from the Song File"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "优先用歌曲文件自带的歌词"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "優先使用歌曲檔案附帶的歌詞"
+          }
+        }
+      }
+    },
+    "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When playing a local file, use its same-name .lrc or embedded lyrics first"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放本機檔案時，先用同名 .lrc 或檔案內嵌的歌詞"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

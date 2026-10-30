@@ -284,6 +284,11 @@ func localFileLyricsWorthRecheck(e enrichEntry, bundleID string, pinned, autoUpg
 	if !playsLocalFiles(bundleID) || !autoUpgrade || pinned || e.ManualLyrics || e.Instrumental || !available {
 		return false
 	}
+	// 开着「优先用歌曲文件自带的歌词」、现存的不是文件自带的:见过也再来一次(开关是后来才打开的),一次进程里每首只来一次
+	// (localFileLyricsRecheckOnce)。
+	if features().PreferLocalFileLyrics && e.LyricsSource != localFileLyricsSource {
+		return e.LyricsRetryCount < lyricsRetryMaxAttempts
+	}
 	if slices.Contains(e.LyricsSourcesSeen, localFileLyricsSource) || slices.Contains(e.LyricsSourcesResponded, localFileLyricsSource) {
 		return false
 	}

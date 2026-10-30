@@ -32,6 +32,12 @@ func runSettingsAuditContracts() {
     expectEqual(sourceHas(features, "players: (players.map(\\.rawValue) + unknownPlayers).sorted(),")
                 && sourceHas(features, "launchLyrimuseOnPlayers: (launchLyrimuseOnPlayers.map(\\.rawValue) + unknownLaunchPlayers).sorted(),"), true,
                 "功能开关: 这个版本不认识的播放器名写回时原样带上")
+    expectEqual(sourceHas(features, "public var effectivePreferLocalFileLyrics: Bool { preferLocalFileLyrics ?? (lyricsSourceMode == .priority) }"),
+                true, "优先用歌曲文件自带的歌词: 没碰过开关时顺序优先为开、智能算法为关(跟引擎 resolvePreferLocalFileLyrics 一致)")
+    let lyricsView = app("SettingsView.swift")
+    expectEqual(sourceHas(sourceBody("private var preferLocalFileRow: some View", in: lyricsView),
+                          "get: { features.effectivePreferLocalFileLyrics },\nset: { features.preferLocalFileLyrics = $0; Task { await features.save() } }"),
+                true, "优先用歌曲文件自带的歌词: 开关读按匹配算法补齐的值,写进文件")
     let settings = app("Settings/AppSettings.swift")
     expectEqual(sourceHas(settings, "if storedObs == nil { defaults.set(obsEnabled, forKey: Keys.obsLyricsEnabled) }"), true,
                 "OBS 开关: 继承网页歌词开关的值当场落盘")
