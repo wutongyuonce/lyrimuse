@@ -142,6 +142,55 @@ func TestSodaUpcomingFallsBackToPreload(t *testing.T) {
 	}
 }
 
+// TestSodaLocalTrackIDFallsBackToPreload:播放队列缓存里没有这首(点播的那条队列只在内存里)时按预载缓存认出曲目 id:
+// 署名里其中一位、去了括号的歌名都认,时长对不上不认,同名两版时专辑对得上的那条优先。
+func TestSodaLocalTrackIDFallsBackToPreload(t *testing.T) {
+	at := uint32(time.Now().Unix() - 60)
+	raw := append(testSodaPreloadRecord("6732381759981225985", "Untitled (How Does It Feel)", []string{"D'Angelo"}, "Voodoo", 430667, at),
+		testSodaPreloadRecord("duet-1", "合唱", []string{"甲", "乙"}, "合辑", 200000, at)...)
+	raw = append(raw, testSodaPreloadRecord("live-2", "同名", []string{"丙"}, "现场", 200000, at+5)...)
+	raw = append(raw, testSodaPreloadRecord("studio-2", "同名", []string{"丙"}, "录音室", 200000, at)...)
+	resetSodaLocalIndex(t, filepath.Join(t.TempDir(), "no-queue-cache"))
+	path := filepath.Join(t.TempDir(), "entries.db")
+	if err := os.WriteFile(path, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	old := sodaPreloadOverride
+	sodaPreloadOverride = path
+	resetPreloadIndex := func() {
+		sodaPreloadIndexMu.Lock()
+		sodaPreloadIndexMod, sodaPreloadIndexSize, sodaPreloadIndexTrack = time.Time{}, 0, nil
+		sodaPreloadIndexMu.Unlock()
+	}
+	resetPreloadIndex()
+	t.Cleanup(func() {
+		sodaPreloadOverride = old
+		resetPreloadIndex()
+	})
+
+	cases := []struct {
+		name, artist, title, album string
+		durationSecs               float64
+		want                       string
+	}{
+		{"整名", "D'Angelo", "Untitled (How Does It Feel)", "Voodoo", 430.667, "6732381759981225985"},
+		{"缓存 key 去了括号", "D'Angelo", "Untitled", "Voodoo", 430.667, "6732381759981225985"},
+		{"时长对不上不认", "D'Angelo", "Untitled", "Voodoo", 250, ""},
+		{"署名里其中一位", "乙", "合唱", "", 200, "duet-1"},
+		{"歌手对不上不认", "丁", "合唱", "", 200, ""},
+		{"歌名对不上不认", "丙", "别的歌", "", 200, ""},
+		{"同名两版:专辑对得上的优先,哪怕缓存建得早", "丙", "同名", "录音室", 200, "studio-2"},
+		{"同名两版没报专辑:取缓存建得最晚的", "丙", "同名", "", 200, "live-2"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := sodaLocalTrackID(c.artist, c.title, c.album, c.durationSecs); got != c.want {
+				t.Fatalf("sodaLocalTrackID(%q,%q,%q) = %q, 期望 %q", c.artist, c.title, c.album, got, c.want)
+			}
+		})
+	}
+}
+
 // testSodaPreviewRecord 拼一条带试听段(preview{start,duration},毫秒)的缓存记录。
 func testSodaPreviewRecord(id, name, artist string, durMs, pvStart, pvDur uint32) []byte {
 	return testSodaAlbumPreviewRecord(id, name, artist, "专辑", durMs, pvStart, pvDur, uint32(time.Now().Unix()))

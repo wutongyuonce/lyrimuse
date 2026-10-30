@@ -26,6 +26,8 @@ public final class EnrichCacheEntry: Decodable, Sendable {
     /// 每一行是谁唱的(引擎 enrichEntry.LyricsSpeakers,Musixmatch 的演唱者标注),绑着正文指纹,见 LyricSpeakerTags。
     /// 不在正文小文件里。
     let lyricsSpeakers: LyricSpeakerTags?
+    /// 按播放器(bundle id)记的它自家平台那份(引擎 enrichEntry.PlayerLyrics),见 PlayerLyricsVersion。不在正文小文件里。
+    let playerLyrics: [String: PlayerLyricsVersion]?
     /// 从别的源借来的假名标注(引擎 enrichEntry.LyricsKana,一行 `[kana:]` 加借到的那些正文行),正文自己不带
     /// `[kana:]` 时读音按它标,见 KanaAnnotation.parse(lrc:donor:)。不在正文小文件里。
     let lyricsKana: String?
@@ -175,6 +177,7 @@ public final class EnrichCacheEntry: Decodable, Sendable {
         case lyricsBG = "lyrics_bg"
         case lyricsSongwriters = "lyrics_songwriters"
         case lyricsSpeakers = "lyrics_speakers"
+        case playerLyrics = "player_lyrics"
         case lyricsKana = "lyrics_kana"
         case lyricsSource = "lyrics_source"
         case coverSource = "cover_source"
@@ -260,6 +263,7 @@ public final class EnrichCacheEntry: Decodable, Sendable {
         lyricsBG = try c.decodeIfPresent(String.self, forKey: .lyricsBG)
         lyricsSongwriters = try c.decodeIfPresent([String].self, forKey: .lyricsSongwriters)
         lyricsSpeakers = try c.decodeIfPresent(LyricSpeakerTags.self, forKey: .lyricsSpeakers)
+        playerLyrics = try? c.decodeIfPresent([String: PlayerLyricsVersion].self, forKey: .playerLyrics)
         lyricsKana = try c.decodeIfPresent(String.self, forKey: .lyricsKana)
         lyricsSource = try c.decodeIfPresent(String.self, forKey: .lyricsSource)
         coverSource = try c.decodeIfPresent(String.self, forKey: .coverSource)
@@ -377,6 +381,8 @@ public struct EnrichCacheLyrics {
     public let songwriters: [String]
     /// 演唱者标注(见 EnrichCacheEntry.lyricsSpeakers),没有时为 nil。
     public let speakers: LyricSpeakerTags?
+    /// 按播放器的那几份(见 EnrichCacheEntry.playerLyrics),挑哪份用 PlayerLyricsVersion.chosen。
+    public let playerVersions: [String: PlayerLyricsVersion]
     /// 借来的假名标注(见 EnrichCacheEntry.lyricsKana),没有时为空串。
     public let kanaDonor: String
     public let instrumental: Bool
@@ -892,6 +898,7 @@ public enum EnrichCacheReader {
             lyricsBG: shown(bg),
             songwriters: entry.lyricsSongwriters ?? [],
             speakers: entry.lyricsSpeakers,
+            playerVersions: instrumental ? [:] : entry.playerLyrics ?? [:],
             kanaDonor: shown(entry.lyricsKana ?? ""),
             instrumental: instrumental,
             resolved: (entry.ts ?? 0) > 0,

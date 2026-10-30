@@ -57579,6 +57579,75 @@
           }
         }
       }
+    },
+    "在%1$@中播放时用%2$@的歌词（晚 %3$@ 秒）" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses %2$@ lyrics when played in %1$@ (%3$@ s later)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在%1$@中播放时用%2$@的歌词（晚 %3$@ 秒）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %1$@ 中播放時使用 %2$@ 的歌詞（晚 %3$@ 秒）"
+          }
+        }
+      }
+    },
+    "在%1$@中播放时用%2$@的歌词（早 %3$@ 秒）" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses %2$@ lyrics when played in %1$@ (%3$@ s earlier)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在%1$@中播放时用%2$@的歌词（早 %3$@ 秒）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %1$@ 中播放時使用 %2$@ 的歌詞（早 %3$@ 秒）"
+          }
+        }
+      }
+    },
+    "这个播放器放的是另一个母版，换用它自家平台的歌词才对得上" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This player streams a different master, so its own platform's lyrics line up with it"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个播放器放的是另一个母版，换用它自家平台的歌词才对得上"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這個播放器播放的是另一個母帶版本，改用它自家平台的歌詞才對得上"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

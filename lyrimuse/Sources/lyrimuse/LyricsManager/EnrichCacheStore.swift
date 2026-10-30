@@ -1077,6 +1077,28 @@ public final class EnrichCacheStore: ObservableObject {
         raw[key]?["lyrics_kana"] as? String ?? ""
     }
 
+    /// 这一条在哪些播放器里放时改用它自家平台那份(bundle id → 那份,`player_lyrics`,在索引里):只留换了正文、而且是对着
+    /// 现在这份主歌词比出来的那几项,跟播放时 `PlayerLyricsVersion.chosen` 同一口径。
+    func playerLyricsVersions(for key: String) -> [String: PlayerLyricsVersion] {
+        guard let stored = raw[key]?["player_lyrics"] as? [String: [String: Any]],
+              stored.values.contains(where: { !($0["lyrics"] as? String ?? "").isEmpty }) else { return [:] }
+        _ = hydrate(key)
+        let entry = raw[key] ?? [:]
+        let lyrics = entry["lyrics"] as? String ?? ""
+        let yrc = entry["lyrics_yrc"] as? String ?? ""
+        var out: [String: PlayerLyricsVersion] = [:]
+        for (bundleID, v) in stored {
+            let version = PlayerLyricsVersion(
+                mainFingerprint: v["main_fp"] as? String ?? "", source: v["source"] as? String ?? "",
+                lyrics: v["lyrics"] as? String ?? "", lyricsYRC: v["yrc"] as? String ?? "",
+                shiftMs: (v["shift_ms"] as? NSNumber)?.intValue ?? 0)
+            if PlayerLyricsVersion.chosen([bundleID: version], bundleID: bundleID, lyrics: lyrics, lyricsYRC: yrc) != nil {
+                out[bundleID] = version
+            }
+        }
+        return out
+    }
+
     /// 这一条的纯文本兜底(`plain_lyrics`,没有时间戳),没有时为空。正文要先补回来,同 `detail(for:)`。
     public func plainLyrics(for key: String) -> String {
         _ = hydrate(key)

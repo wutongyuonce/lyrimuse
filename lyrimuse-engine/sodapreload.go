@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -216,6 +217,52 @@ func sodaPreloadPreview(artist, title, album string, mrDuration float64) (sodaPr
 		}
 	}
 	return sodaPickLocalPreview(cands, album, mrDuration)
+}
+
+// sodaPreloadTrackID:播放队列缓存里认不出这首时(从歌单、专辑、搜索结果点播的那条队列只在内存里,见本文件头注)按预载缓存认,
+// 正在播的歌一定已经缓存。歌手(署名里任一位或整串)、歌名(整名或去掉括号)对得上、过 localLibraryEntryFits 的那几条里,
+// 专辑对得上的优先,同等时取缓存建得最晚的;一条都不认时为空。见 09 章决策 350。
+func sodaPreloadTrackID(artist, title, album string, durationSecs float64) string {
+	wantArtist, wantTitle := normLoose(artist), normLoose(title)
+	if wantArtist == "" || wantTitle == "" {
+		return ""
+	}
+	wantBare, wantAlbum := normLoose(stripParens(title)), normLoose(album)
+	var best sodaPreloadedTrack
+	bestSameAlbum, found := false, false
+	for _, t := range sodaPreloadIndex() {
+		u := t.upcoming
+		if t.id == "" || !sodaPreloadArtistMatches(u.artist, wantArtist) {
+			continue
+		}
+		if normLoose(u.title) != wantTitle && normLoose(stripParens(u.title)) != wantBare {
+			continue
+		}
+		if !localLibraryEntryFits(album, u.album, durationSecs, u.duration) {
+			continue
+		}
+		sameAlbum := wantAlbum != "" && normLoose(u.album) == wantAlbum
+		if !found || (sameAlbum && !bestSameAlbum) || (sameAlbum == bestSameAlbum && t.at > best.at) {
+			best, bestSameAlbum, found = t, sameAlbum, true
+		}
+	}
+	if !found {
+		return ""
+	}
+	return best.id
+}
+
+// sodaPreloadArtistMatches:预载曲目的署名是用「/」连起来的整串(sodaTrackMetaFromPlayable),整串或其中一位对上就算。
+func sodaPreloadArtistMatches(credit, want string) bool {
+	if normLoose(credit) == want {
+		return true
+	}
+	for _, a := range strings.Split(credit, "/") {
+		if normLoose(a) == want {
+			return true
+		}
+	}
+	return false
 }
 
 func sodaPreloadIndex() []sodaPreloadedTrack {

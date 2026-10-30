@@ -319,14 +319,10 @@ func sodaLocalTrackID(artist, title, album string, durationSecs float64) string 
 	refreshSodaLocalIndexLocked()
 	ents := sodaLocalEntriesLocked(artist, title)
 	sodaLocalMu.Unlock()
-	if len(ents) == 0 {
-		return ""
+	if t, ok := pickSodaLocalEntry(ents, album, durationSecs); ok {
+		return strings.TrimSpace(t.ID)
 	}
-	t, ok := pickSodaLocalEntry(ents, album, durationSecs)
-	if !ok {
-		return ""
-	}
-	return strings.TrimSpace(t.ID)
+	return sodaPreloadTrackID(artist, title, album, durationSecs)
 }
 
 func sodaLocalInstrumental(artist, title, album string, durationSecs float64) bool {

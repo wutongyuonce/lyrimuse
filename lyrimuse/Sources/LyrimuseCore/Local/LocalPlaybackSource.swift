@@ -393,6 +393,8 @@ public final class LocalPlaybackSource: ObservableObject {
     /// 上一拍的播放器 bundle id —— 只为「按播放器偏移」那一层服务(见 apply() 里那处判断)。
     /// 不能靠 lastSnapshot 反推:apply() 第一行就把它换成新快照了,等走到判断处已经比不出来。
     private var lastAppliedBundleID: String?
+    /// 正在显示的是这个播放器自家平台那份时,那份的来源(引擎的源名);显示的是主歌词时为 nil。见 PlayerLyricsVersion。
+    @Published public private(set) var currentPlayerLyricsSource: String?
     /// 已落 UserDefaults 的「最后播放器/最后曲目」内存镜像(去重用,见 apply() 里的写点)。
     private var lastPersistedPlayerBundleID: String?
     private var lastPersistedTrackTitle: String?
@@ -4270,7 +4272,11 @@ public final class LocalPlaybackSource: ObservableObject {
         let bundleID = snapshot.bundleIdentifier
         if bundleID != lastAppliedBundleID {
             lastAppliedBundleID = bundleID
-            if !trackChanged, syncEngine.hasContent { applyOffsets() }
+            // 同一首换了播放器:这个播放器有它自家那份时换成它(PlayerLyricsVersion),正文没变时 reload 自己早退。
+            if !trackChanged, syncEngine.hasContent {
+                reloadCurrentLyrics()
+                applyOffsets()
+            }
         }
         // 同一首歌 Music.app 晚一拍才报出实际在放那一版的时长,空间音频偏移跟着重算(换歌那一支已经算过)。
         if !trackChanged, syncEngine.hasContent, currentSpatialAudioOffsetMs() != spatialAudioOffsetMs { applyOffsets() }
@@ -5086,9 +5092,20 @@ public final class LocalPlaybackSource: ObservableObject {
             title: snapshot.title ?? "",
             album: snapshot.album ?? ""
         )
+        // 这个播放器有它自家平台那份、而且是对着现在这份主歌词比出来的,就换用它(正文、译文、逐字、背景人声一起换;
+        // 罗马音和演唱者标注是对着主歌词那几行的,不带过去)。见 PlayerLyricsVersion。
+        let playerVersion = PlayerLyricsVersion.chosen(
+            found?.playerVersions ?? [:], bundleID: snapshot.bundleIdentifier,
+            lyrics: found?.lyrics ?? "", lyricsYRC: found?.lyricsYRC ?? "")
+        if playerVersion?.source != currentPlayerLyricsSource { currentPlayerLyricsSource = playerVersion?.source }
+        let shownTr = playerVersion?.lyricsTr ?? found?.lyricsTr ?? ""
+        let shownRoma = playerVersion == nil ? found?.lyricsRoma ?? "" : ""
+        let shownYRC = playerVersion?.lyricsYRC ?? found?.lyricsYRC ?? ""
+        let shownBG = playerVersion?.lyricsBG ?? found?.lyricsBG ?? ""
+        let shownSpeakers = playerVersion == nil ? found?.speakers : nil
         // 见过中文歌词就记一笔(粘性,只置不清)。判据用共享的 `ChineseVariant.affects`,跟转换本身是同一个函数,别在这里另抄一份。
         // 刻意放在下面的等值闸之前:闸命中早退时这两个标志也必须照常更新。
-        let raw = found?.lyrics ?? ""
+        let raw = playerVersion?.lyrics ?? found?.lyrics ?? ""
         if !sawChineseLyrics, ChineseVariant.affects(raw) {
             sawChineseLyrics = true
         }
@@ -5096,7 +5113,7 @@ public final class LocalPlaybackSource: ObservableObject {
         // 的早退一起被跳掉。译文只在**正在显示**时才算进来,理由见它声明处。
         currentLyricsSupportsChineseVariant = Self.supportsChineseVariant(
             lyrics: raw,
-            translation: found?.lyricsTr ?? "",
+            translation: shownTr,
             translationVisible: showsTranslation)
         // 内容等值闸:失效键是整个 enrich 缓存文件的 mtime,引擎给别的歌写盘(专辑预取最多 30 首逐个落盘/译文回填/重打分)都会带着
         // 一字未变的 found 走到这里;不早退的话每次都白跑简繁转换×3 + 全套解析过滤 + 整曲罗马音/分词重算 + allLines/gapMarkers
@@ -5106,10 +5123,10 @@ public final class LocalPlaybackSource: ObservableObject {
         let reloadSnapshot = LyricsReloadSnapshot(
             trackKey: "\(snapshot.artist ?? "")|\(snapshot.title ?? "")|\(snapshot.album ?? "")",
             lyrics: raw,
-            lyricsTr: found?.lyricsTr ?? "",
-            lyricsRoma: found?.lyricsRoma ?? "",
-            lyricsYRC: found?.lyricsYRC ?? "",
-            lyricsBG: found?.lyricsBG ?? "",
+            lyricsTr: shownTr,
+            lyricsRoma: shownRoma,
+            lyricsYRC: shownYRC,
+            lyricsBG: shownBG,
             instrumental: found?.instrumental ?? false,
             resolved: found?.resolved ?? false,
             searchIncomplete: found?.searchIncomplete ?? false,
@@ -5121,7 +5138,7 @@ public final class LocalPlaybackSource: ObservableObject {
             isHokkien: found?.isHokkien ?? false,
             plainLyrics: found?.plainLyrics ?? "",
             songwriters: found?.songwriters ?? [],
-            speakers: found?.speakers,
+            speakers: shownSpeakers,
             kanaDonor: found?.kanaDonor ?? "",
             headerAliases: EnrichCacheReader.headerAliases(
                 artist: snapshot.artist ?? "", title: snapshot.title ?? "", album: snapshot.album ?? ""))
@@ -5149,8 +5166,7 @@ public final class LocalPlaybackSource: ObservableObject {
         // 同形异码字(康熙部首等)最先换回标准字,署名过滤、日文汉字修复、简繁转换、罗马音都按标准字认。
         // 只换送进引擎的文本;下面算校正值 key 的仍用缓存原文。
         // Musixmatch 的演唱者标注(引擎 lyrics_speakers):指纹对得上才把 v1：/合： 补进正文,交给对唱分栏。
-        let tagged = found?.speakers?.applied(lyrics: raw, lyricsYRC: found?.lyricsYRC ?? "")
-            ?? (lyrics: raw, lyricsYRC: found?.lyricsYRC ?? "")
+        let tagged = shownSpeakers?.applied(lyrics: raw, lyricsYRC: shownYRC) ?? (lyrics: raw, lyricsYRC: shownYRC)
         let text = HanCompatibility.normalized(tagged.lyrics)
         let rawYRC = HanCompatibility.normalized(tagged.lyricsYRC)
         let japaneseSong = Romanizer.looksJapaneseSong(text.isEmpty ? rawYRC : text)
@@ -5161,10 +5177,10 @@ public final class LocalPlaybackSource: ObservableObject {
         // 管"连转换都别做",那里兜"其它调用方/清过发布状态后的重灌"。
         syncEngine.load(
             lyrics: variant.converted(JapaneseKanjiRepair.repair(text, japaneseSong: japaneseSong)),
-            lyricsTr: variant.converted(HanCompatibility.normalized(found?.lyricsTr ?? "")),
-            lyricsRoma: found?.lyricsRoma ?? "",
+            lyricsTr: variant.converted(HanCompatibility.normalized(shownTr)),
+            lyricsRoma: shownRoma,
             lyricsYRC: variant.converted(JapaneseKanjiRepair.repair(rawYRC, japaneseSong: japaneseSong)),
-            lyricsBG: variant.converted(HanCompatibility.normalized(found?.lyricsBG ?? "")),
+            lyricsBG: variant.converted(HanCompatibility.normalized(shownBG)),
             // 借来的假名标注按行文字对上正文,所以跟正文做同样的变换。
             kanaDonor: variant.converted(JapaneseKanjiRepair.repair(
                 HanCompatibility.normalized(found?.kanaDonor ?? ""), japaneseSong: japaneseSong)),
@@ -5180,14 +5196,15 @@ public final class LocalPlaybackSource: ObservableObject {
         )
         updateMenuBarSongRowWidth()
         // 以前按带 BOM 的正文算过指纹、存下的校正值,先挪到新 key 上(见 LyricsOffsetStore.adoptLegacyKey)。
+        // 单曲校正值按显示的这份正文算 key:换用播放器自家那份时它有自己的校正值,不跟主歌词的混。
         LyricsOffsetStore.shared.adoptLegacyKey(
             artist: snapshot.artist ?? "", title: snapshot.title ?? "",
-            lyrics: found?.lyrics ?? "", lyricsYRC: found?.lyricsYRC ?? "")
+            lyrics: raw, lyricsYRC: shownYRC)
         currentOffsetKey = LyricsOffsetStore.trackKey(
             artist: snapshot.artist ?? "",
             title: snapshot.title ?? "",
-            lyrics: found?.lyrics ?? "",
-            lyricsYRC: found?.lyricsYRC ?? ""
+            lyrics: raw,
+            lyricsYRC: shownYRC
         )
         // 钉在这首实际落着的那条缓存上(EnrichCacheReader.resolvedKey,含旧规则兜底),时长变体位照留:引擎按变体键判钉住没有,
         // 「歌词管理」的 pinKey 也是缓存 key 本身,剥掉的话校准钉到另一段录音上,两段之间来回搬。缓存里还没有这首时用

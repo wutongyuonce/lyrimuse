@@ -541,4 +541,41 @@ func runLyricsParsingTests() {
                     "演唱者标注: 引擎按补上的标记分左右")
         expectEqual(engine.activeLine(atMs: 1500)?.plainText, "one", "演唱者标注: 标记本身不显示")
     }
+
+    // ---- 按播放器的那份(引擎 player_lyrics,PlayerLyricsVersion) ----
+    do {
+        let lrc = "[00:01.00]hello\n[00:05.00]world"
+        let yrc = "[1000,500](1000,500,0)hello"
+        let soda = "com.soda.music"
+        let alt = PlayerLyricsVersion(mainFingerprint: "8bef5a361f6e", source: "soda", lyrics: "[00:03.00]hello", shiftMs: 2000)
+        expectEqual(PlayerLyricsVersion.chosen([soda: alt], bundleID: soda, lyrics: lrc, lyricsYRC: yrc), alt,
+                    "按播放器的那份: 播放器对得上、主歌词指纹对得上 → 用它")
+        expectEqual(PlayerLyricsVersion.chosen([soda: alt], bundleID: "com.apple.Music", lyrics: lrc, lyricsYRC: yrc), nil,
+                    "按播放器的那份: 别的播放器不用")
+        expectEqual(PlayerLyricsVersion.chosen([soda: alt], bundleID: nil, lyrics: lrc, lyricsYRC: yrc), nil,
+                    "按播放器的那份: 不知道是哪个播放器不用")
+        expectEqual(PlayerLyricsVersion.chosen([soda: alt], bundleID: soda, lyrics: lrc + "\n[00:09.00]x", lyricsYRC: yrc), nil,
+                    "按播放器的那份: 主歌词换过(指纹对不上)不用")
+        let aligned = PlayerLyricsVersion(mainFingerprint: "8bef5a361f6e", source: "soda", lyrics: "")
+        expectEqual(PlayerLyricsVersion.chosen([soda: aligned], bundleID: soda, lyrics: lrc, lyricsYRC: yrc), nil,
+                    "按播放器的那份: 只记了「比过、对齐了」的不换")
+
+        let json = #"{"main_fp":"8bef5a361f6e","source":"soda","lyrics":"[00:03.00]hello","yrc":"y","tr":"t","tr_lang":"zh","bg":"b","shift_ms":-1500,"at":1}"#
+        let decodedAlt = try? JSONDecoder().decode(PlayerLyricsVersion.self, from: Data(json.utf8))
+        expectEqual(decodedAlt, PlayerLyricsVersion(mainFingerprint: "8bef5a361f6e", source: "soda", lyrics: "[00:03.00]hello",
+                                                    lyricsYRC: "y", lyricsTr: "t", lyricsTrLang: "zh", lyricsBG: "b", shiftMs: -1500),
+                    "按播放器的那份: 键名跟引擎 playerLyricsAlt 的 json 标签一致")
+        let sparse = try? JSONDecoder().decode(PlayerLyricsVersion.self, from: Data(#"{"main_fp":"a","source":"soda"}"#.utf8))
+        expectEqual(sparse?.lyrics, "", "按播放器的那份: 只有标记的一项也解得出来")
+
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        let playback = (try? String(contentsOfFile: root.appendingPathComponent("LyrimuseCore/Local/LocalPlaybackSource.swift").path,
+                                    encoding: .utf8)) ?? ""
+        let reload = sourceBody("func reloadCurrentLyrics(", in: playback)
+        expectEqual([sourceHas(reload, "PlayerLyricsVersion.chosen("),
+                     sourceHas(reload, "let raw = playerVersion?.lyrics ?? found?.lyrics ?? \"\""),
+                     sourceHas(reload, "lyrics: raw, lyricsYRC: shownYRC"),
+                     sourceHas(playback, "if !trackChanged, syncEngine.hasContent { reloadCurrentLyrics() applyOffsets() }")],
+                    [true, true, true, true], "按播放器的那份 接线: 取词挑这份、校正值按显示的正文算 key、同一首换播放器重载")
+    }
 }

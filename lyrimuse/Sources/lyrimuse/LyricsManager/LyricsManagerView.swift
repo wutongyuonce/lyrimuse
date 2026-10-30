@@ -3680,7 +3680,26 @@ struct LyricsManagerView: View {
                                   text: String(format: L10n.plural("解析时 %1$@ 个源应答，选用「%2$@」", count: summary.sourcesRespondedCount),
                                                "\(summary.sourcesRespondedCount)", sourceDisplayName(summary.lyricsSource)))
             }
+            if summary.hasLyrics, !summary.isInstrumental {
+                let versions = store.playerLyricsVersions(for: summary.key)
+                ForEach(versions.keys.sorted(), id: \.self) { bundleID in
+                    if let v = versions[bundleID] {
+                        LyricsManagerFact(icon: "arrow.triangle.swap", text: playerVersionText(bundleID: bundleID, version: v))
+                            .help(L10n.t("这个播放器放的是另一个母版，换用它自家平台的歌词才对得上"))
+                    }
+                }
+            }
         }
+    }
+
+    /// 「在汽水音乐中播放时用汽水音乐的歌词（晚 2.3 秒）」:偏移是那份相对现在这份主歌词的。
+    private func playerVersionText(bundleID: String, version: PlayerLyricsVersion) -> String {
+        let player = SongVersionsSheet.playerDisplayName(bundleID)
+        let source = sourceDisplayName(version.source)
+        let secs = String(format: "%.1f", Double(abs(version.shiftMs)) / 1000)
+        let format = version.shiftMs >= 0 ? L10n.t("在%1$@中播放时用%2$@的歌词（晚 %3$@ 秒）")
+            : L10n.t("在%1$@中播放时用%2$@的歌词（早 %3$@ 秒）")
+        return String(format: format, player, source, secs)
     }
 
     /// 同 `LyricsCandidateDuration.clock`:不足一秒的舍去,跟歌词窗口写的时长一致。

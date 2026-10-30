@@ -233,6 +233,9 @@ type enrichEntry struct {
 	// LyricsSpeakersChecked:这条按哪一版演唱者标注(lyricsSpeakersVersion)问过 Musixmatch。0 = 还没有,符合条件的
 	// 条目播放到时补问一次(speakersbackfill.go)。
 	LyricsSpeakersChecked int `json:"lyrics_speakers_checked,omitempty"`
+	// PlayerLyrics:按播放器(bundle id)记的「在它里面放时改用它自家平台那份」,绑着主歌词指纹(见 playerlyrics.go)。
+	// 不在正文小文件里。
+	PlayerLyrics map[string]playerLyricsAlt `json:"player_lyrics,omitempty"`
 	// LyricsKana:正文自己不带 `[kana:]` 时,从别的候选借来的假名标注(一份只含借到的那些行的小 LRC,见 kanadonor.go)。
 	// App 和 lyrics-romanize 在正文自己没有标注时用它定汉字读音。不绑正文指纹,只对文字一样的行生效。
 	LyricsKana string `json:"lyrics_kana,omitempty"`
@@ -1158,6 +1161,10 @@ func trackEnrichment(artist, title, album, bundleID string, durationSecs float64
 			// 日文歌补借假名标注、让生成的罗马音用上它,不动正文(见 kanabackfill.go)。
 			enrichInflight[key] = true
 			go backfillLyricsKana(withLyricSearchTitle(context.Background(), searchTitle), key, artist, title, album, durationSecs)
+		} else if needsPlayerLyricsCheck(e, bundleID) && !enrichInflight[key] && playerLyricsCheckOnce(key, bundleID, e) {
+			// 在这个播放器里放、主歌词不是它自家源:只问它自家那个源、比一次时间轴(见 playerlyrics.go)。
+			enrichInflight[key] = true
+			go checkPlayerLyrics(withLyricSearchTitle(context.Background(), searchTitle), key, artist, title, album, durationSecs, bundleID)
 		}
 		// 机翻不排上面这条链,跟哪一路都能同时跑,理由见 translatestart.go。
 		startTranslationBackfillLocked(key, e)

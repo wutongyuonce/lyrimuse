@@ -174,6 +174,12 @@ func timelineLinesMatch(a, b string) bool {
 // classifyTimelines 按正文 LCS 配对两份时间轴(两行算不算同一句见 timelineLinesMatch),判 a 相对 b
 // 是对齐、整体平移 minShiftMs 以上,还是判不了。
 func classifyTimelines(a, b []timelineLine, minShiftMs int) timelineRelation {
+	rel, _ := classifyTimelinesShift(a, b, minShiftMs)
+	return rel
+}
+
+// classifyTimelinesShift 同 classifyTimelines,另交出配对行 a 减 b 的中位偏移(毫秒);判不了时偏移为 0。
+func classifyTimelinesShift(a, b []timelineLine, minShiftMs int) (timelineRelation, int) {
 	var d []int
 	for i, j := range timelineLCSAlignFunc(len(a), len(b), func(i, j int) bool { return timelineLinesMatch(a[i].norm, b[j].norm) }) {
 		if j >= 0 {
@@ -182,7 +188,7 @@ func classifyTimelines(a, b []timelineLine, minShiftMs int) timelineRelation {
 	}
 	short := min(len(a), len(b))
 	if len(d) < timelineOffsetMinMatched || len(d)*2 < short {
-		return timelineUndecided
+		return timelineUndecided, 0
 	}
 	sorted := append([]int(nil), d...)
 	sort.Ints(sorted)
@@ -201,13 +207,13 @@ func classifyTimelines(a, b []timelineLine, minShiftMs int) timelineRelation {
 	share := func(n int) float64 { return float64(n) / float64(len(d)) }
 	switch {
 	case med < timelineNearMs && -med < timelineNearMs && share(aroundMedian) >= timelineMinShare:
-		return timelineAligned
+		return timelineAligned, med
 	case med >= minShiftMs && share(later) >= timelineMinShare:
-		return timelineShiftedLater
+		return timelineShiftedLater, med
 	case med <= -minShiftMs && share(earlier) >= timelineMinShare:
-		return timelineShiftedEarlier
+		return timelineShiftedEarlier, med
 	}
-	return timelineUndecided
+	return timelineUndecided, 0
 }
 
 // applyTimelineOffsetPenalty 给时间轴整体平移到另一个母带上的候选扣 timelineOffsetPenalty 分,
