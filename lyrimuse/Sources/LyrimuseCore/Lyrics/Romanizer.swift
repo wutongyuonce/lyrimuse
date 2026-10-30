@@ -491,6 +491,8 @@ public enum Romanizer {
         japaneseLine: Bool = false
     ) -> String? {
         guard looksJapanese(line) || containsHangul(line) || containsHan(line) else {
+            // 拉丁字母夹形近字母的行不标(同 needsRomanization),预生成(LyricsRomanization.romanizeLRC)也走这里。
+            guard !isLatinWithLookalikes(line) else { return nil }
             let reading = WorldRomanization.romanize(line, song: songScript)
             return reading == line ? nil : reading
         }

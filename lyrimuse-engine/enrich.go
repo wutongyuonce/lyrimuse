@@ -1834,7 +1834,7 @@ func lyricsUpgradeApplies(e enrichEntry, scored []scoredLyricCandidateResult, pi
 		}
 	}
 	if picked != nil && !e.Lyrics.IsZero() && features().LyricsSourceMode != lyricsModePriority {
-		if applies, decided := preferLocalFileUpgradeVerdict(e, picked); decided {
+		if applies, decided := preferLocalFileUpgradeVerdict(e, picked, durationSecs, false); decided {
 			return applies
 		}
 	}
@@ -1867,8 +1867,9 @@ func priorityUpgradeVerdict(e enrichEntry, scored []scoredLyricCandidateResult, 
 
 // preferLocalFileUpgradeVerdict:智能算法下开着「优先用歌曲文件自带的歌词」时换不换(decided 为 false 时照原来的规则判):
 // 这一轮挑中的是文件自带的、现存的不是:换(屏上看不出差别的不换);现存的是文件自带的、这一轮挑中的不是(这一轮没读到文件,
-// 比如换了个不交出文件的播放器放):不换。升级重试和重评两处都调它。
-func preferLocalFileUpgradeVerdict(e enrichEntry, picked *scoredLyricCandidateResult) (applies, decided bool) {
+// 比如换了个不交出文件的播放器放):不换。手动重新匹配、现存那份是给另一版选的(lyricsFitAnotherCut)不在这里拍板,
+// 跟顺序优先的 priorityUpgradeVerdict 同一个口子。durationSecs 为 0 = 不知道。升级重试和重评两处都调它。见 09 章决策 347。
+func preferLocalFileUpgradeVerdict(e enrichEntry, picked *scoredLyricCandidateResult, durationSecs float64, manual bool) (applies, decided bool) {
 	if !features().PreferLocalFileLyrics {
 		return false, false
 	}
@@ -1876,6 +1877,9 @@ func preferLocalFileUpgradeVerdict(e enrichEntry, picked *scoredLyricCandidateRe
 	case picked.Source == localFileLyricsSource && e.LyricsSource != localFileLyricsSource:
 		return !keepsShownLyricsOver(e, picked), true
 	case e.LyricsSource == localFileLyricsSource && picked.Source != localFileLyricsSource:
+		if manual || lyricsFitAnotherCut(e, durationSecs) {
+			return false, false
+		}
 		return false, true
 	}
 	return false, false
@@ -3004,7 +3008,7 @@ func rescoreKeepsLyrics(e enrichEntry, scored []scoredLyricCandidateResult, pick
 		return false
 	}
 	if features().LyricsSourceMode != lyricsModePriority {
-		if applies, decided := preferLocalFileUpgradeVerdict(e, picked); decided {
+		if applies, decided := preferLocalFileUpgradeVerdict(e, picked, 0, manual); decided {
 			return !applies
 		}
 	}

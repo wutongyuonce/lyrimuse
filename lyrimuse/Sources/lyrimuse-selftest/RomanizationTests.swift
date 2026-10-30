@@ -1661,6 +1661,12 @@ func runRomanizationTests() {
         expectEqual(refreshed("[00:01.00]kimi no namae wo yonda\n[00:02.00]ashita wa kitto hareru", ja) == nil, true,
                     "过时判定: 歌词源给的(多数行写法不同)不动")
         expectEqual(refreshed("", ja) == nil, true, "过时判定: 空的不算")
+        // 拉丁字母夹形近字母的歌现在不标读音:早先给这些行生成的(只把形近字母换回拉丁字母)清掉;对不上这些行的不动。
+        let lookalike = "[00:01.00]Bеrhadapan dengan partai yang sok suci\n[00:02.00]Le faccе dei nemici come vedi sono pallide"
+        expectEqual(LyricsRomanization.romanizeLRC(lookalike) == nil, true, "过时判定前提: 形近字母的歌现在不出读音")
+        expectEqual(refreshed("[00:01.00]Berhadapan dengan partai yang sok suci\n[00:02.00]Le facce dei nemici come vedi sono pallide",
+                              lookalike), "", "过时判定: 早先给形近字母行生成的读音清掉")
+        expectEqual(refreshed("[00:09.00]Berhadapan", lookalike) == nil, true, "过时判定: 时间标签对不上形近字母行的不清")
         // 借来的假名标注:读音按它标,同一首里没借到的行按学到的推开;借来的改掉了大半行,存着的不用借用的那份
         // 照样认得出是我们生成的。
         let borrowed = "[00:01.00]明日へ向かう\n[00:02.00]明日へ帰る"

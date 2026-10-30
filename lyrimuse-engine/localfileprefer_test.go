@@ -56,6 +56,9 @@ func TestSmartPickPrefersCleanLocalFile(t *testing.T) {
 	if earlyLyricsVerdict([]scoredLyricCandidateResult{lrc}, &lrc, func(string) bool { return false }, false, 0) != earlyLyricsTrust {
 		t.Error("打开时文件自带的那份不用等别的源回话就先上屏")
 	}
+	if earlyLyricsVerdict([]scoredLyricCandidateResult{offLrc}, &offLrc, func(string) bool { return false }, false, 0) == earlyLyricsTrust {
+		t.Error("文件自带的带扣分项(给别的版本的)不直接先上屏")
+	}
 
 	withSmartPrefer(t, false)
 	if got := pickLyricCandidate([]scoredLyricCandidateResult{netease, lrc}); got == nil || got.Source != "netease" {
@@ -107,17 +110,40 @@ func TestPreferLocalFileUpgradeAndRescore(t *testing.T) {
 	if !rescoreKeepsLyrics(local, []scoredLyricCandidateResult{netease}, &netease, false, false) {
 		t.Error("打开时重评留住文件自带的")
 	}
+	if _, decided := preferLocalFileUpgradeVerdict(local, &netease, 0, true); decided {
+		t.Error("手动重新匹配不替它拍板,照原来的规则")
+	}
+	shortCut := local
+	shortCut.ResolvedDurationSecs, shortCut.DurationSecs = 240, 330
+	if _, decided := preferLocalFileUpgradeVerdict(shortCut, &netease, 330, false); decided {
+		t.Error("现存那份是给短一版选的、现在放的是加长版:不替它拍板")
+	}
 	if !localFileLyricsWorthRecheck(enrichEntry{LyricsSource: "netease", LyricsSourcesSeen: []string{localFileLyricsSource}},
 		"com.foobar2000.mac", false, true, true) {
 		t.Error("打开时见过文件自带的、现存却不是它:再来一次")
 	}
 
 	withSmartPrefer(t, false)
-	if _, decided := preferLocalFileUpgradeVerdict(online, &lrc); decided {
+	if _, decided := preferLocalFileUpgradeVerdict(online, &lrc, 0, false); decided {
 		t.Error("关着时不插手,照原来的分数规则")
 	}
 	if localFileLyricsWorthRecheck(enrichEntry{LyricsSource: "netease", LyricsSourcesSeen: []string{localFileLyricsSource}},
 		"com.foobar2000.mac", false, true, true) {
 		t.Error("关着时见过就不再来")
+	}
+}
+
+// 顺序优先下(缺省开着):各源都还没回话、文件自带的那份带扣分项被当兜底挑中时,不先上屏,等排在后面的源。
+func TestPriorityEarlyLyricsWaitsOnPenalizedLocalFile(t *testing.T) {
+	withPriorityOrder(t, "qq", "netease")
+	offLrc := scoredLyricCandidateResult{Source: localFileLyricsSource, Score: 1,
+		ScoreTerms: []scoreTerm{{Kind: "durationOff", Points: -500}, {Kind: scoreTermNativeSource, Points: 250}}}
+	scored := []scoredLyricCandidateResult{offLrc}
+	picked := pickLyricCandidate(scored)
+	if picked == nil || picked.Source != localFileLyricsSource {
+		t.Fatalf("测试前提:找不到干净候选时退回文件自带的那份, got %+v", picked)
+	}
+	if got := earlyLyricsVerdict(scored, picked, func(string) bool { return false }, false, 0); got != earlyLyricsWait {
+		t.Errorf("带扣分项的文件自带歌词要等别的源回话, got %q", got)
 	}
 }

@@ -576,7 +576,8 @@ var kugouAlbumIDGo = func(f func()) { go f() }
 
 // kugouPlayingAlbumID:正在放的这首(大写文件 hash)的专辑 id。在轮询主循环上调,不联网:只读已问到的结论;没有结论时
 // 交给后台去问(同一个 hash 同时只问一份,没问成的 kugouAlbumIDRetryAfter 内不再问),pending 为 true;问完丢掉
-// playerCatalogMemo 里还在等专辑 id 的那几条,下一拍重读就用上。
+// playerCatalogMemo 里还在等专辑 id 的那几条,下一拍重读就用上。没问成、还没到重试时候的也报 pending:playerCatalogMemo
+// 按 pending 只记一小会儿,到点才会再交给后台问;报成「没有」会按命中记满 playerCatalogHitTTL。见 18 章决策 85。
 func kugouPlayingAlbumID(hash string) (id string, pending bool) {
 	kugouAlbumMu.Lock()
 	if id, ok := kugouAlbumIDCache[hash]; ok {
@@ -589,7 +590,7 @@ func kugouPlayingAlbumID(hash string) (id string, pending bool) {
 	}
 	if at, ok := kugouAlbumIDFailedAt[hash]; ok && time.Since(at) < kugouAlbumIDRetryAfter {
 		kugouAlbumMu.Unlock()
-		return "", false
+		return "", true
 	}
 	kugouAlbumIDAsking[hash] = true
 	kugouAlbumMu.Unlock()

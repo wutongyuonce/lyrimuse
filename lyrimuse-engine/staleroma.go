@@ -23,11 +23,14 @@ const staleRomaDelay = 3 * time.Minute
 // errStaleCheckUnsupported:helper 回了 ok 却没带 stale_checked —— 它没判「是不是过时的预生成」,回的读音不能拿来换。
 var errStaleCheckUnsupported = errors.New("lyrics-romanize did not check stale_roma")
 
+// errStaleRomaCleared:存着的是过时的预生成,而现在整首不该有读音,迁移把它清掉(不是故障)。
+var errStaleRomaCleared = errors.New("stale generated romanization should be empty")
+
 // staleRomaRegenerator 是迁移实际调用的 helper;测试换成假实现。
 var staleRomaRegenerator = onDeviceRegenerateStaleRoma
 
 // onDeviceRegenerateStaleRoma:stored 是早先预生成、已经过时的那份,就返回按现在的算法重算的读音;不是返回空串。
-// 找不到 helper、helper 没判,返回错误,迁移据此不记水位。
+// 是、而现在整首不该有读音,返回 errStaleRomaCleared。找不到 helper、helper 没判,返回错误,迁移据此不记水位。
 // kanaDonor 是条目借来的假名标注(LyricsKana),重算按它标。
 func onDeviceRegenerateStaleRoma(lyrics, stored, kanaDonor string) (string, error) {
 	if lyrics == "" || stored == "" {
@@ -48,6 +51,9 @@ func staleRomaFromReply(reply romanizeReply) (string, error) {
 	if !reply.StaleChecked {
 		return "", errStaleCheckUnsupported
 	}
+	if reply.StaleCleared {
+		return "", errStaleRomaCleared
+	}
 	return reply.Roma, nil
 }
 
@@ -67,15 +73,17 @@ func startStaleGeneratedRomaMigration(ctx context.Context) {
 	}()
 }
 
-// isStaleRomaCandidate:有读音、正文里有假名 / 谚文 / 汉字、用户没手改过、不是粤语或台语歌的条目值得问 helper。
+// isStaleRomaCandidate:有读音、正文里有假名 / 谚文 / 汉字或 helper 会出读音的别的文字(hasWorldReadingScript,含冒充
+// 拉丁字母的形近字母)、用户没手改过、不是粤语或台语歌的条目值得问 helper。见 10 章决策 65。
 func isStaleRomaCandidate(e enrichEntry) bool {
 	if e.Lyrics.IsZero() || e.LyricsRoma.IsZero() || e.ManualLyrics ||
 		e.SongLanguage == songLanguageCantonese || e.SongLanguage == songLanguageHokkien {
 		return false
 	}
-	return strings.ContainsFunc(e.Lyrics.String(), func(r rune) bool {
+	lyrics := e.Lyrics.String()
+	return strings.ContainsFunc(lyrics, func(r rune) bool {
 		return unicode.In(r, unicode.Hiragana, unicode.Katakana, unicode.Hangul, unicode.Han)
-	})
+	}) || hasWorldReadingScript(lyrics)
 }
 
 // migrateStaleGeneratedRoma 是迁移本体,返回换了几条。
@@ -92,6 +100,7 @@ func migrateStaleGeneratedRoma(ctx context.Context, scope migrationScope) int {
 		label:       "stale generated romanization",
 		regenerate:  func(it storedRomaItem) (string, error) { return staleRomaRegenerator(it.lyrics, it.roma, it.kana) },
 		unsupported: errStaleCheckUnsupported,
+		cleared:     errStaleRomaCleared,
 	})
 	if complete {
 		scope.markDone(migrationStaleGeneratedRoma, migrationStaleGeneratedRomaVersion)
@@ -101,9 +110,10 @@ func migrateStaleGeneratedRoma(ctx context.Context, scope migrationScope) int {
 
 // storedRomaRegeneration:一道「把存着的读音交给 helper 判、该换就换」的存量迁移。
 type storedRomaRegeneration struct {
-	label       string
-	regenerate  func(storedRomaItem) (string, error)
-	unsupported error // helper 不认这道迁移的入参:后面每一条结果都一样,不再一条条白问
+	label      string
+	regenerate func(storedRomaItem) (string, error)
+	// unsupported:helper 不认这道迁移的入参,后面每一条结果都一样,不再一条条白问。cleared:这一条该清空(可为 nil)。
+	unsupported, cleared error
 }
 
 // kana 是条目借来的假名标注;写回时它也得还是当初那份。
@@ -122,6 +132,10 @@ func regenerateStoredRoma(ctx context.Context, items []storedRomaItem, m storedR
 			break
 		}
 		roma, err := m.regenerate(it)
+		if m.cleared != nil && errors.Is(err, m.cleared) {
+			fresh[it.key] = ""
+			continue
+		}
 		if err != nil {
 			complete = false
 			failed++

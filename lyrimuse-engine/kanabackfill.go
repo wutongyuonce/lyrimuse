@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"log"
 	"strings"
 )
@@ -109,6 +110,10 @@ func backfillLyricsKana(base context.Context, key, artist, title, album string, 
 	romaChecked := false
 	if next.LyricsKana != "" && isStaleRomaCandidate(e) {
 		r, err := staleRomaRegenerator(e.Lyrics.String(), e.LyricsRoma.String(), next.LyricsKana)
+		if errors.Is(err, errStaleRomaCleared) {
+			// 该清空的读音交给启动迁移清,这里只管借来标注之后的重算。
+			err = nil
+		}
 		if err != nil {
 			warnf("kana backfill: %s  romanize helper failed: %v", key, err)
 		}

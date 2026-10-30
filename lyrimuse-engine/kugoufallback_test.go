@@ -315,8 +315,8 @@ func TestKugouPlayingAlbumIDAsksInBackground(t *testing.T) {
 		t.Fatalf("后台问过了、在等的记忆该丢掉: hits=%d kept=%v", hits(), memoKept())
 	}
 	before := hits()
-	if id, pending := kugouPlayingAlbumID("H1"); id != "" || pending || len(queued) != 0 {
-		t.Fatalf("没问成的短时间内不再问: %q %v queued=%d", id, pending, len(queued))
+	if id, pending := kugouPlayingAlbumID("H1"); id != "" || !pending || len(queued) != 0 {
+		t.Fatalf("没问成的短时间内不再问,但仍报还在等(按没读到只记一小会儿): %q %v queued=%d", id, pending, len(queued))
 	}
 	kugouAlbumMu.Lock()
 	kugouAlbumIDFailedAt["H1"] = time.Now().Add(-kugouAlbumIDRetryAfter - time.Second)

@@ -916,6 +916,30 @@ func TestDailyDigestPermanentFailureWaitsForNextPushTime(t *testing.T) {
 	}
 }
 
+// 永久失败挡住后,内容设置(全局模板、每类列出几条)改了也当场放开:内容超限(413)常靠缩短模板、少列几条来修,
+// 这两项在 features.json,改了不重建 alerter。
+func TestDigestHoldReleasesWhenContentSettingsChange(t *testing.T) {
+	useDigestFeatures(t, featureFlags{DailyDigest: true, DailyDigestSource: digestSourceLastfm})
+	p, a := &poller{}, &alerter{}
+	now := time.Date(2026, 9, 25, 22, 30, 0, 0, time.Local)
+	p.noteDigestPushResult(notifyEventDaily, now, a, errNotifyPermanent)
+	if !p.digestHeld(notifyEventDaily, now.Add(time.Hour), a) {
+		t.Fatal("测试前提:永久失败后挡住")
+	}
+	featuresRef().DigestTemplate = digestTemplate{Title: "短 {title}"}
+	if p.digestHeld(notifyEventDaily, now.Add(time.Hour), a) {
+		t.Error("改了全局模板当场放开")
+	}
+	featuresRef().DigestTemplate = digestTemplate{}
+	if !p.digestHeld(notifyEventDaily, now.Add(time.Hour), a) {
+		t.Fatal("测试前提:改回去又挡着")
+	}
+	featuresRef().DigestTopN = digestTopN() + 1
+	if p.digestHeld(notifyEventDaily, now.Add(time.Hour), a) {
+		t.Error("改了每类列出几条当场放开")
+	}
+}
+
 // 推送全失败时只有每个渠道都是重推也不会好的失败(401 / 404 / 413)才带 errNotifyPermanent;5xx、兜底的「被拒」、
 // 永久和临时混着的都不带。
 func TestAlerterPermanentFailure(t *testing.T) {

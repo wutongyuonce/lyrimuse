@@ -29,7 +29,7 @@ import LyrimuseCore
 //        日文歌可以多带 "kana_donor"(引擎从别的源借来的假名标注 lyrics_kana),正文自己不带 [kana:] 时读音按它标。
 //        启动迁移时多带 "stale_roma"(缓存里现有的罗马音):它不是我们早先预生成、按现在的算法已经过时的那份,就回
 //        not-stale、不产出(见 LyricsRomanization.refreshedGeneratedRomanization);是就回现在该存的那份,另带
-//        "stale_checked":true。
+//        "stale_checked":true;现在整首不该有读音、存着的那份是早先给形近字母行生成的,回空读音并带 "stale_cleared":true。
 //        或者多带 "legacy_korean_roma"(缓存里现有的罗马音):它不是旧版韩文读音给这份正文算出来的,
 //        就回 not-legacy、不产出(见 LyricsRomanization.isLegacyKoreanRomanization);是旧版就照常产出,
 //        另带 "legacy_checked":true。引擎只认带了这个标记的回包(不认这个入参的旧 helper 会照常回一份)。
@@ -38,6 +38,7 @@ import LyrimuseCore
 //        {"ok":false,"reason":"no-romanization"}
 //        {"ok":false,"reason":"not-legacy"}
 //        {"ok":true,"roma":"...","stale_checked":true}
+//        {"ok":true,"stale_checked":true,"stale_cleared":true}
 //        {"ok":false,"reason":"not-stale"}
 //        每个回包都多带 "world_readings":<版本>(这个 helper 会出读音的那套日 / 韩 / 中以外文字的版本)。
 
@@ -61,6 +62,7 @@ struct Output: Encodable {
     var reason: String?
     var legacyChecked: Bool?
     var staleChecked: Bool?
+    var staleCleared: Bool?
     /// 每个回包都带:这个 helper 会出读音的那套日 / 韩 / 中以外文字的版本,引擎补存量时靠它认出旧 helper。
     /// 加了文字就 +1,跟引擎的 migrationWorldRomaVersion 同一个数。
     var worldReadings: Int? = 2
@@ -69,6 +71,7 @@ struct Output: Encodable {
         case ok, roma, reason
         case legacyChecked = "legacy_checked"
         case staleChecked = "stale_checked"
+        case staleCleared = "stale_cleared"
         case worldReadings = "world_readings"
     }
 }
@@ -94,6 +97,9 @@ if let stored = input.staleRoma {
         stored, lyrics: input.lyrics, kanaDonor: input.kanaDonor ?? "")
     else {
         emit(Output(ok: false, reason: "not-stale"))
+    }
+    if roma.isEmpty {
+        emit(Output(ok: true, staleChecked: true, staleCleared: true))
     }
     emit(Output(ok: true, roma: roma, staleChecked: true))
 }

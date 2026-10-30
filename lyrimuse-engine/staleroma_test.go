@@ -22,6 +22,8 @@ func TestIsStaleRomaCandidate(t *testing.T) {
 		{"台语歌不标", enrichEntry{Lyrics: bt("[00:01.00]我愛你"), LyricsRoma: bt("[00:01.00]wǒ"), SongLanguage: songLanguageHokkien}, false},
 		{"没有读音", enrichEntry{Lyrics: bt("[00:01.00]君の名は")}, false},
 		{"纯英文", enrichEntry{Lyrics: bt("[00:01.00]hello"), LyricsRoma: bt("[00:01.00]hello")}, false},
+		{"有读音的乌克兰语歌", enrichEntry{Lyrics: bt("[00:01.00]" + strings.Repeat("Я кажу тобі ", 3)),
+			LyricsRoma: bt("[00:01.00]Ya kazhu tobi")}, true},
 	}
 	for _, c := range cases {
 		if got := isStaleRomaCandidate(c.e); got != c.want {
@@ -84,6 +86,24 @@ func TestMigrateStaleGeneratedRomaReplacesOnlyOurs(t *testing.T) {
 	}
 }
 
+// helper 判过是过时的、现在整首不该有读音:清空读音,算换了一条,照常记水位。
+func TestMigrateStaleGeneratedRomaClearsWhenNoReadingNow(t *testing.T) {
+	const key = "A|lookalike|X"
+	lyrics := "[00:01.00]" + strings.Repeat("Bеrhadapan dеngan partai yang sok suci ", 12)
+	withStaleRomaFixture(t, map[string]enrichEntry{
+		key: {Lyrics: bt(lyrics), LyricsRoma: bt("[00:01.00]Berhadapan dengan partai yang sok suci")},
+	}, func(string, string, string) (string, error) { return "", errStaleRomaCleared })
+	if n := runStaleRomaMigration(); n != 1 {
+		t.Fatalf("应清掉 1 条,实换 %d", n)
+	}
+	if got := enrichCache[key].LyricsRoma; !got.IsZero() {
+		t.Errorf("读音应清空,实得 %q", got)
+	}
+	if !migrationDone(migrationStaleGeneratedRoma, migrationStaleGeneratedRomaVersion) {
+		t.Error("清空不是故障,应记水位")
+	}
+}
+
 // helper 比引擎旧(不认 stale_roma,照常回一份):一条不换、不记水位,第一条就停。
 func TestMigrateStaleGeneratedRomaStopsOnOldHelper(t *testing.T) {
 	asked := 0
@@ -109,6 +129,9 @@ func TestStaleRomaFromReply(t *testing.T) {
 	if roma, err := staleRomaFromReply(romanizeReply{OK: false, Reason: "not-stale"}); roma != "" || err != nil {
 		t.Errorf("不是过时的:空串、不是错误,实得 %q, %v", roma, err)
 	}
+	if roma, err := staleRomaFromReply(romanizeReply{OK: true, StaleChecked: true, StaleCleared: true}); roma != "" || !errors.Is(err, errStaleRomaCleared) {
+		t.Errorf("判过是过时的、现在不该有读音:应报 errStaleRomaCleared,实得 %q, %v", roma, err)
+	}
 	if roma, err := staleRomaFromReply(romanizeReply{OK: true, Roma: "[00:01.00]x"}); roma != "" || !errors.Is(err, errStaleCheckUnsupported) {
 		t.Errorf("没带 stale_checked:应报 errStaleCheckUnsupported,实得 %q, %v", roma, err)
 	}
@@ -120,7 +143,8 @@ func TestStaleRomaHelperKeysAndWiring(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, lit := range []string{`case staleRoma = "stale_roma"`, `case staleChecked = "stale_checked"`, `case kanaDonor = "kana_donor"`} {
+	for _, lit := range []string{`case staleRoma = "stale_roma"`, `case staleChecked = "stale_checked"`, `case staleCleared = "stale_cleared"`,
+		`case kanaDonor = "kana_donor"`} {
 		if !strings.Contains(string(src), lit) {
 			t.Errorf("lyrics-romanize/main.swift 里找不到 %s,romanize.go 的 romanizeRequest / romanizeReply 要同步", lit)
 		}

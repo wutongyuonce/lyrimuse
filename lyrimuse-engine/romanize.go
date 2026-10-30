@@ -51,7 +51,8 @@ type romanizeRequest struct {
 }
 
 // romanizeReply 是 lyrics-romanize 的回包。ok:false 时原因在 Reason(no-romanization / empty-input / not-legacy
-// 都是正常结论,不是故障);LegacyChecked 只在带了 legacy_korean_roma、判过是旧版时为真,StaleChecked 同理对 stale_roma。
+// 都是正常结论,不是故障);LegacyChecked 只在带了 legacy_korean_roma、判过是旧版时为真,StaleChecked 同理对 stale_roma;
+// StaleCleared:判过是过时的预生成、而现在整首不该有读音(Roma 为空)。
 // WorldReadings:helper 会出读音的那套日 / 韩 / 中以外文字的版本(每个回包都带,跟 migrationWorldRomaVersion 是同一个数),
 // 补存量那道靠它认旧 helper(worldroma.go)。
 type romanizeReply struct {
@@ -60,6 +61,7 @@ type romanizeReply struct {
 	Reason        string `json:"reason"`
 	LegacyChecked bool   `json:"legacy_checked"`
 	StaleChecked  bool   `json:"stale_checked"`
+	StaleCleared  bool   `json:"stale_cleared"`
 	WorldReadings int    `json:"world_readings"`
 }
 

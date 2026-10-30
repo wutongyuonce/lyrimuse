@@ -89,8 +89,14 @@ public enum LyricsRomanization {
     /// 改了读音算法(`Romanizer`、这里的预处理)之后,引擎那边的迁移版本号加一,存量就会按新算法重算一遍。
     /// 带 `kanaDonor` 时现算的是用上借来标注的那份;借来的标注可能改掉很多行,所以「是不是我们生成的」跟
     /// 不用借来标注的现算也比一次,取对上多的那边。
+    /// 返回空串:现在整首不该有读音,而 `roma` 是早先给「拉丁字母夹形近字母」的行生成的(见 `storedReadsLookalikeLines`),
+    /// 该清掉。见 10 章决策 65。
     public static func refreshedGeneratedRomanization(_ roma: String, lyrics: String, kanaDonor: String = "") -> String? {
-        guard !roma.isEmpty, let fresh = romanizeLRC(lyrics, kanaDonor: kanaDonor), fresh != roma else { return nil }
+        guard !roma.isEmpty else { return nil }
+        guard let fresh = romanizeLRC(lyrics, kanaDonor: kanaDonor) else {
+            return storedReadsLookalikeLines(roma, lyrics: lyrics) ? "" : nil
+        }
+        guard fresh != roma else { return nil }
         let stored = taggedLines(roma)
         guard !stored.isEmpty else { return nil }
         func same(_ lrc: String?) -> Int {
@@ -100,6 +106,16 @@ public enum LyricsRomanization {
         }
         let matched = max(same(fresh), kanaDonor.isEmpty ? 0 : same(romanizeLRC(lyrics)))
         return matched * 5 >= stored.count * 4 ? fresh : nil
+    }
+
+    /// `roma` 的行有八成以上落在「拉丁字母夹形近字母」的歌词行上(`Romanizer.isLatinWithLookalikes`):那是只把形近字母换回
+    /// 拉丁字母、跟原文看不出差别的读音,不会是歌词源给的。
+    private static func storedReadsLookalikeLines(_ roma: String, lyrics: String) -> Bool {
+        let stored = taggedLines(roma)
+        guard !stored.isEmpty else { return false }
+        let lines = taggedLines(lyrics)
+        let echoes = stored.keys.filter { lines[$0].map(Romanizer.isLatinWithLookalikes) ?? false }.count
+        return echoes * 5 >= stored.count * 4
     }
 
     /// 一份 LRC 按行首时间标签串分开:标签串 → 这一行的正文。没有标签的行跳过。
