@@ -137,12 +137,14 @@ type sodaLocalQueue struct {
 }
 
 var (
-	sodaLocalMu      sync.Mutex
-	sodaLocalIndex   map[string][]sodaLocalTrack
-	sodaLocalMod     time.Time
-	sodaLocalSize    int64
-	sodaLocalScanned time.Time
-	sodaLocalReady   bool
+	sodaLocalMu    sync.Mutex
+	sodaLocalIndex map[string][]sodaLocalTrack
+	// sodaLocalBareIndex:歌名带括号的曲目再按去掉括号的歌名挂一次,只给 sodaLocalEntriesLocked 在整名查不到时用。
+	sodaLocalBareIndex map[string][]sodaLocalTrack
+	sodaLocalMod       time.Time
+	sodaLocalSize      int64
+	sodaLocalScanned   time.Time
+	sodaLocalReady     bool
 )
 
 // sodaLocalKey 是索引键 —— 与 kugouLocalKey / qqLocalKey / neteaseLocalKey 同一把
@@ -203,7 +205,7 @@ func decodeSodaLocalQueue(raw []byte) ([]sodaLocalTrack, error) {
 func refreshSodaLocalIndexLocked() {
 	path := sodaLocalQueuePath()
 	if path == "" {
-		sodaLocalIndex, sodaLocalReady = nil, true
+		sodaLocalIndex, sodaLocalBareIndex, sodaLocalReady = nil, nil, true
 		return
 	}
 	st, err := os.Stat(path)
@@ -211,7 +213,7 @@ func refreshSodaLocalIndexLocked() {
 		// 没装汽水 / 没登录过 / 路径变了 —— 正常情况,静默退回网络解析。
 		// 被 TCC 拒了**不是**常态,那一种由 noteLocalCacheDenied 记一行,理由见它的头注。
 		noteLocalCacheDenied("soda", path, err)
-		sodaLocalIndex, sodaLocalReady = nil, true
+		sodaLocalIndex, sodaLocalBareIndex, sodaLocalReady = nil, nil, true
 		return
 	}
 	now := time.Now()
@@ -242,10 +244,12 @@ func refreshSodaLocalIndexLocked() {
 	// 文件版本解析成功才记:客户端正写到一半时读到的半截文件解不开,先记的话直到文件再变都不会重试。
 	sodaLocalMod, sodaLocalSize = st.ModTime(), st.Size()
 	idx := map[string][]sodaLocalTrack{}
+	bare := map[string][]sodaLocalTrack{}
 	for _, t := range tracks {
 		if t.Name == "" || len(t.Artists) == 0 {
 			continue
 		}
+		bareName := stripParens(t.Name)
 		// 多歌手曲目每个署名各挂一次,同 neteaselocal.go:本地标签常只写其中一位。
 		for _, a := range t.Artists {
 			key := sodaLocalKey(a.Name, t.Name)
@@ -253,9 +257,22 @@ func refreshSodaLocalIndexLocked() {
 				continue
 			}
 			idx[key] = append(idx[key], t)
+			if bareKey := sodaLocalKey(a.Name, bareName); bareKey != "" && bareKey != key {
+				bare[bareKey] = append(bare[bareKey], t)
+			}
 		}
 	}
-	sodaLocalIndex = idx
+	sodaLocalIndex, sodaLocalBareIndex = idx, bare
+}
+
+// sodaLocalEntriesLocked:同歌手同名的本地记录。整名查不到时按去掉括号的歌名再查一次:缓存 key 的歌名常去了括号
+// (「Untitled」),汽水记的是整名(「Untitled (How Does It Feel)」),只按整名查,在放汽水时这首拿不到本地曲目 id、
+// 同源加权也跟着没了。同名的另一版由 pickSodaLocalEntry 的时长闸挡。见 09 章决策 348。调用方持有 sodaLocalMu。
+func sodaLocalEntriesLocked(artist, title string) []sodaLocalTrack {
+	if ents := sodaLocalIndex[sodaLocalKey(artist, title)]; len(ents) > 0 {
+		return append([]sodaLocalTrack(nil), ents...)
+	}
+	return append([]sodaLocalTrack(nil), sodaLocalBareIndex[sodaLocalKey(artist, stripParens(title))]...)
 }
 
 // pickSodaLocalEntry 在同名同歌手的多条记录里挑一条。判据与 pickQQLocalEntry /
@@ -300,7 +317,7 @@ func sodaLocalTrackID(artist, title, album string, durationSecs float64) string 
 	}
 	sodaLocalMu.Lock()
 	refreshSodaLocalIndexLocked()
-	ents := append([]sodaLocalTrack(nil), sodaLocalIndex[key]...)
+	ents := sodaLocalEntriesLocked(artist, title)
 	sodaLocalMu.Unlock()
 	if len(ents) == 0 {
 		return ""
@@ -322,7 +339,7 @@ func sodaLocalInstrumental(artist, title, album string, durationSecs float64) bo
 	}
 	sodaLocalMu.Lock()
 	refreshSodaLocalIndexLocked()
-	ents := append([]sodaLocalTrack(nil), sodaLocalIndex[key]...)
+	ents := sodaLocalEntriesLocked(artist, title)
 	sodaLocalMu.Unlock()
 	if len(ents) == 0 {
 		return false

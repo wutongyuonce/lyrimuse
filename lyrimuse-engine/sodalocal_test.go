@@ -83,7 +83,7 @@ func resetSodaLocalIndex(t *testing.T, path string) {
 	t.Helper()
 	clear := func() {
 		sodaLocalMu.Lock()
-		sodaLocalIndex, sodaLocalReady, sodaLocalScanned = nil, false, time.Time{}
+		sodaLocalIndex, sodaLocalBareIndex, sodaLocalReady, sodaLocalScanned = nil, nil, false, time.Time{}
 		sodaLocalMod, sodaLocalSize = time.Time{}, 0
 		sodaLocalMu.Unlock()
 	}
@@ -94,6 +94,36 @@ func resetSodaLocalIndex(t *testing.T, path string) {
 		sodaLocalQueueOverride = old
 		clear()
 	})
+}
+
+// TestSodaLocalTrackIDBareTitle:缓存 key 的歌名去了括号(「Untitled」),汽水队列里记的是整名,整名查不到时按去掉括号的
+// 歌名找到它;整名有记录时用整名那条;时长对不上的同名另一版不认。
+func TestSodaLocalTrackIDBareTitle(t *testing.T) {
+	untitled := sodaTestTrack("Untitled (How Does It Feel)", "D'Angelo", "Voodoo", 430667, 1, 15000)
+	untitled["id"] = "6732381759981225985"
+	live := sodaTestTrack("Swish (Live)", "测试歌手", "现场", 300000, 1, 1000)
+	live["id"] = "live-1"
+	studio := sodaTestTrack("Swish", "测试歌手", "录音室", 200000, 1, 1000)
+	studio["id"] = "studio-1"
+	resetSodaLocalIndex(t, writeTestSodaQueue(t, []map[string]any{untitled, live, studio}))
+
+	cases := []struct {
+		name, artist, title, album string
+		durationSecs               float64
+		want                       string
+	}{
+		{"整名照旧认", "D'Angelo", "Untitled (How Does It Feel)", "Voodoo", 430.667, "6732381759981225985"},
+		{"key 去了括号:按去括号的歌名认出整名那条", "D'Angelo", "Untitled", "Voodoo", 430.667, "6732381759981225985"},
+		{"去括号那条时长对不上不认", "D'Angelo", "Untitled", "Voodoo", 250, ""},
+		{"整名有记录时用整名那条,不去拿带括号的另一版", "测试歌手", "Swish", "录音室", 200, "studio-1"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := sodaLocalTrackID(c.artist, c.title, c.album, c.durationSecs); got != c.want {
+				t.Fatalf("sodaLocalTrackID(%q,%q) = %q, 期望 %q", c.artist, c.title, got, c.want)
+			}
+		})
+	}
 }
 
 // TestSodaLocalInstrumental 覆盖这条路径的判定面:vocal==2 才算纯音乐,vocal==1 不算,
