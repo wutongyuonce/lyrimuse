@@ -57567,6 +57567,29 @@
           }
         }
       }
+    },
+    "已送达（%.1f 秒），取不到收听数据，推的是示例报告" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delivered (%.1f s). No listening data yet, so a sample report was sent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已送达（%.1f 秒），取不到收听数据，推的是示例报告"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已送達（%.1f 秒），取不到聆聽資料，推播的是範例報告"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

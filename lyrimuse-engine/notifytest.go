@@ -11,8 +11,9 @@ import (
 )
 
 // 推送页的「测一下」和推送记录里的「重发」:App 写一份请求,这里推一次,把结论写进结果文件。
-//   - 测一下 {"id","channel":{…}}:往那个渠道推一条示例消息。带的是完整的渠道(编辑表单里还没保存的也能测),
-//     所以文件里有密钥:App 以 0600 写,这里一读到就消费掉。渠道停用着也照推:测的就是它填得对不对。
+//   - 测一下 {"id","channel":{…}}:往那个渠道推一份这一期的日报(notifyTestMessage),按它选的那一套内容排。带的是
+//     完整的渠道(编辑表单里还没保存的也能测),所以文件里有密钥:App 以 0600 写,这里一读到就消费掉。渠道停用着也照推:
+//     测的就是它填得对不对。
 //   - 重发 {"id","resend":"<推送记录 id>"}:把那条没推成的原样(标题、正文、事件)推到同一个渠道,渠道按 id 从
 //     此刻的配置里找(改过地址、密钥的用改过的)。
 //   - 预览 {"id","preview":"daily"|"weekly"}:不推,算一份真实报告写进 notifyPreviewResultPath(digestpreview.go)。
@@ -44,6 +45,8 @@ type notifyTestResult struct {
 	Detail    string `json:"detail,omitempty"`
 	ElapsedMS int64  `json:"elapsed_ms"`
 	At        int64  `json:"at"`
+	// Sample:测一下推的是示例报告(取不到真实数据),App 据此提一句。
+	Sample bool `json:"sample,omitempty"`
 }
 
 type notifyTestResultFile struct {
@@ -67,10 +70,12 @@ func setNotifyPaths() {
 	_ = os.Remove(notifyPreviewResultPath)
 }
 
-// notifyTestTitle / notifyTestBody:「测一下」推的那条示例消息。
+// 「测一下」推的内容:这一期的真实日报,同预览取数(computeDigestPreview,结果也进预览的缓存)。取不到(没连账号、今天昨天
+// 都没听、取数出错)或等了 notifyTestDigestBudget 还没取完时推示例报告(digestSampleStats),标题写明是示例;没取完的那次
+// 照旧在后台取完、留给下一次。标题里都有「听歌」二字,钉钉 / 飞书机器人的自定义关键词填它就能过。见 15 章决策 96。
 const (
-	notifyTestTitle = "🎧 Lyrimuse 推送测试"
-	notifyTestBody  = "收到这条说明这个渠道能用了。听歌报告会推到这里。"
+	notifyTestDigestBudget = 20 * time.Second
+	notifyTestSampleTitle  = "🎧 听歌报告示例"
 )
 
 // startNotifyTestWatcher 由 run() 单开一个 goroutine,ctx 取消时退出。每次推送另起 goroutine(Telegram 走代理
@@ -116,9 +121,13 @@ func parseNotifyTestRequest(data []byte) (notifyTestRequest, bool) {
 
 // runNotifyTest 推一次并写结果。
 func runNotifyTest(req notifyTestRequest) {
-	ch, msg, r, ok := req.Channel, notifyMessage{Event: notifyEventTest, Title: notifyTestTitle, Body: notifyTestBody}, notifyResult{}, true
+	ch, r, ok, sample := req.Channel, notifyResult{}, true, false
+	var msg notifyMessage
 	if req.Resend != "" {
 		ch, msg, r, ok = resendTarget(req.Resend)
+	} else {
+		msg, sample = notifyTestMessage(time.Now(), notifyTestDigestBudget)
+		msg = msg.forChannel(ch)
 	}
 	if ok {
 		rememberNotifyChannelSecrets(ch)
@@ -127,7 +136,45 @@ func runNotifyTest(req notifyTestRequest) {
 	}
 	slog.Info("notify test: done", "resend", req.Resend != "", "platform", ch.Platform, "kind", r.Kind, "status", r.Status, "code", r.Code)
 	writeNotifyTestResult(notifyTestResult{ID: req.ID, OK: r.OK, Kind: r.Kind, Status: r.Status, Code: r.Code,
-		Detail: r.Detail, ElapsedMS: r.Elapsed.Milliseconds(), At: time.Now().Unix()})
+		Detail: r.Detail, ElapsedMS: r.Elapsed.Milliseconds(), At: time.Now().Unix(), Sample: sample})
+}
+
+// notifyTestMessage:测一下要推的那份报告(默认标题、完整正文,推前按渠道改写),sample 为 true 是示例。
+func notifyTestMessage(now time.Time, budget time.Duration) (notifyMessage, bool) {
+	done := make(chan digestPreviewResult, 1)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), digestPreviewTimeout)
+		defer cancel()
+		done <- computeDigestPreview(ctx, liveConfig(), "daily", now)
+	}()
+	title, stats, sample := notifyTestSampleTitle, digestSampleStats(), true
+	select {
+	case res := <-done:
+		if res.OK && res.Digest != nil {
+			title, stats, sample = res.Title, *res.Digest, false
+		}
+	case <-time.After(budget):
+	}
+	return notifyMessage{Event: notifyEventTest, Title: title, Body: digestBody(stats), Digest: &stats}, sample
+}
+
+// digestSampleStats:示例日报,同 App 预览的测试数据(Core `NotificationPreview.sample(.daily)`,两边对得上靠共用样例
+// preview.json 的 samples.daily),每类截到「每类列出」的条数。
+func digestSampleStats() digestStats {
+	a := func(name string, n int) digestTally { return digestTally{Name: name, Count: n} }
+	t := func(name, sub string, n int) digestTally { return digestTally{Name: name, Sub: sub, Count: n} }
+	return digestStats{
+		TotalPlays: 42, TotalDurationMs: 9_960_000,
+		TopArtists: topTallies([]digestTally{a("周杰伦", 12), a("方大同", 8), a("陈绮贞", 5), a("孙燕姿", 4), a("陶喆", 3),
+			a("王菲", 3), a("林忆莲", 2), a("卢广仲", 2), a("Prince", 1), a("D'Angelo", 1)}),
+		TopAlbums: topTallies([]digestTally{t("叶惠美", "周杰伦", 6), t("15", "方大同", 5), t("还是会寂寞", "陈绮贞", 4),
+			t("未完成", "孙燕姿", 3), t("黑色柳丁", "陶喆", 3), t("只爱陌生人", "王菲", 2), t("范特西", "周杰伦", 2),
+			t("野花", "林忆莲", 2), t("100 种生活", "卢广仲", 2), t("橙月", "方大同", 1)}),
+		TopTracks: topTallies([]digestTally{t("晴天", "周杰伦", 4), t("春风吹", "方大同", 3), t("越洋电话", "陈绮贞", 3),
+			t("遇见", "孙燕姿", 2), t("爱很简单", "陶喆", 2), t("红豆", "王菲", 2), t("以父之名", "周杰伦", 2),
+			t("至少还有你", "林忆莲", 1), t("我爱你", "卢广仲", 1), t("特别的人", "方大同", 1)}),
+		NewArtists: 2, NewArtistNames: []string{"Prince", "D'Angelo"},
+	}
 }
 
 // resendTarget:重发那条推送记录要推的渠道和消息。记录或渠道找不到(记录被挤出去了、渠道删了)时 ok 为 false,

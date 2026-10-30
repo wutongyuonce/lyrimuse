@@ -298,7 +298,7 @@ func TestRememberNotifyChannelSecrets(t *testing.T) {
 	}
 }
 
-// 「测一下」:读请求、推一条示例、结果按 id 写进结果文件(留最近几次),也进推送记录。
+// 「测一下」:读请求、推一份报告(没连账号时是示例,按渠道选的那一套排)、结果按 id 写进结果文件(留最近几次),也进推送记录。
 func TestNotifyTestRequestRoundTrip(t *testing.T) {
 	logPath := withNotifyLogForTest(t)
 	dir := t.TempDir()
@@ -306,10 +306,12 @@ func TestNotifyTestRequestRoundTrip(t *testing.T) {
 	notifyTestResultPath = filepath.Join(dir, "result.json")
 	t.Cleanup(func() { notifyTestResultPath = prevResult })
 
-	var gotBody map[string]any
+	var gotBodies []map[string]any
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, _ := io.ReadAll(r.Body)
-		json.Unmarshal(b, &gotBody)
+		var m map[string]any
+		json.Unmarshal(b, &m)
+		gotBodies = append(gotBodies, m)
 		io.WriteString(w, `{"code":200}`)
 	}))
 	defer srv.Close()
@@ -318,15 +320,21 @@ func TestNotifyTestRequestRoundTrip(t *testing.T) {
 		t.Error("没有 id 的请求不收")
 	}
 	for i, id := range []string{"t1", "t2"} {
-		raw, _ := json.Marshal(notifyTestRequest{ID: id, Channel: notifyChannel{ID: "c", Platform: platformBark, URL: " " + srv.URL + "/key ", Enabled: i == 0}})
+		style := []string{"", digestStyleBrief}[i]
+		raw, _ := json.Marshal(notifyTestRequest{ID: id, Channel: notifyChannel{ID: "c", Platform: platformBark, URL: " " + srv.URL + "/key ", Enabled: i == 0,
+			DigestStyle: style}})
 		req, ok := parseNotifyTestRequest(raw)
 		if !ok {
 			t.Fatal("合法请求没收下")
 		}
 		runNotifyTest(req)
 	}
-	if gotBody["title"] != notifyTestTitle {
-		t.Errorf("推的是示例消息, got %v", gotBody)
+	if len(gotBodies) != 2 || gotBodies[0]["title"] != notifyTestSampleTitle || !strings.HasPrefix(gotBodies[0]["body"].(string), "共播放 42 次") ||
+		!strings.Contains(gotBodies[0]["body"].(string), "Top 歌手") {
+		t.Errorf("没连账号时推完整的示例报告, got %v", gotBodies)
+	}
+	if len(gotBodies) == 2 && (!strings.Contains(gotBodies[1]["body"].(string), "最常听的歌手：周杰伦") || strings.Contains(gotBodies[1]["body"].(string), "Top 歌手")) {
+		t.Errorf("选了精简的渠道推精简那一套, got %v", gotBodies[1])
 	}
 	b, err := os.ReadFile(notifyTestResultPath)
 	if err != nil {
@@ -334,10 +342,10 @@ func TestNotifyTestRequestRoundTrip(t *testing.T) {
 	}
 	var f notifyTestResultFile
 	json.Unmarshal(b, &f)
-	if len(f.Results) != 2 || f.Results[0].ID != "t1" || f.Results[1].ID != "t2" || !f.Results[1].OK || f.Results[1].Kind != notifyKindOK {
+	if len(f.Results) != 2 || f.Results[0].ID != "t1" || f.Results[1].ID != "t2" || !f.Results[1].OK || f.Results[1].Kind != notifyKindOK || !f.Results[1].Sample {
 		t.Errorf("results = %+v", f.Results)
 	}
-	if e := readNotifyLog(logPath).Entries; len(e) != 2 || e[0].Event != notifyEventTest {
+	if e := readNotifyLog(logPath).Entries; len(e) != 2 || e[0].Event != notifyEventTest || e[1].Style != digestStyleBrief {
 		t.Errorf("测试也进推送记录(停用的渠道照测), got %+v", e)
 	}
 }
@@ -444,7 +452,7 @@ func TestNotifySharedSamples(t *testing.T) {
 	}
 	var rf notifyTestResultFile
 	strict("test-result.json", &rf)
-	if len(rf.Results) != 2 || rf.Results[1].Kind != notifyKindNotFound {
+	if len(rf.Results) != 2 || rf.Results[1].Kind != notifyKindNotFound || !rf.Results[0].Sample {
 		t.Errorf("results = %+v", rf.Results)
 	}
 }

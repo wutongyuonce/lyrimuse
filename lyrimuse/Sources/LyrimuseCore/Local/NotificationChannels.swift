@@ -239,7 +239,8 @@ public struct NotificationFailure: Equatable, Sendable {
 }
 
 /// 推送页「测一下」和推送记录「重发」的 App ↔ 引擎通道(引擎 notifytest.go)。
-///   - 请求 `lyrimuse-notify-test-request.json`:`{"id","channel":{…}}` 测一个渠道(带着密钥,0600 写),
+///   - 请求 `lyrimuse-notify-test-request.json`:`{"id","channel":{…}}` 往一个渠道推一份这一期的日报、按它选的报告内容排
+///     (带着密钥,0600 写;取不到收听数据时推示例,结果里 `sample` 为 true),
 ///     `{"id","resend":"<推送记录 id>"}` 重发一条没推成的。
 ///   - 结果 `lyrimuse-notify-test-result.json`:最近 10 次的结论,按 id 找。
 public enum NotificationTest {
@@ -255,9 +256,11 @@ public enum NotificationTest {
         public let detail: String?
         public let elapsedMS: Int64
         public let at: Int64
+        /// 测一下推的是示例报告。
+        public let sample: Bool?
 
         enum CodingKeys: String, CodingKey {
-            case id, ok, kind, status, code, detail, at
+            case id, ok, kind, status, code, detail, at, sample
             case elapsedMS = "elapsed_ms"
         }
 
@@ -315,7 +318,7 @@ public enum NotificationTest {
     /// 预览要取账号全部歌手(判新听的歌手),第一次一二十秒;等这么久还没有结果就当没取到。
     public static let previewTimeout: TimeInterval = 60
 
-    /// 引擎每 0.5 秒看一次请求;Telegram 一次推送走代理回退最长十几秒,排过版的被拒还要再推一次纯文本,前后能到三十秒。
-    /// 过了这么久还没有结果就当引擎没接手(没在跑)。
-    public static let timeout: TimeInterval = 45
+    /// 引擎每 0.5 秒看一次请求;测一下先取这一期的数据(最多 20 秒,引擎 notifyTestDigestBudget),Telegram 一次推送走代理回退
+    /// 最长十几秒,排过版的被拒还要再推一次纯文本,前后能到三十秒。过了这么久还没有结果就当引擎没接手(没在跑)。
+    public static let timeout: TimeInterval = 60
 }

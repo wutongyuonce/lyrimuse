@@ -45,9 +45,9 @@ func (ch notifyChannel) digestStyle(legacy digestTemplate) (string, digestTempla
 	return digestStyleFull, digestTemplate{}
 }
 
-// forChannel:听歌报告按这个渠道选的那一套改写标题正文。进来的是默认标题和完整正文;不是听歌报告的原样返回。
+// forChannel:听歌报告(和「测一下」推的那份)按这个渠道选的那一套改写标题正文。进来的是默认标题和完整正文;不带报告的原样返回。
 func (m notifyMessage) forChannel(ch notifyChannel) notifyMessage {
-	if m.Digest == nil || !notifyEventIsDigest(m.Event) {
+	if m.Digest == nil {
 		return m
 	}
 	style, tpl := ch.digestStyle(features().DigestTemplate)

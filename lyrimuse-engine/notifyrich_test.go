@@ -226,18 +226,23 @@ func TestPlainFallbackPayload(t *testing.T) {
 	if tr := tracks[0].(map[string]any); tr["name"] != "a_b|c" || tr["artist"] != "D~E" || tr["count"] != 5.0 {
 		t.Errorf("%v", tr)
 	}
-	test := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformWebhook, URL: "https://example.com/h"},
-		notifyMessage{Event: notifyEventTest, Title: notifyTestTitle, Body: notifyTestBody}).body)
-	if _, ok := test["data"]; ok {
-		t.Error("测一下那条没有 data")
+	test := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformWebhook, URL: "https://example.com/h"}, sampleTestMessage()).body)
+	if d, _ := test["data"].(map[string]any); test["event"] != notifyEventTest || d["total_plays"] != 42.0 {
+		t.Errorf("测一下那条带着报告的 data、事件是 test: %v", test)
 	}
 }
 
-// 「测一下」那条也按平台格式发,测得出这个渠道收不收排过版的消息。
+func sampleTestMessage() notifyMessage {
+	s := digestSampleStats()
+	return notifyMessage{Event: notifyEventTest, Title: notifyTestSampleTitle, Body: digestBody(s), Digest: &s}
+}
+
+// 「测一下」那份报告跟真推一样按平台排版,测得出这个渠道收不收排过版的消息。
 func TestRichTestMessage(t *testing.T) {
-	msg := notifyMessage{Event: notifyEventTest, Title: notifyTestTitle, Body: notifyTestBody}
+	useDigestFeatures(t, featureFlags{DigestTopN: 3})
+	msg := sampleTestMessage()
 	tg := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformTelegram, URL: "TOKEN", ChatID: "42"}, msg).body)
-	if tg["text"] != "<b>"+notifyTestTitle+"</b>\n"+notifyTestBody || tg["parse_mode"] != "HTML" {
+	if text, _ := tg["text"].(string); !strings.HasPrefix(text, "<b>"+notifyTestSampleTitle+"</b>") || !strings.Contains(text, "周杰伦") || tg["parse_mode"] != "HTML" {
 		t.Errorf("%v", tg)
 	}
 	fs := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformFeishu, URL: "https://open.feishu.cn/x"}, msg).body)
@@ -245,8 +250,12 @@ func TestRichTestMessage(t *testing.T) {
 		t.Errorf("%v", fs)
 	}
 	bk := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, msg).body)
-	if bk["body"] != notifyTestBody || bk["image"] != nil {
+	if bk["title"] != notifyTestSampleTitle || bk["body"] != msg.Body {
 		t.Errorf("%v", bk)
+	}
+	brief := msg.forChannel(notifyChannel{DigestStyle: digestStyleBrief})
+	if brief.Style != digestStyleBrief || !strings.Contains(brief.Body, "最常听的歌手：周杰伦") {
+		t.Errorf("测一下也按渠道选的那一套改写: %+v", brief)
 	}
 }
 

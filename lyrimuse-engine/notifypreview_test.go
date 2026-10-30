@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -102,6 +103,17 @@ func (s notifyPreviewSample) statsFor(kind string, topN int) digestStats {
 	return digestStats{TotalPlays: in.TotalPlays, TotalDurationMs: in.TotalDurationMs,
 		TopArtists: clip(artists), TopAlbums: clip(albums), TopTracks: clip(tracks),
 		PrevPlays: in.PrevPlays, PrevLabel: in.PrevLabel, NewArtists: in.NewArtists, NewArtistNames: in.NewArtistNames}
+}
+
+// 测一下取不到真实数据时推的示例,跟 App 预览的测试数据是同一份。
+func TestDigestSampleStatsMatchesPreviewSample(t *testing.T) {
+	s := loadNotifyPreviewSample(t)
+	for _, n := range []int{1, 3, 10} {
+		useDigestFeatures(t, featureFlags{DigestTopN: n})
+		if got, want := digestSampleStats(), s.statsFor("daily", n); !reflect.DeepEqual(got, want) {
+			t.Errorf("top %d:\n got  %+v\n want %+v", n, got, want)
+		}
+	}
 }
 
 func TestNotifyPreviewSampleMatchesDigest(t *testing.T) {

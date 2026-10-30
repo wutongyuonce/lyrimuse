@@ -505,6 +505,8 @@ func runSettingsInteractionTests() {
         expectEqual(resend?["resend"] as? String, "e2", "重发: 请求带推送记录 id")
         let resultSample = (try? Data(contentsOf: samples.appendingPathComponent("test-result.json"))) ?? Data()
         expectEqual(T.result(id: "r1", in: resultSample)?.ok, true, "测一下: 读得懂共用样例")
+        expectEqual(T.result(id: "r1", in: resultSample)?.sample, true, "测一下: 读得懂推的是示例报告")
+        expectEqual(T.result(id: "r2", in: resultSample)?.sample, nil, "测一下: 没写 sample 当不是示例")
         expectEqual(T.result(id: "r2", in: resultSample)?.failure?.kind, .notFound, "测一下: 按 id 找到自己的那次")
         expectEqual(T.result(id: "zz", in: resultSample) == nil, true, "测一下: 别人的结果不算")
         expectEqual(NotificationRouting.routes(fromConfig: channelsSample), ["weekly_digest": ["c1"], "daily_digest": ["c1", "c2"]],

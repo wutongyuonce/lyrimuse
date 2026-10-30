@@ -34,7 +34,8 @@ final class NotificationDeliveryWatcher: ObservableObject {
 @MainActor
 enum NotificationTestRunner {
     enum Outcome: Equatable {
-        case delivered(seconds: Double)
+        /// sample:测一下推的是示例报告(取不到收听数据)。
+        case delivered(seconds: Double, sample: Bool)
         case failed(NotificationFailure)
         /// 请求写不出去,或引擎一直没接手(后台服务没在跑)。
         case noEngine
@@ -63,7 +64,7 @@ enum NotificationTestRunner {
             guard let data = FileIO.read(resultURL), let result = NotificationTest.result(id: id, in: data) else { continue }
             NotificationDeliveryWatcher.shared.refresh()
             if let failure = result.failure { return .failed(failure) }
-            return .delivered(seconds: Double(result.elapsedMS) / 1000)
+            return .delivered(seconds: Double(result.elapsedMS) / 1000, sample: result.sample ?? false)
         }
         return .noEngine
     }
@@ -836,8 +837,10 @@ struct NotificationChannelEditor: View {
             .foregroundStyle(.secondary)
         } else if let outcome = testOutcome {
             switch outcome {
-            case .delivered(let seconds):
-                Label(String(format: L10n.t("已送达（%.1f 秒），去手机或群聊里看看收到没有"), seconds), systemImage: "checkmark.circle.fill")
+            case .delivered(let seconds, let sample):
+                Label(String(format: sample ? L10n.t("已送达（%.1f 秒），取不到收听数据，推的是示例报告")
+                                            : L10n.t("已送达（%.1f 秒），去手机或群聊里看看收到没有"), seconds),
+                      systemImage: "checkmark.circle.fill")
                     .font(.system(size: 12))
                     .foregroundStyle(.green)
             case .failed(let failure):

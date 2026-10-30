@@ -1122,6 +1122,7 @@
 "已连接：%@" = "Connected: %@";
 "已送达" = "Delivered";
 "已送达（%.1f 秒），去手机或群聊里看看收到没有" = "Delivered (%.1f s). Check that it arrived on your phone or in the group";
+"已送达（%.1f 秒），取不到收听数据，推的是示例报告" = "Delivered (%.1f s). No listening data yet, so a sample report was sent";
 "已选 %@ 首" = "%@ selected";
 "已选 %d / %d" = "%d of %d selected";
 "已选择 %@ 首" = "%@ Songs Selected";
