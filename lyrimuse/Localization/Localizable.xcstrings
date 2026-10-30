@@ -51368,40 +51368,6 @@
         }
       }
     },
-    "在 %@ 上看完整榜单" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "See the full chart on %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 %@ 上看完整排行"
-          }
-        }
-      }
-    },
-    "数据来自 %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Data from %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料來自 %@"
-          }
-        }
-      }
-    },
     "真实数据 · %@" : {
       "extractionState" : "manual",
       "localizations" : {

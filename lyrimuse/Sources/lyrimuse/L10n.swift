@@ -26,6 +26,11 @@ import LyrimuseCore
 // 跟打包出来的实际目录名一致),并在 generate-strings.py 的 TARGETS 和 build.sh 的拷贝那两行
 // 登记;②在 `current` 里加一条判断分支返回对应目录名;③LyrimuseCore `UILanguage` 的 `localeIdentifier(for:)`、`pack(forLocalization:)` 加映射。
 // 查找/兜底逻辑(bundle/t(_:))不用改。
+extension ReportLanguage {
+    /// 听歌报告的语言 = 当前界面语言(features.json 的 report_language 也是写它)。
+    static var ui: ReportLanguage { ReportLanguage(L10n.current) }
+}
+
 enum L10n {
     // current/bundle 每次读都重新解析,不用 `static let` 一次性缓存——否则运行期切换
     // 语言不会立刻生效,得强制重启 App。这里故意不 import AppSettings.shared 来读这个

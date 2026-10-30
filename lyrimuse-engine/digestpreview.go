@@ -98,8 +98,8 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 	case "daily":
 		midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 		yesterday := midnight.AddDate(0, 0, -1)
-		today := candidate{midnight, now, fmt.Sprintf("🎧 今日听歌报告（%s）", now.Format("01-02")), dailyDigestPeriod(midnight, now)}
-		prev := candidate{yesterday, midnight, fmt.Sprintf("🎧 昨日听歌报告（%s）", yesterday.Format("01-02")), dailyDigestPeriod(yesterday, midnight)}
+		today := candidate{midnight, now, dailyDigestTitle(dw(), now, midnight), dailyDigestPeriod(midnight, now)}
+		prev := candidate{yesterday, midnight, dailyDigestTitle(dw(), now, yesterday), dailyDigestPeriod(yesterday, midnight)}
 		// 跟真推送选同一种:推送时间在中午以后推当天,先看今天;在中午以前推前一天,先看昨天(dailyDigestTarget)。
 		cands = []candidate{today, prev}
 		if digestPushMinutes() < digestPushSameDayFrom {
@@ -111,14 +111,14 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 			res.Reason = digestPreviewFetch
 			return res
 		}
-		cands = []candidate{{time.Unix(from, 0), time.Unix(to, 0), weeklyDigestTitle(source, from, to), weeklyDigestPeriod(from, to)}}
+		cands = []candidate{{time.Unix(from, 0), time.Unix(to, 0), weeklyDigestTitle(dw(), source, from, to), weeklyDigestPeriod(from, to)}}
 	default:
 		res.Reason = digestPreviewFetch
 		return res
 	}
 
 	for _, c := range cands {
-		key := fmt.Sprintf("%s|%s|%d|%d", kind, source, digestTopN(), c.from.Unix())
+		key := fmt.Sprintf("%s|%s|%d|%d|%s", kind, source, digestTopN(), c.from.Unix(), features().ReportLanguage)
 		digestPreviewMu.Lock()
 		hit, ok := digestPreviewCache[key]
 		digestPreviewMu.Unlock()

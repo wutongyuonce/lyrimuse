@@ -119,12 +119,12 @@ func TestDigestSampleStatsMatchesPreviewSample(t *testing.T) {
 func TestNotifyPreviewSampleMatchesDigest(t *testing.T) {
 	s := loadNotifyPreviewSample(t)
 	now := time.Date(s.Now.Year, time.Month(s.Now.Month), s.Now.Day, s.Now.Hour, s.Now.Minute, 0, 0, time.Local)
-	if _, _, _, title := dailyDigestTarget(now, defaultDigestPushMinutes); title != s.DailyTitle {
-		t.Errorf("daily title = %q, want %q", title, s.DailyTitle)
+	if _, from, _ := dailyDigestTarget(now, defaultDigestPushMinutes); dailyDigestTitle(digestWordsFor(digestLangHans), now, from) != s.DailyTitle {
+		t.Errorf("daily title = %q, want %q", dailyDigestTitle(digestWordsFor(digestLangHans), now, from), s.DailyTitle)
 	}
 	// 样例的 now 是周二;上周 = 前一个周一 00:00 到本周一 00:00(ListenBrainz 源的开区间)。
 	monday := time.Date(now.Year(), now.Month(), now.Day()-int((now.Weekday()+6)%7), 0, 0, 0, 0, time.Local)
-	if got := weeklyDigestTitle(digestSourceListenBrainz, monday.AddDate(0, 0, -7).Unix(), monday.Unix()); got != s.WeeklyTitle {
+	if got := weeklyDigestTitle(digestWordsFor(digestLangHans), digestSourceListenBrainz, monday.AddDate(0, 0, -7).Unix(), monday.Unix()); got != s.WeeklyTitle {
 		t.Errorf("weekly title = %q, want %q", got, s.WeeklyTitle)
 	}
 	if len(s.Bodies) == 0 {

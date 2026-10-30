@@ -48,11 +48,12 @@ public struct DigestTemplate: Equatable, Sendable {
 
     /// 这一期每个占位符的值;取不到的是空串。
     public static func values(defaultTitle: String, defaultBody: String, stats s: NotificationPreview.Stats,
-                              topN: Int) -> [String: String] {
+                              topN: Int, lang: ReportLanguage = .zhHans) -> [String: String] {
+        let w = lang.words
         var v = Dictionary(uniqueKeysWithValues: placeholders.map { ($0, "") })
         v["title"] = defaultTitle
         v["body"] = defaultBody
-        v["summary"] = NotificationPreview.summaryLine(s)
+        v["summary"] = NotificationPreview.summaryLine(s, lang: lang)
         v["plays"] = String(s.totalPlays)
         v["source"] = s.sourceName
         v["from"] = s.from
@@ -61,27 +62,26 @@ public struct DigestTemplate: Equatable, Sendable {
         if s.prevPlays > 0, !s.prevLabel.isEmpty, !s.truncated {
             v["prev_plays"] = String(s.prevPlays)
             v["prev_label"] = s.prevLabel
-            let pct = Int((Double(s.totalPlays - s.prevPlays) * 100 / Double(s.prevPlays)).rounded())
-            v["change"] = pct > 0 ? "↑\(pct)%" : pct < 0 ? "↓\(-pct)%" : "持平"
+            v["change"] = NotificationPreview.change(s.totalPlays, s.prevPlays, lang: lang)
         }
         let minutes = s.totalDurationMs / 60000
         if minutes >= 60 {
-            v["duration"] = "\(minutes / 60) 小时 \(minutes % 60) 分"
+            v["duration"] = w.f("value_hm", [("h", String(minutes / 60)), ("m", String(minutes % 60))])
         } else if minutes > 0 {
-            v["duration"] = "\(minutes) 分"
+            v["duration"] = w.f("value_m", [("m", String(minutes))])
         }
         let n = DigestTopN.resolved(topN)
         func list(_ tallies: [NotificationPreview.Tally]) -> (lines: String, first: String) {
-            let top = tallies.prefix(n).map { $0.sub.isEmpty ? ($0.name, $0.count) : ("\($0.sub) - \($0.name)", $0.count) }
-            let lines = top.enumerated().map { "\($0.offset + 1). \($0.element.0)（\($0.element.1)）" }
-            return (lines.joined(separator: "\n"), top.first?.0 ?? "")
+            let top = Array(tallies.prefix(n))
+            let lines = top.enumerated().map { NotificationPreview.plainItem($0.offset + 1, $0.element, w) }
+            return (lines.joined(separator: "\n"), top.first.map { NotificationPreview.plainName($0, w) } ?? "")
         }
         (v["top_artists"], v["top_artist"]) = list(s.artists)
         (v["top_albums"], v["top_album"]) = list(s.albums)
         (v["top_tracks"], v["top_track"]) = list(s.tracks)
         if s.newArtists > 0 {
             v["new_artists"] = String(s.newArtists)
-            v["new_artist_names"] = s.newArtistNames.joined(separator: "、")
+            v["new_artist_names"] = s.newArtistNames.joined(separator: w["name_sep"])
         }
         return v
     }
@@ -125,37 +125,18 @@ public struct DigestTemplate: Equatable, Sendable {
     }
 
     /// 三套预设写成模板的样子(标题都是默认标题,存成空),编辑器照它显示、从它改起;精简、概况的纯文本正文就是渲染它。
-    /// 同引擎 digestPresetTemplates,共用样例 shared/testdata/notify/presets.json。自定义返回 nil。见 15 章决策 91。
-    public static func preset(_ style: DigestStyle) -> DigestTemplate? {
-        switch style {
-        case .full: return DigestTemplate(body: expandedDefaultBody)
-        case .brief:
-            return DigestTemplate(body: "{summary}\n最常听的歌手：{top_artist}\n最常听的专辑：{top_album}\n最常听的歌曲：{top_track}\n"
-                                  + "新听了 {new_artists} 位歌手：{new_artist_names}")
-        case .overview: return DigestTemplate(body: "{summary}\n新听了 {new_artists} 位歌手")
-        case .custom: return nil
-        }
+    /// 正文按报告语言取(ReportWords 的 preset_*)。同引擎 digestPresetTemplate,共用样例 shared/testdata/notify/presets.json
+    /// (简体)、words.json(三种语言)。自定义返回 nil。见 15 章决策 91。
+    public static func preset(_ style: DigestStyle, lang: ReportLanguage = .zhHans) -> DigestTemplate? {
+        style == .custom ? nil : DigestTemplate(body: lang.words["preset_" + style.rawValue])
     }
 
     /// 多行的占位符:插进正文时单独占一行,标题里不插。
     public static let multilinePlaceholders: Set<String> = ["body", "top_artists", "top_albums", "top_tracks"]
 
     /// 默认正文拆成各段的写法(编辑器「拆开默认正文」):换掉 `{body}` 后能逐段删改、调顺序。只有一条的榜单也照列,
-    /// 新歌手那句不带「等」,其余跟默认正文一样。
-    public static let expandedDefaultBody = """
-    {summary}
-
-    Top 歌手：
-    {top_artists}
-
-    Top 专辑：
-    {top_albums}
-
-    Top 歌曲：
-    {top_tracks}
-
-    新听了 {new_artists} 位歌手：{new_artist_names}
-    """
+    /// 新歌手那句不带「等」,其余跟默认正文一样。就是完整那套预设。
+    public static func expandedDefaultBody(lang: ReportLanguage = .zhHans) -> String { lang.words["preset_full"] }
 
     /// 模板里 `{小写字母和下划线}` 的位置(UTF-16,给 NSTextView 上色用)和认不认得,同 renderText 的匹配方式。
     public struct Token: Equatable, Sendable {
@@ -208,8 +189,8 @@ public struct DigestTemplate: Equatable, Sendable {
 
     /// 这一期实际推的标题和正文;哪一段没自定义、或者渲染出来是空的,那一段用默认(同引擎 renderDigestTemplate)。
     public func render(defaultTitle: String, defaultBody: String, stats: NotificationPreview.Stats,
-                       topN: Int) -> (title: String, body: String) {
-        let v = Self.values(defaultTitle: defaultTitle, defaultBody: defaultBody, stats: stats, topN: topN)
+                       topN: Int, lang: ReportLanguage = .zhHans) -> (title: String, body: String) {
+        let v = Self.values(defaultTitle: defaultTitle, defaultBody: defaultBody, stats: stats, topN: topN, lang: lang)
         var outTitle = defaultTitle, outBody = defaultBody
         if !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let r = Self.renderText(title, values: v).replacingOccurrences(of: "\n", with: " ")

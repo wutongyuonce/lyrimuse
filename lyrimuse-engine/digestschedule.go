@@ -83,8 +83,8 @@ func digestDue(now, last time.Time, interval time.Duration) bool {
 }
 
 // dailyDigestTarget 判这一次检查该推哪一期日报:最近一个已经到了的推送时刻对应的那一天。day 是该期的本地日期(YYYY-MM-DD),
-// 跟 dailyDigestState 里记的比;[from, to) 是取数区间 —— 那一天还没过完就到现在为止,过完了就是一整天。
-func dailyDigestTarget(now time.Time, minutes int) (day string, from, to time.Time, title string) {
+// 跟 dailyDigestState 里记的比;[from, to) 是取数区间 —— 那一天还没过完就到现在为止,过完了就是一整天。标题见 dailyDigestTitle。
+func dailyDigestTarget(now time.Time, minutes int) (day string, from, to time.Time) {
 	today := midnightOf(now)
 	push := digestPushAt(today, minutes)
 	if now.Before(push) {
@@ -98,15 +98,19 @@ func dailyDigestTarget(now time.Time, minutes int) (day string, from, to time.Ti
 	if now.Before(to) {
 		to = now
 	}
+	return from.Format(time.DateOnly), from, to
+}
+
+// dailyDigestTitle:from 那一天的日报标题,今天、昨天写明,再早的只写日期。
+func dailyDigestTitle(w digestWords, now, from time.Time) string {
+	today := midnightOf(now)
 	switch {
 	case from.Equal(today):
-		title = fmt.Sprintf("🎧 今日听歌报告（%s）", from.Format("01-02"))
+		return w.f("title_today", "date", w.date(from))
 	case from.Equal(today.AddDate(0, 0, -1)):
-		title = fmt.Sprintf("🎧 昨日听歌报告（%s）", from.Format("01-02"))
-	default:
-		title = fmt.Sprintf("🎧 听歌报告（%s）", from.Format("01-02"))
+		return w.f("title_yesterday", "date", w.date(from))
 	}
-	return from.Format(time.DateOnly), from, to, title
+	return w.f("title_day", "date", w.date(from))
 }
 
 // ---- 时区 ----

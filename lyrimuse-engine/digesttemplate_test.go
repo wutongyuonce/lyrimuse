@@ -92,7 +92,7 @@ func TestDigestPushWithCustomTemplate(t *testing.T) {
 		{ID: "tg", Platform: platformTelegram, URL: srv.URL + "/bot123:abc", ChatID: "42", Enabled: true},
 	}})
 	stats := digestStats{TotalPlays: 7, TopArtists: []digestTally{{Name: "A", Count: 4}, {Name: "B", Count: 3}}}
-	if err := digestPush(a, notifyEventDaily, "🎧 今日听歌报告（10-22）", stats); err != nil {
+	if err := digestPush(a, notifyEventDaily, fixedTitle("🎧 今日听歌报告（10-22）"), stats); err != nil {
 		t.Fatal(err)
 	}
 	if len(bodies) != 1 {
@@ -110,10 +110,10 @@ func TestDigestPushWithCustomTemplate(t *testing.T) {
 		t.Errorf("推送记录: 标题是推出去的、Key 是默认标题、Custom, got %+v", e)
 	}
 	// 同一期(过了零点写成「昨日」)不推第二份;下一期标题一样也照推。
-	if err := digestPush(a, notifyEventDaily, "🎧 昨日听歌报告（10-22）", stats); err != nil || len(bodies) != 1 {
+	if err := digestPush(a, notifyEventDaily, fixedTitle("🎧 昨日听歌报告（10-22）"), stats); err != nil || len(bodies) != 1 {
 		t.Errorf("同一期不推第二份, err=%v pushes=%d", err, len(bodies))
 	}
-	if err := digestPush(a, notifyEventDaily, "🎧 今日听歌报告（10-23）", stats); err != nil || len(bodies) != 2 {
+	if err := digestPush(a, notifyEventDaily, fixedTitle("🎧 今日听歌报告（10-23）"), stats); err != nil || len(bodies) != 2 {
 		t.Errorf("下一期照推, err=%v pushes=%d", err, len(bodies))
 	}
 }

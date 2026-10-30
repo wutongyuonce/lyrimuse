@@ -45,11 +45,11 @@ func previousCalendarPeriod(now time.Time, kind calendarDigestKind) (from, to ti
 
 // calendarDigestTitle 推送标题。写明是哪一个月 / 哪一年，不用「上月」「去年」：引擎停过
 // 一阵再启动时，推出来的可能不是紧挨着的上一个周期。
-func calendarDigestTitle(kind calendarDigestKind, from time.Time) string {
+func calendarDigestTitle(w digestWords, kind calendarDigestKind, from time.Time) string {
 	if kind == calendarDigestYearly {
-		return fmt.Sprintf("🏆 %d 年度听歌小结", from.Year())
+		return w.month("title_year", from.Year(), from.Month())
 	}
-	return fmt.Sprintf("📅 %d 年 %d 月听歌小结", from.Year(), int(from.Month()))
+	return w.month("title_month", from.Year(), from.Month())
 }
 
 // calendarDigestState 持久化「已推送到哪个周期」(周期键)，防重启后重推。每月、年度各一份文件。
@@ -165,7 +165,7 @@ func (p *poller) calendarDigest(now time.Time, env digestEnv, kind calendarDiges
 		return
 	}
 	addDigestExtras(env, source, calendarDigestPeriod(kind, from, to, source == digestSourceListenBrainz), &stats, now)
-	err := digestPush(env.alerter, event, calendarDigestTitle(kind, from), stats)
+	err := digestPush(env.alerter, event, func(w digestWords) string { return calendarDigestTitle(w, kind, from) }, stats)
 	p.noteDigestPushResult(event, now, env.alerter, err)
 	if err != nil {
 		return

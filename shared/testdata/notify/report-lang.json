@@ -1,0 +1,430 @@
+{
+  "cases": [
+    {
+      "lang": "zh-hans",
+      "kind": "daily",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎧 今日听歌报告（10-20）",
+      "summary": "共播放 42 次 · 约 2 小时 46 分",
+      "body": "共播放 42 次 · 约 2 小时 46 分\n\nTop 歌手：\n1. 周杰伦（12）\n2. 方大同（8）\n3. 陈绮贞（5）\n\nTop 专辑：\n1. 周杰伦 - 叶惠美（6）\n2. 方大同 - 15（5）\n3. 陈绮贞 - 还是会寂寞（4）\n\nTop 歌曲：\n1. 周杰伦 - 晴天（4）\n2. 方大同 - 春风吹（3）\n3. 陈绮贞 - 越洋电话（3）\n\n新听了 2 位歌手：Prince、D'Angelo",
+      "sections": [
+        {
+          "heading": "歌手",
+          "title": "Top 歌手",
+          "lines": [
+            "1. 周杰伦 · 12",
+            "2. 方大同 · 8",
+            "3. 陈绮贞 · 5"
+          ]
+        },
+        {
+          "heading": "专辑",
+          "title": "Top 专辑",
+          "lines": [
+            "1. 叶惠美 — 周杰伦 · 6",
+            "2. 15 — 方大同 · 5",
+            "3. 还是会寂寞 — 陈绮贞 · 4"
+          ]
+        },
+        {
+          "heading": "歌曲",
+          "title": "Top 歌曲",
+          "lines": [
+            "1. 晴天 — 周杰伦 · 4",
+            "2. 春风吹 — 方大同 · 3",
+            "3. 越洋电话 — 陈绮贞 · 3"
+          ]
+        }
+      ],
+      "new_line": "新听了 2 位歌手：Prince、D'Angelo"
+    },
+    {
+      "lang": "zh-hans",
+      "kind": "daily",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎧 今日听歌报告（10-20）",
+      "summary": "共播放 42 次 · 约 2 小时 46 分",
+      "body": "共播放 42 次 · 约 2 小时 46 分\n最常听的歌手：周杰伦\n最常听的专辑：周杰伦 - 叶惠美\n最常听的歌曲：周杰伦 - 晴天\n新听了 2 位歌手：Prince、D'Angelo",
+      "sections": [
+        {
+          "heading": "最常听",
+          "title": "最常听",
+          "lines": [
+            "歌手：周杰伦 · 12",
+            "专辑：叶惠美 — 周杰伦 · 6",
+            "歌曲：晴天 — 周杰伦 · 4"
+          ]
+        }
+      ],
+      "new_line": "新听了 2 位歌手：Prince、D'Angelo"
+    },
+    {
+      "lang": "zh-hans",
+      "kind": "daily",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎧 今日听歌报告（10-20）",
+      "summary": "共播放 42 次 · 约 2 小时 46 分",
+      "body": "共播放 42 次 · 约 2 小时 46 分\n新听了 2 位歌手",
+      "sections": null,
+      "new_line": "新听了 2 位歌手"
+    },
+    {
+      "lang": "zh-hans",
+      "kind": "weekly",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎵 上周听歌小结（10-12~10-18）",
+      "summary": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分",
+      "body": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分\n\nTop 歌手：\n1. 方大同（61）\n2. 周杰伦（48）\n3. Prince（33）\n\nTop 专辑：\n1. 方大同 - JTW 西游记（29）\n2. 周杰伦 - 叶惠美（21）\n3. Prince - For You（17）\n\nTop 歌曲：\n1. 方大同 - NMW（11）\n2. 周杰伦 - 晴天（9）\n3. Prince - For You（8）\n\n新听了 5 位歌手：D'Angelo、林忆莲、卢广仲 等",
+      "sections": [
+        {
+          "heading": "歌手",
+          "title": "Top 歌手",
+          "lines": [
+            "1. 方大同 · 61",
+            "2. 周杰伦 · 48",
+            "3. Prince · 33"
+          ]
+        },
+        {
+          "heading": "专辑",
+          "title": "Top 专辑",
+          "lines": [
+            "1. JTW 西游记 — 方大同 · 29",
+            "2. 叶惠美 — 周杰伦 · 21",
+            "3. For You — Prince · 17"
+          ]
+        },
+        {
+          "heading": "歌曲",
+          "title": "Top 歌曲",
+          "lines": [
+            "1. NMW — 方大同 · 11",
+            "2. 晴天 — 周杰伦 · 9",
+            "3. For You — Prince · 8"
+          ]
+        }
+      ],
+      "new_line": "新听了 5 位歌手：D'Angelo、林忆莲、卢广仲 等"
+    },
+    {
+      "lang": "zh-hans",
+      "kind": "weekly",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎵 上周听歌小结（10-12~10-18）",
+      "summary": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分",
+      "body": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分\n最常听的歌手：方大同\n最常听的专辑：方大同 - JTW 西游记\n最常听的歌曲：方大同 - NMW\n新听了 5 位歌手：D'Angelo、林忆莲、卢广仲",
+      "sections": [
+        {
+          "heading": "最常听",
+          "title": "最常听",
+          "lines": [
+            "歌手：方大同 · 61",
+            "专辑：JTW 西游记 — 方大同 · 29",
+            "歌曲：NMW — 方大同 · 11"
+          ]
+        }
+      ],
+      "new_line": "新听了 5 位歌手：D'Angelo、林忆莲、卢广仲 等"
+    },
+    {
+      "lang": "zh-hans",
+      "kind": "weekly",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎵 上周听歌小结（10-12~10-18）",
+      "summary": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分",
+      "body": "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分\n新听了 5 位歌手",
+      "sections": null,
+      "new_line": "新听了 5 位歌手"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "daily",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎧 今日聽歌報告（10-20）",
+      "summary": "共播放 42 次 · 約 2 小時 46 分",
+      "body": "共播放 42 次 · 約 2 小時 46 分\n\nTop 歌手：\n1. 周杰伦（12）\n2. 方大同（8）\n3. 陈绮贞（5）\n\nTop 專輯：\n1. 周杰伦 - 叶惠美（6）\n2. 方大同 - 15（5）\n3. 陈绮贞 - 还是会寂寞（4）\n\nTop 歌曲：\n1. 周杰伦 - 晴天（4）\n2. 方大同 - 春风吹（3）\n3. 陈绮贞 - 越洋电话（3）\n\n新聽了 2 位歌手：Prince、D'Angelo",
+      "sections": [
+        {
+          "heading": "歌手",
+          "title": "Top 歌手",
+          "lines": [
+            "1. 周杰伦 · 12",
+            "2. 方大同 · 8",
+            "3. 陈绮贞 · 5"
+          ]
+        },
+        {
+          "heading": "專輯",
+          "title": "Top 專輯",
+          "lines": [
+            "1. 叶惠美 — 周杰伦 · 6",
+            "2. 15 — 方大同 · 5",
+            "3. 还是会寂寞 — 陈绮贞 · 4"
+          ]
+        },
+        {
+          "heading": "歌曲",
+          "title": "Top 歌曲",
+          "lines": [
+            "1. 晴天 — 周杰伦 · 4",
+            "2. 春风吹 — 方大同 · 3",
+            "3. 越洋电话 — 陈绮贞 · 3"
+          ]
+        }
+      ],
+      "new_line": "新聽了 2 位歌手：Prince、D'Angelo"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "daily",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎧 今日聽歌報告（10-20）",
+      "summary": "共播放 42 次 · 約 2 小時 46 分",
+      "body": "共播放 42 次 · 約 2 小時 46 分\n最常聽的歌手：周杰伦\n最常聽的專輯：周杰伦 - 叶惠美\n最常聽的歌曲：周杰伦 - 晴天\n新聽了 2 位歌手：Prince、D'Angelo",
+      "sections": [
+        {
+          "heading": "最常聽",
+          "title": "最常聽",
+          "lines": [
+            "歌手：周杰伦 · 12",
+            "專輯：叶惠美 — 周杰伦 · 6",
+            "歌曲：晴天 — 周杰伦 · 4"
+          ]
+        }
+      ],
+      "new_line": "新聽了 2 位歌手：Prince、D'Angelo"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "daily",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎧 今日聽歌報告（10-20）",
+      "summary": "共播放 42 次 · 約 2 小時 46 分",
+      "body": "共播放 42 次 · 約 2 小時 46 分\n新聽了 2 位歌手",
+      "sections": null,
+      "new_line": "新聽了 2 位歌手"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "weekly",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎵 上週聽歌小結（10-12~10-18）",
+      "summary": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分",
+      "body": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分\n\nTop 歌手：\n1. 方大同（61）\n2. 周杰伦（48）\n3. Prince（33）\n\nTop 專輯：\n1. 方大同 - JTW 西游记（29）\n2. 周杰伦 - 叶惠美（21）\n3. Prince - For You（17）\n\nTop 歌曲：\n1. 方大同 - NMW（11）\n2. 周杰伦 - 晴天（9）\n3. Prince - For You（8）\n\n新聽了 5 位歌手：D'Angelo、林忆莲、卢广仲 等",
+      "sections": [
+        {
+          "heading": "歌手",
+          "title": "Top 歌手",
+          "lines": [
+            "1. 方大同 · 61",
+            "2. 周杰伦 · 48",
+            "3. Prince · 33"
+          ]
+        },
+        {
+          "heading": "專輯",
+          "title": "Top 專輯",
+          "lines": [
+            "1. JTW 西游记 — 方大同 · 29",
+            "2. 叶惠美 — 周杰伦 · 21",
+            "3. For You — Prince · 17"
+          ]
+        },
+        {
+          "heading": "歌曲",
+          "title": "Top 歌曲",
+          "lines": [
+            "1. NMW — 方大同 · 11",
+            "2. 晴天 — 周杰伦 · 9",
+            "3. For You — Prince · 8"
+          ]
+        }
+      ],
+      "new_line": "新聽了 5 位歌手：D'Angelo、林忆莲、卢广仲 等"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "weekly",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎵 上週聽歌小結（10-12~10-18）",
+      "summary": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分",
+      "body": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分\n最常聽的歌手：方大同\n最常聽的專輯：方大同 - JTW 西游记\n最常聽的歌曲：方大同 - NMW\n新聽了 5 位歌手：D'Angelo、林忆莲、卢广仲",
+      "sections": [
+        {
+          "heading": "最常聽",
+          "title": "最常聽",
+          "lines": [
+            "歌手：方大同 · 61",
+            "專輯：JTW 西游记 — 方大同 · 29",
+            "歌曲：NMW — 方大同 · 11"
+          ]
+        }
+      ],
+      "new_line": "新聽了 5 位歌手：D'Angelo、林忆莲、卢广仲 等"
+    },
+    {
+      "lang": "zh-hant",
+      "kind": "weekly",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎵 上週聽歌小結（10-12~10-18）",
+      "summary": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分",
+      "body": "共播放 286 次（前一週 241，↑19%） · 約 17 小時 52 分\n新聽了 5 位歌手",
+      "sections": null,
+      "new_line": "新聽了 5 位歌手"
+    },
+    {
+      "lang": "en",
+      "kind": "daily",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎧 Today's Listening Report (Oct 20)",
+      "summary": "42 plays · about 2 h 46 min",
+      "body": "42 plays · about 2 h 46 min\n\nTop artists:\n1. 周杰伦 (12)\n2. 方大同 (8)\n3. 陈绮贞 (5)\n\nTop albums:\n1. 周杰伦 - 叶惠美 (6)\n2. 方大同 - 15 (5)\n3. 陈绮贞 - 还是会寂寞 (4)\n\nTop tracks:\n1. 周杰伦 - 晴天 (4)\n2. 方大同 - 春风吹 (3)\n3. 陈绮贞 - 越洋电话 (3)\n\n2 new artists: Prince, D'Angelo",
+      "sections": [
+        {
+          "heading": "Artists",
+          "title": "Top artists",
+          "lines": [
+            "1. 周杰伦 · 12",
+            "2. 方大同 · 8",
+            "3. 陈绮贞 · 5"
+          ]
+        },
+        {
+          "heading": "Albums",
+          "title": "Top albums",
+          "lines": [
+            "1. 叶惠美 — 周杰伦 · 6",
+            "2. 15 — 方大同 · 5",
+            "3. 还是会寂寞 — 陈绮贞 · 4"
+          ]
+        },
+        {
+          "heading": "Tracks",
+          "title": "Top tracks",
+          "lines": [
+            "1. 晴天 — 周杰伦 · 4",
+            "2. 春风吹 — 方大同 · 3",
+            "3. 越洋电话 — 陈绮贞 · 3"
+          ]
+        }
+      ],
+      "new_line": "2 new artists: Prince, D'Angelo"
+    },
+    {
+      "lang": "en",
+      "kind": "daily",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎧 Today's Listening Report (Oct 20)",
+      "summary": "42 plays · about 2 h 46 min",
+      "body": "42 plays · about 2 h 46 min\nTop artist: 周杰伦\nTop album: 周杰伦 - 叶惠美\nTop track: 周杰伦 - 晴天\nNew artists (2): Prince, D'Angelo",
+      "sections": [
+        {
+          "heading": "Most played",
+          "title": "Most played",
+          "lines": [
+            "Artist: 周杰伦 · 12",
+            "Album: 叶惠美 — 周杰伦 · 6",
+            "Track: 晴天 — 周杰伦 · 4"
+          ]
+        }
+      ],
+      "new_line": "2 new artists: Prince, D'Angelo"
+    },
+    {
+      "lang": "en",
+      "kind": "daily",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎧 Today's Listening Report (Oct 20)",
+      "summary": "42 plays · about 2 h 46 min",
+      "body": "42 plays · about 2 h 46 min\nNew artists: 2",
+      "sections": null,
+      "new_line": "2 new artists"
+    },
+    {
+      "lang": "en",
+      "kind": "weekly",
+      "style": "full",
+      "top_n": 3,
+      "title": "🎵 Last Week's Listening Digest (Oct 12 – Oct 18)",
+      "summary": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min",
+      "body": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min\n\nTop artists:\n1. 方大同 (61)\n2. 周杰伦 (48)\n3. Prince (33)\n\nTop albums:\n1. 方大同 - JTW 西游记 (29)\n2. 周杰伦 - 叶惠美 (21)\n3. Prince - For You (17)\n\nTop tracks:\n1. 方大同 - NMW (11)\n2. 周杰伦 - 晴天 (9)\n3. Prince - For You (8)\n\n5 new artists: D'Angelo, 林忆莲, 卢广仲 and more",
+      "sections": [
+        {
+          "heading": "Artists",
+          "title": "Top artists",
+          "lines": [
+            "1. 方大同 · 61",
+            "2. 周杰伦 · 48",
+            "3. Prince · 33"
+          ]
+        },
+        {
+          "heading": "Albums",
+          "title": "Top albums",
+          "lines": [
+            "1. JTW 西游记 — 方大同 · 29",
+            "2. 叶惠美 — 周杰伦 · 21",
+            "3. For You — Prince · 17"
+          ]
+        },
+        {
+          "heading": "Tracks",
+          "title": "Top tracks",
+          "lines": [
+            "1. NMW — 方大同 · 11",
+            "2. 晴天 — 周杰伦 · 9",
+            "3. For You — Prince · 8"
+          ]
+        }
+      ],
+      "new_line": "5 new artists: D'Angelo, 林忆莲, 卢广仲 and more"
+    },
+    {
+      "lang": "en",
+      "kind": "weekly",
+      "style": "brief",
+      "top_n": 3,
+      "title": "🎵 Last Week's Listening Digest (Oct 12 – Oct 18)",
+      "summary": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min",
+      "body": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min\nTop artist: 方大同\nTop album: 方大同 - JTW 西游记\nTop track: 方大同 - NMW\nNew artists (5): D'Angelo, 林忆莲, 卢广仲",
+      "sections": [
+        {
+          "heading": "Most played",
+          "title": "Most played",
+          "lines": [
+            "Artist: 方大同 · 61",
+            "Album: JTW 西游记 — 方大同 · 29",
+            "Track: NMW — 方大同 · 11"
+          ]
+        }
+      ],
+      "new_line": "5 new artists: D'Angelo, 林忆莲, 卢广仲 and more"
+    },
+    {
+      "lang": "en",
+      "kind": "weekly",
+      "style": "overview",
+      "top_n": 3,
+      "title": "🎵 Last Week's Listening Digest (Oct 12 – Oct 18)",
+      "summary": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min",
+      "body": "286 plays (vs. 241 the week before, ↑19%) · about 17 h 52 min\nNew artists: 5",
+      "sections": null,
+      "new_line": "5 new artists"
+    }
+  ]
+}

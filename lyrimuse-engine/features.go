@@ -207,6 +207,8 @@ type featureFlagsFile struct {
 	// SystemLanguage:App 写进来的本机系统语言(AppleLocale 下划线前那段转小写,App 侧 SystemLanguage),
 	// LyricsTranslationLanguage 是 auto 时按它解析。
 	SystemLanguage string `json:"system_language,omitempty"`
+	// ReportLanguage:App 写进来的界面语言(zh-hans / zh-hant / en),听歌报告按它用哪种语言写(digestlang.go)。
+	ReportLanguage string `json:"report_language,omitempty"`
 	// LyricsMachineTranslation:歌词源没带社区译文时,用机器翻译补一份(见 translate.go)。
 	// **默认关**,跟其它附加功能一致 —— 它会把歌词正文发给第三方翻译服务,而现有的五个
 	// 歌词源只发歌手/歌名,这是一条新的外发数据,该由用户显式同意。
@@ -337,6 +339,8 @@ type featureFlags struct {
 	// SystemLanguage:App 写进来的本机系统语言(AppleLocale 下划线前那段转小写,见 featureFlagsFile.SystemLanguage),
 	// App 还没写过时是空串。按界面语言问 YouTube Music 时用(ytmusicDisplayLanguage)。
 	SystemLanguage string
+	// ReportLanguage:听歌报告用哪种语言写,缺省 / 认不得按简体(parseDigestLang)。
+	ReportLanguage digestLang
 	// 见上面同名字段的注释。只被 needsTranslationBackfill/backfillTranslation 读取。
 	LyricsMachineTranslation bool
 	// LaunchLyrimuseOnPlayers 是逐播放器勾选的集合(键是 player* 常量),空 = 不跟随。只被 companionlaunch.go 读取。
@@ -473,6 +477,7 @@ func buildFeatureFlags(f featureFlagsFile) featureFlags {
 		LyricsWordFormats:         resolveLyricsWordFormats(f.LyricsWordFormats),
 		LyricsTranslationLanguage: resolveLyricsTranslationLanguage(f.LyricsTranslationLanguage, f.SystemLanguage),
 		SystemLanguage:            strings.ToLower(strings.TrimSpace(f.SystemLanguage)),
+		ReportLanguage:            parseDigestLang(f.ReportLanguage),
 		LyricsMachineTranslation:  boolOr(f.LyricsMachineTranslation, false),
 		LaunchLyrimuseOnPlayers:   resolveLaunchLyrimuseOnPlayers(f.LaunchLyrimuseOnPlayers),
 		LyricsDecisionTrace:       boolOr(f.LyricsDecisionTrace, false),

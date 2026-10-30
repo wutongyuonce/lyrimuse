@@ -65,7 +65,7 @@ func (p *poller) dailyDigest(now time.Time, env digestEnv) {
 	}
 	p.dailyLastCheckedAt = now.Round(0)
 
-	day, from, to, title := dailyDigestTarget(now, digestPushMinutes())
+	day, from, to := dailyDigestTarget(now, digestPushMinutes())
 	if day <= p.dailyState.load() {
 		return // 这一期已经推送过了
 	}
@@ -95,7 +95,7 @@ func (p *poller) dailyDigest(now time.Time, env digestEnv) {
 		return
 	}
 	addDigestExtras(env, source, dailyDigestPeriod(from, to), &stats, now)
-	err = digestPush(env.alerter, notifyEventDaily, title, stats)
+	err = digestPush(env.alerter, notifyEventDaily, func(w digestWords) string { return dailyDigestTitle(w, now, from) }, stats)
 	p.noteDigestPushResult(notifyEventDaily, now, env.alerter, err)
 	if err != nil {
 		return // 推送没成功,不标记已推送,下次检查再推(永久失败等到下一个推送时刻)

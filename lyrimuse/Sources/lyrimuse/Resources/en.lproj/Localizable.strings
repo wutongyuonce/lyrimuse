@@ -807,7 +807,6 @@
 "图标样式" = "Icon Style";
 "圆角" = "Corners";
 "在 %@ 上收听" = "Listen on %@";
-"在 %@ 上看完整榜单" = "See the full chart on %@";
 "在 %@ 中打开" = "Open in %@";
 "在 %@ 中搜索" = "Search in %@";
 "在 %@ 中播放" = "Play in %@";
@@ -1432,7 +1431,6 @@
 "数据文件夹" = "Data Folder";
 "数据来源" = "Data Source";
 "数据来源：%@" = "Data source: %@";
-"数据来自 %@" = "Data from %@";
 "整体延后 %@ 秒" = "%@ s later overall";
 "整体提前 %@ 秒" = "%@ s earlier overall";
 "整句标注罗马字" = "Romaji for the whole line";

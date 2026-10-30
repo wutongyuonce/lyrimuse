@@ -9,6 +9,7 @@ import (
 	"net/http"
 	neturl "net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -467,12 +468,13 @@ func (p *poller) noteDigestPushResult(event string, now time.Time, a *alerter, e
 		template: features().DigestTemplate, topN: digestTopN()}
 }
 
-// digestPush 推送一条听歌报告——各 cadence 各自算好 title、拿到 stats 后调用同一份文案
-// 拼装逻辑(digestBody)。一个渠道都没收下才返回错误，调用方不记「已推送」，下次检查重推。
+// digestPush 推送一条听歌报告——各 cadence 各自给出按某种语言算标题的函数、拿到 stats 后调用同一份文案
+// 拼装逻辑(digestBody)。标题按当前报告语言算,认「同一期」的键按简体算(digestHansTitle)。一个渠道都没收下才返回错误，
+// 调用方不记「已推送」，下次检查重推。
 // 正文是纯文本那一份(推送记录、纯文本平台用);按平台排版的由 notifyrich.go 照 stats 另排。每个渠道推哪一套内容
 // (精简、概况、自定义模板)在推到那个渠道前改写(notifyMessage.forChannel);判「这一期推过没有」按默认标题(notifyMessage.Key)。
-func digestPush(a *alerter, event, title string, stats digestStats) error {
-	return a.sendMessage(notifyMessage{Event: event, Title: title, Body: digestBody(stats), Digest: &stats, Key: title})
+func digestPush(a *alerter, event string, title func(digestWords) string, stats digestStats) error {
+	return a.sendMessage(notifyMessage{Event: event, Title: title(dw()), Body: digestBody(stats), Digest: &stats, Key: digestHansTitle(title)})
 }
 
 // digestShown:某一类要不要列。只有超过 1 条时才列(只有一条时排名没有意义)，「每类列出」设成 1 时例外：用户要的就是各类第一名。
@@ -480,23 +482,33 @@ func digestShown(list []digestTally) bool {
 	return len(list) > 1 || (len(list) == 1 && digestTopN() == 1)
 }
 
+// digestTallyName:纯文本里一行的名字,专辑、歌曲带歌手(「歌手 - 歌名」)。
+func digestTallyName(w digestWords, t digestTally) string {
+	if t.Sub == "" {
+		return t.Name
+	}
+	return w.f("pair", "artist", t.Sub, "name", t.Name)
+}
+
 // digestSummaryLine 是正文第一行:总次数、跟上一期比、听了多久。按平台排版的也用这一行。
 func digestSummaryLine(stats digestStats) string {
+	w := dw()
 	var b strings.Builder
 	if stats.Truncated {
-		fmt.Fprintf(&b, "共播放 %d 次以上（记录太多，只统计了最近这些）", stats.TotalPlays)
+		b.WriteString(w.count("plays_truncated", stats.TotalPlays))
 	} else {
-		fmt.Fprintf(&b, "共播放 %d 次", stats.TotalPlays)
+		b.WriteString(w.count("plays", stats.TotalPlays))
 		if stats.PrevPlays > 0 && stats.PrevLabel != "" {
-			fmt.Fprintf(&b, "（%s %d，%s）", stats.PrevLabel, stats.PrevPlays, digestChange(stats.TotalPlays, stats.PrevPlays))
+			b.WriteString(w.f("compare", "label", stats.PrevLabel, "prev", strconv.Itoa(stats.PrevPlays),
+				"change", digestChange(stats.TotalPlays, stats.PrevPlays)))
 		}
 	}
 	if stats.TotalDurationMs > 0 {
 		totalMin := stats.TotalDurationMs / 60000
 		if totalMin >= 60 {
-			fmt.Fprintf(&b, " · 约 %d 小时 %d 分", totalMin/60, totalMin%60)
+			b.WriteString(w.f("duration_hm", "h", strconv.FormatInt(totalMin/60, 10), "m", strconv.FormatInt(totalMin%60, 10)))
 		} else {
-			fmt.Fprintf(&b, " · 约 %d 分", totalMin)
+			b.WriteString(w.f("duration_m", "m", strconv.FormatInt(totalMin, 10)))
 		}
 	}
 	return b.String()
@@ -511,7 +523,7 @@ func digestChange(cur, prev int) string {
 	case pct < 0:
 		return fmt.Sprintf("↓%d%%", -pct)
 	}
-	return "持平"
+	return dw()["flat"]
 }
 
 // digestNewArtistsLine:「新听了 44 位歌手：A、B、C 等」。名字列全了就不写「等」;一位都没有返回空。
@@ -519,39 +531,34 @@ func digestNewArtistsLine(stats digestStats) string {
 	if stats.NewArtists <= 0 {
 		return ""
 	}
-	line := fmt.Sprintf("新听了 %d 位歌手", stats.NewArtists)
+	w := dw()
+	line := w.count("new_artists", stats.NewArtists)
 	if len(stats.NewArtistNames) == 0 {
 		return line
 	}
-	line += "：" + strings.Join(stats.NewArtistNames, "、")
+	line += w["names_lead"] + strings.Join(stats.NewArtistNames, w["name_sep"])
 	if stats.NewArtists > len(stats.NewArtistNames) {
-		line += " 等"
+		line += w["more"]
 	}
 	return line
 }
 
 // digestBody 拼推送正文:第一行(digestSummaryLine),然后歌手、专辑、歌曲(digestShown),最后一句新听的歌手。
 func digestBody(stats digestStats) string {
-	shown := digestShown
+	w := dw()
 	var b strings.Builder
 	b.WriteString(digestSummaryLine(stats))
 	b.WriteString("\n")
-	if shown(stats.TopArtists) {
-		b.WriteString("\nTop 歌手：\n")
-		for i, t := range stats.TopArtists {
-			fmt.Fprintf(&b, "%d. %s（%d）\n", i+1, t.Name, t.Count)
+	for _, c := range []struct {
+		head string
+		list []digestTally
+	}{{"head_artists", stats.TopArtists}, {"head_albums", stats.TopAlbums}, {"head_tracks", stats.TopTracks}} {
+		if !digestShown(c.list) {
+			continue
 		}
-	}
-	if shown(stats.TopAlbums) {
-		b.WriteString("\nTop 专辑：\n")
-		for i, t := range stats.TopAlbums {
-			fmt.Fprintf(&b, "%d. %s - %s（%d）\n", i+1, t.Sub, t.Name, t.Count)
-		}
-	}
-	if shown(stats.TopTracks) {
-		b.WriteString("\nTop 歌曲：\n")
-		for i, t := range stats.TopTracks {
-			fmt.Fprintf(&b, "%d. %s - %s（%d）\n", i+1, t.Sub, t.Name, t.Count)
+		b.WriteString("\n" + w[c.head] + w["colon"] + "\n")
+		for i, t := range c.list {
+			b.WriteString(w.f("item", "i", strconv.Itoa(i+1), "name", digestTallyName(w, t), "n", strconv.Itoa(t.Count)) + "\n")
 		}
 	}
 	if line := digestNewArtistsLine(stats); line != "" {

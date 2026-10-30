@@ -36,22 +36,23 @@ func dailyDigestPeriod(from, to time.Time) digestPeriod {
 // weeklyDigestPeriod:跟前一周比。报告本身叫「上周听歌小结」,拿来比的那周叫「前一周」,不叫「上周」。
 func weeklyDigestPeriod(from, to int64) digestPeriod {
 	f, t := time.Unix(from, 0), time.Unix(to, 0)
-	return digestPeriod{from: f, to: t, prevFrom: f.Add(-t.Sub(f)), prevTo: f, prevLabel: "前一周", lbRange: "week"}
+	return digestPeriod{from: f, to: t, prevFrom: f.Add(-t.Sub(f)), prevTo: f, prevLabel: dw()["prev_week"], lbRange: "week"}
 }
 
 // calendarDigestPeriod:月报跟再上一个月比(写「9 月」,跨年写「2025 年 12 月」),年报跟再上一年比(「2025 年」)。
 // 写具体月份、年份而不写「上月」,理由同 calendarDigestTitle。
 func calendarDigestPeriod(kind calendarDigestKind, from, to time.Time, lbStats bool) digestPeriod {
 	p := digestPeriod{from: from, to: to, prevTo: from, statsAPI: lbStats, lbRange: lbStatsRange(kind)}
+	w := dw()
 	if kind == calendarDigestYearly {
 		p.prevFrom = from.AddDate(-1, 0, 0)
-		p.prevLabel = fmt.Sprintf("%d 年", p.prevFrom.Year())
+		p.prevLabel = w.month("prev_year", p.prevFrom.Year(), p.prevFrom.Month())
 		return p
 	}
 	p.prevFrom = from.AddDate(0, -1, 0)
-	p.prevLabel = fmt.Sprintf("%d 月", int(p.prevFrom.Month()))
+	p.prevLabel = w.month("prev_month", p.prevFrom.Year(), p.prevFrom.Month())
 	if p.prevFrom.Year() != from.Year() {
-		p.prevLabel = fmt.Sprintf("%d 年 %d 月", p.prevFrom.Year(), int(p.prevFrom.Month()))
+		p.prevLabel = w.month("prev_month_year", p.prevFrom.Year(), p.prevFrom.Month())
 	}
 	return p
 }

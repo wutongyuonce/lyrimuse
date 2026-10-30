@@ -501,11 +501,11 @@ func TestDigestLastCheckedAtIsWallClock(t *testing.T) {
 func TestWeeklyDigestTitleEndDate(t *testing.T) {
 	mon := time.Date(2026, 10, 12, 0, 0, 0, 0, time.Local)
 	nextMon := mon.AddDate(0, 0, 7)
-	if got := weeklyDigestTitle(digestSourceListenBrainz, mon.Unix(), nextMon.Unix()); got != "🎵 上周听歌小结（10-12~10-18）" {
+	if got := weeklyDigestTitle(digestWordsFor(digestLangHans), digestSourceListenBrainz, mon.Unix(), nextMon.Unix()); got != "🎵 上周听歌小结（10-12~10-18）" {
 		t.Errorf("ListenBrainz 标题 = %q", got)
 	}
 	from, to := time.Date(2026, 10, 11, 12, 0, 0, 0, time.Local), time.Date(2026, 10, 18, 12, 0, 0, 0, time.Local)
-	if got := weeklyDigestTitle(digestSourceLastfm, from.Unix(), to.Unix()); got != "🎵 上周听歌小结（10-11~10-18）" {
+	if got := weeklyDigestTitle(digestWordsFor(digestLangHans), digestSourceLastfm, from.Unix(), to.Unix()); got != "🎵 上周听歌小结（10-11~10-18）" {
 		t.Errorf("Last.fm 标题 = %q", got)
 	}
 }

@@ -72,8 +72,9 @@ enum NotificationTestRunner {
 
 /// 推送没成的原因翻成一句话加一句该怎么改。按平台说:同一个「鉴权不过」,钉钉是安全设置、飞书是签名、Telegram 是 Token。
 enum NotificationFailureText {
-    /// 报告和测试消息的标题里都有「听歌」二字,钉钉 / 飞书机器人的自定义关键词填它就都能过。
-    static let keyword = "听歌"
+    /// 报告的标题里都有这个词(简体「听歌」、繁体「聽歌」、英文「Listening」,跟报告语言走),钉钉 / 飞书机器人的
+    /// 自定义关键词填它就都能过。
+    static var keyword: String { ReportLanguage.ui.words["keyword"] }
 
     static func summary(_ f: NotificationFailure, platform: NotificationPlatform?) -> String {
         let reason: String
@@ -596,7 +597,7 @@ struct NotificationChannelEditor: View {
         .onDisappear { testTask?.cancel() }
         .sheet(item: $templateEdit, onDismiss: templateEditorClosed) { edit in
             DigestTemplateEditor(original: edit.seed) { saved in
-                let style = DigestStyle.matching(saved)
+                let style = DigestStyle.matching(saved, lang: .ui)
                 if style == .custom { draft.digestTemplate = saved }
                 draft.digestStyle = style.rawValue
                 templateEdit = nil
@@ -785,7 +786,7 @@ struct NotificationChannelEditor: View {
 
     /// 这一档的模板:预设是它自己那份,自定义是渠道存的那份。
     private var shownTemplate: DigestTemplate {
-        DigestTemplate.preset(digestStyle) ?? draft.digestTemplate
+        DigestTemplate.preset(digestStyle, lang: .ui) ?? draft.digestTemplate
     }
 
     private func openTemplateEditor(_ seed: DigestTemplate) {

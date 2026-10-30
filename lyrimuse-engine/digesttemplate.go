@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -73,10 +72,11 @@ func digestPlaceholders(defaultTitle, defaultBody string, s digestStats, topN in
 		v["prev_label"] = s.PrevLabel
 		v["change"] = digestChange(s.TotalPlays, s.PrevPlays)
 	}
+	w := dw()
 	if m := s.TotalDurationMs / 60000; m >= 60 {
-		v["duration"] = fmt.Sprintf("%d 小时 %d 分", m/60, m%60)
+		v["duration"] = w.f("value_hm", "h", strconv.FormatInt(m/60, 10), "m", strconv.FormatInt(m%60, 10))
 	} else if m > 0 {
-		v["duration"] = fmt.Sprintf("%d 分", m)
+		v["duration"] = w.f("value_m", "m", strconv.FormatInt(m, 10))
 	}
 	list := func(tallies []digestTally) (lines, first string) {
 		if len(tallies) > topN {
@@ -84,16 +84,13 @@ func digestPlaceholders(defaultTitle, defaultBody string, s digestStats, topN in
 		}
 		var b strings.Builder
 		for i, t := range tallies {
-			name := t.Name
-			if t.Sub != "" {
-				name = t.Sub + " - " + t.Name
-			}
+			name := digestTallyName(w, t)
 			if i == 0 {
 				first = name
 			} else {
 				b.WriteString("\n")
 			}
-			fmt.Fprintf(&b, "%d. %s（%d）", i+1, name, t.Count)
+			b.WriteString(w.f("item", "i", strconv.Itoa(i+1), "name", name, "n", strconv.Itoa(t.Count)))
 		}
 		return b.String(), first
 	}
@@ -102,7 +99,7 @@ func digestPlaceholders(defaultTitle, defaultBody string, s digestStats, topN in
 	v["top_tracks"], v["top_track"] = list(s.TopTracks)
 	if s.NewArtists > 0 {
 		v["new_artists"] = strconv.Itoa(s.NewArtists)
-		v["new_artist_names"] = strings.Join(s.NewArtistNames, "、")
+		v["new_artist_names"] = strings.Join(s.NewArtistNames, w["name_sep"])
 	}
 	return v
 }

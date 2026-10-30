@@ -32,16 +32,19 @@ struct NotificationPreviewCard: View {
         return nil
     }
 
-    fileprivate var stats: NotificationPreview.Stats { real?.stats ?? NotificationPreview.sample(kind) }
+    fileprivate var stats: NotificationPreview.Stats { real?.stats ?? NotificationPreview.sample(kind, lang: lang) }
+
+    /// 报告语言:跟界面语言走。
+    fileprivate var lang: ReportLanguage { .ui }
 
     private var custom: Bool { style == .custom }
 
     var body: some View {
-        let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now)
-        let defaultText = NotificationPreview.body(stats, topN: features.digestTopN)
+        let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now, lang: lang)
+        let defaultText = NotificationPreview.body(stats, topN: features.digestTopN, lang: lang)
         let (title, text) = custom
-            ? template.render(defaultTitle: defaultTitle, defaultBody: defaultText, stats: stats, topN: features.digestTopN)
-            : (defaultTitle, NotificationPreview.body(stats, topN: features.digestTopN, style: style))
+            ? template.render(defaultTitle: defaultTitle, defaultBody: defaultText, stats: stats, topN: features.digestTopN, lang: lang)
+            : (defaultTitle, NotificationPreview.body(stats, topN: features.digestTopN, style: style, lang: lang))
         return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Text(L10n.t("预览"))
@@ -262,7 +265,7 @@ enum NotificationPreviewLoader {
     private static func cacheKey(_ kind: NotificationPreview.Kind) -> String {
         let features = FeatureSettingsStore.shared
         let source = kind == .daily ? features.dailyDigestSource : features.weeklyDigestSource
-        return NotificationPreview.previewCacheKey(kind, source: source, topN: features.digestTopN, pushMinutes: features.digestPushMinutes)
+        return NotificationPreview.previewCacheKey(kind, source: source, topN: features.digestTopN, pushMinutes: features.digestPushMinutes, lang: .ui)
     }
 
     /// 任务被取消(预览关了、切了档)时返回 nil。
@@ -290,13 +293,13 @@ extension NotificationPreviewCard {
         return NotificationPreview.WebhookPeriod(from: p.from, to: p.to, topN: features.digestTopN)
     }
 
-    fileprivate var summary: String { NotificationPreview.summaryLine(stats) }
+    fileprivate var summary: String { NotificationPreview.summaryLine(stats, lang: lang) }
     fileprivate var sections: [NotificationPreview.RichSection] {
-        NotificationPreview.richSections(stats, topN: features.digestTopN, style: style)
+        NotificationPreview.richSections(stats, topN: features.digestTopN, style: style, lang: lang)
     }
-    fileprivate var newLine: String { NotificationPreview.newArtistsLine(stats, style: style) }
-    fileprivate var linkLabel: String { String(format: L10n.t("在 %@ 上看完整榜单"), stats.sourceName) }
-    fileprivate var footerText: String { "Lyrimuse · " + String(format: L10n.t("数据来自 %@"), stats.sourceName) }
+    fileprivate var newLine: String { NotificationPreview.newArtistsLine(stats, style: style, lang: lang) }
+    fileprivate var linkLabel: String { lang.words.f("link", [("source", stats.sourceName)]) }
+    fileprivate var footerText: String { lang.words.f("footer", [("source", stats.sourceName)]) }
 
     @ViewBuilder
     fileprivate func richStage(title: String, text: String) -> some View {

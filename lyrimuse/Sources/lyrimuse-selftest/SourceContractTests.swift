@@ -4066,7 +4066,7 @@ func runSourceContractSettingsTests() {
                         && sourceHas(section, ".sheet(item: $templateEdit, onDismiss: templateEditorClosed) { edit in")
                         && sourceHas(section, "DigestTemplateEditor(original: edit.seed)")
                         && sourceHas(section, "DigestTemplateExpression(template: shownTemplate)")
-                        && sourceHas(section, "let style = DigestStyle.matching(saved)")
+                        && sourceHas(section, "let style = DigestStyle.matching(saved, lang: .ui)")
                         && sourceHas(section, "signed: !cleaned.secret.isEmpty, style: digestStyle, template: draft.digestTemplate)"),
                     true, "报告内容: 渠道编辑弹窗写明沿用的那一套、自定义开模板编辑器,收起(含按 Esc)时没模板退回;两处预览按渠道那一套画(15 章决策 90)")
         // 推送记录展开全部时高度封顶、在卡里滚;这一页的下拉 / 步进器 / 按钮用设计系统的玻璃件(15 章决策 83)。

@@ -103,8 +103,8 @@ public enum NotificationPreview {
         }
     }
 
-    /// 每类 10 条(「每类列出」的上限),按设置截前几条。
-    public static func sample(_ kind: Kind) -> Stats {
+    /// 每类 10 条(「每类列出」的上限),按设置截前几条。周报的上一期叫法按报告语言写。
+    public static func sample(_ kind: Kind, lang: ReportLanguage = .zhHans) -> Stats {
         switch kind {
         case .daily:
             return Stats(
@@ -133,15 +133,16 @@ public enum NotificationPreview {
                          Tally("越洋电话", "陈绮贞", 7), Tally("春风吹", "方大同", 7),
                          Tally("Untitled (How Does It Feel)", "D'Angelo", 6), Tally("遇见", "孙燕姿", 6),
                          Tally("爱很简单", "陶喆", 5), Tally("红豆", "王菲", 5), Tally("至少还有你", "林忆莲", 4)],
-                prevPlays: 241, prevLabel: "前一周", newArtists: 5, newArtistNames: ["D'Angelo", "林忆莲", "卢广仲"])
+                prevPlays: 241, prevLabel: lang.words["prev_week"], newArtists: 5, newArtistNames: ["D'Angelo", "林忆莲", "卢广仲"])
         }
     }
 
     /// 日报按「今天 22 点推今天那期」的标题;周报是 `now` 所在周的上一周(周一到周日,同引擎 ListenBrainz 源)。
-    public static func title(_ kind: Kind, now: Date, calendar: Calendar = .current) -> String {
+    public static func title(_ kind: Kind, now: Date, calendar: Calendar = .current, lang: ReportLanguage = .zhHans) -> String {
+        let w = lang.words
         switch kind {
         case .daily:
-            return "🎧 今日听歌报告（\(monthDay(now, calendar))）"
+            return w.f("title_today", [("date", w.date(now, calendar))])
         case .weekly:
             let today = calendar.startOfDay(for: now)
             // weekday:周日 1 … 周六 7;离本周一几天。
@@ -149,30 +150,35 @@ public enum NotificationPreview {
             let monday = calendar.date(byAdding: .day, value: -sinceMonday, to: today) ?? today
             let from = calendar.date(byAdding: .day, value: -7, to: monday) ?? monday
             let end = calendar.date(byAdding: .day, value: -1, to: monday) ?? monday
-            return "🎵 上周听歌小结（\(monthDay(from, calendar))~\(monthDay(end, calendar))）"
+            return w.f("title_week", [("from", w.date(from, calendar)), ("to", w.date(end, calendar))])
         }
-    }
-
-    private static func monthDay(_ date: Date, _ calendar: Calendar) -> String {
-        let c = calendar.dateComponents([.month, .day], from: date)
-        return String(format: "%02d-%02d", c.month ?? 0, c.day ?? 0)
     }
 
     /// 同引擎 digestSummaryLine:总次数、跟上一期比(「前一周 241，↑19%」)、听了多久。
-    public static func summaryLine(_ stats: Stats) -> String {
-        var out = "共播放 \(stats.totalPlays) 次"
+    public static func summaryLine(_ stats: Stats, lang: ReportLanguage = .zhHans) -> String {
+        let w = lang.words
+        var out: String
         if stats.truncated {
-            out += "以上（记录太多，只统计了最近这些）"
-        } else if stats.prevPlays > 0, !stats.prevLabel.isEmpty {
-            let pct = Int((Double(stats.totalPlays - stats.prevPlays) * 100 / Double(stats.prevPlays)).rounded())
-            let change = pct > 0 ? "↑\(pct)%" : pct < 0 ? "↓\(-pct)%" : "持平"
-            out += "（\(stats.prevLabel) \(stats.prevPlays)，\(change)）"
+            out = w.count("plays_truncated", stats.totalPlays)
+        } else {
+            out = w.count("plays", stats.totalPlays)
+            if stats.prevPlays > 0, !stats.prevLabel.isEmpty {
+                out += w.f("compare", [("label", stats.prevLabel), ("prev", String(stats.prevPlays)),
+                                       ("change", change(stats.totalPlays, stats.prevPlays, lang: lang))])
+            }
         }
         if stats.totalDurationMs > 0 {
             let minutes = stats.totalDurationMs / 60000
-            out += minutes >= 60 ? " · 约 \(minutes / 60) 小时 \(minutes % 60) 分" : " · 约 \(minutes) 分"
+            out += minutes >= 60 ? w.f("duration_hm", [("h", String(minutes / 60)), ("m", String(minutes % 60))])
+                : w.f("duration_m", [("m", String(minutes))])
         }
         return out
+    }
+
+    /// 「↑12%」「↓32%」,四舍五入后是 0 写「持平」(同引擎 digestChange)。
+    public static func change(_ cur: Int, _ prev: Int, lang: ReportLanguage = .zhHans) -> String {
+        let pct = Int((Double(cur - prev) * 100 / Double(prev)).rounded())
+        return pct > 0 ? "↑\(pct)%" : pct < 0 ? "↓\(-pct)%" : lang.words["flat"]
     }
 
     /// 同引擎 digestNewArtistsLine:「新听了 5 位歌手：A、B、C 等」;概况只写「新听了 5 位歌手」(引擎 richDigest.newLine);
@@ -184,13 +190,13 @@ public enum NotificationPreview {
         return rest.isEmpty ? nil : (summary, String(rest))
     }
 
-    public static func newArtistsLine(_ stats: Stats, style: DigestStyle = .full) -> String {
+    public static func newArtistsLine(_ stats: Stats, style: DigestStyle = .full, lang: ReportLanguage = .zhHans) -> String {
         guard stats.newArtists > 0 else { return "" }
-        if style == .overview { return "新听了 \(stats.newArtists) 位歌手" }
-        var line = "新听了 \(stats.newArtists) 位歌手"
-        guard !stats.newArtistNames.isEmpty else { return line }
-        line += "：" + stats.newArtistNames.joined(separator: "、")
-        if stats.newArtists > stats.newArtistNames.count { line += " 等" }
+        let w = lang.words
+        var line = w.count("new_artists", stats.newArtists)
+        guard style != .overview, !stats.newArtistNames.isEmpty else { return line }
+        line += w["names_lead"] + stats.newArtistNames.joined(separator: w["name_sep"])
+        if stats.newArtists > stats.newArtistNames.count { line += w["more"] }
         return line
     }
 
@@ -201,34 +207,43 @@ public enum NotificationPreview {
     }
 
     /// 歌手、专辑、歌曲各自的第一名,一类一行(引擎 digestTopOnes)。
-    private static func topOnes(_ stats: Stats, _ line: (String, Tally) -> String) -> [String] {
-        [("歌手", stats.artists), ("专辑", stats.albums), ("歌曲", stats.tracks)].compactMap { label, list in
+    private static func topOnes(_ stats: Stats, _ w: ReportWords, _ line: (String, Tally) -> String) -> [String] {
+        [(w["label_artist"], stats.artists), (w["label_album"], stats.albums), (w["label_track"], stats.tracks)].compactMap { label, list in
             list.first.map { line(label, $0) }
         }
     }
 
     /// 同引擎 digestBodyStyled:精简、概况渲染各自的预设模板(`DigestTemplate.preset`);完整和自定义按默认正文拼
     /// (模板里的 `{body}` 就是它)。
-    public static func body(_ stats: Stats, topN: Int, style: DigestStyle = .full) -> String {
-        let full = fullBody(stats, topN: topN)
-        guard style == .brief || style == .overview, let preset = DigestTemplate.preset(style) else { return full }
-        return preset.render(defaultTitle: "", defaultBody: full, stats: stats, topN: topN).body
+    public static func body(_ stats: Stats, topN: Int, style: DigestStyle = .full, lang: ReportLanguage = .zhHans) -> String {
+        let full = fullBody(stats, topN: topN, lang: lang)
+        guard style == .brief || style == .overview, let preset = DigestTemplate.preset(style, lang: lang) else { return full }
+        return preset.render(defaultTitle: "", defaultBody: full, stats: stats, topN: topN, lang: lang).body
     }
 
-    private static func fullBody(_ stats: Stats, topN: Int) -> String {
+    /// 纯文本里一行:「1. 歌手 - 歌名（4）」,同引擎 digestBody 里那一行。
+    static func plainItem(_ i: Int, _ t: Tally, _ w: ReportWords) -> String {
+        w.f("item", [("i", String(i)), ("name", plainName(t, w)), ("n", String(t.count))])
+    }
+
+    /// 纯文本里的名字,专辑、歌曲带歌手,同引擎 digestTallyName。
+    static func plainName(_ t: Tally, _ w: ReportWords) -> String {
+        t.sub.isEmpty ? t.name : w.f("pair", [("artist", t.sub), ("name", t.name)])
+    }
+
+    private static func fullBody(_ stats: Stats, topN: Int, lang: ReportLanguage) -> String {
         let n = DigestTopN.resolved(topN)
-        var out = summaryLine(stats) + "\n"
+        let w = lang.words
+        var out = summaryLine(stats, lang: lang) + "\n"
         func section(_ heading: String, _ list: [Tally]) {
             guard let top = shown(list, n) else { return }
-            out += "\n\(heading)：\n"
-            for (i, t) in top.enumerated() {
-                out += t.sub.isEmpty ? "\(i + 1). \(t.name)（\(t.count)）\n" : "\(i + 1). \(t.sub) - \(t.name)（\(t.count)）\n"
-            }
+            out += "\n" + w[heading] + w["colon"] + "\n"
+            for (i, t) in top.enumerated() { out += plainItem(i + 1, t, w) + "\n" }
         }
-        section("Top 歌手", stats.artists)
-        section("Top 专辑", stats.albums)
-        section("Top 歌曲", stats.tracks)
-        let line = newArtistsLine(stats)
+        section("head_artists", stats.artists)
+        section("head_albums", stats.albums)
+        section("head_tracks", stats.tracks)
+        let line = newArtistsLine(stats, lang: lang)
         if !line.isEmpty { out += "\n" + line + "\n" }
         while out.hasSuffix("\n") { out.removeLast() }
         return out
@@ -236,13 +251,14 @@ public enum NotificationPreview {
 
     /// 同引擎 richDigest.sections(不转义):完整列三类,歌手「1. 方大同 · 61」,专辑、歌曲「1. 叶惠美 — 周杰伦 · 21」;
     /// 精简只有一段「最常听」(「歌手：方大同 · 61」「专辑：JTW 西游记 — 方大同 · 29」);概况不列。
-    public static func richSections(_ stats: Stats, topN: Int, style: DigestStyle = .full) -> [RichSection] {
+    public static func richSections(_ stats: Stats, topN: Int, style: DigestStyle = .full, lang: ReportLanguage = .zhHans) -> [RichSection] {
+        let w = lang.words
         switch style {
         case .brief:
-            let lines = topOnes(stats) { label, t in
-                "\(label)：" + (t.sub.isEmpty ? t.name : "\(t.name) — \(t.sub)") + " · \(t.count)"
+            let lines = topOnes(stats, w) { label, t in
+                w.f("brief_line", [("label", label), ("name", t.sub.isEmpty ? t.name : "\(t.name) — \(t.sub)"), ("n", String(t.count))])
             }
-            return lines.isEmpty ? [] : [RichSection(heading: "最常听", title: "最常听", lines: lines)]
+            return lines.isEmpty ? [] : [RichSection(heading: w["most_played"], title: w["most_played"], lines: lines)]
         case .overview:
             return []
         case .full, .custom:
@@ -250,20 +266,21 @@ public enum NotificationPreview {
         }
         let n = DigestTopN.resolved(topN)
         var out: [RichSection] = []
-        for (heading, list) in [("歌手", stats.artists), ("专辑", stats.albums), ("歌曲", stats.tracks)] {
+        for (heading, title, list) in [(w["col_artists"], w["head_artists"], stats.artists), (w["col_albums"], w["head_albums"], stats.albums),
+                                       (w["col_tracks"], w["head_tracks"], stats.tracks)] {
             guard let top = shown(list, n) else { continue }
-            out.append(RichSection(heading: heading, lines: top.enumerated().map { i, t in
+            out.append(RichSection(heading: heading, title: title, lines: top.enumerated().map { i, t in
                 t.sub.isEmpty ? "\(i + 1). \(t.name) · \(t.count)" : "\(i + 1). \(t.name) — \(t.sub) · \(t.count)"
             }))
         }
         return out
     }
 
-    /// App 侧真实预览缓存的键:哪一档、这一档的数据源偏好(空串 = 自动)、每类列几名、每日报告推当天还是前一天。跟引擎
+    /// App 侧真实预览缓存的键:哪一档、这一档的数据源偏好(空串 = 自动)、每类列几名、每日报告推当天还是前一天、报告语言。跟引擎
     /// digestpreview.go 的缓存键同一组输入(引擎那边是解析后的数据源和这一期的起点),任何一样变了就不用旧的结果。
-    public static func previewCacheKey(_ kind: Kind, source: String, topN: Int, pushMinutes: Int) -> String {
+    public static func previewCacheKey(_ kind: Kind, source: String, topN: Int, pushMinutes: Int, lang: ReportLanguage = .zhHans) -> String {
         let day = kind == .daily ? (DigestPushTime.dailyCoversSameDay(pushMinutes) ? "today" : "yesterday") : "-"
-        return "\(kind.rawValue)|\(source)|\(DigestTopN.resolved(topN))|\(day)"
+        return "\(kind.rawValue)|\(source)|\(DigestTopN.resolved(topN))|\(day)|\(lang.rawValue)"
     }
 
     /// 这一期的起止日期(含两头,YYYY-MM-DD),通用 Webhook 的 data 里写。日报是 `now` 那天,周报是上一周的周一到周日。

@@ -71,11 +71,10 @@ func setNotifyPaths() {
 }
 
 // 「测一下」推的内容:这一期的真实日报,同预览取数(computeDigestPreview,结果也进预览的缓存)。取不到(没连账号、今天昨天
-// 都没听、取数出错)或等了 notifyTestDigestBudget 还没取完时推示例报告(digestSampleStats),标题写明是示例;没取完的那次
+// 都没听、取数出错)或等了 notifyTestDigestBudget 还没取完时推示例报告(digestSampleStats),标题写明是示例(title_sample);没取完的那次
 // 照旧在后台取完、留给下一次。标题里都有「听歌」二字,钉钉 / 飞书机器人的自定义关键词填它就能过。见 15 章决策 96。
 const (
 	notifyTestDigestBudget = 20 * time.Second
-	notifyTestSampleTitle  = "🎧 听歌报告示例"
 )
 
 // startNotifyTestWatcher 由 run() 单开一个 goroutine,ctx 取消时退出。每次推送另起 goroutine(Telegram 走代理
@@ -147,7 +146,7 @@ func notifyTestMessage(now time.Time, budget time.Duration) (notifyMessage, bool
 		defer cancel()
 		done <- computeDigestPreview(ctx, liveConfig(), "daily", now)
 	}()
-	title, stats, sample := notifyTestSampleTitle, digestSampleStats(), true
+	title, stats, sample := dw()["title_sample"], digestSampleStats(), true
 	select {
 	case res := <-done:
 		if res.OK && res.Digest != nil {

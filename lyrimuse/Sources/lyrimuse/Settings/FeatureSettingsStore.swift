@@ -356,6 +356,9 @@ struct FeatureFlagsFile: Codable, Equatable {
     /// 本机系统语言(`SystemLanguage.current()`),引擎解析上面的 "auto" 用。描述的是这台机器而不是偏好:
     /// 加载时跟本机对不上就单独改写这一个键(见 `writeSystemLanguage`),配置包导出时去掉、导入时换成本机的值。
     var systemLanguage: String?
+    /// 听歌报告的语言 = 界面语言(`ReportLanguage.ui`),引擎按它写报告(digestlang.go)。加载时跟界面语言对不上就随整份
+    /// 写回;界面语言换了单独改写(`followReportLanguage`)。
+    var reportLanguage: String?
     /// **遗留字段**:「跟随播放器启动」还是一个总开关时写的布尔。只有它、没有下面的列表时,load() 按它迁移成列表
     /// (PlayerLinkage.migratedLaunchSet),整份写回时这个键随之删掉。引擎不认它。
     var launchLyrimuseOnMusicOpen: Bool?
@@ -433,6 +436,7 @@ struct FeatureFlagsFile: Codable, Equatable {
         case lyricsWordFormats = "lyrics_word_formats"
         case lyricsTranslationLanguage = "lyrics_translation_language"
         case systemLanguage = "system_language"
+        case reportLanguage = "report_language"
         case launchLyrimuseOnMusicOpen = "launch_lyrimuse_on_music_open"
         case launchLyrimuseOnPlayers = "launch_lyrimuse_on_players"
         case trustedPlayers = "trusted_players"
@@ -635,6 +639,8 @@ public final class FeatureSettingsStore: ObservableObject {
     /// 本机系统语言,每次 load() 读一遍(见 FeatureFlagsFile.systemLanguage)。「翻译语言包」那一行按它算
     /// 「跟随系统语言」的目标,跟引擎认的是同一个值。
     @Published public private(set) var systemLanguage = ""
+    /// 听歌报告的语言,每次 load() 按界面语言算一遍(见 FeatureFlagsFile.reportLanguage)。
+    @Published public private(set) var reportLanguage = ""
     // 「跟随播放器启动」:打开勾了的播放器时,引擎顺带唤起 Lyrimuse(lyrimuse-engine/companionlaunch.go,语义见
     // LyrimuseCore.PlayerLinkage 头注)。全新安装为空(不跟随);只有布尔的老配置在 load() 里迁移成列表。
     @Published public var launchLyrimuseOnPlayers: Set<PlaybackPlayer> = []
@@ -765,6 +771,7 @@ public final class FeatureSettingsStore: ObservableObject {
             lyricsWordFormats: lyricsWordFormats == [.yrc] ? nil : lyricsWordFormats.map(\.rawValue),
             lyricsTranslationLanguage: lyricsTranslationLanguage.rawValue,
             systemLanguage: systemLanguage.isEmpty ? nil : systemLanguage,
+            reportLanguage: reportLanguage.isEmpty ? nil : reportLanguage,
             launchLyrimuseOnPlayers: (launchLyrimuseOnPlayers.map(\.rawValue) + unknownLaunchPlayers).sorted(),
             trustedPlayers: trustedPlayers.isEmpty ? nil : trustedPlayers,
             lastfmExcludedBundles: lastfmExcludedBundles.isEmpty ? nil : lastfmExcludedBundles.sorted(),
@@ -887,6 +894,7 @@ public final class FeatureSettingsStore: ObservableObject {
         document = JSONConfigDocument.load(url: Self.fileURL)
         loadFailure = nil
         systemLanguage = SystemLanguage.current()
+        reportLanguage = ReportLanguage.ui.rawValue
         var decoded: FeatureFlagsFile?
         switch document.state {
         case .missing:
@@ -1148,6 +1156,19 @@ public final class FeatureSettingsStore: ObservableObject {
         }
         let path = context.codingPath.map(\.stringValue).joined(separator: ".")
         return path.isEmpty ? context.debugDescription : "\(path): \(context.debugDescription)"
+    }
+
+    /// 界面语言换了:报告语言跟着改,马上写盘(引擎热重读,下一份报告就换语言)。没变不写。
+    public func followReportLanguage() {
+        let next = ReportLanguage.ui.rawValue
+        guard next != reportLanguage else { return }
+        reportLanguage = next
+        do {
+            try persistFile()
+            commitSnapshot()
+        } catch {
+            logger.error("writing report_language failed: \(String(describing: error), privacy: .public)")
+        }
     }
 
     public func commitSnapshot() {

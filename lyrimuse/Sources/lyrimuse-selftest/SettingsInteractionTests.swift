@@ -544,6 +544,45 @@ func runSettingsInteractionTests() {
         expectEqual(P.title(.weekly, now: previewNow), preview["weekly_title"] as? String ?? "", "渠道预览: 周报标题同引擎")
         let sunday = Calendar.current.date(from: DateComponents(year: 2026, month: 10, day: 18, hour: 9)) ?? Date()
         expectEqual(P.title(.weekly, now: sunday), "🎵 上周听歌小结（10-05~10-11）", "渠道预览: 周日看的上周是再往前那一周")
+
+        // 报告语言(15 章决策 98):用语表、三种语言拼出来的样子都跟引擎一字不差(共用样例 words.json、report-lang.json)。
+        let wordsJSON = (try? Data(contentsOf: samples.appendingPathComponent("words.json")))
+            .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: [String: String]] } ?? [:]
+        for lang in ReportLanguage.allCases {
+            expectEqual(ReportWords.table[lang] ?? [:], wordsJSON[lang.rawValue] ?? ["": "缺"], "报告语言: \(lang.rawValue) 用语表同引擎")
+        }
+        expectEqual([ReportLanguage(""), ReportLanguage(" ZH-HANT "), ReportLanguage("en"), ReportLanguage("ja")], [.zhHans, .zhHant, .en, .zhHans],
+                    "报告语言: 认得的三种,其余按简体")
+        expectEqual(ReportLanguage.featuresKey, "report_language", "报告语言: 键名同引擎 features.go 的 json 标签")
+        let langCases = (try? Data(contentsOf: samples.appendingPathComponent("report-lang.json")))
+            .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }?["cases"] as? [[String: Any]] ?? []
+        expectEqual(langCases.count, 18, "报告语言: 共用样例三种语言 × 日报周报 × 三套")
+        for c in langCases {
+            let lang = ReportLanguage(c["lang"] as? String ?? "")
+            let kind = P.Kind(rawValue: c["kind"] as? String ?? "") ?? .daily
+            let style = DigestStyle(rawValue: c["style"] as? String ?? "") ?? .full
+            let n = c["top_n"] as? Int ?? 3
+            let st = P.sample(kind, lang: lang)
+            let label = "报告语言: \(lang.rawValue) \(kind.rawValue) \(style.rawValue)"
+            expectEqual(P.title(kind, now: previewNow, lang: lang), c["title"] as? String ?? "", "\(label) 标题同引擎")
+            expectEqual(P.summaryLine(st, lang: lang), c["summary"] as? String ?? "", "\(label) 第一行同引擎")
+            expectEqual(P.body(st, topN: n, style: style, lang: lang), c["body"] as? String ?? "", "\(label) 正文同引擎")
+            let wantSections = (c["sections"] as? [[String: Any]] ?? []).map {
+                P.RichSection(heading: $0["heading"] as? String ?? "", title: $0["title"] as? String, lines: $0["lines"] as? [String] ?? [])
+            }
+            expectEqual(P.richSections(st, topN: n, style: style, lang: lang), wantSections, "\(label) 排版各段同引擎")
+            expectEqual(P.newArtistsLine(st, style: style, lang: lang), c["new_line"] as? String ?? "", "\(label) 新歌手那句同引擎")
+        }
+        expectEqual(DigestStyle.matching(DigestTemplate.preset(.brief, lang: .en) ?? DigestTemplate(), lang: .en), .brief,
+                    "报告语言: 英文的精简预设认得出是精简")
+        let langRoot = samples.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let featureStore = (try? String(contentsOf: langRoot.appendingPathComponent("lyrimuse/Sources/lyrimuse/Settings/FeatureSettingsStore.swift"),
+                                        encoding: .utf8)) ?? ""
+        let appSettingsSrc = (try? String(contentsOf: langRoot.appendingPathComponent("lyrimuse/Sources/lyrimuse/Settings/AppSettings.swift"),
+                                          encoding: .utf8)) ?? ""
+        expectEqual(sourceHas(featureStore, "case reportLanguage = \"report_language\"") && sourceHas(featureStore, "reportLanguage = ReportLanguage.ui.rawValue")
+                    && sourceHas(sourceBody("@Published var appLanguage: String {", in: appSettingsSrc), "FeatureSettingsStore.shared.followReportLanguage()"),
+                    true, "报告语言(契约): 加载时按界面语言写 report_language,切换界面语言时跟着改写")
         let json = P.webhookJSON(event: "daily_digest", title: "a<b>", body: "x\n\"y\"", sentAt: Date(timeIntervalSince1970: 0))
         let decoded = (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: String]
         expectEqual(decoded, ["app": "lyrimuse", "event": "daily_digest", "title": "a<b>", "body": "x\n\"y\"", "sent_at": "1970-01-01T00:00:00Z"],
@@ -632,7 +671,7 @@ func runSettingsInteractionTests() {
         expectEqual(goList, DigestTemplate.placeholders, "推送内容: 占位符两边一致、顺序一致")
         // 编辑器(15 章决策 89):拆开默认正文、插到光标处、认不出的占位符。
         let daily = P.sample(.daily)
-        expectEqual(DigestTemplate(body: DigestTemplate.expandedDefaultBody)
+        expectEqual(DigestTemplate(body: DigestTemplate.expandedDefaultBody())
                         .render(defaultTitle: "t", defaultBody: P.body(daily, topN: 3), stats: daily, topN: 3).body,
                     P.body(daily, topN: 3), "推送内容编辑器: 拆开默认正文渲染出来跟默认正文一样(日报样例)")
         typealias TPL = DigestTemplate
@@ -665,7 +704,7 @@ func runSettingsInteractionTests() {
                                        encoding: .utf8)) ?? ""
         let loader = sourceBody("enum NotificationPreviewLoader {", in: previewCard)
         expectEqual(sourceHas(loader, "cache[cacheKey(kind)]") && sourceHas(loader, "cache[key] = (Date(), state)")
-                    && sourceHas(loader, "NotificationPreview.previewCacheKey(kind, source: source, topN: features.digestTopN, pushMinutes: features.digestPushMinutes)")
+                    && sourceHas(loader, "NotificationPreview.previewCacheKey(kind, source: source, topN: features.digestTopN, pushMinutes: features.digestPushMinutes, lang: .ui)")
                     && !sourceHas(loader, "cache[kind]"), true,
                     "预览缓存(契约): App 侧按 previewCacheKey 取、存")
     }

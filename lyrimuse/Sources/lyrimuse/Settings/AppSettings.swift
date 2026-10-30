@@ -1534,6 +1534,7 @@ final class AppSettings: ObservableObject {
         didSet {
             defaults.set(appLanguage, forKey: Keys.appLanguage)
             followLanguageForDefaultRomanization()
+            FeatureSettingsStore.shared.followReportLanguage()
         }
     }
     private var applyingLanguageDefaultRomanization = false

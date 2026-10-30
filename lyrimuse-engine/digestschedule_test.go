@@ -49,7 +49,8 @@ func TestDailyDigestTargetByPushTime(t *testing.T) {
 		{at(19, 12, 0), 12 * 60, "2026-10-19", "🎧 今日听歌报告（10-19）", true},
 	}
 	for _, c := range cases {
-		day, from, to, title := dailyDigestTarget(c.now, c.minutes)
+		day, from, to := dailyDigestTarget(c.now, c.minutes)
+		title := dailyDigestTitle(digestWordsFor(digestLangHans), c.now, from)
 		wantTo := from.AddDate(0, 0, 1)
 		if c.toNow {
 			wantTo = c.now

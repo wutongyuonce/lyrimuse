@@ -280,7 +280,7 @@ func TestPlainFallbackPayload(t *testing.T) {
 
 func sampleTestMessage() notifyMessage {
 	s := digestSampleStats()
-	return notifyMessage{Event: notifyEventTest, Title: notifyTestSampleTitle, Body: digestBody(s), Digest: &s}
+	return notifyMessage{Event: notifyEventTest, Title: dw()["title_sample"], Body: digestBody(s), Digest: &s}
 }
 
 // 「测一下」那份报告跟真推一样按平台排版,测得出这个渠道收不收排过版的消息。
@@ -288,7 +288,7 @@ func TestRichTestMessage(t *testing.T) {
 	useDigestFeatures(t, featureFlags{DigestTopN: 3})
 	msg := sampleTestMessage()
 	tg := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformTelegram, URL: "TOKEN", ChatID: "42"}, msg).body)
-	if text, _ := tg["text"].(string); !strings.HasPrefix(text, "<b>"+notifyTestSampleTitle+"</b>") || !strings.Contains(text, "周杰伦") || tg["parse_mode"] != "HTML" {
+	if text, _ := tg["text"].(string); !strings.HasPrefix(text, "<b>"+dw()["title_sample"]+"</b>") || !strings.Contains(text, "周杰伦") || tg["parse_mode"] != "HTML" {
 		t.Errorf("%v", tg)
 	}
 	fs := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformFeishu, URL: "https://open.feishu.cn/x"}, msg).body)
@@ -296,7 +296,7 @@ func TestRichTestMessage(t *testing.T) {
 		t.Errorf("%v", fs)
 	}
 	bk := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, msg).body)
-	if bk["title"] != notifyTestSampleTitle || bk["subtitle"] != digestSummaryLine(*msg.Digest) || bk["icon"] != richAppIcon {
+	if bk["title"] != dw()["title_sample"] || bk["subtitle"] != digestSummaryLine(*msg.Digest) || bk["icon"] != richAppIcon {
 		t.Errorf("%v", bk)
 	}
 	brief := msg.forChannel(notifyChannel{DigestStyle: digestStyleBrief})

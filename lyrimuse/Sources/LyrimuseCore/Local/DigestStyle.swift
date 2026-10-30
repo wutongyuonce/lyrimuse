@@ -7,16 +7,16 @@ import Foundation
 public enum DigestStyle: String, CaseIterable, Sendable {
     case full, brief, overview, custom
 
-    /// 编辑器里这份模板算哪一套:跟某套预设一样(首尾空白不算)就是那一套,没改过默认(`{title}` / `{body}`)算完整,
-    /// 其余是自定义。
-    public static func matching(_ template: DigestTemplate) -> DigestStyle {
+    /// 编辑器里这份模板算哪一套:跟某套预设(按报告语言)一样(首尾空白不算)就是那一套,没改过默认(`{title}` / `{body}`)
+    /// 算完整,其余是自定义。
+    public static func matching(_ template: DigestTemplate, lang: ReportLanguage = .zhHans) -> DigestStyle {
         func trimmed(_ t: DigestTemplate) -> DigestTemplate {
             DigestTemplate(title: t.title.trimmingCharacters(in: .whitespacesAndNewlines),
                            body: t.body.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         let t = DigestTemplate.resolved(title: template.title, body: template.body)
         guard t.isCustom else { return .full }
-        return [.full, .brief, .overview].first { DigestTemplate.preset($0).map(trimmed) == trimmed(t) } ?? .custom
+        return [.full, .brief, .overview].first { DigestTemplate.preset($0, lang: lang).map(trimmed) == trimmed(t) } ?? .custom
     }
 }
 

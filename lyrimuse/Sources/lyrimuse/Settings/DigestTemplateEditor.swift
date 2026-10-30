@@ -86,13 +86,13 @@ struct DigestTemplateEditor: View {
 
     private var draft: DigestTemplate { DigestTemplate.resolved(title: title, body: bodyText) }
 
-    private var style: DigestStyle { DigestStyle.matching(draft) }
+    private var style: DigestStyle { DigestStyle.matching(draft, lang: .ui) }
 
     /// 点预设:填进它的模板;点自定义:还原换走之前写的那份(没有时这一档点不了)。
     private func apply(_ next: DigestStyle) {
         guard next != style else { return }
         if style == .custom { keptCustom = draft }
-        guard let filled = DigestTemplate.preset(next) ?? keptCustom else { return }
+        guard let filled = DigestTemplate.preset(next, lang: .ui) ?? keptCustom else { return }
         title = filled.editableTitle
         bodyText = filled.editableBody
     }
@@ -144,7 +144,7 @@ struct DigestTemplateEditor: View {
                 Spacer()
                 if bodyText.contains("{body}") {
                     Button(L10n.t("拆开默认正文")) {
-                        bodyText = bodyText.replacingOccurrences(of: "{body}", with: DigestTemplate.expandedDefaultBody)
+                        bodyText = bodyText.replacingOccurrences(of: "{body}", with: DigestTemplate.expandedDefaultBody(lang: .ui))
                     }
                     .buttonStyle(.link)
                     .font(.system(size: 11.5))
@@ -205,10 +205,11 @@ struct DigestTemplateEditor: View {
     }
 
     private var previewColumn: some View {
-        let stats = real?.stats ?? NotificationPreview.sample(kind)
-        let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now)
-        let defaultBody = NotificationPreview.body(stats, topN: features.digestTopN)
-        let out = draft.render(defaultTitle: defaultTitle, defaultBody: defaultBody, stats: stats, topN: features.digestTopN)
+        let lang = ReportLanguage.ui
+        let stats = real?.stats ?? NotificationPreview.sample(kind, lang: lang)
+        let defaultTitle = real?.title ?? NotificationPreview.title(kind, now: now, lang: lang)
+        let defaultBody = NotificationPreview.body(stats, topN: features.digestTopN, lang: lang)
+        let out = draft.render(defaultTitle: defaultTitle, defaultBody: defaultBody, stats: stats, topN: features.digestTopN, lang: lang)
         return VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 fieldLabel(L10n.t("预览"))

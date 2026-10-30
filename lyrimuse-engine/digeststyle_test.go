@@ -27,12 +27,12 @@ func TestDigestPresetTemplatesMatchSample(t *testing.T) {
 		if err := json.Unmarshal(sample[style], &want); err != nil {
 			t.Fatal(style, err)
 		}
-		if got := digestPresetTemplates[style]; got != want {
+		if got := digestPresetTemplate(digestWordsFor(digestLangHans), style); got != want {
 			t.Errorf("%s preset = %+v, want %+v", style, got, want)
 		}
 	}
-	if len(digestPresetTemplates) != 3 {
-		t.Errorf("presets = %d, want 3", len(digestPresetTemplates))
+	if got := digestPresetTemplate(digestWordsFor(digestLangHans), digestStyleCustom); got.custom() {
+		t.Errorf("自定义没有预设: %+v", got)
 	}
 }
 
@@ -98,7 +98,7 @@ func TestDigestPushPerChannelStyle(t *testing.T) {
 	stats := digestStats{TotalPlays: 7, NewArtists: 2, NewArtistNames: []string{"X", "Y"},
 		TopArtists: []digestTally{{Name: "A&B", Count: 4}, {Name: "C", Count: 3}},
 		TopAlbums:  []digestTally{{Name: "专辑一", Sub: "A&B", Count: 4}, {Name: "专辑二", Sub: "C", Count: 3}}}
-	if err := digestPush(a, notifyEventDaily, "🎧 今日听歌报告（10-22）", stats); err != nil {
+	if err := digestPush(a, notifyEventDaily, fixedTitle("🎧 今日听歌报告（10-22）"), stats); err != nil {
 		t.Fatal(err)
 	}
 	var tg map[string]any

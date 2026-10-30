@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+import "strconv"
 
 // 听歌报告推到每个渠道时用哪一套内容(渠道的 digest_style):完整、精简、概况三套预设,各平台照旧按自己的格式排版
 // (notifyrich.go);自定义按这个渠道自己的模板出标题正文、按纯文本推(digesttemplate.go)。三套预设各自也写成一份模板
@@ -16,15 +16,15 @@ const (
 	digestStyleCustom   = "custom"
 )
 
-// digestPresetTemplates:三套预设写成模板的样子(标题都是默认标题),同 Core `DigestTemplate.preset`,两边对得上靠
-// 共用样例 shared/testdata/notify/presets.json。完整这份渲染出来跟默认正文一样(只有一条的榜单照列、新歌手那句不带「等」
-// 两处除外),真推完整时仍用 digestBody。
-var digestPresetTemplates = map[string]digestTemplate{
-	digestStyleFull: {Body: "{summary}\n\nTop 歌手：\n{top_artists}\n\nTop 专辑：\n{top_albums}\n\nTop 歌曲：\n{top_tracks}\n\n" +
-		"新听了 {new_artists} 位歌手：{new_artist_names}"},
-	digestStyleBrief: {Body: "{summary}\n最常听的歌手：{top_artist}\n最常听的专辑：{top_album}\n最常听的歌曲：{top_track}\n" +
-		"新听了 {new_artists} 位歌手：{new_artist_names}"},
-	digestStyleOverview: {Body: "{summary}\n新听了 {new_artists} 位歌手"},
+// digestPresetTemplate:三套预设写成模板的样子(标题都是默认标题),正文按报告语言取(digestWordTable 的 preset_*),
+// 同 Core `DigestTemplate.preset`,两边对得上靠共用样例 shared/testdata/notify/presets.json。完整这份渲染出来跟默认正文
+// 一样(只有一条的榜单照列、新歌手那句不带「等」两处除外),真推完整时仍用 digestBody。认不得的 style 返回空模板。
+func digestPresetTemplate(w digestWords, style string) digestTemplate {
+	switch style {
+	case digestStyleFull, digestStyleBrief, digestStyleOverview:
+		return digestTemplate{Body: w["preset_"+style]}
+	}
+	return digestTemplate{}
 }
 
 // digestStyle:这个渠道这一期按哪一套推;自定义时另返回要用的模板。legacy 是 features.json 里四档共用的那份。
@@ -67,21 +67,22 @@ func digestBodyStyled(s digestStats, style string) string {
 	body := digestBody(s)
 	switch style {
 	case digestStyleBrief, digestStyleOverview:
-		_, body = renderDigestTemplate(digestPresetTemplates[style], "", body, s, digestTopN())
+		_, body = renderDigestTemplate(digestPresetTemplate(dw(), style), "", body, s, digestTopN())
 	}
 	return body
 }
 
 // digestTopOnes:歌手、专辑、歌曲各自的第一名,一类一行;某类没有就不写。sub 拼专辑、歌曲的那一段(带歌手),esc 是平台转义。
 func digestTopOnes(s digestStats, line func(label, name string, count int) string, sub func(digestTally) string, esc func(string) string) []string {
+	w := dw()
 	var out []string
 	if len(s.TopArtists) > 0 {
-		out = append(out, line("歌手", esc(s.TopArtists[0].Name), s.TopArtists[0].Count))
+		out = append(out, line(w["label_artist"], esc(s.TopArtists[0].Name), s.TopArtists[0].Count))
 	}
 	for _, c := range []struct {
 		label string
 		list  []digestTally
-	}{{"专辑", s.TopAlbums}, {"歌曲", s.TopTracks}} {
+	}{{w["label_album"], s.TopAlbums}, {w["label_track"], s.TopTracks}} {
 		if len(c.list) == 0 {
 			continue
 		}
@@ -97,7 +98,7 @@ func digestNewArtistsCount(s digestStats) string {
 	if s.NewArtists <= 0 {
 		return ""
 	}
-	return fmt.Sprintf("新听了 %d 位歌手", s.NewArtists)
+	return dw().count("new_artists", s.NewArtists)
 }
 
 // richDigest 是按平台排版时用的那份数,带着这个渠道选的那一套。
@@ -111,13 +112,14 @@ type richDigest struct {
 func (d *richDigest) sections(esc func(string) string) []richSection {
 	switch d.style {
 	case digestStyleBrief:
+		w := dw()
 		lines := digestTopOnes(*d.digestStats, func(label, name string, count int) string {
-			return fmt.Sprintf("%s：%s · %d", label, name, count)
+			return w.f("brief_line", "label", label, "name", name, "n", strconv.Itoa(count))
 		}, func(t digestTally) string { return t.Name + " — " + t.Sub }, esc)
 		if len(lines) == 0 {
 			return nil
 		}
-		return []richSection{{heading: "最常听", title: "最常听", lines: lines}}
+		return []richSection{{heading: w["most_played"], title: w["most_played"], lines: lines}}
 	case digestStyleOverview:
 		return nil
 	}

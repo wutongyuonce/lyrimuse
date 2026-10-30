@@ -123,11 +123,11 @@ type richSection struct {
 // 「1. Xscape — Michael Jackson · 30」(排过版的读起来先看名字,纯文本那份照旧「歌手 - 歌名（次数）」)。
 func richSections(d *digestStats, esc func(string) string) []richSection {
 	var out []richSection
-	add := func(heading string, list []digestTally) {
+	add := func(heading, title string, list []digestTally) {
 		if !digestShown(list) {
 			return
 		}
-		s := richSection{heading: heading, title: "Top " + heading}
+		s := richSection{heading: heading, title: title}
 		for i, t := range list {
 			if t.Sub == "" {
 				s.lines = append(s.lines, fmt.Sprintf("%d. %s · %d", i+1, esc(t.Name), t.Count))
@@ -137,9 +137,10 @@ func richSections(d *digestStats, esc func(string) string) []richSection {
 		}
 		out = append(out, s)
 	}
-	add("歌手", d.TopArtists)
-	add("专辑", d.TopAlbums)
-	add("歌曲", d.TopTracks)
+	w := dw()
+	add(w["col_artists"], w["head_artists"], d.TopArtists)
+	add(w["col_albums"], w["head_albums"], d.TopAlbums)
+	add(w["col_tracks"], w["head_tracks"], d.TopTracks)
 	return out
 }
 
@@ -151,10 +152,10 @@ func digestSourceName(d *digestStats) string {
 }
 
 func richLinkLabel(d *digestStats) string {
-	return "在 " + digestSourceName(d) + " 上看完整榜单"
+	return dw().f("link", "source", digestSourceName(d))
 }
 
-func richFooter(d *digestStats) string { return "Lyrimuse · 数据来自 " + digestSourceName(d) }
+func richFooter(d *digestStats) string { return dw().f("footer", "source", digestSourceName(d)) }
 
 // clipRunes:超过 n 个字符的截掉,末尾放省略号(平台对标题有长度上限,超了整条拒收)。
 func clipRunes(s string, n int) string {
@@ -282,7 +283,7 @@ func slackRich(title, body string, d *richDigest) (any, bool) {
 	}
 	firstBlock := section(first)
 	if d.CoverURL != "" {
-		alt := "封面"
+		alt := dw()["cover"]
 		if len(d.TopAlbums) > 0 {
 			alt = d.TopAlbums[0].Name
 		}
@@ -381,7 +382,7 @@ func markdownCover(d *richDigest) string {
 	if d == nil || d.CoverURL == "" {
 		return ""
 	}
-	return "![封面](" + d.CoverURL + ")\n\n"
+	return "![" + dw()["cover"] + "](" + d.CoverURL + ")\n\n"
 }
 
 // dingtalkRich:钉钉 markdown。只支持 markdown 的一个子集,名字不转义(它不认反斜杠转义,转了会原样显示出来);

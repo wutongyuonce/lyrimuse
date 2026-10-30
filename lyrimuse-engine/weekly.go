@@ -282,7 +282,7 @@ func (p *poller) weeklyDigest(now time.Time, env digestEnv) {
 		return
 	}
 	addDigestExtras(env, source, weeklyDigestPeriod(from, to), &stats, now)
-	err = digestPush(env.alerter, notifyEventWeekly, weeklyDigestTitle(source, from, to), stats)
+	err = digestPush(env.alerter, notifyEventWeekly, func(w digestWords) string { return weeklyDigestTitle(w, source, from, to) }, stats)
 	p.noteDigestPushResult(notifyEventWeekly, now, env.alerter, err)
 	if err != nil {
 		return
@@ -292,11 +292,10 @@ func (p *poller) weeklyDigest(now time.Time, env digestEnv) {
 
 // weeklyDigestTitle 推送标题里的起止日期。ListenBrainz 源的 to 是本周一 00:00(开区间)，
 // 结束日写它前一秒那天(上周日)；Last.fm 源照写它图表周的 to 那天。见 15 章决策 69。
-func weeklyDigestTitle(source string, from, to int64) string {
+func weeklyDigestTitle(w digestWords, source string, from, to int64) string {
 	end := to
 	if source == digestSourceListenBrainz {
 		end = to - 1
 	}
-	return fmt.Sprintf("🎵 上周听歌小结（%s~%s）",
-		time.Unix(from, 0).Local().Format("01-02"), time.Unix(end, 0).Local().Format("01-02"))
+	return w.f("title_week", "from", w.date(time.Unix(from, 0).Local()), "to", w.date(time.Unix(end, 0).Local()))
 }

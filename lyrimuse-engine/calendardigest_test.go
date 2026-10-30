@@ -39,10 +39,10 @@ func TestPreviousCalendarPeriod(t *testing.T) {
 
 func TestCalendarDigestTitleNamesThePeriod(t *testing.T) {
 	aug := time.Date(2026, 8, 1, 0, 0, 0, 0, time.Local)
-	if got := calendarDigestTitle(calendarDigestMonthly, aug); got != "📅 2026 年 8 月听歌小结" {
+	if got := calendarDigestTitle(digestWordsFor(digestLangHans), calendarDigestMonthly, aug); got != "📅 2026 年 8 月听歌小结" {
 		t.Errorf("月报标题 = %q", got)
 	}
-	if got := calendarDigestTitle(calendarDigestYearly, time.Date(2025, 1, 1, 0, 0, 0, 0, time.Local)); got != "🏆 2025 年度听歌小结" {
+	if got := calendarDigestTitle(digestWordsFor(digestLangHans), calendarDigestYearly, time.Date(2025, 1, 1, 0, 0, 0, 0, time.Local)); got != "🏆 2025 年度听歌小结" {
 		t.Errorf("年报标题 = %q", got)
 	}
 }
