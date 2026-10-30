@@ -980,7 +980,8 @@ private struct LyricsSettingsTab: View {
         switch section {
         case .fetch:
             // 三张卡:「歌词来源」先说怎么用(匹配算法)再列来源,顺序优先时来源本身排成有序列表;
-            // 「选定之后」是歌词定下来以后后台还换不换的三项;预解析是无感优化,单独一行排最后。
+            // 「选定之后」是歌词定下来以后后台还换不换的三项;预解析是无感优化,排最后一张,
+            // 同卡底下「高级」组放不建议改的「优先用歌曲文件自带的歌词」。
             //
             // 间距跟 SettingsPage 的卡间距(14)一致:包一层只为挂同一片背景光。
             VStack(spacing: 14) {
@@ -1016,8 +1017,6 @@ private struct LyricsSettingsTab: View {
             // 先说怎么用这些来源(匹配算法),再列来源。顺序优先时来源本身排成有序列表(可拖动、上下移),
             // 没开的收在下面,不再另起一份顺序列表把同一批来源画第二遍。
             matchingModeRow
-            CardDivider()
-            preferLocalFileRow
             CardDivider()
             if features.lyricsSourceMode == .priority {
                 let visible = orderedEnabledSources
@@ -1295,7 +1294,8 @@ private struct LyricsSettingsTab: View {
     }
 
     /// 「优先用歌曲文件自带的歌词」:放本机文件时先用同名 .lrc 和文件里内嵌的歌词,两种匹配算法通用。按「这首是不是本机文件」
-    /// 判,不分播放器。闸门在引擎 features.go PreferLocalFileLyrics,见 09 章决策 346。
+    /// 判,不分播放器。闸门在引擎 features.go PreferLocalFileLyrics,见 09 章决策 346。不建议用户打开,只放在页尾「高级」组里,
+    /// 别挪回「歌词来源」卡。
     private var preferLocalFileRow: some View {
         SettingsRow(
             icon: "doc.text",
@@ -1421,6 +1421,9 @@ private struct LyricsSettingsTab: View {
                     get: { features.albumPrefetch },
                     set: { features.albumPrefetch = $0; Task { await features.save() } }
                 ))
+            }
+            SettingsRowGroup(title: L10n.t("高级")) {
+                preferLocalFileRow
             }
         }
     }
