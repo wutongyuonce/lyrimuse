@@ -23,19 +23,21 @@ enum LockScreenSpace {
             let id = functions.create(connection, 1, 0)
             guard id != 0 else { return false }
             _ = functions.setLevel(connection, id, absoluteLevel)
-            _ = functions.show(connection, [id] as CFArray)
+            functions.show(connection, [id] as CFArray)
             target = (connection, id)
             space = target
         }
         // 最后一个参数 7:从窗口原来所在的全部 Space 里拿掉。
-        return functions.addWindows(target.connection, target.id, [window.windowNumber] as CFArray, 7) == 0
+        functions.addWindows(target.connection, target.id, [window.windowNumber] as CFArray, 7)
+        return true
     }
 
     private typealias MainConnectionID = @convention(c) () -> Int32
     private typealias SpaceCreate = @convention(c) (Int32, Int32, Int32) -> Int32
     private typealias SpaceSetAbsoluteLevel = @convention(c) (Int32, Int32, Int32) -> Int32
-    private typealias ShowSpaces = @convention(c) (Int32, CFArray) -> Int32
-    private typealias SpaceAddWindowsAndRemoveFromSpaces = @convention(c) (Int32, Int32, CFArray, Int32) -> Int32
+    // 这两个没有返回值(按 Int32 接住的是寄存器里的残留,本机读到 205275136),别拿它判成败。
+    private typealias ShowSpaces = @convention(c) (Int32, CFArray) -> Void
+    private typealias SpaceAddWindowsAndRemoveFromSpaces = @convention(c) (Int32, Int32, CFArray, Int32) -> Void
 
     private static let functions: (mainConnection: MainConnectionID, create: SpaceCreate, setLevel: SpaceSetAbsoluteLevel,
                                    show: ShowSpaces, addWindows: SpaceAddWindowsAndRemoveFromSpaces)? = {

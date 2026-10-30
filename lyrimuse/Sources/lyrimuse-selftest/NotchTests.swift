@@ -3022,6 +3022,10 @@ func runNotchTests() {
         expectEqual(space.contains("dlopen(\"/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/SkyLight\", RTLD_LAZY)")
                         && space.contains("guard let functions = Self.functions, window.windowNumber > 0 else { return false }"), true,
                     "锁屏显示: SkyLight 函数运行时查找,查不到不显示")
+        expectEqual(space.contains("private typealias ShowSpaces = @convention(c) (Int32, CFArray) -> Void")
+                        && space.contains("private typealias SpaceAddWindowsAndRemoveFromSpaces = @convention(c) (Int32, Int32, CFArray, Int32) -> Void")
+                        && !space.contains("[window.windowNumber] as CFArray, 7) =="), true,
+                    "锁屏显示: 显示 Space、挪窗口两个函数没有返回值,不拿残留值判成败")
         expectEqual(sourceHas(appDelegate, "NotchLockScreenPresenter.setLocked(screenIsLocked && !sessionIsInactive)\n")
                         && sourceHas(appDelegate, "let lockScreenShowsLyrics = NotchLockScreenPresenter.isPresenting && !screensAreAsleep\n LocalPlaybackSource.shared.setScreenLocked(hidden && !lockScreenShowsLyrics)")
                         && appDelegate.contains("NotchLockScreenPresenter.start()"), true,
