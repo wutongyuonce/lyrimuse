@@ -121,6 +121,7 @@ func runPositionReplayTests() {
     replayKugouLateStartAnchor()
     replayLXMusicLateStartLeadHolds()
     replayLXMusicColdResume()
+    replayFoobarColdResume()
     replayLXMusicColdResumeStale()
     replayLXMusicRateChange()
     replayLXMusicOpenAPIClock()
@@ -660,6 +661,36 @@ private func replayLXMusicColdResume() {
         expectEqual(near(rig.shown(at: at(150.3)), 70.2, 0.02), true,
                     "回放·洛雪 冷恢复后再暂停、恢复: 偏置随暂停作废(\(fmt(rig.shown(at: at(150.3)))),想要 70.200)")
     }
+}
+
+/// foobar2000 停了十几秒再按恢复、默认输出设备闲着(按实测的一次):100.0 按下,100.08 报在放、锚点 17.0,100.47 设备才转起来,
+/// 100.56 出声。设备转起来之前停在暂停位置,转起来之后从锚点起算,20 秒后照转起来的时刻走(比出声早 0.09 秒),
+/// 不跟系统按锚点外推的那份(早 0.48 秒)。见 `waitsForOutputDeviceOnColdStart`。
+@MainActor
+private func replayFoobarColdResume() {
+    func fmt(_ v: Double?) -> String { v.map { String(format: "%.3f", $0) } ?? "nil" }
+    let fb = PlaybackPlayer.foobar2000.bundleIdentifier
+    let rig = ReplayRig("foobar-cold-resume")
+    defer { rig.tearDown() }
+    for t in stride(from: 0.0, through: 6.0, by: 2) {
+        rig.tick(mediaControl(fb, "稻香", anchor: 10, elapsed: 10 + t, duration: 223), at: at(t))
+    }
+    rig.source.replayPlayerStateEvent(at: at(6.95), freeze: true)
+    rig.tick(mediaControl(fb, "稻香", anchor: 16.95, elapsed: 16.95, duration: 223, playing: false), at: at(7))
+    rig.source.replayResumeSignal(at: at(100))
+    rig.source.replayLXMusicColdStartSignal(at: at(100))
+    rig.tick(mediaControl(fb, "稻香", anchor: 17.0, elapsed: 17.02, duration: 223), at: at(100.1))
+    expectEqual(near(rig.shown(at: at(100.1)), 16.95, 0.02), true,
+                "回放·foobar2000 冷恢复: 设备转起来之前停在暂停位置(\(fmt(rig.shown(at: at(100.1)))))")
+    rig.source.replayLXMusicAudioStarted(at: at(100.47))
+    rig.tick(mediaControl(fb, "稻香", anchor: 17.0, elapsed: 17.42, duration: 223), at: at(100.5))
+    expectEqual(near(rig.shown(at: at(100.5)), 17.03, 0.02), true,
+                "回放·foobar2000 冷恢复: 设备转起来后从锚点起算(\(fmt(rig.shown(at: at(100.5)))))")
+    for t in stride(from: 102.5, through: 120.5, by: 2) {
+        rig.tick(mediaControl(fb, "稻香", anchor: 17.0, elapsed: 17.0 + t - 100.08, duration: 223), at: at(t))
+    }
+    expectEqual(near(rig.shown(at: at(120.5)), 37.03, 0.03), true,
+                "回放·foobar2000 冷恢复: 20 秒后照设备转起来的时刻走,不回到锚点外推(\(fmt(rig.shown(at: at(120.5)))),想要 37.030)")
 }
 
 /// 洛雪冷恢复记下了,设备 101.0 转起来,新锚点却跟在放信号那一刻的一样(用不上);半分钟后拖到 60 秒:跟新锚点走,

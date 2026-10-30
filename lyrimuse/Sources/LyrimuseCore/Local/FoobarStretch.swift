@@ -5,8 +5,9 @@ import os
 /// 按 1 倍外推越走越偏,到暂停、跳转它报回正确位置才纠回(锚点本身是准的)。在放时每拍读一次主窗口的进度条
 /// (`FoobarSliders.progress`),只拿来量速度:变速时进度条比出声固定落后约 0.9 秒,开播头几秒这段落后还在涨,所以锚点之后
 /// `settleSecs` 才取起点,起点不动,到最新一次读数隔 `windowSecs` 以上就算出速度(间隔越长越准),偏离 1 倍不到 `minDeviation`
-/// 算 1 倍。位置照「锚点 + 锚点以来的时间 × 速度」走。量出来的速度记着(DSP 链换歌不变),新锚点照它走;锚点之后头两次读数
-/// 隔 `quickWindowSecs` 以上先粗量一次,只用来改方向:记着变速、粗量是 1 倍就放掉,记着 1 倍、粗量偏离 `quickDeviation`
+/// 算 1 倍。位置照「锚点 + 锚点以来的时间 × 速度」走。量出来的速度记着(DSP 链换歌不变),新锚点照它走;锚点之后进度条
+/// 开始走了(读数跟上一次不一样)才取粗量起点(冷启动接着放时它先停在存下的位置一秒多,再一下跳上来),到它隔
+/// `quickWindowSecs` 以上先粗量一次,只用来改方向:记着变速、粗量是 1 倍就放掉,记着 1 倍、粗量偏离 `quickDeviation`
 /// 以上就先用粗量的。同一份锚点下进度条往回跳(单曲循环绕回开头时它不发新锚点)、或离上一次读数隔了 `readGapSecs` 以上
 /// (焦点被别的 App 占着那段不读进度条)就从那里重新等、重新量,可能跨圈的两次读数不拿来算。
 /// 进度条读不到(没授「辅助功能」、主窗口没布局、`SourceKnockout` 关了 `foobar-slider`)时照记着的走。
@@ -78,8 +79,9 @@ public enum FoobarStretch {
             return next
         }
         guard let sample else { return next }
-        if let last = next.last,
-           sample.value < last.value - rewindSlackSecs || sample.at.timeIntervalSince(last.at) > readGapSecs {
+        let previous = next.last
+        if let previous,
+           sample.value < previous.value - rewindSlackSecs || sample.at.timeIntervalSince(previous.at) > readGapSecs {
             next.anchorSeenAt = now
             next.probe = nil
             next.first = nil
@@ -90,7 +92,7 @@ public enum FoobarStretch {
                 if next.rate == 1, abs(quick - 1) >= quickDeviation { next.rate = quick }
                 if next.rate != 1, quick == 1 { next.rate = 1 }
             }
-        } else {
+        } else if let previous, sample.value != previous.value {
             next.probe = sample
         }
         guard let first = next.first else {

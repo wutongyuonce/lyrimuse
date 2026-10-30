@@ -794,6 +794,12 @@ public final class LocalPlaybackSource: ObservableObject {
     /// 见 lxMusicColdStartPosition。设备转起来之后正常一两拍内就用上(转起来那一刻当场补查一次)。
     public nonisolated static let lxMusicColdStartMaxAgeSecs: TimeInterval = 5
 
+    /// 冷恢复时等默认输出设备转起来才算起点(`lxMusicColdStartPosition`)的播放器:洛雪,还有 foobar2000(设备停着时它也是先报在放、
+    /// 锚点在按下那一刻,设备 0.3~0.6 秒后才转起来,出声比转起来晚 0.05~0.1 秒,见 02 章决策 213)。纯函数,selftest 覆盖。
+    public nonisolated static func waitsForOutputDeviceOnColdStart(bundleID: String?) -> Bool {
+        bundleID == PlaybackPlayer.lxMusic.bundleIdentifier || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier
+    }
+
     /// 洛雪播放中途改速度:它只改音频元素、不重报会话,系统那份速度和锚点都还是旧的。`setting` 是它配置里的速度和改的时刻
     /// (见 `LXMusicPlaybackRate`)。在放、两份速度不一样时,读数从改的那一刻起换成新速度。它暂停、恢复、跳转、换歌时按新速度
     /// 重报,那之后两份一样,不动。连着改了几次只看得到最后一次。见 02 章决策 130。纯函数,selftest 直接覆盖。
@@ -2319,8 +2325,8 @@ public final class LocalPlaybackSource: ObservableObject {
                 // 「恢复播放」那种信号晚于这次暂停:看到恢复晚了也拿它当上界、不封顶(见 resumeSignalAge)。
                 let resumeSignalAge = Self.resumeSignalAge(resumeSignalAt: posResumeSignalAt, now: now)
                 let sinceSignal = resumeSignalAge ?? freshSignalAge ?? Self.resumeMaxForwardCapSecs
-                // 洛雪冷启动还在等设备转起来:还没出声,先停在暂停位置,转起来再按 lxMusicColdStartPosition 重算。
-                let awaitingAudio = lastSnapshot?.bundleIdentifier == PlaybackPlayer.lxMusic.bundleIdentifier && !lxOpenAPIActive
+                // 冷启动还在等设备转起来:还没出声,先停在暂停位置,转起来再按 lxMusicColdStartPosition 重算。
+                let awaitingAudio = Self.waitsForOutputDeviceOnColdStart(bundleID: lastSnapshot?.bundleIdentifier) && !lxOpenAPIActive
                     && lxColdStart.map { $0.audioAt == nil } ?? false
                 // 洛雪开放 API 推的是它音频元素的进度,恢复时声音没走起来它也停着,跟 Kaset 一样原样采信。
                 trackPosSeconds = Self.resumeReadingNeverLeads(
@@ -3085,7 +3091,7 @@ public final class LocalPlaybackSource: ObservableObject {
         if resumeSignal {
             posResumeSignalAt = Date()
             if posResumeEpisodeAt == nil { posResumeEpisodeAt = posResumeSignalAt }
-            // 不看上一份是不是洛雪:打开洛雪点歌时 App 记着的还是别的播放器。只在洛雪的读数上用,见调用处。洛雪在它设置里
+            // 不看上一份是不是洛雪:打开洛雪点歌时 App 记着的还是别的播放器。只在洛雪、foobar2000 的读数上用,见调用处。洛雪在它设置里
             // 选了别的输出设备时不等默认设备:那台可能一直闲着,等满 3 秒歌词就定住 3 秒(见 02 章决策 134)。
             dropStaleLXMusicColdStart(now: Date())
             if lxColdStart == nil, ProcessAudioOutput.defaultOutputDeviceIsRunning() == false {
@@ -4518,7 +4524,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 groundTruthFromBrowser: browserProbePrecise,
                 anchorElapsedTime: snapshot.anchorElapsedTime, streamRaw: snapshot.elapsedTime,
                 anchorLagSeed: usedBrowserProbe ? 0 : anchorLag(forBundleID: snapshot.bundleIdentifier))
-            if let cold = lxColdStart, snapshot.bundleIdentifier == PlaybackPlayer.lxMusic.bundleIdentifier,
+            if let cold = lxColdStart, Self.waitsForOutputDeviceOnColdStart(bundleID: snapshot.bundleIdentifier),
                let started = Self.lxMusicColdStartPosition(anchorElapsed: snapshot.anchorElapsedTime, signalAnchor: cold.signalAnchor,
                                                            audioAt: cold.audioAt, rate: rate, now: now) {
                 logger.notice("lx cold start: output device started \(cold.audioAt.map { $0.timeIntervalSince(cold.signalAt) } ?? -1, format: .fixed(precision: 3))s after the playing signal, anchor \(snapshot.anchorElapsedTime ?? -1, format: .fixed(precision: 3)) → \(started, format: .fixed(precision: 3)) (was \(positionSeconds, format: .fixed(precision: 3)))")

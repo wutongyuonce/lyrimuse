@@ -3675,7 +3675,8 @@ public enum MediaControlClient {
         )
         // 读到之后主线程可能要等一两百毫秒才处理(换歌那一刻加载封面 / 歌词,实测 0.21s),位置得按读到的时刻
         // 补到处理那一刻(见 MediaControlSnapshot.capturedAt)。只对实测过的播放器开(02 章决策 41)。
-        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil || foobarLoop != nil || foobarRate != 1 {
+        if Self.stampsCaptureTime(bundleID: bundleID) || amazonPosition != nil || pine != nil
+            || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier {
             snapshot.capturedAt = sampledAt
         }
         if held { snapshot.isWaitingToPlay = true }

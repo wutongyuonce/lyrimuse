@@ -83,6 +83,9 @@ func runFoobarTests() {
         expectEqual(LocalPlaybackSource.pollsFastWhilePaused(bundleID: foobar, pausedFor: 30), true,
                     "foobar 轮询: 刚暂停那段按播放档轮询(恢复只有事件流一条即时信号)")
         expectEqual(LocalPlaybackSource.positionSourceTier(forBundleID: foobar), .precise, "foobar 位置: 锚点准,归 precise")
+        expectEqual([foobar, PlaybackPlayer.lxMusic.bundleIdentifier, PlaybackPlayer.soda.bundleIdentifier].map {
+            LocalPlaybackSource.waitsForOutputDeviceOnColdStart(bundleID: $0) }, [true, true, false],
+                    "foobar 冷恢复: 设备停着时等它转起来才算起点(按下后锚点早 0.3~0.6 秒),跟洛雪一样;别家不动")
         expectEqual(TornTrackHold.arrivesWhole(bundle: foobar), true, "foobar 换歌: 一帧报齐,不按撕裂快照按住")
     }
 
@@ -168,7 +171,9 @@ func runFoobarTests() {
         expectEqual(abs(S.position(anchor: 10, oneX: 20, rate: 1.32) - 23.2) < 1e-9, true, "foobar 变速: 锚点以来那段乘速度")
         func at(_ secs: Double) -> Date { t0.addingTimeInterval(secs) }
         var tracker = S.step(S.Tracker(), anchorKey: "a", playing: true, sample: sample(0, 0), now: at(0))
-        expectEqual(tracker.first == nil && tracker.rate == 1, true, "foobar 变速: 锚点之后头 3 秒不取起点(进度条的落后还在涨)")
+        expectEqual(tracker.first == nil && tracker.probe == nil && tracker.rate == 1, true,
+                    "foobar 变速: 锚点之后头 3 秒不取细量起点(进度条的落后还在涨),头一次读数也不当粗量起点")
+        tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(0.6, 0.5), now: at(0.5))
         tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(3.6, 3), now: at(3))
         expectEqual(tracker.first == sample(3.6, 3) && tracker.rate == 1.2, true, "foobar 变速: 3 秒后取细量起点,粗量偏离够大先用粗量的")
         tracker = S.step(tracker, anchorKey: "a", playing: true, sample: sample(10.2, 8), now: at(8))
@@ -180,6 +185,7 @@ func runFoobarTests() {
         tracker = S.step(tracker, anchorKey: "b", playing: false, sample: nil, now: at(20))
         expectEqual(tracker.first == nil && tracker.rate == 1.33, true, "foobar 变速: 停着不量")
         tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(40, 20), now: at(20))
+        tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(40.3, 20.3), now: at(20.3))
         tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(42.5, 22.5), now: at(22.5))
         expectEqual(tracker.rate, 1, "foobar 变速: 记着变速、锚点后头两次读数粗量是 1 倍就马上放掉")
         var looped = S.step(S.Tracker(), anchorKey: "l", playing: true, sample: sample(0.1, 0), now: at(0))
@@ -195,11 +201,19 @@ func runFoobarTests() {
         expectEqual(gapped.rate == 1 && gapped.first == sample(11.1, 41) && gapped.probe == sample(7.1, 37), true,
                     "foobar 变速: 隔了 30 秒才再读到(焦点被占那段不读)从那里重新量,不拿跨了几圈的旧读数算(实测量成 0.28 倍)")
         var fresh = S.step(S.Tracker(), anchorKey: "d", playing: true, sample: sample(0.5, 0), now: at(0))
-        fresh = S.step(fresh, anchorKey: "d", playing: true, sample: sample(3.1, 2), now: at(2))
+        fresh = S.step(fresh, anchorKey: "d", playing: true, sample: sample(0.63, 0.1), now: at(0.1))
+        fresh = S.step(fresh, anchorKey: "d", playing: true, sample: sample(3.23, 2.1), now: at(2.1))
         expectEqual(fresh.rate, 1.3, "foobar 变速: 记着 1 倍、粗量偏离 15% 以上先用粗量的")
         var slight = S.step(S.Tracker(), anchorKey: "e", playing: true, sample: sample(0.5, 0), now: at(0))
-        slight = S.step(slight, anchorKey: "e", playing: true, sample: sample(2.7, 2), now: at(2))
+        slight = S.step(slight, anchorKey: "e", playing: true, sample: sample(0.6, 0.1), now: at(0.1))
+        slight = S.step(slight, anchorKey: "e", playing: true, sample: sample(2.8, 2.1), now: at(2.1))
         expectEqual(slight.rate, 1, "foobar 变速: 粗量偏离不到 15% 不改,等细量")
+        var resumed = S.Tracker()
+        for (value, secs) in [(8.11, 0.0), (8.11, 0.6), (9.6, 1.1), (10.6, 2.1), (11.6, 3.1)] {
+            resumed = S.step(resumed, anchorKey: "r", playing: true, sample: sample(value, secs), now: at(secs))
+        }
+        expectEqual(resumed.rate == 1 && resumed.probe == sample(9.6, 1.1), true,
+                    "foobar 变速: 冷启动接着放时进度条先停在存下的位置再跳上来,停着那次读数不当粗量起点(实测误量成 1.26 倍)")
         let bars = [PineVolume.Slider(min: 0, max: 100, value: 40), PineVolume.Slider(min: 0, max: 223.453, value: 34.02)]
         expectEqual(FoobarSliders.progressIndex(bars, duration: 223.4), 1, "foobar 进度条: 最大值对上时长的那一根")
         expectEqual(FoobarSliders.progressIndex([bars[0], PineVolume.Slider(min: 0, max: 100, value: 7)], duration: 100) == nil, true, "foobar 进度条: 恰好 100 秒跟音量分不出时不认")
@@ -227,6 +241,8 @@ func runFoobarTests() {
                     "foobar 接线: 量出的速度交给下游外推")
         expectEqual(sourceHas(client, "Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: stretched, duration: raw.duration)"), true,
                     "foobar 接线: 单曲循环按变速后的位置取余")
+        expectEqual(sourceHas(client, "|| bundleID == PlaybackPlayer.foobar2000.bundleIdentifier {"), true,
+                    "foobar 接线: 快照一律带上读到的时刻(冷启动接着放时换歌那一拍主线程晚 0.12 秒处理,不补就一直慢这么多)")
         let focusLost = sourceBody("private static func snapshotAfterFocusLost()", in: client)
         let pausedFocus = sourceBody("private static func pausedFocusReading(", in: client)
         expectEqual([focusLost.contains("snapshot = snapshot.map { foobarProbedSnapshot($0, now: now) }"),
