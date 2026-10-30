@@ -240,7 +240,7 @@
       },
       {
         "source": "applemusic",
-        "score": 1154,
+        "score": 1155,
         "terms": [
           {
             "kind": "duration",
@@ -252,7 +252,7 @@
           },
           {
             "kind": "lines",
-            "points": 26
+            "points": 27
           },
           {
             "kind": "album",
@@ -271,7 +271,7 @@
       },
       {
         "source": "soda",
-        "score": 1154,
+        "score": 1155,
         "terms": [
           {
             "kind": "duration",
@@ -283,7 +283,7 @@
           },
           {
             "kind": "lines",
-            "points": 26
+            "points": 27
           },
           {
             "kind": "album",
@@ -329,11 +329,11 @@
       },
       {
         "source": "netease",
-        "score": 754,
+        "score": 755,
         "terms": [
           {
             "kind": "duration",
-            "points": 207
+            "points": 208
           },
           {
             "kind": "lines",
@@ -356,7 +356,7 @@
       },
       {
         "source": "musixmatch",
-        "score": 754,
+        "score": 755,
         "terms": [
           {
             "kind": "duration",
@@ -364,7 +364,7 @@
           },
           {
             "kind": "lines",
-            "points": 26
+            "points": 27
           },
           {
             "kind": "album",
@@ -382,11 +382,11 @@
       },
       {
         "source": "lrclib",
-        "score": 754,
+        "score": 751,
         "terms": [
           {
             "kind": "duration",
-            "points": 208
+            "points": 205
           },
           {
             "kind": "lines",
@@ -407,7 +407,7 @@
         ]
       },
       {
-        "source": "migu",
+        "source": "deezer",
         "score": 616,
         "terms": [
           {
@@ -429,12 +429,12 @@
         ]
       },
       {
-        "source": "deezer",
-        "score": 602,
+        "source": "migu",
+        "score": 616,
         "terms": [
           {
             "kind": "duration",
-            "points": 206
+            "points": 220
           },
           {
             "kind": "lines",

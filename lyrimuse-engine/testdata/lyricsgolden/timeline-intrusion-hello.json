@@ -6,9 +6,9 @@
     "consensus_peers": 7,
     "title_accepted": true,
     "version_tags_ok": true,
-    "source_duration_delta_pct": 0.2305157840956208,
-    "lyrics_end_secs": 226.73,
-    "coverage_pct": 91.21264175916129,
+    "source_duration_delta_pct": 0,
+    "lyrics_end_secs": 221.16,
+    "coverage_pct": 88.97185132737667,
     "ending_corroborated": false,
     "album_score": 200,
     "live_mismatch": false,
@@ -144,7 +144,7 @@
     "soda": {}
   },
   "expect": {
-    "winner": "kugou",
+    "winner": "netease",
     "verdicts": {
       "applemusic": "accepted",
       "deezer": "accepted",
@@ -157,7 +157,7 @@
     },
     "ranked": [
       {
-        "source": "kugou",
+        "source": "netease",
         "score": 1231,
         "terms": [
           {
@@ -194,12 +194,12 @@
         "translation_lang": "zh"
       },
       {
-        "source": "netease",
-        "score": 1211,
+        "source": "kugou",
+        "score": 1231,
         "terms": [
           {
             "kind": "duration",
-            "points": 211
+            "points": 229
           },
           {
             "kind": "wordTiming",
@@ -207,7 +207,7 @@
           },
           {
             "kind": "lines",
-            "points": 30
+            "points": 32
           },
           {
             "kind": "album",
@@ -418,6 +418,6 @@
         "translation_lang": "zh"
       }
     ],
-    "winner_fingerprint": "610254ca2e345a59"
+    "winner_fingerprint": "ae6ef4fef38d823d"
   }
 }

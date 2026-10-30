@@ -6,9 +6,9 @@
     "consensus_peers": 2,
     "title_accepted": true,
     "version_tags_ok": true,
-    "source_duration_delta_pct": 0.32032830024212444,
-    "lyrics_end_secs": 245.42,
-    "coverage_pct": 87.05830971015864,
+    "source_duration_delta_pct": 0.01985961847697917,
+    "lyrics_end_secs": 245.4,
+    "coverage_pct": 87.0512150716035,
     "ending_corroborated": false,
     "album_score": 200,
     "live_mismatch": false,
@@ -102,7 +102,7 @@
     }
   },
   "expect": {
-    "winner": "qq",
+    "winner": "netease",
     "verdicts": {
       "kugou": "accepted",
       "netease": "accepted",
@@ -110,7 +110,7 @@
     },
     "ranked": [
       {
-        "source": "qq",
+        "source": "netease",
         "score": 1243,
         "terms": [
           {
@@ -152,8 +152,8 @@
         "has_romanization": true
       },
       {
-        "source": "netease",
-        "score": 1242,
+        "source": "qq",
+        "score": 1243,
         "terms": [
           {
             "kind": "duration",
@@ -165,7 +165,7 @@
           },
           {
             "kind": "lines",
-            "points": 46
+            "points": 47
           },
           {
             "kind": "album",
@@ -232,6 +232,6 @@
         "has_romanization": true
       }
     ],
-    "winner_fingerprint": "055a3233801df968"
+    "winner_fingerprint": "aa6e7e102909070f"
   }
 }

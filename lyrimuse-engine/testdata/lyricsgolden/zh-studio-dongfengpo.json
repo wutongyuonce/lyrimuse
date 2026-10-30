@@ -144,7 +144,7 @@
       },
       {
         "source": "netease",
-        "score": 1159,
+        "score": 1160,
         "terms": [
           {
             "kind": "duration",
@@ -156,7 +156,7 @@
           },
           {
             "kind": "lines",
-            "points": 36
+            "points": 37
           },
           {
             "kind": "album",
@@ -175,11 +175,11 @@
       },
       {
         "source": "qq",
-        "score": 1159,
+        "score": 1160,
         "terms": [
           {
             "kind": "duration",
-            "points": 202
+            "points": 203
           },
           {
             "kind": "wordTiming",
@@ -206,11 +206,11 @@
       },
       {
         "source": "kugou",
-        "score": 1159,
+        "score": 1160,
         "terms": [
           {
             "kind": "duration",
-            "points": 202
+            "points": 203
           },
           {
             "kind": "wordTiming",

@@ -6,9 +6,9 @@
     "consensus_peers": 4,
     "title_accepted": true,
     "version_tags_ok": true,
-    "source_duration_delta_pct": 0,
-    "lyrics_end_secs": 197.89,
-    "coverage_pct": 90.76440424536523,
+    "source_duration_delta_pct": 0.011925183235031812,
+    "lyrics_end_secs": 198.76,
+    "coverage_pct": 91.16343922284497,
     "ending_corroborated": false,
     "album_score": 200,
     "live_mismatch": false,
@@ -111,7 +111,7 @@
     }
   },
   "expect": {
-    "winner": "netease",
+    "winner": "qq",
     "instrumental_marker": "lrclib",
     "verdicts": {
       "amll": "accepted",
@@ -122,7 +122,7 @@
     },
     "ranked": [
       {
-        "source": "netease",
+        "source": "qq",
         "score": 1192,
         "terms": [
           {
@@ -153,7 +153,7 @@
         "has_word_timing": true
       },
       {
-        "source": "qq",
+        "source": "netease",
         "score": 1192,
         "terms": [
           {
@@ -216,7 +216,7 @@
       },
       {
         "source": "amll",
-        "score": 1191,
+        "score": 1192,
         "terms": [
           {
             "kind": "duration",
@@ -228,7 +228,7 @@
           },
           {
             "kind": "lines",
-            "points": 42
+            "points": 43
           },
           {
             "kind": "album",
@@ -280,6 +280,6 @@
         ]
       }
     ],
-    "winner_fingerprint": "cd99e4e465f1f38a"
+    "winner_fingerprint": "a116b72361c97bc0"
   }
 }

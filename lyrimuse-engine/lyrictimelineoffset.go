@@ -180,19 +180,10 @@ func classifyTimelines(a, b []timelineLine, minShiftMs int) timelineRelation {
 
 // classifyTimelinesShift 同 classifyTimelines,另交出配对行 a 减 b 的中位偏移(毫秒);判不了时偏移为 0。
 func classifyTimelinesShift(a, b []timelineLine, minShiftMs int) (timelineRelation, int) {
-	var d []int
-	for i, j := range timelineLCSAlignFunc(len(a), len(b), func(i, j int) bool { return timelineLinesMatch(a[i].norm, b[j].norm) }) {
-		if j >= 0 {
-			d = append(d, a[i].ms-b[j].ms)
-		}
-	}
-	short := min(len(a), len(b))
-	if len(d) < timelineOffsetMinMatched || len(d)*2 < short {
+	d, med, ok := timelinePairOffsets(a, b)
+	if !ok {
 		return timelineUndecided, 0
 	}
-	sorted := append([]int(nil), d...)
-	sort.Ints(sorted)
-	med := sorted[len(sorted)/2]
 	aroundMedian, later, earlier := 0, 0, 0
 	for _, x := range d {
 		if x-med < timelineNearMs && med-x < timelineNearMs {
@@ -214,6 +205,23 @@ func classifyTimelinesShift(a, b []timelineLine, minShiftMs int) (timelineRelati
 		return timelineShiftedEarlier, med
 	}
 	return timelineUndecided, 0
+}
+
+// timelinePairOffsets 按正文 LCS 配对两份时间轴(两行算不算同一句见 timelineLinesMatch),返回配上的各行
+// a 减 b 的毫秒差和它们的中位数(偶数个取靠上那个)。配对不足 timelineOffsetMinMatched 行或不到较短一份的
+// 一半时 ok=false。
+func timelinePairOffsets(a, b []timelineLine) (d []int, med int, ok bool) {
+	for i, j := range timelineLCSAlignFunc(len(a), len(b), func(i, j int) bool { return timelineLinesMatch(a[i].norm, b[j].norm) }) {
+		if j >= 0 {
+			d = append(d, a[i].ms-b[j].ms)
+		}
+	}
+	if len(d) < timelineOffsetMinMatched || len(d)*2 < min(len(a), len(b)) {
+		return nil, 0, false
+	}
+	sorted := append([]int(nil), d...)
+	sort.Ints(sorted)
+	return d, sorted[len(sorted)/2], true
 }
 
 // applyTimelineOffsetPenalty 给时间轴整体平移到另一个母带上的候选扣 timelineOffsetPenalty 分,

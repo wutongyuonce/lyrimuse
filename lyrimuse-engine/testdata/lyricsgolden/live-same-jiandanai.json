@@ -140,7 +140,7 @@
         "has_word_timing": true
       },
       {
-        "source": "qq",
+        "source": "kugou",
         "score": 1109,
         "terms": [
           {
@@ -171,12 +171,12 @@
         "has_word_timing": true
       },
       {
-        "source": "kugou",
-        "score": 1107,
+        "source": "qq",
+        "score": 1109,
         "terms": [
           {
             "kind": "duration",
-            "points": 242
+            "points": 243
           },
           {
             "kind": "wordTiming",
@@ -184,7 +184,7 @@
           },
           {
             "kind": "lines",
-            "points": 55
+            "points": 56
           },
           {
             "kind": "album",

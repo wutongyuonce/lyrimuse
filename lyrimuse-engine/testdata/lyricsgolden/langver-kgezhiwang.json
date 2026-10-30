@@ -175,11 +175,11 @@
       },
       {
         "source": "lrclib",
-        "score": 761,
+        "score": 776,
         "terms": [
           {
             "kind": "duration",
-            "points": 202
+            "points": 217
           },
           {
             "kind": "lines",

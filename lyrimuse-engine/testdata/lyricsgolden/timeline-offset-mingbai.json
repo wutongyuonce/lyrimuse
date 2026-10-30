@@ -7,8 +7,8 @@
     "title_accepted": true,
     "version_tags_ok": true,
     "source_duration_delta_pct": 0,
-    "lyrics_end_secs": 255.77,
-    "coverage_pct": 87.98629481962071,
+    "lyrics_end_secs": 252.71,
+    "coverage_pct": 86.93363789289732,
     "ending_corroborated": false,
     "album_score": 200,
     "live_mismatch": false,
@@ -137,7 +137,7 @@
     }
   },
   "expect": {
-    "winner": "soda",
+    "winner": "netease",
     "verdicts": {
       "applemusic": "accepted",
       "kugou": "accepted",
@@ -148,6 +148,37 @@
       "soda": "accepted"
     },
     "ranked": [
+      {
+        "source": "netease",
+        "score": 1159,
+        "terms": [
+          {
+            "kind": "duration",
+            "points": 203
+          },
+          {
+            "kind": "wordTiming",
+            "points": 400
+          },
+          {
+            "kind": "lines",
+            "points": 36
+          },
+          {
+            "kind": "album",
+            "points": 150
+          },
+          {
+            "kind": "titleMatch",
+            "points": 120
+          },
+          {
+            "kind": "consensus",
+            "points": 250
+          }
+        ],
+        "has_word_timing": true
+      },
       {
         "source": "soda",
         "score": 1159,
@@ -180,38 +211,7 @@
         "has_word_timing": true
       },
       {
-        "source": "netease",
-        "score": 1151,
-        "terms": [
-          {
-            "kind": "duration",
-            "points": 195
-          },
-          {
-            "kind": "wordTiming",
-            "points": 400
-          },
-          {
-            "kind": "lines",
-            "points": 36
-          },
-          {
-            "kind": "album",
-            "points": 150
-          },
-          {
-            "kind": "titleMatch",
-            "points": 120
-          },
-          {
-            "kind": "consensus",
-            "points": 250
-          }
-        ],
-        "has_word_timing": true
-      },
-      {
-        "source": "applemusic",
+        "source": "lrclib",
         "score": 760,
         "terms": [
           {
@@ -237,12 +237,12 @@
         ]
       },
       {
-        "source": "lrclib",
-        "score": 753,
+        "source": "applemusic",
+        "score": 760,
         "terms": [
           {
             "kind": "duration",
-            "points": 197
+            "points": 204
           },
           {
             "kind": "lines",
@@ -359,6 +359,6 @@
         ]
       }
     ],
-    "winner_fingerprint": "a83ed2ccd8db9c6c"
+    "winner_fingerprint": "7fb3f63b4a9652aa"
   }
 }
