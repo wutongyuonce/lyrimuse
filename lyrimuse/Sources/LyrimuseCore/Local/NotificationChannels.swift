@@ -304,6 +304,8 @@ public enum NotificationTest {
         /// 取到了就有;取不到时 `reason` 说为什么。
         public let stats: NotificationPreview.Stats?
         public let reason: Reason?
+        /// 引擎按哪种报告语言算的标题(引擎 digestPreviewResult.Lang);旧引擎没有这一项时为空。
+        public let lang: String
     }
 
     public static func previewResult(id: String, in data: Data) -> PreviewResult? {
@@ -312,7 +314,8 @@ public enum NotificationTest {
         let ok = r["ok"] as? Bool ?? false
         let stats = ok ? (r["digest"] as? [String: Any]).map(NotificationPreview.Stats.init(digestJSON:)) : nil
         return PreviewResult(id: id, title: r["title"] as? String ?? "", stats: stats,
-                             reason: stats == nil ? PreviewResult.Reason(rawValue: r["reason"] as? String ?? "") ?? .fetch : nil)
+                             reason: stats == nil ? PreviewResult.Reason(rawValue: r["reason"] as? String ?? "") ?? .fetch : nil,
+                             lang: r["lang"] as? String ?? "")
     }
 
     /// 预览要取账号全部歌手(判新听的歌手),第一次一二十秒;等这么久还没有结果就当没取到。

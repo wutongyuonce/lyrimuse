@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -218,6 +220,88 @@ func TestDigestReportLangSample(t *testing.T) {
 		}
 		if len(got) != len(want.Cases) {
 			t.Errorf("cases = %d, want %d", len(got), len(want.Cases))
+		}
+	}
+}
+
+// 换进去的歌名、歌手名里带 {n}、{name} 这类字样时原样留着,不被后面的名字再换一遍。
+func TestDigestWordsFillOnce(t *testing.T) {
+	w := digestWordsFor(digestLangHans)
+	if got := w.f("item", "i", "1", "name", "Song {n} {name}", "n", "4"); got != "1. Song {n} {name}（4）" {
+		t.Errorf("item = %q", got)
+	}
+	if got := w.f("pair", "artist", "A {name}", "name", "B"); got != "A {name} - B" {
+		t.Errorf("pair = %q", got)
+	}
+}
+
+// 精简那一段里没有歌手的专辑、歌曲只写名字(同 App 预览),不多出「 — 」。
+func TestBriefTopOnesWithoutArtist(t *testing.T) {
+	useDigestFeatures(t, featureFlags{DigestTopN: 3})
+	st := digestStats{TotalPlays: 5, TopAlbums: []digestTally{{Name: "X", Count: 5}}}
+	secs := (&richDigest{digestStats: &st, style: digestStyleBrief}).sections(func(s string) string { return s })
+	if len(secs) != 1 || len(secs[0].lines) != 1 || secs[0].lines[0] != "专辑：X · 5" {
+		t.Errorf("%+v", secs)
+	}
+}
+
+// 钉钉 / 飞书说消息里没有关键词、报告是英文写的:改用简体标题推一次纯文本;简体报告不重推。
+func TestKeywordRejectedRetriesWithHansTitle(t *testing.T) {
+	var mu sync.Mutex
+	var texts []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var m map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&m)
+		text := ""
+		if c, ok := m["text"].(map[string]any); ok {
+			text, _ = c["content"].(string)
+		}
+		mu.Lock()
+		texts = append(texts, text)
+		mu.Unlock()
+		if !strings.Contains(text, "听歌") {
+			io.WriteString(w, `{"errcode":310000,"errmsg":"keywords not in content"}`)
+			return
+		}
+		io.WriteString(w, `{"errcode":0,"errmsg":"ok"}`)
+	}))
+	defer srv.Close()
+	ch := notifyChannel{ID: "dd", Platform: platformDingtalk, URL: srv.URL + "/robot/send?access_token=x", Enabled: true}
+	msg := func() notifyMessage {
+		d := richSample()
+		return notifyMessage{Event: notifyEventDaily, Title: dw().f("title_today", "date", "Oct 20"), Body: digestBody(*d), Digest: d,
+			Key: "🎧 今日听歌报告（10-20）"}
+	}
+	useDigestFeatures(t, featureFlags{DigestTopN: 2, ReportLanguage: digestLangEn})
+	if r := pushToChannel(ch, msg()); !r.OK || len(texts) != 2 || !strings.HasPrefix(texts[1], "🎧 今日听歌报告（10-20）\n") {
+		t.Fatalf("英文报告关键词没过应改用简体标题重推: ok=%v texts=%q", r.OK, texts)
+	}
+	texts = nil
+	useDigestFeatures(t, featureFlags{DigestTopN: 2})
+	m := msg()
+	m.Title = "我的标题"
+	if r := pushToChannel(ch, m); r.OK || len(texts) != 1 {
+		t.Errorf("简体报告的关键词问题是用户自己的配置,不重推: ok=%v 次数=%d", r.OK, len(texts))
+	}
+}
+
+// Server酱:标题截到 32 字、微信卡片摘要截到 64 字(英文标题会超)。
+func TestServerChanClipsTitleAndShort(t *testing.T) {
+	useDigestFeatures(t, featureFlags{DigestTopN: 2, ReportLanguage: digestLangEn})
+	d := richSample()
+	d.Truncated = true
+	msg := notifyMessage{Event: notifyEventWeekly, Title: "🎵 Last Week's Listening Digest (Oct 20 – Oct 26)", Body: digestBody(*d), Digest: d}
+	for _, formatted := range []bool{true, false} {
+		nr, err := buildNotifyRequestAs(notifyChannel{Platform: platformServerChan, URL: "https://sctapi.ftqq.com/x.send"}, msg, formatted)
+		if err != nil {
+			t.Fatal(err)
+		}
+		form, _ := url.ParseQuery(string(nr.body))
+		if n := len([]rune(form.Get("title"))); n > serverChanTitleMax || !strings.HasPrefix(form.Get("title"), "🎵 Last Week") {
+			t.Errorf("formatted=%v title(%d) = %q", formatted, n, form.Get("title"))
+		}
+		if n := len([]rune(form.Get("short"))); n > serverChanShortMax {
+			t.Errorf("formatted=%v short(%d) = %q", formatted, n, form.Get("short"))
 		}
 	}
 }

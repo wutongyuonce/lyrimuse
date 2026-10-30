@@ -22,9 +22,23 @@ public struct ReportWords: Sendable {
 
     public subscript(_ key: String) -> String { table[key] ?? "" }
 
-    /// 取 key 那一句,把 `{名字}` 换成值。
+    /// 取 key 那一句,把 `{名字}` 换成值。只扫那一句本身一遍:换进去的歌名里带 `{n}` 这类字样时原样留着(同引擎 digestWords.f)。
     public func f(_ key: String, _ values: [(String, String)] = []) -> String {
-        values.reduce(self[key]) { $0.replacingOccurrences(of: "{\($1.0)}", with: $1.1) }
+        let vals = Dictionary(values, uniquingKeysWith: { _, last in last })
+        var out = ""
+        var rest = self[key][...]
+        while let open = rest.firstIndex(of: "{") {
+            out += rest[..<open]
+            let after = rest[rest.index(after: open)...]
+            if let close = after.firstIndex(of: "}"), let value = vals[String(after[..<close])] {
+                out += value
+                rest = after[after.index(after: close)...]
+            } else {
+                out += "{"
+                rest = after
+            }
+        }
+        return out + rest
     }
 
     /// 带数量 `{n}` 的那一句;数量是 1 且表里有 `key_one` 时用它(英文单复数)。

@@ -278,7 +278,8 @@ enum NotificationPreviewLoader {
             do { try await Task.sleep(nanoseconds: 400_000_000) } catch { return nil }
             guard let data = FileIO.read(resultURL), let result = NotificationTest.previewResult(id: id, in: data) else { continue }
             let state: State = result.stats.map { .real(title: result.title, stats: $0) } ?? .unavailable(result.reason)
-            cache[key] = (Date(), state)
+            // 刚切了界面语言、引擎还没跟上:这份的标题是旧语言,照显示但不缓存,下次再取。
+            if result.lang.isEmpty || result.lang == ReportLanguage.ui.rawValue { cache[key] = (Date(), state) }
             return state
         }
         return .unavailable(nil)

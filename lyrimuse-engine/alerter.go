@@ -178,7 +178,22 @@ func pushToChannel(ch notifyChannel, msg notifyMessage) notifyResult {
 			r = pushNotifyRequest(ch, nr, start)
 		}
 	}
+	// 钉钉 / 飞书机器人的自定义关键词没过,而报告不是简体写的:关键词多半是按简体报告填的「听歌」,改用简体标题(Key)
+	// 推一次纯文本。钉钉 310000 也可能是加签、IP 不对,那样重推一次照样失败,结论不变。见 15 章决策 99。
+	if !r.OK && notifyKeywordRejected(ch.Platform, r.Code) && msg.Key != "" && msg.Key != msg.Title && reportLang() != digestLangHans {
+		log.Printf("notify: %s rejected the report (code=%s), retrying with the Simplified Chinese title", ch.Platform, r.Code)
+		hans := msg
+		hans.Title = msg.Key
+		if nr, err = buildNotifyRequestAs(ch, hans, false); err == nil {
+			r = pushNotifyRequest(ch, nr, start)
+		}
+	}
 	return r
+}
+
+// notifyKeywordRejected:钉钉 / 飞书说消息里没有自定义关键词(钉钉 310000 是安全设置没过的总称)。
+func notifyKeywordRejected(platform, code string) bool {
+	return (platform == platformDingtalk && code == "310000") || (platform == platformFeishu && code == "19024")
 }
 
 // notifyHTTPClient:推送用的 client。重定向只跟 307 / 308:301 / 302 / 303 会把 POST 改成 GET、丢掉正文,跟过去拿到的

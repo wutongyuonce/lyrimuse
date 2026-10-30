@@ -554,6 +554,10 @@ func runSettingsInteractionTests() {
         expectEqual([ReportLanguage(""), ReportLanguage(" ZH-HANT "), ReportLanguage("en"), ReportLanguage("ja")], [.zhHans, .zhHant, .en, .zhHans],
                     "报告语言: 认得的三种,其余按简体")
         expectEqual(ReportLanguage.featuresKey, "report_language", "报告语言: 键名同引擎 features.go 的 json 标签")
+        expectEqual(ReportLanguage.zhHans.words.f("item", [("i", "1"), ("name", "Song {n} {name}"), ("n", "4")]), "1. Song {n} {name}（4）",
+                    "报告语言: 换进去的歌名里带 {n} 原样留着(同引擎 TestDigestWordsFillOnce)")
+        let langResult = Data(#"{"results":[{"id":"p1","kind":"daily","ok":false,"reason":"empty","lang":"en","at":1}]}"#.utf8)
+        expectEqual(NotificationTest.previewResult(id: "p1", in: langResult)?.lang, "en", "报告语言: 预览结果读得出引擎按哪种语言算的")
         let langCases = (try? Data(contentsOf: samples.appendingPathComponent("report-lang.json")))
             .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }?["cases"] as? [[String: Any]] ?? []
         expectEqual(langCases.count, 18, "报告语言: 共用样例三种语言 × 日报周报 × 三套")

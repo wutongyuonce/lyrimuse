@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -38,17 +39,28 @@ func digestWordsFor(lang digestLang) digestWords {
 	return digestWordTable[digestLangHans]
 }
 
-// dw:当前报告语言的那张表。
-func dw() digestWords { return digestWordsFor(features().ReportLanguage) }
+// reportLang:当前报告语言;还没读过 features.json(零值)时按简体。
+func reportLang() digestLang { return parseDigestLang(string(features().ReportLanguage)) }
 
-// f 取 key 那一句,把 {名字} 换成 kv 里的值(名字、值交替给)。
+// dw:当前报告语言的那张表。
+func dw() digestWords { return digestWordsFor(reportLang()) }
+
+// f 取 key 那一句,把 {名字} 换成 kv 里的值(名字、值交替给)。只扫那一句本身一遍:换进去的歌名里带 {n} 这类字样时
+// 原样留着,不会再被后面的名字换掉。
 func (w digestWords) f(key string, kv ...string) string {
-	s := w[key]
+	vals := make(map[string]string, len(kv)/2)
 	for i := 0; i+1 < len(kv); i += 2 {
-		s = strings.ReplaceAll(s, "{"+kv[i]+"}", kv[i+1])
+		vals[kv[i]] = kv[i+1]
 	}
-	return s
+	return digestWordSlotRe.ReplaceAllStringFunc(w[key], func(m string) string {
+		if v, ok := vals[m[1:len(m)-1]]; ok {
+			return v
+		}
+		return m
+	})
 }
+
+var digestWordSlotRe = regexp.MustCompile(`\{[a-z_]+\}`)
 
 // count:带数量 {n} 的那一句;数量是 1 且表里有 key_one 时用它(英文单复数)。
 func (w digestWords) count(key string, n int, kv ...string) string {

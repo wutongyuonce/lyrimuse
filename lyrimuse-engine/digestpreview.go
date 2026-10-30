@@ -39,6 +39,8 @@ type digestPreviewResult struct {
 	Title  string       `json:"title,omitempty"`
 	Digest *digestStats `json:"digest,omitempty"`
 	At     int64        `json:"at"`
+	// Lang:标题、上一期叫法按哪种报告语言算的。App 切了界面语言、引擎还没热重读时会对不上,App 不缓存那一份。
+	Lang string `json:"lang,omitempty"`
 }
 
 type digestPreviewResultFile struct {
@@ -56,8 +58,9 @@ var (
 func runDigestPreview(req notifyTestRequest) {
 	ctx, cancel := context.WithTimeout(context.Background(), digestPreviewTimeout)
 	defer cancel()
+	lang := reportLang()
 	res := computeDigestPreview(ctx, liveConfig(), req.Preview, time.Now())
-	res.ID, res.At = req.ID, time.Now().Unix()
+	res.ID, res.At, res.Lang = req.ID, time.Now().Unix(), string(lang)
 	slog.Info("notify preview: done", "kind", res.Kind, "ok", res.OK, "reason", res.Reason)
 	writeDigestPreviewResult(res)
 }
@@ -118,7 +121,7 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 	}
 
 	for _, c := range cands {
-		key := fmt.Sprintf("%s|%s|%d|%d|%s", kind, source, digestTopN(), c.from.Unix(), features().ReportLanguage)
+		key := fmt.Sprintf("%s|%s|%d|%d|%s", kind, source, digestTopN(), c.from.Unix(), reportLang())
 		digestPreviewMu.Lock()
 		hit, ok := digestPreviewCache[key]
 		digestPreviewMu.Unlock()

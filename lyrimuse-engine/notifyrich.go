@@ -56,7 +56,8 @@ func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, cont
 			return nil, "", false, nil
 		}
 		// short 是微信里那张提醒卡片上显示的内容;不填时卡片显示 desp 的开头,也就是封面那行 markdown 原文。
-		form := url.Values{"title": {msg.Title}, "desp": {serverChanRich(d)}, "short": {digestSummaryLine(*d.digestStats)}}
+		form := url.Values{"title": {clipRunes(msg.Title, serverChanTitleMax)}, "desp": {serverChanRich(d)},
+			"short": {clipRunes(digestSummaryLine(*d.digestStats), serverChanShortMax)}}
 		return []byte(form.Encode()), "application/x-www-form-urlencoded", true, nil
 	case platformBark, "":
 		if d == nil {
@@ -408,6 +409,12 @@ func wecomRich(title, body string, d *richDigest) string {
 	bold := func(s string) string { return "**" + s + "**" }
 	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n", true) + "\n\n> " + richFooter(d.digestStats)
 }
+
+// Server酱 Turbo 的上限:标题 32 字、微信提醒卡片(short)64 字。英文标题、记录被截断时的第一行会超,截掉。
+const (
+	serverChanTitleMax = 32
+	serverChanShortMax = 64
+)
 
 // serverChanRich:Server酱的 desp 按 markdown 渲染(微信里收到标题那条提醒,点进去看的是这一页)。
 func serverChanRich(d *richDigest) string {

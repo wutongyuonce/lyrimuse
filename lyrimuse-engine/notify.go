@@ -216,7 +216,7 @@ func buildNotifyPayload(platform, title, body, feishuSecret, telegramChatID stri
 		// Server酱 Turbo(sctapi.ftqq.com)只认 application/x-www-form-urlencoded,
 		// 字段叫 title/desp(desp 支持 Markdown)——跟其它平台的 JSON body 完全是
 		// 两回事,照抄 json.Marshal 那一套会直接推送失败。
-		form := url.Values{"title": {title}, "desp": {body}}
+		form := url.Values{"title": {clipRunes(title, serverChanTitleMax)}, "desp": {body}}
 		return []byte(form.Encode()), "application/x-www-form-urlencoded", nil
 	default: // platformBark 及任何未识别的值
 		b, err := json.Marshal(map[string]any{

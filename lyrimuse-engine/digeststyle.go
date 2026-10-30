@@ -115,7 +115,12 @@ func (d *richDigest) sections(esc func(string) string) []richSection {
 		w := dw()
 		lines := digestTopOnes(*d.digestStats, func(label, name string, count int) string {
 			return w.f("brief_line", "label", label, "name", name, "n", strconv.Itoa(count))
-		}, func(t digestTally) string { return t.Name + " — " + t.Sub }, esc)
+		}, func(t digestTally) string {
+			if t.Sub == "" {
+				return t.Name
+			}
+			return t.Name + " — " + t.Sub
+		}, esc)
 		if len(lines) == 0 {
 			return nil
 		}
