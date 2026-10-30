@@ -7,7 +7,8 @@ import Foundation
 /// AM 的做法:封面缩到 128²,三份副本(半边长 1.4 / 0.7 / 0.7,长边一半为 1)各自整圈慢转,第三份跟着第一份公转;
 /// 每份逐像素压暗、按 Rec.709 亮度权重提饱和;叠好后大半径高斯模糊、反预乘、混 10% 白,最后过一张压红 / 蓝的色表。
 /// 这里把模糊挪到每份副本自己身上预先烘好(两张位图),转动交给 Core Animation:底层外延铺满不露边,
-/// 上层两份带软边透明、按普通 over 叠。颜色、几何、周期都取 AM 的值,只有「先叠后模糊」变成「先模糊后叠」。
+/// 上层两份带软边透明、按普通 over 叠。几何、周期取 AM 的值;「先叠后模糊」变成「先模糊后叠」会让明暗跨度收窄、
+/// 彩度略高,所以饱和比 AM 低一点、再补一点对比度(这两个值是对着 AM 真值在训练集上拟合的,见 07 章决策 187)。
 public enum AMBackdrop {
     /// 一份封面副本。单位:视图长边的一半 = 1,y 向上,原点在视图中心。
     public struct Layer: Equatable, Sendable {
@@ -30,8 +31,11 @@ public enum AMBackdrop {
         Layer(halfSide: 0.7, dx: 0.7, dy: 0.7, period: 180, parent: 0, darken: 0.635),
     ]
 
-    /// 提饱和倍数(AM 宽窗口那一档)。
-    public static let saturation = 2.4
+    /// 提饱和倍数(AM 宽窗口那一档是 2.4)。
+    public static let saturation = 2.3
+    /// 对比度:颜色绕 `contrastPivot` 拉开的倍数(AM 没有这一步,补「先模糊后叠」收窄的明暗跨度)。
+    public static let contrast = 1.07
+    public static let contrastPivot = 0.45
     /// 模糊 σ(点)。AM 按绝对点数取,不随窗口缩放。
     public static let blurSigmaPoints = 120.0
     /// 模糊之后混进的白。
@@ -45,14 +49,15 @@ public enum AMBackdrop {
 
     // MARK: - 颜色
 
-    /// 一份副本的颜色变换:out = M · rgb + bias(压暗、提饱和、混白合在一起),逐行给出。
-    public static func colorMatrix(darken: Double, saturation: Double = saturation) -> (rows: [[Double]], bias: Double) {
+    /// 一份副本的颜色变换:out = M · rgb + bias(压暗、提饱和、混白、对比度合在一起),逐行给出。
+    public static func colorMatrix(darken: Double, saturation: Double = saturation,
+                                   contrast k: Double = contrast) -> (rows: [[Double]], bias: Double) {
         let lw = [0.2126, 0.7152, 0.0722]
         let keep = 1 - whiteMix
         let rows = (0..<3).map { r in
-            (0..<3).map { c in keep * darken * ((r == c ? saturation : 0) + (1 - saturation) * lw[c]) }
+            (0..<3).map { c in k * keep * darken * ((r == c ? saturation : 0) + (1 - saturation) * lw[c]) }
         }
-        return (rows, whiteMix)
+        return (rows, k * whiteMix + (1 - k) * contrastPivot)
     }
 
     /// 色表校正:压以红 / 蓝为主导的高饱和色,其余几乎不动。系数是对 AM 色表采样做最小二乘拟合得到的

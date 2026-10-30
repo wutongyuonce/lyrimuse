@@ -235,10 +235,14 @@ func runLyricsWindowTests() {
         func apply(_ c: [Double]) -> [Double] { m.rows.map { r in zip(r, c).map(*).reduce(0, +) + m.bias } }
         let gray = apply([0.5, 0.5, 0.5])
         expectEqual(abs(gray[0] - gray[1]) < 1e-9 && abs(gray[1] - gray[2]) < 1e-9, true, "背景颜色: 灰进灰出")
-        expectEqual(abs(gray[0] - (0.9 * 0.65 * 0.5 + 0.1)) < 1e-9, true, "背景颜色: 压暗 0.65 后混 10% 白")
+        let k = AMBackdrop.contrast, pivot = AMBackdrop.contrastPivot
+        expectEqual(abs(gray[0] - (k * (0.9 * 0.65 * 0.5 + 0.1) + (1 - k) * pivot)) < 1e-9, true,
+                    "背景颜色: 压暗 0.65、混 10% 白,再绕支点拉对比度")
         let warm = apply([0.6, 0.4, 0.4])
-        expectEqual(abs((warm[0] - warm[1]) - 0.9 * 0.65 * 0.2 * 2.4) < 1e-9, true, "背景颜色: 通道差放大 2.4 倍")
-        expectEqual(abs(apply([0, 0, 0])[0] - 0.1) < 1e-9, true, "背景颜色: 纯黑也混进 10% 白")
+        expectEqual(abs((warm[0] - warm[1]) - k * 0.9 * 0.65 * 0.2 * AMBackdrop.saturation) < 1e-9, true, "背景颜色: 通道差按饱和倍数放大")
+        let flat = AMBackdrop.colorMatrix(darken: 0.65, contrast: 1)
+        expectEqual(abs(flat.bias - 0.1) < 1e-9, true, "背景颜色: 不拉对比度时纯黑混进 10% 白")
+        expectEqual(apply([0.2, 0.2, 0.2])[0] < flat.rows[0].reduce(0, +) * 0.2 + flat.bias, true, "背景颜色: 对比度把暗色压得更暗")
 
         for v in [0.0, 0.3, 0.7, 1.0] {
             let c = AMBackdrop.lutCorrect(v, v, v)
