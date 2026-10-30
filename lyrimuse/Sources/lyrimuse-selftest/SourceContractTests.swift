@@ -4028,15 +4028,14 @@ func runSourceContractSettingsTests() {
                     "推送提醒第二期: 「每类列出」那一块接到 features.digestTopN 并落盘")
         // 推送提醒页收紧(15 章决策 92):四档是两列开关小块,三项共用设置是一组控件小块;两个弹窗里的几选一用胶囊分段、按钮用 sheet 里的玻璃。
         let editorSource = read("Sources/lyrimuse/Settings/DigestTemplateEditor.swift")
-        // 模板输入框:程序化换文字进撤销栈、输入法组字时不上色、单行标题横着滚。
+        // 模板输入框:程序化换文字进撤销栈、单行标题横着滚。
         let placeholderView = read("Sources/lyrimuse/Settings/PlaceholderTextView.swift")
         expectEqual(sourceHas(sourceBody("func updateNSView(", in: placeholderView), "context.coordinator.replaceAll(tv, with: text)")
                         && sourceHas(sourceBody("func replaceAll(", in: placeholderView), "tv.shouldChangeText(in: full, replacementString: text)")
                         && sourceHas(sourceBody("func replaceAll(", in: placeholderView), "tv.didChangeText()")
-                        && sourceHas(sourceBody("func highlight(", in: placeholderView), "guard let storage = tv.textStorage, !tv.hasMarkedText() else { return }")
                         && sourceHas(placeholderView, "tv.textContainer?.widthTracksTextView = false")
                         && !placeholderView.contains(".byTruncatingTail"), true,
-                    "推送内容编辑器: 点预设换文字可撤销、组字时不抹掉输入法样式、标题超宽横着滚不截断")
+                    "推送内容编辑器: 点预设换文字可撤销、标题超宽横着滚不截断")
         expectEqual(sourceHas(tab, "SettingsTileGrid(title: L10n.t(\"四档共用\"), columns: 1) {")
                         && sourceHas(sourceBody("private func digestTile(", in: tab), "SettingsToggleTile(icon: icon, title: title, detail: subtitle,")
                         && !section.contains("SettingsGlassTabPicker") && !editorSource.contains("SettingsGlassTabPicker")

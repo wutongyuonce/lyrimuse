@@ -112,9 +112,8 @@ struct PlaceholderTextView: NSViewRepresentable {
                 || selector == #selector(NSResponder.insertLineBreak(_:)))
         }
 
-        /// 输入法正在组字时不上色:整段重设属性会抹掉组字的下划线和底色,上屏后 textDidChange 会再来一次。
         func highlight(_ tv: NSTextView) {
-            guard let storage = tv.textStorage, !tv.hasMarkedText() else { return }
+            guard let storage = tv.textStorage else { return }
             let full = NSRange(location: 0, length: storage.length)
             storage.beginEditing()
             storage.setAttributes([.font: PlaceholderTextView.baseFont, .foregroundColor: NSColor.labelColor], range: full)
