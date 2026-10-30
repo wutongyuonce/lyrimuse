@@ -169,9 +169,7 @@ final class MenuBarStatusMenu: NSObject, NSMenuDelegate {
             settingsItem.keyEquivalentModifierMask = .command
         }
         menu.addItem(settingsItem)
-        // 同「关于」页那张卡片:无 Sparkle 构建里这一项点了没反应,不如不给。
         // 查到还没装的新版本时换成跟面板底栏同一句提示,点了同样翻到设置的「软件更新」页(06 章决策 46)。
-        #if canImport(Sparkle)
         if let update = SparkleUpdaterManager.shared.availableUpdate {
             menu.addItem(action(AppMenuActions.updateTitle(update),
                                 symbol: "arrow.down.circle.fill", selector: #selector(openSoftwareUpdate)))
@@ -179,7 +177,6 @@ final class MenuBarStatusMenu: NSObject, NSMenuDelegate {
             menu.addItem(action(L10n.t("检查更新…"), symbol: "arrow.triangle.2.circlepath",
                                 selector: #selector(checkForUpdates)))
         }
-        #endif
         menu.addItem(action(L10n.t("关于 Lyrimuse"), symbol: "info.circle",
                             selector: #selector(openAbout)))
         let help = NSMenu()
@@ -286,10 +283,8 @@ final class MenuBarStatusMenu: NSObject, NSMenuDelegate {
 
     @objc private func openAbout() { AppMenuActions.openAbout() }
 
-    #if canImport(Sparkle)
     @objc private func checkForUpdates() { AppMenuActions.checkForUpdates() }
     @objc private func openSoftwareUpdate() { AppMenuActions.openSoftwareUpdate() }
-    #endif
 
     @objc private func quit() {
         // 经 AppExit 登记原因再终止:所有主动退出都从那一个出口走,见 AppExit 头注。

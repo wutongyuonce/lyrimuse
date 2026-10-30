@@ -8,7 +8,7 @@
 # 令牌是 $LYRIMUSE_HEAVY_GATE_DIR(默认 ~/Library/Caches/lyrimuse-heavy-gate)下的 token-<n> 目录(mkdir 原子),
 # 里面 owner 文件三行:pid、说明、开始时刻。持有进程已经不在的令牌直接回收,不用等超时。装机优先:有装机在等
 # (want-install.<pid>)时,校验不去抢空出来的令牌。
-# 不生效的情况:LYRIMUSE_HEAVY_GATE=0、包管理器构建(设了 LYRIMUSE_SPM_SCRATCH_PATH)、建不了令牌目录。
+# 不生效的情况:LYRIMUSE_HEAVY_GATE=0、建不了令牌目录。
 # 用法:heavy_gate_acquire <说明> install|check;退出前 heavy_gate_release(放进调用方自己的 EXIT trap)。
 
 HEAVY_GATE_DIR="${LYRIMUSE_HEAVY_GATE_DIR:-$HOME/Library/Caches/lyrimuse-heavy-gate}"
@@ -51,7 +51,7 @@ heavy_gate_holders() {
 
 heavy_gate_acquire() {
   local label="$1" prio="$2" waited=0 start i tok pid
-  if [ "${LYRIMUSE_HEAVY_GATE:-1}" = 0 ] || [ -n "${LYRIMUSE_SPM_SCRATCH_PATH:-}" ] || [ -n "$HEAVY_GATE_HELD" ]; then
+  if [ "${LYRIMUSE_HEAVY_GATE:-1}" = 0 ] || [ -n "$HEAVY_GATE_HELD" ]; then
     return 0
   fi
   mkdir -p "$HEAVY_GATE_DIR" 2>/dev/null || return 0

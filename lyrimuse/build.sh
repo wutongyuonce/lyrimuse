@@ -37,8 +37,7 @@ APP_NAME="Lyrimuse"
 BUILD_REQUESTED_AT="$(/usr/bin/python3 -c 'import time; print("%.3f" % time.time())')"
 PLAIN_INSTALL=1
 if [ "$#" -gt 0 ]; then PLAIN_INSTALL=0; fi
-for v in LYRIMUSE_SIGN_ID LYRIMUSE_VERSION LYRIMUSE_NO_SOURCE_SNAPSHOT LYRIMUSE_SPM_SCRATCH_PATH \
-    LYRIMUSE_SPM_CACHE_PATH LYRIMUSE_NO_SPARKLE LYRIMUSE_GOTOOLCHAIN LYRIMUSE_MEDIA_CONTROL_PREFIX LYRIMUSE_RELEASE_BUILD; do
+for v in LYRIMUSE_SIGN_ID LYRIMUSE_VERSION LYRIMUSE_NO_SOURCE_SNAPSHOT LYRIMUSE_MEDIA_CONTROL_PREFIX LYRIMUSE_RELEASE_BUILD; do
   if [ -n "${!v:-}" ]; then PLAIN_INSTALL=0; fi
 done
 # Swift 编法:普通装机用调试配置加 -O(逐文件优化、增量多核,改一个文件不再整个模块重编);带参数的(package.sh 打发布包)、
@@ -54,10 +53,9 @@ fi
 # 会互相拆掉对方的暂存包、或者重启到对方装了一半的版本。后到的一次在这里原地排队,会话之间不用互相询问
 # 「能不能装 / 装好没有」。mkdir 是原子的;锁里记着持有者 pid,持有者已经不在了(被 SIGKILL,EXIT trap
 # 没跑)就接管。锁放在全机共用的 ~/Library/Caches 下,不放工作树的 .build:同一个仓库另开的工作树(git worktree)
-# 各有自己的 .build,锁跟着工作树走的话两边能同时装机。包管理器构建(设了 LYRIMUSE_SPM_SCRATCH_PATH)、
-# 建不了那个目录时仍放 .build。
+# 各有自己的 .build,锁跟着工作树走的话两边能同时装机。建不了那个目录时仍放 .build。
 BUILD_LOCK="$PWD/.build/build.sh.lock"
-if [ -z "${LYRIMUSE_SPM_SCRATCH_PATH:-}" ] && mkdir -p "$HOME/Library/Caches" 2>/dev/null; then
+if mkdir -p "$HOME/Library/Caches" 2>/dev/null; then
   BUILD_LOCK="$HOME/Library/Caches/lyrimuse-build.sh.lock"
 fi
 # 上一次全部成功的普通装机:源码快照拍下的时刻、装进 /Applications 的那个包(inode)。排队合并用。
@@ -348,11 +346,9 @@ coalesce_if_installed
 # - 快照目录固定、rsync 保留 mtime,SwiftPM 与 go 的增量编译照常生效;快照有自己的 .build。
 # - 快照的 .build 第一次建时,从工作树 .build 克隆已下载的依赖(checkouts / repositories /
 #   artifacts),不用联网重拉。workspace-state.json 不复制:它记着工作树 .build 的绝对路径。
-# - 包管理器构建(设了 LYRIMUSE_SPM_SCRATCH_PATH / LYRIMUSE_SPM_CACHE_PATH)只许写自己那棵树、
-#   也没有别的写入者,直接编工作树;LYRIMUSE_NO_SOURCE_SNAPSHOT=1 同样直接编工作树(排查用)。
+# - LYRIMUSE_NO_SOURCE_SNAPSHOT=1 直接编工作树(排查用)。
 SNAPSHOT_AT=""
-if [ -z "${LYRIMUSE_NO_SOURCE_SNAPSHOT:-}" ] && [ -z "${LYRIMUSE_SPM_SCRATCH_PATH:-}" ] \
-    && [ -z "${LYRIMUSE_SPM_CACHE_PATH:-}" ]; then
+if [ -z "${LYRIMUSE_NO_SOURCE_SNAPSHOT:-}" ]; then
   # 拍快照之前记时刻:排队合并拿它跟后面那几次的请求时刻比。
   SNAPSHOT_AT="$(/usr/bin/python3 -c 'import time; print("%.3f" % time.time())')"
   # 普通装机全机共用一个快照目录(排队锁全机共用,同一时刻只有一次装机在用它):换一棵工作树装机只同步内容不同的文件,
@@ -393,27 +389,15 @@ cmux_stage 0.1 "编译 App"
 SWIFT_SLICES=()
 TRANSLATE_SLICES=()
 ROMANIZE_SLICES=()
-# LYRIMUSE_SPM_CACHE_PATH / LYRIMUSE_SPM_SCRATCH_PATH(包管理器构建用):
-# 把 SwiftPM 的下载缓存与构建产物重定向出默认的 ~/Library/Caches 和 ./.build——包管理器
-# 的构建沙箱只允许写它自己那棵工作树。两个变量各自独立(而不是一个「附加参数」字符串),
-# 因为 MacPorts 的 build.env 传不了带空格的值。默认为空,对现有路径零影响。
-SPM_PATH_ARGS=()
-[ -n "${LYRIMUSE_SPM_CACHE_PATH:-}" ] && SPM_PATH_ARGS+=(--cache-path "$LYRIMUSE_SPM_CACHE_PATH")
-[ -n "${LYRIMUSE_SPM_SCRATCH_PATH:-}" ] && SPM_PATH_ARGS+=(--scratch-path "$LYRIMUSE_SPM_SCRATCH_PATH")
-# LYRIMUSE_NO_SPARKLE(包管理器构建用):Package.swift 按这个变量决定 Sparkle
-# 依赖进不进来。SwiftPM 会**缓存清单的求值结果**,而缓存键不含环境变量 —— 同一棵工作树上
-# 切换这个变量,不失效缓存就可能仍按上一次的清单构建(依赖还在、却按无 Sparkle 编译,或者
-# 反过来)。只在设了这个变量时关掉清单缓存,默认路径的构建速度一点不受影响。
-[ -n "${LYRIMUSE_NO_SPARKLE:-}" ] && SPM_PATH_ARGS+=(--manifest-cache none)
 for arch in $ARCHES; do
   # 只编装进包的三个产品。不带 --product 会把 lyrimuse-selftest 也按 release 整模块编一遍,包里用不到它。
   for product in lyrimuse lyrics-translate lyrics-romanize; do
-    swift build -c "$SWIFT_CONFIG" --arch "$arch" --product "$product" ${SPM_PATH_ARGS[@]+"${SPM_PATH_ARGS[@]}"} \
+    swift build -c "$SWIFT_CONFIG" --arch "$arch" --product "$product" \
       ${SWIFT_OPT_ARGS[@]+"${SWIFT_OPT_ARGS[@]}"}
   done
   # 产物目录问 --show-bin-path,不硬编码 ".build/<arch>-apple-macosx/release"。
   # 这里必须带上同一组路径参数,否则问到的是默认 .build 而不是上面真正用的那棵。
-  BIN_PATH="$(swift build -c "$SWIFT_CONFIG" --arch "$arch" ${SPM_PATH_ARGS[@]+"${SPM_PATH_ARGS[@]}"} --show-bin-path)"
+  BIN_PATH="$(swift build -c "$SWIFT_CONFIG" --arch "$arch" --show-bin-path)"
   stamp_sdk_version "$BIN_PATH/lyrimuse" "$BIN_PATH/lyrics-translate" "$BIN_PATH/lyrics-romanize"
   # **把这一轮的切片拷走再编下一个架构**,别把 $BIN_PATH 直接攒进 *_SLICES。
   #
@@ -484,12 +468,10 @@ for arch in $ARCHES; do
   # -X 对 const **静默失败**:构建照样成功、不报错,值原封不动——所以这条注入
   # "看起来生效了"是靠不住的,真正的把关在 versioninjection_test.go 和下面装配完
   # 之后那道引擎/App 版本一致性校验。
-  # LYRIMUSE_GOTOOLCHAIN(包管理器构建用):MacPorts 沙箱禁网,钉住的
-  # go1.24.4 若非本机版本会触发工具链下载而失败——port 传 local 用它自带的 go
-  # (依赖声明保证 ≥1.24)。默认仍是 go1.24.4(系统 1.21 产物缺 LC_UUID,AMFI 拒签)。
+  # GOTOOLCHAIN 钉 go1.24.4:系统 1.21 的产物缺 LC_UUID,AMFI 拒签。
   # -s -w:不带符号表和 DWARF(约 4.7 MB);pclntab 还在,panic 栈照样有函数名和行号。见 15 章决策 33。
   # -trimpath:不带源码快照的本机路径(panic 栈写模块路径),跟提交校验、各工作树共用 go 的编译缓存。
-  (cd ../lyrimuse-engine && GOTOOLCHAIN="${LYRIMUSE_GOTOOLCHAIN:-go1.24.4}" GOOS=darwin GOARCH="$goarch" \
+  (cd ../lyrimuse-engine && GOTOOLCHAIN=go1.24.4 GOOS=darwin GOARCH="$goarch" \
     go build -trimpath -ldflags "-s -w -X main.clientVersion=$APP_VERSION" -o "$out" .)
   ENGINE_SLICES+=("$out")
 done
@@ -592,9 +574,9 @@ codesign --force --sign "$SIGN_ID" "$NPC_DST/libnowplaying-clients.dylib"
 # 安装对 CI 是无操作的冗余检查,不影响什么)。`brew install` 失败(网络问题/没装 Homebrew
 # 本身等)不阻断本地构建,跳过这一步、打个警告:这样出来的包只剩 Apple Music 和 Spotify 读得到(走
 # AppleScript),其余播放器都靠 media-control。发布构建缺了它,package.sh 的必备组件闸拒绝打包。
-# LYRIMUSE_MEDIA_CONTROL_PREFIX(给 MacPorts 这类包管理器构建用):从指定
-# 前缀取 media-control、并且**不再**尝试 brew 自动安装——port 的构建沙箱里既没有 brew 也
-# 没有网。设了但路径下没有可执行文件时,按下面既有的"没装"警告路径走,不回落到 brew。
+# LYRIMUSE_MEDIA_CONTROL_PREFIX(CI 直取 ghcr bottle 时用):从指定前缀取 media-control、
+# 并且**不再**尝试 brew 自动安装。设了但路径下没有可执行文件时,按下面既有的"没装"警告路径走,
+# 不回落到 brew。
 if [ -n "${LYRIMUSE_MEDIA_CONTROL_PREFIX:-}" ]; then
   MEDIA_CONTROL_PREFIX="$LYRIMUSE_MEDIA_CONTROL_PREFIX"
 else
@@ -610,10 +592,8 @@ if [ -x "$MEDIA_CONTROL_PREFIX/bin/media-control" ]; then
   # 先删再拷贝(跟引擎/.lproj 同款先例):Homebrew Cellar 里这些文件很多是只读的
   # (-r-xr-xr-x),`cp -R` 会原样带过来只读位——第二次往后重新构建时,已存在的只读文件/
   # 目录会让 `cp`/`codesign` 直接 "Permission denied"(实测坐实)。
-  # 只拷 media-control 自己的那几件,不是整个 bin//lib//Frameworks/ 目录:Homebrew 的
-  # Cellar 前缀下这三个目录确实只有它自己的文件,但 MacPorts 那种**共享 prefix**
-  # (/opt/local)下整目录拷等于把上百个别的包一起塞进 .app。framework 的位置也随发行版
-  # 变(Homebrew 在 Frameworks/,MacPorts 按 ports 布局规范在 Library/Frameworks/)。
+  # 只拷 media-control 自己的那几件,不是整个 bin//lib//Frameworks/ 目录:前缀不一定是它独占的,
+  # 整目录拷会把同一前缀下别的包一起塞进 .app。
   rm -rf "$APP_DIR/Contents/Resources/media-control"
   mkdir -p "$APP_DIR/Contents/Resources/media-control/bin" \
            "$APP_DIR/Contents/Resources/media-control/lib" \
@@ -621,16 +601,10 @@ if [ -x "$MEDIA_CONTROL_PREFIX/bin/media-control" ]; then
   cp "$MEDIA_CONTROL_PREFIX/bin/media-control" "$APP_DIR/Contents/Resources/media-control/bin/"
   cp -R "$MEDIA_CONTROL_PREFIX/lib/media-control" "$APP_DIR/Contents/Resources/media-control/lib/media-control"
   MC_FW_SRC="$MEDIA_CONTROL_PREFIX/Frameworks/MediaRemoteAdapter.framework"
-  [ -d "$MC_FW_SRC" ] || MC_FW_SRC="$MEDIA_CONTROL_PREFIX/Library/Frameworks/MediaRemoteAdapter.framework"
   # ditto 而不是 cp -R:framework 内部有 Versions/Current 这类符号链接,cp -R 会把它们
   # 拆成实体拷贝、进而破坏代码签名(跟下面 Sparkle 那处同一个理由)。
   ditto "$MC_FW_SRC" "$APP_DIR/Contents/Resources/media-control/Frameworks/MediaRemoteAdapter.framework"
   chmod -R u+w "$APP_DIR/Contents/Resources/media-control"
-  # 启动脚本按相对路径找 framework。包内布局固定是 ../Frameworks/,而发行版可能把它装在
-  # Library/Frameworks/ 并相应改过这一行(MacPorts 的 ports 布局规范要求),拷进来之后要
-  # 改回包内的位置,否则运行时找不到框架。
-  /usr/bin/sed -i '' "s|'\.\.', 'Library', 'Frameworks', 'MediaRemoteAdapter.framework'|'..', 'Frameworks', 'MediaRemoteAdapter.framework'|" \
-    "$APP_DIR/Contents/Resources/media-control/bin/media-control"
   # media-control 这个可执行文件本身完全没签名(实测 `codesign -dv` 报 "code object is
   # not signed at all")——跟引擎(go build 的产物自带签名)不一样,这里需要主动
   # 补签,不然可能被 Gatekeeper 拦下来。MediaRemoteAdapter.framework 内部那个 Mach-O
@@ -663,7 +637,7 @@ if [ -x "$MEDIA_CONTROL_PREFIX/bin/media-control" ]; then
   # QQ 音乐支持,所以下面的架构自检会把还是单架构的文件列出来。
   if [ "$UNIVERSAL" = 1 ]; then
     MC_FW="$APP_DIR/Contents/Resources/media-control/Frameworks/MediaRemoteAdapter.framework"
-    # 前缀由 LYRIMUSE_MEDIA_CONTROL_PREFIX 指定时(CI 直取 ghcr bottle、MacPorts 沙箱),
+    # 前缀由 LYRIMUSE_MEDIA_CONTROL_PREFIX 指定时(CI 直取 ghcr bottle),
     # 机器上可能压根没有 brew、或者 brew 里装着另一个版本,版本号只能从前缀自己读——
     # bottle 解出来就是 media-control/<版本>/ 这层结构,末段即版本号。
     if [ -n "${LYRIMUSE_MEDIA_CONTROL_PREFIX:-}" ]; then
@@ -750,34 +724,16 @@ fi
 #
 # 用 find 动态定位 xcframework 里的 slice 路径(而不是硬编码 macos-arm64_x86_64
 # 这个字符串)——SPM/Sparkle 版本更新时这层目录名可能变,find 对这类改动更稳。
-# artifacts 落在 SwiftPM 的 scratch 目录下,默认是 ./.build,被上面那组路径参数重定向过
-# 就跟着走(包管理器构建会这么做)。
-SPM_SCRATCH="${LYRIMUSE_SPM_SCRATCH_PATH:-.build}"
-# 目录不在时 find 返回 1,pipefail + set -e 会让脚本在下面「跳过 Sparkle」的判断之前就无声退出:先判目录。
+SPM_SCRATCH=.build
+# 目录不在时 find 返回 1,pipefail + set -e 会让脚本在下面那句报错之前就无声退出:先判目录。
 SPARKLE_FW_SRC=""
 if [ -d "$SPM_SCRATCH/artifacts" ]; then
   SPARKLE_FW_SRC="$(find "$SPM_SCRATCH/artifacts" -type d -name "Sparkle.framework" -path "*/Sparkle.xcframework/*" 2>/dev/null | head -1 || true)"
 fi
-# Sparkle 不在依赖里就整段跳过:包管理器(MacPorts / Homebrew)装的应用不该自更新,升级
-# 走它们自己的通道——此时没有 framework 可嵌,不是错误。
-#
-# 两条判据,顺序有讲究:
-#  ① LYRIMUSE_NO_SPARKLE —— 上游提供的正式开关(见 Package.swift),包管理器该用这条。
-#     它是**声明**,所以先看它:不依赖"构建产物里恰好没找到 framework"这种间接证据。
-#  ② 退路:清单里真的没有 Sparkle(下游自己改过 Package.swift)。保留它是为了不弄坏那些
-#     已经在这么做的端口 —— 它们升级到新版本时不该突然构建失败。
-if [ -n "${LYRIMUSE_NO_SPARKLE:-}" ]; then
-  echo "    LYRIMUSE_NO_SPARKLE set — skipping framework embed (no in-app updater)"
-  SPARKLE_SKIPPED=1
-elif [ -z "$SPARKLE_FW_SRC" ] && ! grep -q 'sparkle-project/Sparkle' Package.swift; then
-  echo "    Sparkle not a dependency — skipping framework embed (no in-app updater)"
-  SPARKLE_SKIPPED=1
-fi
-if [ "${SPARKLE_SKIPPED:-0}" = 0 ] && [ ! -d "$SPARKLE_FW_SRC" ]; then
+if [ ! -d "$SPARKLE_FW_SRC" ]; then
   echo "!! Sparkle.framework not found under $SPM_SCRATCH/artifacts — did 'swift package resolve' run?" >&2
   exit 1
 fi
-if [ "${SPARKLE_SKIPPED:-0}" = 0 ]; then
 mkdir -p "$APP_DIR/Contents/Frameworks"
 rm -rf "$APP_DIR/Contents/Frameworks/Sparkle.framework"
 ditto "$SPARKLE_FW_SRC" "$APP_DIR/Contents/Frameworks/Sparkle.framework"
@@ -804,7 +760,6 @@ find "$APP_DIR/Contents/Frameworks/Sparkle.framework" \
     -exec codesign --force --sign "$SIGN_ID" {} \;
 codesign --force --sign "$SIGN_ID" "$APP_DIR/Contents/Frameworks/Sparkle.framework"
 echo "    Sparkle.framework embedded + signed"
-fi  # SPARKLE_SKIPPED
 # 本地化文案 + 状态栏图标直接从源码拷进 Contents/Resources/，不再依赖
 # SwiftPM 的 Bundle.module 访问器——原因见下面这段注释和 L10n.swift/MenuBarMenu.swift
 # 顶部注释。AppIcon.icns 已经证明 Contents/Resources/ 这个位置对 codesign 完全安全。

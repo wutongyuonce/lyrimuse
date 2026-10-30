@@ -80,9 +80,8 @@ REQUIRED_CONTENTS=(
   "Resources/zh-hant.lproj/InfoPlist.strings"
   "Resources/en.lproj/InfoPlist.strings"
   "Resources/THIRD_PARTY_LICENSES"
+  "Frameworks/Sparkle.framework"
 )
-# 跟 build.sh 同一个开关:设了就不嵌 Sparkle。
-[ -n "${LYRIMUSE_NO_SPARKLE:-}" ] || REQUIRED_CONTENTS+=("Frameworks/Sparkle.framework")
 
 # missing_contents <app>:一行一个打印缺的必备组件,齐全时什么都不打印。
 missing_contents() {

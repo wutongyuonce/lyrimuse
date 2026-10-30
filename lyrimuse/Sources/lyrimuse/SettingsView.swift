@@ -8074,7 +8074,7 @@ private struct AboutSettingsTab: View {
     /// 「↗」= 在浏览器里打开。
     ///
     /// 软件更新:检查 / 下载 / 安装的界面都在「软件更新」页(Settings/SoftwareUpdatePage.swift),这里只留一行
-    /// 带当前状态的入口。无 Sparkle 构建里没有可用的更新动作,这一行不画(见 SparkleUpdaterManager 的 #else 分支)。
+    /// 带当前状态的入口。
     ///
     /// 反馈问题进 issue 模板选择页,版本、系统、播放器已经填好;行尾的邮件图标给没有 GitHub 账号的人,邮箱写在悬停提示里,
     /// 按右键可拷贝地址。「使用求助」进讨论区的问答分类。反馈问题和邮件都走 `FeedbackReporter`,
@@ -8082,13 +8082,11 @@ private struct AboutSettingsTab: View {
     private var helpCard: some View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(title: L10n.t("更新与帮助"))
-            #if canImport(Sparkle)
             SettingsLinkRow(icon: "arrow.triangle.2.circlepath", title: L10n.t("软件更新"),
                          subtitle: updateSubtitle, opensExternally: false) {
                 AppActions.shared.requestSettings(.softwareUpdate)
             }
             CardDivider()
-            #endif
             SettingsLinkRow(icon: "exclamationmark.bubble", title: L10n.t("反馈问题"),
                          subtitle: L10n.t("在 GitHub 新建 issue，自动附带版本、系统与播放器信息"),
                          opensExternally: true) {
