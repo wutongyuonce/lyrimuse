@@ -377,36 +377,12 @@ struct LyricShareCardView: View {
 }
 
 extension WindowBackgroundLayers {
-    /// 歌词窗口背景按初始姿态画成静止的一帧(几何同 `BackdropNSView.layout`:暗底铺满,光斑绕锚点转到起始角、
-    /// 放大 scale 倍,以 lighten 混合、不透明度 0.25),再压一层同窗口的 0.15 黑。
+    /// 歌词窗口背景按动画起点画成静止的一帧(几何同 `BackdropNSView`,画法见 `AMBackdrop.drawFrame`)。
     func stillImage(size: CGSize) -> NSImage {
         NSImage(size: size, flipped: false) { rect in
             guard let ctx = NSGraphicsContext.current?.cgContext else { return false }
-            Self.drawAspectFill(self.base, in: rect, context: ctx)
-            for (i, pose) in self.poses.enumerated() where i < self.glows.count {
-                ctx.saveGState()
-                let anchor = CGPoint(x: rect.width * pose.anchor.x, y: rect.height * (1 - pose.anchor.y))
-                ctx.translateBy(x: anchor.x, y: anchor.y)
-                ctx.rotate(by: CGFloat(-(pose.initialAngle - 12) * .pi / 180))
-                ctx.translateBy(x: -anchor.x, y: -anchor.y)
-                ctx.translateBy(x: rect.midX, y: rect.midY)
-                ctx.scaleBy(x: pose.scale, y: pose.scale)
-                ctx.translateBy(x: -rect.midX, y: -rect.midY)
-                ctx.setBlendMode(.lighten)
-                ctx.setAlpha(0.25)
-                Self.drawAspectFill(self.glows[i], in: rect, context: ctx)
-                ctx.restoreGState()
-            }
-            ctx.setFillColor(NSColor(white: 0, alpha: 0.15).cgColor)
-            ctx.fill(rect)
+            AMBackdrop.drawFrame(self.baked, in: ctx, size: rect.size, time: self.startTime)
             return true
         }
-    }
-
-    private static func drawAspectFill(_ image: NSImage, in rect: CGRect, context: CGContext) {
-        guard let cg = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
-        let scale = max(rect.width / CGFloat(cg.width), rect.height / CGFloat(cg.height))
-        let w = CGFloat(cg.width) * scale, h = CGFloat(cg.height) * scale
-        context.draw(cg, in: CGRect(x: rect.midX - w / 2, y: rect.midY - h / 2, width: w, height: h))
     }
 }

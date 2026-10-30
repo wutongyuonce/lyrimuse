@@ -266,7 +266,6 @@ final class WebLyricsScreenRenderer {
     private let wrapper = CALayer()
     private let fillLayer = CAGradientLayer()
     private let backdrop: BackdropNSView
-    private let dimLayer = CALayer()
     private let pane = WebLyricsPlayerPane()
     private let list: LyricsLayerListView
     private let emptyState = WebLyricsEmptyStateLayer()
@@ -369,21 +368,18 @@ final class WebLyricsScreenRenderer {
         container.addSublayer(wrapper)
 
         fillLayer.frame = bounds
-        dimLayer.frame = bounds
-        dimLayer.backgroundColor = NSColor.black.withAlphaComponent(0.15).cgColor
         wrapper.addSublayer(fillLayer)
         if let l = backdrop.layer {
             l.masksToBounds = true
             wrapper.addSublayer(l)
         }
-        wrapper.addSublayer(dimLayer)
         // 左栏叠在歌词上面:手机那种排法里底部播放条压着歌词列表的下半截(连滚动指示条)。
         if let l = list.layer { wrapper.addSublayer(l) }
         wrapper.addSublayer(pane)
         wrapper.addSublayer(emptyState)
         chrome.frame = bounds
         wrapper.addSublayer(chrome)
-        for layer in [wrapper, fillLayer, dimLayer, pane, emptyState, chrome] as [CALayer] {
+        for layer in [wrapper, fillLayer, pane, emptyState, chrome] as [CALayer] {
             layer.actions = ["position": NSNull(), "bounds": NSNull(), "frame": NSNull(), "hidden": NSNull(),
                              "colors": NSNull(), "backgroundColor": NSNull()]
         }
@@ -1293,11 +1289,9 @@ final class WebLyricsScreenRenderer {
         if usesArtwork, let layers = playback.windowBackgroundLayers {
             backdrop.apply(layers: layers, animating: playback.isPlayingNow)
             backdrop.layer?.isHidden = false
-            dimLayer.isHidden = false
             fillLayer.isHidden = true
         } else {
             backdrop.layer?.isHidden = true
-            dimLayer.isHidden = true
             fillLayer.isHidden = false
             switch mode {
             case .solid:

@@ -4843,12 +4843,9 @@ struct LyricsWindowView: View {
     // 影响 ScrollView 自身、也就不影响这层 .background() 铺的范围。
     @ViewBuilder
     private var artworkBackground: some View {
-        // AM 式动画背景(反向工程依据 Priva28 gist + AMLL,烘焙与参数见
-        // PlaybackCoordinator.bakeWindowBackgroundLayers):暗底静态铺满,3 份取自封面不同区域
-        // 的羽化光斑以 lighten(变亮)混合、绕各自的偏心锚点慢速往复摆动 —— 这就是 AM 歌词页背景
-        // "缓慢流动的光斑"的来源。图层全部预烘焙,动画在 Core Animation 里跑(见 WindowAnimatedBackground)。
-        //
-        // 遮罩只留 0.15 的可读性保底:主要压暗已在暗底烘焙(EV −1.9)里完成。
+        // AM 式动画背景(做法与参数见 AMBackdrop,烘焙见 PlaybackCoordinator.bakeWindowBackgroundLayers):
+        // 三份封面副本压暗、提饱和、预先模糊,各自整圈慢转。图层全部预烘焙,动画在 Core Animation 里跑
+        // (见 WindowAnimatedBackground)。AM 背景上不压遮罩,这里也不压。
         switch activeBackgroundMode {
         case .artwork:
             if let canvas = spotifyCanvasBackground {
@@ -4865,7 +4862,6 @@ struct LyricsWindowView: View {
                     animating: windowController.isSurfaceVisible && playback.isPlayingNow)
                     // 换歌重建整棵子树:动画从新一首的初始姿态干净重启,onAppear 重新点火。
                     .id(ObjectIdentifier(layers))
-                    .overlay(Color.black.opacity(0.15))
                     .clipped()
                     // 换歌/高清替代到货都会产出新的图层实例(Equatable 按 === 实现),一条
                     // 过渡覆盖原来 artworkData 字节比较 + highRes 指针比较两条。
@@ -7428,7 +7424,7 @@ private struct TransportButtonStyle: ButtonStyle {
     }
 }
 
-/// AM 式动画背景:暗底 + 3 份羽化光斑绕偏心锚点慢速往复摆动、以 lighten 混合。
+/// AM 式动画背景:三份封面副本各自整圈慢转(做法见 `AMBackdrop`)。
 ///
 /// 动画交给 **Core Animation** 跑(`BackdropLayerView` 里的关键帧动画),装好之后由渲染进程逐帧
 /// 合成,主线程不参与。别改回 SwiftUI 的 `.rotationEffect` + `.repeatForever`:那种写法是 SwiftUI
@@ -7446,12 +7442,9 @@ private struct WindowAnimatedBackground: View {
     }
 }
 
-/// 背景那棵图层树:base 铺满,每个光斑是「旋转层(锚点 = pose.anchor)⊃ 缩放层(绕中心放大 pose.scale)」,
-/// 旋转层上挂一条 `transform.rotation.z` 往复动画。几何口径照 SwiftUI 那版:`scaledToFill` =
-/// `.resizeAspectFill`(不裁,溢出部分转进来时要看得见)。图层用 AppKit 默认的 y 轴向上坐标,
-/// 所以 SwiftUI 的锚点 y 要翻成 `1 − y`、角度要取负(`rotationEffect` 正角是顺时针,y 向上坐标里
-/// 正角是逆时针)。别改成翻转坐标系省掉这两处换算:层背视图的翻转由 AppKit 管,跟手动设
-/// geometryFlipped 叠在一起时方向说不准。
+/// 背景那棵图层树(几何同 `AMBackdrop.placement` / `drawFrame`):底色铺满,三份封面副本各是一个「自转层」,
+/// 第三份外面再套一层跟第一份同步转的「公转层」(绕视图中心)。自转层挂底层或上层位图,按长边一半为单位摆放。
+/// 图层用 AppKit 默认的 y 轴向上坐标,`AMBackdrop` 的角度也是 y 向上、逆时针为正,直接用,不用换算。
 private struct BackdropLayerView: NSViewRepresentable {
     let layers: WindowBackgroundLayers
     let animating: Bool
@@ -7466,20 +7459,17 @@ private struct BackdropLayerView: NSViewRepresentable {
 @MainActor
 final class BackdropNSView: NSView {
     private static let spinKey = "lyrimuse.backdrop-spin"
-    /// 往复摆动的幅度(度)。光斑必须跟底层布局保持对齐,lighten 才是"原位增亮亮区";大角度
-    /// 会把封面布局盖掉(见烘焙函数注释)。
-    private static let swingDegrees: Double = 12
 
     private let baseLayer = CALayer()
-    private var rotators: [CALayer] = []
-    private var scalers: [CALayer] = []
+    /// 每份副本:公转层(没有父层的那几份不挂动画)⊃ 自转层。
+    private var orbiters: [CALayer] = []
+    private var spinners: [CALayer] = []
     private weak var appliedLayers: WindowBackgroundLayers?
     private var isAnimating = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
-        baseLayer.contentsGravity = .resizeAspectFill
         baseLayer.actions = Self.noActions
         layer?.addSublayer(baseLayer)
     }
@@ -7489,7 +7479,7 @@ final class BackdropNSView: NSView {
 
     private static let noActions: [String: CAAction] = [
         "position": NSNull(), "bounds": NSNull(), "contents": NSNull(), "transform": NSNull(),
-        "anchorPoint": NSNull(),
+        "anchorPoint": NSNull(), "backgroundColor": NSNull(),
     ]
 
     func apply(layers: WindowBackgroundLayers, animating: Bool) {
@@ -7501,27 +7491,24 @@ final class BackdropNSView: NSView {
 
     private func rebuild(_ layers: WindowBackgroundLayers) {
         appliedLayers = layers
-        rotators.forEach { $0.removeFromSuperlayer() }
-        rotators = []
-        scalers = []
+        orbiters.forEach { $0.removeFromSuperlayer() }
+        orbiters = []
+        spinners = []
+        let m = layers.baked.meanColor
+        baseLayer.backgroundColor = CGColor(srgbRed: m.r, green: m.g, blue: m.b, alpha: 1)
         let scale = window?.backingScaleFactor ?? 2
-        baseLayer.contents = layers.base.cgImage(forProposedRect: nil, context: nil, hints: nil)
-        baseLayer.contentsScale = scale
-        for (i, pose) in layers.poses.enumerated() where i < layers.glows.count {
-            let rotator = CALayer()
-            rotator.actions = Self.noActions
-            rotator.anchorPoint = CGPoint(x: pose.anchor.x, y: 1 - pose.anchor.y)
-            let scaler = CALayer()
-            scaler.actions = Self.noActions
-            scaler.contents = layers.glows[i].cgImage(forProposedRect: nil, context: nil, hints: nil)
-            scaler.contentsScale = scale
-            scaler.contentsGravity = .resizeAspectFill
-            scaler.opacity = 0.25
-            scaler.compositingFilter = "lightenBlendMode"
-            rotator.addSublayer(scaler)
-            layer?.addSublayer(rotator)
-            rotators.append(rotator)
-            scalers.append(scaler)
+        for i in AMBackdrop.layers.indices {
+            let orbiter = CALayer()
+            orbiter.actions = Self.noActions
+            let spinner = CALayer()
+            spinner.actions = Self.noActions
+            spinner.contents = i == 0 ? layers.baked.base : layers.baked.overlay
+            spinner.contentsScale = scale
+            spinner.contentsGravity = .resize
+            orbiter.addSublayer(spinner)
+            layer?.addSublayer(orbiter)
+            orbiters.append(orbiter)
+            spinners.append(spinner)
         }
         isAnimating = false
         needsLayout = true
@@ -7530,54 +7517,64 @@ final class BackdropNSView: NSView {
 
     override func layout() {
         super.layout()
+        guard let layers = appliedLayers else { return }
         let b = bounds
+        let unit = max(b.width, b.height) / 2
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         baseLayer.frame = b
-        for (i, rotator) in rotators.enumerated() {
-            guard let pose = appliedLayers?.poses[i] else { continue }
-            rotator.bounds = CGRect(origin: .zero, size: b.size)
-            rotator.position = CGPoint(x: b.width * pose.anchor.x, y: b.height * (1 - pose.anchor.y))
-            let scaler = scalers[i]
-            scaler.bounds = CGRect(origin: .zero, size: b.size)
-            scaler.position = CGPoint(x: b.width / 2, y: b.height / 2)
-            scaler.transform = CATransform3DMakeScale(pose.scale, pose.scale, 1)
-            // 模型值 = 往复的起点;动画在它上面跑(定格时就停在这里或暂停那一刻)。
-            if rotator.animation(forKey: Self.spinKey) == nil {
-                rotator.transform = CATransform3DMakeRotation(
-                    Self.caAngle(pose.initialAngle - Self.swingDegrees), 0, 0, 1)
+        for (i, spinner) in spinners.enumerated() {
+            let l = AMBackdrop.layers[i]
+            let orbiter = orbiters[i]
+            orbiter.bounds = CGRect(origin: .zero, size: b.size)
+            orbiter.position = CGPoint(x: b.midX, y: b.midY)
+            let half = (i == 0 ? layers.baked.baseHalfExtent : layers.baked.overlayHalfExtent) * unit
+            spinner.bounds = CGRect(x: 0, y: 0, width: 2 * half, height: 2 * half)
+            spinner.position = CGPoint(x: b.width / 2 + l.dx * unit, y: b.height / 2 + l.dy * unit)
+            // 模型值 = 动画起点那一刻的姿态;定格时停在这里或暂停那一刻。
+            if spinner.animation(forKey: Self.spinKey) == nil {
+                spinner.transform = CATransform3DMakeRotation(AMBackdrop.spinAngle(layer: i, time: layers.startTime), 0, 0, 1)
+                orbiter.transform = l.parent.map {
+                    CATransform3DMakeRotation(AMBackdrop.spinAngle(layer: $0, time: layers.startTime), 0, 0, 1)
+                } ?? CATransform3DIdentity
             }
         }
         CATransaction.commit()
     }
 
-    /// 走 / 停。停 = 冻结在当下那一帧(speed 0 + timeOffset),再走时从那一帧接着摆,不跳。
+    /// 走 / 停。停 = 冻结在当下那一帧(speed 0 + timeOffset),再走时从那一帧接着转,不跳。
     private func setAnimating(_ on: Bool) {
-        guard on != isAnimating || (on && rotators.first?.animation(forKey: Self.spinKey) == nil) else { return }
+        guard on != isAnimating || (on && spinners.first?.animation(forKey: Self.spinKey) == nil) else { return }
         isAnimating = on
-        guard let poses = appliedLayers?.poses else { return }
-        for (i, rotator) in rotators.enumerated() where i < poses.count {
+        guard let layers = appliedLayers else { return }
+        for (i, spinner) in spinners.enumerated() {
+            let orbiter = orbiters[i]
+            let parent = AMBackdrop.layers[i].parent
             if on {
-                if rotator.animation(forKey: Self.spinKey) == nil {
-                    let pose = poses[i]
-                    // 烘焙里的时长带符号(负 = 反向),摆动只要一个周期长度,方向由往复本身给出。
-                    let half = max(1, abs(pose.spinDuration))
-                    // 离散关键帧、别改回连续插值或靠 preferredFrameRateRange 降帧:见 07 章决策 172。
-                    let swing = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-                    swing.values = BackdropSwing.angles(from: pose.initialAngle - Self.swingDegrees,
-                                                        to: pose.initialAngle + Self.swingDegrees,
-                                                        halfPeriod: half).map(Self.caAngle)
-                    swing.calculationMode = .discrete
-                    swing.duration = 2 * half
-                    swing.repeatCount = .infinity
-                    swing.isRemovedOnCompletion = false
-                    rotator.add(swing, forKey: Self.spinKey)
+                if spinner.animation(forKey: Self.spinKey) == nil {
+                    spinner.add(Self.turn(period: AMBackdrop.layers[i].period, start: layers.startTime), forKey: Self.spinKey)
+                    if let p = parent {
+                        orbiter.add(Self.turn(period: AMBackdrop.layers[p].period, start: layers.startTime), forKey: Self.spinKey)
+                    }
                 }
-                resume(rotator)
+                resume(spinner)
+                if parent != nil { resume(orbiter) }
             } else {
-                pause(rotator)
+                pause(spinner)
+                if parent != nil { pause(orbiter) }
             }
         }
+    }
+
+    /// 整圈慢转。离散关键帧、别改回连续插值或靠 preferredFrameRateRange 降帧:见 07 章决策 172。
+    private static func turn(period: Double, start: Double) -> CAKeyframeAnimation {
+        let spin = CAKeyframeAnimation(keyPath: "transform.rotation.z")
+        spin.values = AMBackdrop.turnAngles(period: period, start: start)
+        spin.calculationMode = .discrete
+        spin.duration = period
+        spin.repeatCount = .infinity
+        spin.isRemovedOnCompletion = false
+        return spin
     }
 
     private func pause(_ l: CALayer) {
@@ -7595,9 +7592,6 @@ final class BackdropNSView: NSView {
         l.beginTime = 0
         l.beginTime = l.convertTime(CACurrentMediaTime(), from: nil) - paused
     }
-
-    /// SwiftUI 角度(度,顺时针为正)→ y 向上图层里的弧度(逆时针为正)。
-    static func caAngle(_ degrees: Double) -> CGFloat { CGFloat(-degrees * .pi / 180) }
 }
 
 // MARK: - Last.fm 系列

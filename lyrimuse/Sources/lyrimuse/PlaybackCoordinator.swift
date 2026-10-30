@@ -9,37 +9,28 @@ import os
 private let logger = Logger(subsystem: "me.yudaotor.lyrimuse", category: "coordinator")
 
 /// 「歌词窗口」AM 式动画背景的一套预烘焙图层(烘焙见 PlaybackCoordinator
-/// .bakeWindowBackgroundLayers,消费见 LyricsWindowView.WindowAnimatedBackground)。
+/// .bakeWindowBackgroundLayers,做法见 `AMBackdrop`,消费见 LyricsWindowView.WindowAnimatedBackground)。
 /// class 而非 struct:视图用实例身份(===)当换歌交叉淡入/动画重启的触发键,
 /// Equatable 按身份实现正是为了配 `.animation(value:)`。
 final class WindowBackgroundLayers: Equatable {
-    /// 暗底:封面压暗+重模糊,静态铺满。AM 背景的"黑位下限"来自这层。
-    let base: NSImage
-    /// 光斑层:各自取封面不同区域、径向羽化,与 poses 一一对应。
-    let glows: [NSImage]
-    /// 每层的确定性姿态/动画参数(seed 来自曲目标识,同一首歌永远同一布局)。
-    struct GlowPose {
-        let initialAngle: Double   // 初始角(度)
-        let spinDuration: Double   // 转一整圈的周期(秒),负值反向
-        let anchor: UnitPoint      // 旋转锚点(偏心,转动才带出"漂移"感)
-        let scale: CGFloat         // scaledToFill 之上的额外放大
-    }
-    let poses: [GlowPose]
+    /// 底层(第一份封面副本,外延铺满)和上层(第二、三份共用,带软边透明)。
+    let baked: AMBackdrop.Baked
+    /// 动画起点(秒,`AMBackdrop.startTime`):同一首歌每次从同一处转起。
+    let startTime: Double
     /// 背景均色的色相/饱和度:左栏次级元素(副行/时间/进度已播段)要做 AM 式 vibrancy 染色 ——
     /// AM 的次级文字不是半透明白(那样三通道等效 α 应相等,对着 AM 截图逐通道反解是 r0.74/g0.58/b0.49),
-    /// 而是背景色相的亮化低饱和版。这里存烘焙后 base 的 CIAreaAverage 转 HSB 的 h/s,亮度各元素自定。
+    /// 而是背景色相的亮化低饱和版。这里存底层可见区均色转 HSB 的 h/s,亮度各元素自定。
     let tintHue: Double
     let tintSaturation: Double
-    /// 背景均色的**亮度**(已含视图层 0.15 黑遮罩的 ×0.85,即屏幕见到的亮度)。固定亮度档的 vibrancy
+    /// 背景均色的**亮度**(屏幕上见到的亮度,背景上不再压遮罩)。固定亮度档的 vibrancy
     /// 染色在亮封面(金色 bgV≈0.7)上会撞上背景亮度直接隐形,文字类调用靠它做最小对比度自适应
     /// (见 amVibrantColor)。0 = 未知(取色失败),不做自适应、用固定亮度档(见 AMVibrancy.brightness)。
     let tintBrightness: Double
 
-    init(base: NSImage, glows: [NSImage], poses: [GlowPose],
+    init(baked: AMBackdrop.Baked, startTime: Double,
          tintHue: Double = 0, tintSaturation: Double = 0, tintBrightness: Double = 0) {
-        self.base = base
-        self.glows = glows
-        self.poses = poses
+        self.baked = baked
+        self.startTime = startTime
         self.tintHue = tintHue
         self.tintSaturation = tintSaturation
         self.tintBrightness = tintBrightness
@@ -1405,298 +1396,14 @@ final class PlaybackCoordinator: ObservableObject {
         return h
     }
 
-    /// 「歌词窗口」AM 式动画背景的图层烘焙。AM 的背景 ≈ 封面的宏观色彩布局,但明度布局被抹平:同屏对拍里 AM 各采样区的
-    /// 明度都落在一个窄带里,色相却逐区各异;保留封面的明度布局会出现"左缘死黑 + 亮斑突兀",调 EV 够不着。做法:
-    /// - 宏观场 = 6×6 面积平均降采样 + 逐格乘法亮度归一化(RGB × mean/L,homog 0.55 部分归一,系数夹 [0.4, 3.5] 防近黑格
-    ///   爆噪)再放大,σ35 高斯只融格边。乘法保色相/饱和 —— 加法提黑会灰掉;纯高斯 σ 大混泥、σ 小见人形,所以是
-    ///   "降采样出场、高斯只融边"。
-    /// - 逐格饱和度归一 + 少数派色相收拢:饱和度低于目标的格子抬到目标(satTarget,按源图鲜艳端 satP75 的幂函数取;
-    ///   近黑格不动,见 darkLumaFloor);偏离主色相(S² 加权圆均值)60°~120° 的格子夹回 ±60°(AM 的场 = 一个主色系 +
-    ///   近亲点缀);灰阶封面两步都自动 no-op。
-    /// - 成场后 CIVibrance 0.4 × hueCoherenceScale + 闭环饱和度乘子(= satTarget ÷ 融合后场的实测均值 S,上下限见 satMul):
-    ///   σ35 融合互混 + 光斑 lighten 会磨掉约 30% 饱和,固定乘子对混合结构不同的封面不可能都对;闭环后鲜艳均匀的封面
-    ///   乘子自动 <1,灰化结构自动 >1。
-    /// - 底色 EV −0.15:归一化之后只需轻压。
-    /// - 光斑锚原始最亮格(归一化前的亮度),羽化外沿 0.7W(AM 没有独立光斑,只有柔和的色场渐变)。
-    /// - 视图层 3 层 lighten α0.25 摆动(α 在归一化的平场上影响很小)。
-    /// 残余差异主要是 AM 各区内部还有 0.10~0.21 的柔和起伏(其动画瞬间的相位),我们单帧偏平,由摆动动画在时间维上补。
-    /// 对拍数据见 07 章「背景取色逼近 Apple Music」。
-    /// 歌词窗口背景两张位图存成排版边长的几分之一(见 bakeWindowBackgroundLayers 里的 render)。
-    nonisolated static let windowBackgroundStoreDivisor: CGFloat = 3
-
+    /// 「歌词窗口」AM 式动画背景的图层烘焙:两张 240² 位图 + 动画起点 + 取色用的均色(做法见 `AMBackdrop`)。
     nonisolated private static func bakeWindowBackgroundLayers(cgImage: CGImage, seed: UInt64) -> WindowBackgroundLayers? {
-        let W: CGFloat = 720
-        let frame = CGRect(x: 0, y: 0, width: W, height: W)
-
-        // 6×6 面积平均降采样 + 逐格乘法亮度归一化(见函数头注释)。CGContext 自管缓冲
-        // (data: nil),draw 之后直接原位改写像素再 makeImage —— 别用 data: &数组 那种
-        // 临时指针写法(仅初始化调用期间有效,后续使用是未定义行为)。
-        guard let cs = CGColorSpace(name: CGColorSpace.sRGB),
-              let cgctx = CGContext(data: nil, width: 6, height: 6, bitsPerComponent: 8,
-                                    bytesPerRow: 6 * 4, space: cs,
-                                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-        else { return nil }
-        cgctx.interpolationQuality = .medium
-        cgctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: 6, height: 6))
-        guard let data = cgctx.data else { return nil }
-        let px = data.bindMemory(to: UInt8.self, capacity: 36 * 4)
-        // 归一化用的亮度取**归一化前**的原始格亮度;光斑锚点也用它(场归一化之后
-        // "最亮格"就没意义了)。
-        var cellLuma = [Double](repeating: 0, count: 36)
-        for i in 0..<36 {
-            let o = i * 4
-            cellLuma[i] = (0.299 * Double(px[o]) + 0.587 * Double(px[o + 1]) + 0.114 * Double(px[o + 2])) / 255
-        }
-        let meanLuma = cellLuma.reduce(0, +) / 36
-        let homog = 0.55
-        for i in 0..<36 {
-            let f0 = meanLuma / max(0.02, cellLuma[i])
-            let f = (1 - homog) + homog * min(3.5, max(0.4, f0))
-            for ch in 0..<3 {
-                px[i * 4 + ch] = UInt8(min(255, Double(px[i * 4 + ch]) * f))
-            }
-            px[i * 4 + 3] = 255
-        }
-        // 各格饱和度:下面判主色相、算 satP75、把欠饱和格子抬到 satTarget 都用它。AM 的背景饱和度跟着封面的
-        // 鲜艳端走,不是面积均值:白纱/留白参与 6×6 平均会把格子灰化。灰阶封面各格 S≈0,后面几步自动不动。
-        var cellSat = [Double](repeating: 0, count: 36)
-        for i in 0..<36 {
-            let o = i * 4
-            let mx = Double(max(px[o], max(px[o + 1], px[o + 2])))
-            let mn = Double(min(px[o], min(px[o + 1], px[o + 2])))
-            cellSat[i] = mx > 0 ? (mx - mn) / mx : 0
-        }
-        // 少数派色相向主色相收拢:封面上小块杂色(如青色 logo)的格子会被下面的饱和归一放大成刺眼的纯色斑,
-        // 而 AM 的场是"一个主色系 + 近亲色点缀"。主色相 hDom = S² 加权圆均值;偏离 60°~120° 的格子夹回主色相
-        // ±60°(保留点缀、不抹掉),S/V 不动。离群权重占到 20% 以上时不收拢:那是构图里第二个真实色系(比如
-        // 蓝天 + 暖色建筑),交给下面 σ35 高斯模糊做自然的空间过渡,硬夹会夹出一片假色。单色/灰阶封面各格
-        // 本就贴着主色相或 S≈0 被跳过,自动 no-op。
-        func rgbToHSV(_ r: Double, _ g: Double, _ b: Double) -> (h: Double, s: Double, v: Double) {
-            let mx = Swift.max(r, g, b), mn = Swift.min(r, g, b), d = mx - mn
-            var h = 0.0
-            if d > 0 {
-                if mx == r { h = (g - b) / d } else if mx == g { h = (b - r) / d + 2 } else { h = (r - g) / d + 4 }
-                h *= 60
-                if h < 0 { h += 360 }
-            }
-            return (h, mx > 0 ? d / mx : 0, mx)
-        }
-        func hsvToRGB(_ h: Double, _ s: Double, _ v: Double) -> (r: Double, g: Double, b: Double) {
-            let hh = (h.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360) / 60
-            let i = Int(hh), f = hh - Double(i)
-            let p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f))
-            switch i {
-            case 0: return (v, t, p)
-            case 1: return (q, v, p)
-            case 2: return (p, v, t)
-            case 3: return (p, q, v)
-            case 4: return (t, p, v)
-            default: return (v, p, q)
-            }
-        }
-        // 近黑格的饱和度读数不可信:肉眼纯黑的一大片背景,原始 RGB 往往带一丝几乎不可见的偏色(摄影黑位 /
-        // JPEG 压缩常见),这个偏色的比值(HSV 饱和度)在亮度极小时会被放大到跟中高亮区一样高,把整张图的
-        // 主色相拖偏("大面积纯黑 + 一小块金属反光"这类封面,能有两成格子亮度 ≈0.047 却读出 s≈0.36)。
-        // 上面的亮度归一化只保留原有比值、不产生新色相,要的是一道"多暗就不信它的颜色"的判据:用归一化前
-        // 的原始格亮度(`cellLuma`,光斑锚点也用它)设下限,低于它的格子不参与色相判定与 p75 统计,也不
-        // 参与把欠饱和格子拉向 satTarget 的那次修正。0.08 是经验值(伪影格 ≈0.047、合理的暗色内容普遍
-        // >0.1),不是精确阈值。
-        let darkLumaFloor = 0.08
-        var hueSin = 0.0, hueCos = 0.0
-        for i in 0..<36 where cellSat[i] > 0.05 && cellLuma[i] > darkLumaFloor {
-            let o = i * 4
-            let (h, s, _) = rgbToHSV(Double(px[o]) / 255, Double(px[o + 1]) / 255, Double(px[o + 2]) / 255)
-            hueSin += sin(h * .pi / 180) * s * s
-            hueCos += cos(h * .pi / 180) * s * s
-        }
-        // 1 = 色相一致、正常走既有的饱和度放大;越接近 0 越是"噪声凑巧不为零",
-        // 下面 satTarget/satMul/CIVibrance 按它收着放大,见算它那段的注释。
-        var hueCoherenceScale = 1.0
-        if hueSin != 0 || hueCos != 0 {
-            let hDom = atan2(hueSin, hueCos) * 180 / .pi
-            // 色相一致度:S² 加权圆均值向量的合成模长 / 总权重——多格色相互相印证(同一色系)时接近 1,
-            // 彼此抵消(方向各异)时接近 0。hDom/offHueFraction 只管"要不要把离群格子夹回来",不管"这个 hDom
-            // 本身有多可信":一张几乎无彩的封面(S 全在 0.06~0.22)也能算出一个看似成立的 hDom,那只是噪声方向
-            // 凑巧不为零。对拍里灰阶封面 coherence≈0.27,两大真实色系 0.47,单一色系 0.59;低于参考值时按比例
-            // 收着后面的饱和度放大(satTarget/satMul/CIVibrance 三处一起收)。
-            var totalHueWeight = 0.0, offHueWeight = 0.0
-            for i in 0..<36 where cellSat[i] > 0.05 && cellLuma[i] > darkLumaFloor {
-                let o = i * 4
-                let (h, s, _) = rgbToHSV(Double(px[o]) / 255, Double(px[o + 1]) / 255, Double(px[o + 2]) / 255)
-                var d = h - hDom
-                while d > 180 { d -= 360 }
-                while d < -180 { d += 360 }
-                totalHueWeight += s * s
-                // 只把"够近、值得拉回来"的离群格子计入这道占比闸——上限 120° 见下面
-                // clamp 循环同一道判据的注释(色轮对面的真补色本来就不进这套机制,不该
-                // 因为它占比大就反过来拦住"该拉的近似色"被拉)。
-                if abs(d) > 60 && abs(d) <= 120 { offHueWeight += s * s }
-            }
-            let offHueFraction = totalHueWeight > 0 ? offHueWeight / totalHueWeight : 0
-            if totalHueWeight > 0 {
-                let resultantMag = (hueSin * hueSin + hueCos * hueCos).squareRoot()
-                let coherenceLinear = min(1, (resultantMag / totalHueWeight) / 0.4)
-                hueCoherenceScale = coherenceLinear * coherenceLinear
-            }
-            if offHueFraction < 0.2 {
-                for i in 0..<36 where cellSat[i] > 0.05 && cellLuma[i] > darkLumaFloor {
-                    let o = i * 4
-                    let (h, s, v) = rgbToHSV(Double(px[o]) / 255, Double(px[o + 1]) / 255, Double(px[o + 2]) / 255)
-                    var d = h - hDom
-                    while d > 180 { d -= 360 }
-                    while d < -180 { d += 360 }
-                    // 上限 120°:色轮对面的真补色(比如蓝天对暖棕,相距 150° 上下)套用"偏离 60° 就拉近 60°"
-                    // 的固定位移,新色相落在哪全看 d 的正负号,跟原色、跟主色相都不沾边,会夹出刺眼的桃红/紫红。
-                    // 这套位移只为"近似色被饱和归一放大跑偏"的 60°~120° 窗口标定,超过 120° 原样放行,交给
-                    // σ35 高斯模糊做自然过渡(跟 offHueFraction ≥ 20% 那条分支一个道理)。
-                    guard abs(d) > 60, abs(d) <= 120 else { continue }
-                    let (r, g, b) = hsvToRGB(hDom + (d > 0 ? 60 : -60), s, v)
-                    px[o] = UInt8(min(255, max(0, r * 255)))
-                    px[o + 1] = UInt8(min(255, max(0, g * 255)))
-                    px[o + 2] = UInt8(min(255, max(0, b * 255)))
-                }
-            }
-        }
-        // satP75 同样排除近黑格(见上面 darkLumaFloor 的注释)——不然"大面积纯黑+一角
-        // 高光"这类封面,近黑格的伪饱和度会直接顶到排序里的 p75 位置,把 satTarget 算
-        // 得远高于封面实际观感。样本太暗、亮格不够 9 个(排序后 p75 位置会落空/退化)时
-        // 退回全 36 格——这类封面本来就该给低 satTarget,不筛也没问题。
-        let brightIdx = (0..<36).filter { cellLuma[$0] > darkLumaFloor }
-        let satP75: Double
-        if brightIdx.count >= 9 {
-            let sats = brightIdx.map { cellSat[$0] }.sorted()
-            satP75 = sats[min(sats.count - 1, Int(Double(sats.count) * 26.0 / 36.0))]
-        } else {
-            satP75 = cellSat.sorted()[26]
-        }
-        // 目标饱和度按源图鲜艳端(satP75)的幂函数取:AM_p75 ≈ 1.029 × satP75^1.433,是拿 36 组 Apple Music 真机截图
-        // 跟同一张封面对拍、做对数-对数回归拟合出来的(源图越浓,AM 保留的比例越高,不是固定倍率)。要调就在那批数据上
-        // 重新拟合,别凭感觉改。数据和排除过的假说见 07 章「背景取色逼近 Apple Music」第九、十轮。
-        let satTarget = min(0.95, 1.029 * pow(satP75, 1.433)) * hueCoherenceScale
-        for i in 0..<36 where cellSat[i] > 0.01 && cellSat[i] < satTarget && cellLuma[i] > darkLumaFloor {
-            let target = satTarget
-            let k = target / cellSat[i]
-            let o = i * 4
-            let mx = Double(max(px[o], max(px[o + 1], px[o + 2])))
-            for ch in 0..<3 {
-                let c = Double(px[o + ch])
-                px[o + ch] = UInt8(min(255, max(0, mx - (mx - c) * k)))
-            }
-        }
-        guard let fieldCG = cgctx.makeImage() else { return nil }
-
-        func clamp(_ img: CIImage) -> CIImage {
-            img.applyingFilter("CIColorClamp", parameters: [
-                "inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
-                "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1),
-            ])
-        }
-        // 底图和光斑都出自 σ35 模糊过的平滑色场,按 720 排版、存成 1/3 边长:贴到整窗时放大看不出差别,
-        // 常驻和窗口服务器那份位图各省九成(07 章决策 173)。
-        func render(_ img: CIImage) -> NSImage? {
-            let stored = W / Self.windowBackgroundStoreDivisor
-            let small = img.transformed(by: CGAffineTransform(scaleX: stored / W, y: stored / W))
-            guard let out = blurBakeContext.createCGImage(small, from: CGRect(x: 0, y: 0, width: stored, height: stored))
-            else { return nil }
-            return NSImage(cgImage: out, size: NSSize(width: frame.width / 2, height: frame.height / 2))
-        }
-
-        let field = CIImage(cgImage: fieldCG)
-            .transformed(by: CGAffineTransform(scaleX: W / 6, y: W / 6))
-            .clampedToExtent()
-            .applyingGaussianBlur(sigma: 35)
-            .cropped(to: frame)
-        // 闭环饱和度乘子:格级归一后 σ35 融合(相邻异色相格互混)+光斑 lighten 还会
-        // 磨掉一截饱和度,按融合后场的实测均值闭环拉回 satTarget —— 场内部再怎么互混,
-        // 出场饱和度都贴住目标;鲜艳均匀封面 fieldS 超标时乘子自动 <1 回落。
-        //
-        // 上下限刻意没跟着 satTarget 的幂函数抬:回归数据里只有一组(蓝底 + 人像肤色,两大色系反差大)
-        // 顶到过 1.6 的上限,抬到 2.2/3.5 也治不好(那张 σ35 模糊后 fieldS 0.56→0.15,网格 p75 会从 0.37 的
-        // 目标冲到 0.8~1.0)。根子是"闭环乘子按面积均值 fieldS 算、目标 satTarget 按网格 p75 校准"的口径错位,
-        // 抬上限只会把这类高反差封面推向过饱和,不抬则欠一截饱和度,两害相权取后者。数据见 07 章「背景取色
-        // 逼近 Apple Music」。
-        var satMul = 0.85
-        let fieldAvg = field.applyingFilter("CIAreaAverage", parameters: [
-            kCIInputExtentKey: CIVector(cgRect: frame),
-        ])
-        if let avgCG = blurBakeContext.createCGImage(fieldAvg, from: CGRect(x: 0, y: 0, width: 1, height: 1)),
-           let d = avgCG.dataProvider?.data as Data?, d.count >= 3 {
-            let mx = Double(max(d[0], max(d[1], d[2])))
-            let mn = Double(min(d[0], min(d[1], d[2])))
-            let fieldS = mx > 0 ? (mx - mn) / mx : 0
-            // 上下限 0.35~1.6,跟 satTarget 的幂函数基数配套;上限也按 hueCoherenceScale 收,给色相一致的封面留够
-            // 放大空间(coherenceScale=1 时上限不变)。
-            if fieldS > 0.02 {
-                satMul = min(1.6 * max(0.4, hueCoherenceScale), max(0.35 * hueCoherenceScale, satTarget / fieldS))
-            }
-        }
-        let vivified = field
-            .applyingFilter("CIVibrance", parameters: ["inputAmount": 0.4 * hueCoherenceScale])
-            .applyingFilter("CIColorControls", parameters: [kCIInputSaturationKey: satMul])
-
-        let baseImage = clamp(vivified
-            .applyingFilter("CIExposureAdjust", parameters: ["inputEV": -0.15]))
-        guard let base = render(baseImage) else { return nil }
-
-        // 背景均色 → HSB(见 WindowBackgroundLayers.tintHue / tintBrightness 的注释)。均色取烘焙后的 base
-        // (就是屏幕上那层)。
-        var tintHue: Double = 0
-        var tintSat: Double = 0
-        var tintBright: Double = 0
-        let avg = baseImage.applyingFilter("CIAreaAverage", parameters: [
-            kCIInputExtentKey: CIVector(cgRect: frame),
-        ])
-        if let avgCG = blurBakeContext.createCGImage(avg, from: CGRect(x: 0, y: 0, width: 1, height: 1)),
-           let data = avgCG.dataProvider?.data as Data?, data.count >= 3 {
-            let color = NSColor(
-                red: CGFloat(data[0]) / 255, green: CGFloat(data[1]) / 255,
-                blue: CGFloat(data[2]) / 255, alpha: 1)
-            var h: CGFloat = 0, s: CGFloat = 0, v: CGFloat = 0
-            color.usingColorSpace(.sRGB)?.getHue(&h, saturation: &s, brightness: &v, alpha: nil)
-            tintHue = Double(h)
-            tintSat = Double(s)
-            // ×0.85 对齐视图层的 0.15 黑遮罩,存的是屏幕实际见到的背景亮度。
-            tintBright = Double(v) * 0.85
-        }
-
-        // 光斑锚在**原始**最亮格(归一化前):lighten 原位补一点暖亮渐变(对拍里 AM 的
-        // B 区比周边亮 ~0.05 就是这类柔和抬升)。CGContext 缓冲行 0 是图像顶行,
-        // CIImage y 向上,坐标要翻转。
-        let brightest = (0..<36).max(by: { cellLuma[$0] < cellLuma[$1] }) ?? 14
-        let bx = (Double(brightest % 6) + 0.5) / 6.0
-        let by = 1.0 - (Double(brightest / 6) + 0.5) / 6.0
-        guard let mask = CIFilter(name: "CIRadialGradient", parameters: [
-            "inputCenter": CIVector(x: bx * frame.width, y: by * frame.height),
-            "inputRadius0": frame.width * 0.08,
-            "inputRadius1": frame.width * 0.7,
-            "inputColor0": CIColor(red: 1, green: 1, blue: 1, alpha: 1),
-            "inputColor1": CIColor(red: 1, green: 1, blue: 1, alpha: 0),
-        ])?.outputImage?.cropped(to: frame) else { return nil }
-        let glowImage = clamp(vivified.applyingFilter("CIBlendWithAlphaMask", parameters: [
-            kCIInputMaskImageKey: mask,
-            kCIInputBackgroundImageKey: CIImage(color: .clear).cropped(to: frame),
-        ]))
-        guard let glow = render(glowImage) else { return nil }
-
-        var state = seed == 0 ? 0x9e37_79b9_7f4a_7c15 : seed
-        func next() -> Double {
-            state = state &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
-            return Double(state >> 11) / Double(UInt64(1) << 53)
-        }
-        // 三层共用同一张光斑图,姿态微差;周期错开、视图端做 ±小角度往复摆动。
-        let periods: [Double] = [55, 75, 95]
-        var poses: [WindowBackgroundLayers.GlowPose] = []
-        for i in 0..<3 {
-            poses.append(WindowBackgroundLayers.GlowPose(
-                initialAngle: (next() - 0.5) * 30,
-                spinDuration: periods[i],
-                anchor: UnitPoint(x: 0.4 + next() * 0.2, y: 0.4 + next() * 0.2),
-                scale: 1.0 + next() * 0.25
-            ))
-        }
-        return WindowBackgroundLayers(base: base, glows: [glow, glow, glow], poses: poses,
-                                      tintHue: tintHue, tintSaturation: tintSat,
-                                      tintBrightness: tintBright)
+        guard let baked = AMBackdrop.bake(cgImage) else { return nil }
+        let m = baked.meanColor
+        var h: CGFloat = 0, sat: CGFloat = 0, v: CGFloat = 0
+        NSColor(srgbRed: m.r, green: m.g, blue: m.b, alpha: 1).getHue(&h, saturation: &sat, brightness: &v, alpha: nil)
+        return WindowBackgroundLayers(baked: baked, startTime: AMBackdrop.startTime(seed: seed),
+                                      tintHue: Double(h), tintSaturation: Double(sat), tintBrightness: Double(v))
     }
 
     /// 背景模糊的离线烘焙(性能审计:替代视图层的合成期活滤镜)——灵动岛用,

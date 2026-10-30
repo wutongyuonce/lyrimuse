@@ -229,33 +229,83 @@ func runLyricsWindowTests() {
         expectEqual(updates, 4, "节流: 0.25 秒档在 60Hz 屏上每秒刷 4 次")
     }
 
-    // MARK: - 背景光斑摆动取样(BackdropSwing,07 章决策 172)
+    // MARK: - 封面背景的颜色、几何与转动(AMBackdrop,07 章决策 186)
     do {
-        let a = BackdropSwing.angles(from: -12, to: 12, halfPeriod: 55)
-        expectEqual(a.count, 1101, "光斑摆动: 110 秒往复按 10Hz 取 1100 档")
-        expectEqual(a.first, -12, "光斑摆动: 从起点出发")
-        expectEqual(a.last, -12, "光斑摆动: 回到起点,循环接得上")
-        expectEqual(a[550], 12, "光斑摆动: 半程到终点")
-        expectEqual(zip(a, a.dropFirst()).prefix(550).allSatisfy { $0 <= $1 }, true, "光斑摆动: 去程单调")
-        expectEqual(zip(a, a.dropFirst()).dropFirst(550).allSatisfy { $0 >= $1 }, true, "光斑摆动: 回程单调")
-        expectEqual(zip(a, a.dropFirst()).map { abs($1 - $0) }.max()! < 0.1, true, "光斑摆动: 一档转动不到 0.1°")
-        expectEqual(BackdropSwing.angles(from: 0, to: 1, halfPeriod: 0).count, 3, "光斑摆动: 时长为 0 也至少两档")
+        let m = AMBackdrop.colorMatrix(darken: 0.65)
+        func apply(_ c: [Double]) -> [Double] { m.rows.map { r in zip(r, c).map(*).reduce(0, +) + m.bias } }
+        let gray = apply([0.5, 0.5, 0.5])
+        expectEqual(abs(gray[0] - gray[1]) < 1e-9 && abs(gray[1] - gray[2]) < 1e-9, true, "背景颜色: 灰进灰出")
+        expectEqual(abs(gray[0] - (0.9 * 0.65 * 0.5 + 0.1)) < 1e-9, true, "背景颜色: 压暗 0.65 后混 10% 白")
+        let warm = apply([0.6, 0.4, 0.4])
+        expectEqual(abs((warm[0] - warm[1]) - 0.9 * 0.65 * 0.2 * 2.4) < 1e-9, true, "背景颜色: 通道差放大 2.4 倍")
+        expectEqual(abs(apply([0, 0, 0])[0] - 0.1) < 1e-9, true, "背景颜色: 纯黑也混进 10% 白")
+
+        for v in [0.0, 0.3, 0.7, 1.0] {
+            let c = AMBackdrop.lutCorrect(v, v, v)
+            expectEqual(abs(c.0 - v) < 0.02 && abs(c.1 - v) < 0.02 && abs(c.2 - v) < 0.02, true, "背景色表: 灰阶基本不动(\(v))")
+        }
+        let red = AMBackdrop.lutCorrect(1, 0, 0), blue = AMBackdrop.lutCorrect(0, 0, 1)
+        expectEqual(red.0 < 0.8 && blue.2 < 0.8, true, "背景色表: 压纯红、纯蓝")
+        let yellow = AMBackdrop.lutCorrect(1, 1, 0), green = AMBackdrop.lutCorrect(0, 1, 0)
+        expectEqual(yellow.0 > 0.95 && yellow.1 > 0.95 && green.1 > 0.95, true, "背景色表: 黄、绿不压")
+        let wild = AMBackdrop.lutCorrect(1.7, -0.4, 0.2)
+        expectEqual([wild.0, wild.1, wild.2].allSatisfy { (0...1).contains($0) }, true, "背景色表: 越界输入先夹再算")
+        expectEqual(AMBackdrop.colorCube(dimension: 5).count, 5 * 5 * 5 * 16, "背景色表: 色立方按 RGBA Float32 排")
+
+        let size = CGSize(width: 1000, height: 600)
+        let p0 = AMBackdrop.placement(layer: 0, viewSize: size, time: 0)
+        expectEqual(p0.center == CGPoint(x: 500, y: 300) && p0.angle == 0 && p0.halfSide == 700, true,
+                    "背景几何: 第一份居中、半边长 1.4 × 长边一半")
+        let p2 = AMBackdrop.placement(layer: 2, viewSize: size, time: 0)
+        expectEqual(abs(p2.center.x - 850) < 1e-9 && abs(p2.center.y - 650) < 1e-9, true, "背景几何: 第三份起点偏右上")
+        let q2 = AMBackdrop.placement(layer: 2, viewSize: size, time: 60)
+        expectEqual(abs(q2.center.x - 850) < 1e-6 && abs(q2.center.y - (-50)) < 1e-6, true,
+                    "背景几何: 第三份跟着第一份公转(240 秒一圈,60 秒顺时针转四分之一)")
+        expectEqual(abs(q2.angle - (-2 * Double.pi * 60 / 180 - Double.pi / 2)) < 1e-9, true, "背景几何: 第三份总转角 = 自转 + 公转")
+        let tall = AMBackdrop.placement(layer: 0, viewSize: CGSize(width: 400, height: 900), time: 0)
+        expectEqual(tall.halfSide, 630, "背景几何: 竖窗按长边铺")
+
+        let a = AMBackdrop.turnAngles(period: 140, start: 0)
+        expectEqual(a.count, 1401, "背景转动: 140 秒一圈按 10Hz 取 1400 档")
+        expectEqual(a.first, 0, "背景转动: 从起点出发")
+        expectEqual(abs(a.last! + 2 * Double.pi) < 1e-9, true, "背景转动: 转满一整圈(顺时针),循环接得上")
+        expectEqual(zip(a, a.dropFirst()).allSatisfy { $1 < $0 }, true, "背景转动: 一路同向")
+        expectEqual(zip(a, a.dropFirst()).map { ($0 - $1) * 180 / .pi }.max()! < 0.3, true, "背景转动: 一档转不到 0.3°")
+        let b = AMBackdrop.turnAngles(period: 240, start: 60)
+        expectEqual(abs(b[0] + Double.pi / 2) < 1e-9, true, "背景转动: 起点按动画起点取")
+        expectEqual((0..<50).allSatisfy { (0..<AMBackdrop.cycle).contains(AMBackdrop.startTime(seed: UInt64($0) &* 0x9E37_79B9_7F4A_7C15)) },
+                    true, "背景转动: 起点落在一个完整周期里")
+
         let window = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
             .appendingPathComponent("lyrimuse/UI/LyricsWindowView.swift"), encoding: .utf8)) ?? ""
-        expectEqual(sourceBytes(window, contain: "swing.calculationMode = .discrete"), true,
-                    "光斑摆动(契约): 背景光斑走离散关键帧")
-        expectEqual(sourceBytes(window, contain: "let swing = CABasicAnimation(keyPath: \"transform.rotation.z\")"), false,
-                    "光斑摆动(契约): 不用连续插值的旋转动画")
+        expectEqual(sourceBytes(window, contain: "spin.calculationMode = .discrete"), true,
+                    "背景转动(契约): 走离散关键帧(07 章决策 172)")
+        expectEqual(sourceBytes(window, contain: "CABasicAnimation(keyPath: \"transform.rotation.z\")"), false,
+                    "背景转动(契约): 不用连续插值的旋转动画")
     }
 
-    // MARK: - 背景两张位图存小(07 章决策 173)
+    // MARK: - 封面背景烘焙(AMBackdrop.bake,07 章决策 173、186)
     do {
-        let coordinator = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("lyrimuse/PlaybackCoordinator.swift"), encoding: .utf8)) ?? ""
-        expectEqual(sourceBytes(coordinator, contain: "nonisolated static let windowBackgroundStoreDivisor: CGFloat = 3"), true,
-                    "背景位图(契约): 存成排版边长的 1/3")
-        expectEqual(sourceBytes(coordinator, contain: "let stored = W / Self.windowBackgroundStoreDivisor"), true,
-                    "背景位图(契约): 底图和光斑都经 render 按这个比例缩小再存")
+        let n = 64
+        let ctx = CGContext(data: nil, width: n, height: n, bitsPerComponent: 8, bytesPerRow: n * 4,
+                            space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+        ctx.setFillColor(CGColor(srgbRed: 0.8, green: 0.2, blue: 0.1, alpha: 1))
+        ctx.fill(CGRect(x: 0, y: 0, width: n, height: n))
+        ctx.setFillColor(CGColor(srgbRed: 0.1, green: 0.2, blue: 0.7, alpha: 1))
+        ctx.fill(CGRect(x: 0, y: 0, width: n / 2, height: n / 2))
+        if let baked = AMBackdrop.bake(ctx.makeImage()!) {
+            expectEqual(baked.base.width == 240 && baked.overlay.width == 240, true, "背景烘焙: 两张位图都存 240²(07 章决策 173)")
+            func alpha(_ img: CGImage, _ x: Int, _ y: Int) -> UInt8 {
+                let data = img.dataProvider!.data! as Data
+                return data[y * img.bytesPerRow + x * img.bitsPerPixel / 8 + 3]
+            }
+            expectEqual(alpha(baked.base, 0, 0), 255, "背景烘焙: 底层外延到角上仍不透明")
+            expectEqual(alpha(baked.overlay, 0, 0), 0, "背景烘焙: 上层四角透明")
+            expectEqual(alpha(baked.overlay, 120, 120) > 240, true, "背景烘焙: 上层中间不透明")
+            expectEqual(baked.meanColor.r > baked.meanColor.b, true, "背景烘焙: 均色随封面主色(红多蓝少)")
+        } else {
+            expectEqual(true, false, "背景烘焙: 合成图烘得出来")
+        }
     }
 
     // MARK: - 逐帧时钟降频(FrameCadence.linkRate,07 章决策 140)
