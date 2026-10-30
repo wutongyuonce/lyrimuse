@@ -353,3 +353,15 @@ func TestDurationNearTieBothPipelines(t *testing.T) {
 		check(t, mergeLyricCandidateRounds("方大同", "Goodbye Melody Rose", "", 187, base, extra))
 	})
 }
+
+// 同一份正文,咪咕晚 0.4 秒、结尾还挂着逐句拆开的版权声明,QQ 那份挂一行写完的:声明行不算末句,两家照样打平,冠军是早的 QQ。
+func TestDurationNearTieIgnoresTrailingNotices(t *testing.T) {
+	raw := map[string]lyricSourceResult{
+		"qq":   {source: "qq", lyr: noticeTailLRC(20, 0, []string{noticeOneLine}), matchTitle: "只有我和你的地方", matchArtist: "邓紫棋"},
+		"migu": {source: "migu", lyr: noticeTailLRC(20, 0.4, noticeSplit), matchTitle: "只有我和你的地方", matchArtist: "邓紫棋"},
+	}
+	scored := rankLyricSourceResults("邓紫棋", "只有我和你的地方", "", 187, raw)
+	if len(scored) != 2 || scored[0].Score != scored[1].Score || scored[0].Source != "qq" {
+		t.Fatalf("声明行不该抬咪咕的时长分,应打平且 QQ 在前: %v", dtSortedSources(scored))
+	}
+}

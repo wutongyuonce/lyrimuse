@@ -9,8 +9,8 @@ import (
 // 由 scripts/gen-lyric-notices.py 生成 lyricnotices_generated.go,App 那边读同一份
 // (LyricNotices+Generated.swift)。改规则改那份 JSON,别在这里单独加。
 //
-// 引擎只用 translation 那一面(isTranslationNotice 清洗译文轨);body 那一面是 App 显示正文时用的,
-// 这里也编译一遍,只为让两侧测试跑同一批例句。
+// translation 那一面清洗译文轨(isTranslationNotice);body 那一面是 App 显示正文时删掉的声明行,引擎取末句、
+// 整首显示轴、正文共识与行数时同样跳过它(isBodyNoticeLine),两侧口径一致。
 type lyricNoticeRule struct {
 	id          string
 	pattern     string
@@ -41,6 +41,11 @@ func compileLyricNotices(rules []lyricNoticeRule) []compiledLyricNotice {
 		out = append(out, compiledLyricNotice{lyricNoticeRule: r, re: re})
 	}
 	return out
+}
+
+// isBodyNoticeLine:正文里这一行是不是源塞进来的声明(App 显示时会删掉的那一面)。见 09 章决策 353。
+func isBodyNoticeLine(text string) bool {
+	return lyricNoticeMatches(text, false)
 }
 
 // lyricNoticeMatches:这一行是不是 translation(true)/ body(false)那一面的声明。比较前去掉首尾空白,

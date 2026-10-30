@@ -85,7 +85,7 @@ func displayedTimeline(lrc, yrc string) []timelineLine {
 	}
 	var words []timelineLine
 	for _, h := range yrcLineHeads(yrc) {
-		if isCreditLine(h.text) {
+		if isCreditLine(h.text) || isBodyNoticeLine(h.text) {
 			continue
 		}
 		if n := normTimelineText(timelineSungText(h.text, speakers)); n != "" {
@@ -108,7 +108,7 @@ func timelineSungText(text string, speakers map[string]bool) string {
 }
 
 // timelineLines 把 LRC 展开成按显示时刻排序的(毫秒, 归一化正文):一行多戳按戳展开,已扣掉
-// offsetMs;署名行与归一化后为空的行不参与,行首的演唱者标签剥掉(timelineSungText)。
+// offsetMs;署名行、声明行(isBodyNoticeLine)与归一化后为空的行不参与,行首的演唱者标签剥掉(timelineSungText)。
 func timelineLines(lrc string, offsetMs int, speakers map[string]bool) []timelineLine {
 	var out []timelineLine
 	for _, line := range strings.Split(lrc, "\n") {
@@ -117,7 +117,7 @@ func timelineLines(lrc string, offsetMs int, speakers map[string]bool) []timelin
 			continue
 		}
 		text := strings.TrimSpace(lrcTimestampRe.ReplaceAllString(line, ""))
-		if text == "" || isCreditLine(text) {
+		if text == "" || isCreditLine(text) || isBodyNoticeLine(text) {
 			continue
 		}
 		n := normTimelineText(timelineSungText(text, speakers))

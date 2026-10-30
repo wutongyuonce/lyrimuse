@@ -265,6 +265,9 @@ func lyricsAreCreditsOnly(lrc string) bool {
 // 正文共识(lyricConsensusBody)剔署名行、时长端点不剔,两处口径本就该一致。演唱者标签
 // (男：/女：)不算署名,理由见 lyricspeaker.go。
 //
+// 源塞进正文的声明行(「版权所有翻版必究」「未经权利人授权不得使用」,isBodyNoticeLine)同样跳过:它们常挂在末句之后
+// 几秒,跟上面的署名行是同一形态。见 09 章决策 353。
+//
 // 段落标记行(「[Outro]」「(Instrumental)」「【间奏】」)和只有符号的行(「♪」「…」)同样跳过(isLyricMarkerLine):
 // 也是没有歌词正文的时间戳,却能把一份早早唱完的歌词撑进「时长吻合」,批内别的候选随之丢掉印证和共识分。
 // 见 09 章决策 198。
@@ -281,7 +284,7 @@ func lastLRCTimestampSecs(lrc string) (float64, bool) {
 			continue
 		}
 		text := strings.TrimSpace(lrcTimestampRe.ReplaceAllString(line, ""))
-		if text == "" || isRelaxedCreditLine(text, speakers) || isLyricMarkerLine(text) {
+		if text == "" || isRelaxedCreditLine(text, speakers) || isLyricMarkerLine(text) || isBodyNoticeLine(text) {
 			continue
 		}
 		for _, m := range matches {
@@ -545,7 +548,7 @@ const lyricOvershootToleranceSecs = 5.0
 // (按版本号可查,如决策 31/33/36/43/44/49/50/58/64/69/82)——这里不重复。
 const lyricsScoringVersion = 30
 
-const lyricsScoringRevision = 4
+const lyricsScoringRevision = 5
 
 // lyricsScoringStamp 是一条歌词按哪一版打分规则选出来的:主版本号 + 开发修订号。存成两个整数、按这两段比大小,
 // 不存小数:小数比大小时 29.10 会排在 29.9 前面。
@@ -3657,7 +3660,7 @@ func isLRCMetaTagLine(line string) bool {
 	return strings.HasSuffix(trimmed, "]") && lrcMetaTagPrefixRe.MatchString(trimmed)
 }
 
-// lyricConsensusBody 把一份 LRC 归一成"可跨源比对的正文":逐行去时间戳、丢署名行、
+// lyricConsensusBody 把一份 LRC 归一成"可跨源比对的正文":逐行去时间戳、丢署名行、源塞进来的声明行(isBodyNoticeLine)、
 // 元数据标签行与空行,每行 normLoose 后拼接。给 contentConsensusPeers 的 3-gram 比对用。歌词行几乎不重复,
 // 走 normLooseUncached,别灌进 normLoose 的备忘表把歌名、歌手的条目挤掉。
 func lyricConsensusBody(lyrics string) string {
@@ -3686,7 +3689,7 @@ func lyricConsensusBody(lyrics string) string {
 			}
 			continue
 		}
-		if isCreditLine(text) {
+		if isCreditLine(text) || isBodyNoticeLine(text) {
 			continue
 		}
 		b.WriteString(normLooseUncached(text))
@@ -3695,7 +3698,7 @@ func lyricConsensusBody(lyrics string) string {
 }
 
 // eachContentLyricLine 逐行交出"真的在唱的"正文(去掉时间戳,演唱者标记行只交标记后面那段):元信息标签行、空行、
-// 只有演唱者标记的行、职员表行都跳过。口径跟 lyricConsensusBody 逐条对齐,两边要一起改。
+// 只有演唱者标记的行、职员表行、声明行都跳过。口径跟 lyricConsensusBody 逐条对齐,两边要一起改。
 func eachContentLyricLine(lyrics string, fn func(text string)) {
 	speakers := lyricSpeakerLabels(lyrics)
 	for _, line := range splitLyricLines(lyrics) {
@@ -3712,7 +3715,7 @@ func eachContentLyricLine(lyrics string, fn func(text string)) {
 			}
 			continue
 		}
-		if isCreditLine(text) {
+		if isCreditLine(text) || isBodyNoticeLine(text) {
 			continue
 		}
 		fn(text)

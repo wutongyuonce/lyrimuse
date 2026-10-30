@@ -5,6 +5,7 @@ import Foundation
 /// (lyricnotices_generated.go)。改规则改那份 JSON,别在这里或 Go 那边单独加。
 ///
 /// 两个作用面:`body` 是 App 显示正文时的署名过滤(`LyricsSyncEngine.strippingCreditLines` 调 `matchesBody`),
+/// 引擎取末句、整首显示轴、正文共识与行数时也跳过这一面(Go 侧 isBodyNoticeLine);
 /// `translation` 是引擎清洗译文轨(Go 侧 isTranslationNotice)。这里两面都编译,selftest 与 go test
 /// 跑同一批例句。
 public enum LyricNotices {

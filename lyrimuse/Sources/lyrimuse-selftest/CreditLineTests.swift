@@ -1710,4 +1710,20 @@ func runCreditLineTests() {
         expectEqual(drops(["这是我们的主题曲", "第二句歌词", "第三句歌词"]), [false, false, false],
                     "影视说明: 没有书名号的不删")
     }
+
+    // ---- 唱片公司那段整句版权声明逐句拆开挂在结尾 ----
+    do {
+        func drops(_ lines: [String]) -> [Bool] { LyricsSyncEngine.creditLineDropDecisions(lines) }
+        let split = ["版权所有翻版必究", "本专辑涉及的任何作品", "包括但不限于词曲/录音/录像", "视听/文字/摄影和美术等作品", "未经权利人授权不得使用"]
+        expectEqual(drops(["Tell me you feel it too", "Just me and you"] + split), [false, false] + split.map { _ in true },
+                    "声明: 整句版权声明拆成几行时每一行都删")
+        let hant = ["版權所有翻版必究", "本專輯涉及的任何作品", "包括但不限於詞曲/錄音/錄影", "視聽/文字/攝影和美術等作品", "未經權利人授權不得使用"]
+        expectEqual(drops(["我只在乎 me and you"] + hant), [false] + hant.map { _ in true }, "声明: 繁体字形同样删")
+        // 繁体显示时正文先转成繁体再过署名过滤,按转换器真实转出来的字形再判一遍。
+        let converted = split.map(ChineseVariant.traditional.converted)
+        expectEqual(drops(["我只在乎 me and you"] + converted), [false] + converted.map { _ in true },
+                    "声明: 繁体显示时(简体声明转成繁体)同样删 \(converted)")
+        expectEqual(drops(["包括但不限于", "当涉及到你的时候", "她的美术馆 太多的灿烂"]), [false, false, false],
+                    "声明: 只有「包括但不限于」「涉及」「美术」的真歌词不删")
+    }
 }
