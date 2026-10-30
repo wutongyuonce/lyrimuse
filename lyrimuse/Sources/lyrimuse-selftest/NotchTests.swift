@@ -2751,6 +2751,10 @@ func runNotchTests() {
                         && sourceHas(sourceBody("func end()", in: pass), "window?.ignoresMouseEvents = false")
                         && sourceHas(sourceBody("func end()", in: pass), "monitors.forEach(NSEvent.removeMonitor)"), true,
                     "歌词行穿透: 进来时整扇窗穿透、装监听,离开时恢复、卸监听")
+        expectEqual(sourceHas(sourceBody("func end()", in: pass), "debugPointer = nil"), true,
+                    "歌词行穿透: 穿透结束时清掉模拟的指针,下次真指针进来不再按它判")
+        expectEqual(sourceHas(sourceBody("private func animateBand(", in: pass), "CATransaction.setDisableActions(true)"), true,
+                    "歌词行穿透: 淡化只走显式动画,关掉独立 layer 改模型值自带的隐式动画")
         expectEqual(sourceHas(sourceBody("private func installMask(on layer: CALayer)", in: pass), "layer.mask = container")
                         && !root.contains(".mask"), true,
                     "歌词行穿透: 淡化只在穿透期间挂在 layer 上,SwiftUI 里不常驻遮罩")

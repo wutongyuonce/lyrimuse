@@ -755,6 +755,11 @@ func runWebLyricsTests() {
                         && sourceBytes(pagesSource, contain: "card.classList.toggle('paused', !playing);")
                         && sourceBytes(pagesSource, contain: "card.classList.toggle('rainbow', !!style.rainbow);"), true,
                     "网页歌词: OBS 彩虹按整页坐标铺、只铺在没有逐字片段的行和逐字片段上、强制字透明、未唱和副行按透明度打折、暂停和减弱动态效果时停住")
+        expectEqual(sourceBytes(pagesSource, contain: "animation: lmRainbow var(--rbs) linear infinite; animation-delay: var(--rbd, 0s); }")
+                        && sourceBytes(pagesSource, contain: "if (style.rainbow) card.style.setProperty('--rbd', rainbowDelay());")
+                        && sourceBytes(pagesSource, contain: "if (style.rainbow) before.ghost.style.setProperty('--rbd', rainbowDelay());")
+                        && sourceBytes(pagesSource, contain: "return -((performance.now() / 1000) % style.rainbow.seconds) + 's';"), true,
+                    "网页歌词: OBS 彩虹换句重建的行和淡出的旧句都按整页同一个时钟接着流,不从起点重来")
         let obsFeed = app("WebLyrics/WebLyricsObsFeed.swift")
         expectEqual(sourceBytes(obsFeed, contain: "let sung = (s.followsCoverArt ? p.artworkAccentColor : nil) ?? s.foregroundColor")
                         && sourceBytes(obsFeed, contain: "rainbow: s.overlayRainbow))")

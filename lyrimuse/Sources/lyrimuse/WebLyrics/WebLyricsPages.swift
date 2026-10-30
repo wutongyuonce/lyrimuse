@@ -865,7 +865,7 @@ enum WebLyricsPages {
              background-image: linear-gradient(90deg, var(--sung) 0, var(--sung) var(--p, 0%), var(--unsung) var(--p, 0%), var(--unsung) 100%); }
         #card.rainbow .rb, #card.rainbow .w { -webkit-background-clip: text; background-clip: text; color: transparent !important;
              background-image: var(--rb); background-size: var(--rbw) 100%; background-repeat: repeat-x; background-attachment: fixed;
-             animation: lmRainbow var(--rbs) linear infinite; }
+             animation: lmRainbow var(--rbs) linear infinite; animation-delay: var(--rbd, 0s); }
         #card.rainbow .w { -webkit-mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%);
              mask-image: linear-gradient(90deg, #000 0, #000 var(--p, 0%), rgba(0,0,0,var(--rbu)) var(--p, 0%), rgba(0,0,0,var(--rbu)) 100%); }
         #card.rainbow.paused .rb, #card.rainbow.paused .w { animation-play-state: paused; }
@@ -1109,7 +1109,13 @@ enum WebLyricsPages {
               }
             }
             card.innerHTML = html;
+            if (style.rainbow) card.style.setProperty('--rbd', rainbowDelay());
             layoutRows();
+          }
+          // 彩虹流动按整页同一个时钟走(同原生几处,17 章决策 55):换句整组重建的元素从插进来那一刻起算,延迟设成
+          // 「此刻在一圈里走到哪」的负值,前后句的颜色才接得上。
+          function rainbowDelay() {
+            return -((performance.now() / 1000) % style.rainbow.seconds) + 's';
           }
           function sideOf(raw) { return style.align === 'automatic' ? (raw || 'center') : style.align; }
           // 对唱留白照 `OverlayCardGeometry.cardInsets`:左右声部只在近侧留舞台缩进,合唱两侧留;
@@ -1165,6 +1171,7 @@ enum WebLyricsPages {
             if (!main) return;
             // 卡片贴底,换句后高度变了上沿会挪;旧的一句留在它原来在屏幕上的位置。
             before.ghost.style.top = before.mainTop - card.getBoundingClientRect().top - card.clientTop + 'px';
+            if (style.rainbow) before.ghost.style.setProperty('--rbd', rainbowDelay());
             card.appendChild(before.ghost);
             before.ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: RISE.outMs, easing: 'ease-out', fill: 'forwards' })
               .onfinish = () => before.ghost.remove();

@@ -83,6 +83,8 @@ final class NotchLyricRowPassThrough {
 
     func end() {
         guard isActive else { return }
+        // 模拟的那一点只管这一次穿透:留着的话下次真指针进来还按它判,退不出去。
+        debugPointer = nil
         monitors.forEach(NSEvent.removeMonitor)
         monitors.removeAll()
         fallbackTimer?.invalidate()
@@ -149,6 +151,8 @@ final class NotchLyricRowPassThrough {
     private func animateBand(to opacity: Float, completion: (() -> Void)? = nil) {
         guard let band = maskBand else { completion?(); return }
         CATransaction.begin()
+        // 只走下面这条显式动画:独立 layer 改模型值会自带一条 0.25 秒的隐式动画,叠在一起淡完会先跳回一截再落下去。
+        CATransaction.setDisableActions(true)
         CATransaction.setCompletionBlock(completion)
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = band.presentation()?.opacity ?? band.opacity
