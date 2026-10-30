@@ -177,6 +177,13 @@ public enum NotificationPreview {
 
     /// 同引擎 digestNewArtistsLine:「新听了 5 位歌手：A、B、C 等」;概况只写「新听了 5 位歌手」(引擎 richDigest.newLine);
     /// 一位都没有为空。
+    /// Bark 正文第一行是报告第一行(`summary`)时拆成副标题和其余几行;其余几行是空的就不拆。同引擎 barkSplitSummary。
+    public static func barkSplit(_ text: String, summary: String) -> (subtitle: String, rest: String)? {
+        guard text.hasPrefix(summary + "\n") else { return nil }
+        let rest = text.dropFirst(summary.count + 1).drop(while: { $0 == "\n" })
+        return rest.isEmpty ? nil : (summary, String(rest))
+    }
+
     public static func newArtistsLine(_ stats: Stats, style: DigestStyle = .full) -> String {
         guard stats.newArtists > 0 else { return "" }
         if style == .overview { return "新听了 \(stats.newArtists) 位歌手" }

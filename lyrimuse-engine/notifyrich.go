@@ -47,7 +47,7 @@ func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, cont
 		}
 		v, ok = m, true
 	case platformDingtalk:
-		v, ok = map[string]any{"msgtype": "markdown", "markdown": map[string]string{"title": msg.Title, "text": dingtalkRich(msg.Title, msg.Body, d)}}, true
+		v, ok = dingtalkPayload(msg.Title, dingtalkRich(msg.Title, msg.Body, d), d), true
 	case platformWecom:
 		content := wecomRich(msg.Title, msg.Body, d)
 		v, ok = map[string]any{"msgtype": "markdown_v2", "markdown_v2": map[string]string{"content": content}}, len(content) <= wecomMarkdownMaxBytes
@@ -55,13 +55,19 @@ func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, cont
 		if d == nil {
 			return nil, "", false, nil
 		}
-		form := url.Values{"title": {msg.Title}, "desp": {serverChanRich(d)}}
+		// short 是微信里那张提醒卡片上显示的内容;不填时卡片显示 desp 的开头,也就是封面那行 markdown 原文。
+		form := url.Values{"title": {msg.Title}, "desp": {serverChanRich(d)}, "short": {digestSummaryLine(*d.digestStats)}}
 		return []byte(form.Encode()), "application/x-www-form-urlencoded", true, nil
 	case platformBark, "":
-		if d == nil || (d.CoverURL == "" && d.Link == "") {
+		if d == nil {
 			return nil, "", false, nil
 		}
-		m := map[string]any{"title": msg.Title, "body": msg.Body, "group": "nowplaying", "level": "active"}
+		m := map[string]any{"title": msg.Title, "body": msg.Body, "group": "nowplaying", "level": "active", "icon": richAppIcon}
+		if !msg.Custom {
+			if subtitle, rest, ok := barkSplitSummary(msg.Body, d.digestStats); ok {
+				m["subtitle"], m["body"] = subtitle, rest
+			}
+		}
 		if d.CoverURL != "" {
 			m["image"] = d.CoverURL // 长按展开通知时显示大图
 		}
@@ -75,6 +81,32 @@ func buildRichPayload(ch notifyChannel, msg notifyMessage) (payload []byte, cont
 	}
 	b, err := json.Marshal(v)
 	return b, "application/json", true, err
+}
+
+// richAppIcon:Bark、ntfy 通知的图标(仓库里的 docs/images/app-icon.png,走 jsDelivr,国内也取得到)。取不到时客户端用默认图标。
+// 各平台用上的按钮、副标题、摘要见 15 章决策 97。
+const richAppIcon = "https://cdn.jsdelivr.net/gh/Yudaotor/lyrimuse@main/docs/images/app-icon.png"
+
+// barkSplitSummary:正文第一行是报告的第一行(总次数、时长)时,把它挪进 Bark 的副标题,锁屏上标题、副标题、榜单各占一层。
+// 第一行后面没别的了(概况没有新歌手)时不挪,正文不能空。
+func barkSplitSummary(body string, d *digestStats) (subtitle, rest string, ok bool) {
+	summary := digestSummaryLine(*d)
+	rest, found := strings.CutPrefix(body, summary+"\n")
+	rest = strings.TrimLeft(rest, "\n")
+	if !found || rest == "" {
+		return "", "", false
+	}
+	return summary, rest, true
+}
+
+// dingtalkPayload:有链接时发 actionCard(单按钮,点了去完整榜单),没有时发 markdown。两种的正文是同一份 markdown。
+func dingtalkPayload(title, text string, d *richDigest) map[string]any {
+	if d == nil || d.Link == "" {
+		return map[string]any{"msgtype": "markdown", "markdown": map[string]string{"title": title, "text": text}}
+	}
+	return map[string]any{"msgtype": "actionCard", "actionCard": map[string]string{
+		"title": title, "text": text, "singleTitle": richLinkLabel(d.digestStats), "singleURL": d.Link,
+	}}
 }
 
 // ---- 共用的几块 ----
@@ -139,7 +171,8 @@ func clipRunes(s string, n int) string {
 const telegramMaxChars = 4096
 
 // telegramRich:parse_mode HTML。名字里的 & < > 必须转义,不然整条解析失败。封面放在链接预览里(link_preview_options.url
-// 可以跟正文里的链接不是同一个),显示在文字上方;不用 sendPhoto,它的图片说明只有 1024 字,每类列 10 条就放不下。
+// 不必出现在正文里),显示在文字上方;不用 sendPhoto,它的图片说明只有 1024 字,每类列 10 条就放不下。去完整榜单是消息下方
+// 的一颗 URL 按钮(inline_keyboard 里只填 url 的按钮不用回调,机器人不需要在线)。
 func telegramRich(chatID, title, body string, d *richDigest) (any, bool) {
 	esc := html.EscapeString
 	var b strings.Builder
@@ -154,9 +187,6 @@ func telegramRich(chatID, title, body string, d *richDigest) (any, bool) {
 		if line := d.newLine(); line != "" {
 			b.WriteString("\n\n🆕 " + esc(line))
 		}
-		if d.Link != "" {
-			b.WriteString("\n\n<a href=\"" + esc(d.Link) + "\">" + esc(richLinkLabel(d.digestStats)) + "</a>")
-		}
 	}
 	text := b.String()
 	if utf8.RuneCountInString(text) > telegramMaxChars {
@@ -166,9 +196,11 @@ func telegramRich(chatID, title, body string, d *richDigest) (any, bool) {
 	if d != nil && d.CoverURL != "" {
 		preview = map[string]any{"url": d.CoverURL, "prefer_large_media": true, "show_above_text": true}
 	}
-	return map[string]any{
-		"chat_id": strings.TrimSpace(chatID), "text": text, "parse_mode": "HTML", "link_preview_options": preview,
-	}, true
+	m := map[string]any{"chat_id": strings.TrimSpace(chatID), "text": text, "parse_mode": "HTML", "link_preview_options": preview}
+	if d != nil && d.Link != "" {
+		m["reply_markup"] = map[string]any{"inline_keyboard": [][]map[string]string{{{"text": richLinkLabel(d.digestStats), "url": d.Link}}}}
+	}
+	return m, true
 }
 
 // ---- Discord ----
@@ -281,22 +313,21 @@ func slackRich(title, body string, d *richDigest) (any, bool) {
 
 // ---- 飞书 ----
 
-// feishuRichCard:消息卡片(群机器人 webhook 收 msg_type=interactive)。蓝色标题栏、第一行、三栏榜单(窄屏上自动叠成一列)、
+// feishuRichCard:消息卡片(群机器人 webhook 收 msg_type=interactive)。蓝色标题栏(第一行是它的副标题)、三栏榜单(窄屏上自动叠成一列)、
 // 新听的歌手、去完整榜单的按钮、来源。名字都放在 plain_text 里,不进 markdown,不用转义。不带封面:卡片里的图片要先用
 // 应用凭据上传换 image_key,群机器人地址做不到。
 func feishuRichCard(title, body string, d *richDigest) map[string]any {
 	plain := func(s string) map[string]any {
 		return map[string]any{"tag": "div", "text": map[string]string{"tag": "plain_text", "content": s}}
 	}
-	card := map[string]any{
-		"config": map[string]bool{"wide_screen_mode": true},
-		"header": map[string]any{"title": map[string]string{"tag": "plain_text", "content": title}, "template": "blue"},
-	}
+	header := map[string]any{"title": map[string]string{"tag": "plain_text", "content": title}, "template": "blue"}
+	card := map[string]any{"config": map[string]bool{"wide_screen_mode": true}, "header": header}
 	if d == nil {
 		card["elements"] = []any{plain(body)}
 		return card
 	}
-	elements := []any{plain(digestSummaryLine(*d.digestStats))}
+	header["subtitle"] = map[string]string{"tag": "plain_text", "content": digestSummaryLine(*d.digestStats)}
+	var elements []any
 	var columns []any
 	for _, s := range d.sections(func(s string) string { return s }) {
 		columns = append(columns, map[string]any{
@@ -329,9 +360,9 @@ func feishuRichCard(title, body string, d *richDigest) map[string]any {
 // markdownEscaper:名字里会被当成 markdown 语法的字符加反斜杠(企业微信 markdown_v2、Server酱按标准 markdown 渲染)。
 var markdownEscaper = strings.NewReplacer(`\`, `\\`, "`", "\\`", `*`, `\*`, `_`, `\_`, `[`, `\[`, `]`, `\]`, `<`, `\<`, `>`, `\>`, `|`, `\|`, `~`, `\~`)
 
-// markdownDigest 拼 markdown 正文的主体:第一行加粗、每类一个小标题和有序列表、新听的歌手、链接。
-// heading 是小节标题的前缀(「#### 」或加粗),br 是行与行之间怎么断(钉钉要行尾两个空格才换行)。
-func markdownDigest(d *richDigest, esc func(string) string, heading func(string) string, br string) string {
+// markdownDigest 拼 markdown 正文的主体:第一行加粗、每类一个小标题和有序列表、新听的歌手、链接(withLink 为 false 时不写,
+// 链接另放按钮)。heading 是小节标题的前缀(「#### 」或加粗),br 是行与行之间怎么断(钉钉要行尾两个空格才换行)。
+func markdownDigest(d *richDigest, esc func(string) string, heading func(string) string, br string, withLink bool) string {
 	var b strings.Builder
 	b.WriteString("**" + esc(digestSummaryLine(*d.digestStats)) + "**")
 	for _, s := range d.sections(esc) {
@@ -340,7 +371,7 @@ func markdownDigest(d *richDigest, esc func(string) string, heading func(string)
 	if line := d.newLine(); line != "" {
 		b.WriteString("\n\n🆕 " + esc(line))
 	}
-	if d.Link != "" {
+	if withLink && d.Link != "" {
 		b.WriteString("\n\n[" + richLinkLabel(d.digestStats) + "](" + d.Link + ")")
 	}
 	return b.String()
@@ -355,12 +386,13 @@ func markdownCover(d *richDigest) string {
 
 // dingtalkRich:钉钉 markdown。只支持 markdown 的一个子集,名字不转义(它不认反斜杠转义,转了会原样显示出来);
 // 行尾两个空格才换行。末尾一行「Lyrimuse」:开了「自定义关键词」安全设置的机器人,把关键词设成 Lyrimuse 就能收。
+// 有链接时整条发成 actionCard,正文同一份 markdown,链接是卡片底部的按钮(dingtalkPayload)。
 func dingtalkRich(title, body string, d *richDigest) string {
 	if d == nil {
 		return "#### " + title + "\n\n" + strings.ReplaceAll(body, "\n", "  \n")
 	}
 	bold := func(s string) string { return "**" + s + "**" }
-	return "#### " + title + "\n\n" + markdownCover(d) + markdownDigest(d, func(s string) string { return s }, bold, "  \n") +
+	return "#### " + title + "\n\n" + markdownCover(d) + markdownDigest(d, func(s string) string { return s }, bold, "  \n", d.Link == "") +
 		"\n\n###### " + richFooter(d.digestStats)
 }
 
@@ -373,13 +405,13 @@ func wecomRich(title, body string, d *richDigest) string {
 		return "# " + title + "\n\n" + markdownEscaper.Replace(body)
 	}
 	bold := func(s string) string { return "**" + s + "**" }
-	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n") + "\n\n> " + richFooter(d.digestStats)
+	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n", true) + "\n\n> " + richFooter(d.digestStats)
 }
 
 // serverChanRich:Server酱的 desp 按 markdown 渲染(微信里收到标题那条提醒,点进去看的是这一页)。
 func serverChanRich(d *richDigest) string {
 	h4 := func(s string) string { return "#### " + s }
-	return markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, h4, "\n") + "\n\n> " + richFooter(d.digestStats)
+	return markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, h4, "\n", true) + "\n\n> " + richFooter(d.digestStats)
 }
 
 // ---- 通用 Webhook ----

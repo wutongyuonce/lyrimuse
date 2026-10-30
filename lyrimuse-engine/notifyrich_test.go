@@ -56,11 +56,18 @@ func TestRichTelegram(t *testing.T) {
 		t.Fatalf("rich=%v %v", nr.rich, m)
 	}
 	for _, want := range []string{"<b>Top 歌手</b>\n1. 方大同 · 129\n2. Guns N&#39; &lt;Roses&gt; &amp; *Co* · 12",
-		"<b>Top 专辑</b>\n1. Xscape (Deluxe) — Michael Jackson · 30", "🆕 新听了 44 位歌手：Patti LaBelle、The Crane、99 God 等",
-		`<a href="https://www.last.fm/user/u/library/artists?from=2026-10-12&amp;to=2026-10-18">在 Last.fm 上看完整榜单</a>`} {
+		"<b>Top 专辑</b>\n1. Xscape (Deluxe) — Michael Jackson · 30", "🆕 新听了 44 位歌手：Patti LaBelle、The Crane、99 God 等"} {
 		if !strings.Contains(text, want) {
 			t.Errorf("text 缺 %q:\n%s", want, text)
 		}
+	}
+	if strings.Contains(text, "<a ") {
+		t.Errorf("链接放按钮里,正文不再写: %s", text)
+	}
+	kb, _ := m["reply_markup"].(map[string]any)["inline_keyboard"].([]any)
+	if len(kb) != 1 || kb[0].([]any)[0].(map[string]any)["url"] != "https://www.last.fm/user/u/library/artists?from=2026-10-12&to=2026-10-18" ||
+		kb[0].([]any)[0].(map[string]any)["text"] != "在 Last.fm 上看完整榜单" {
+		t.Errorf("去完整榜单是一颗 URL 按钮: %v", m["reply_markup"])
 	}
 	preview, _ := m["link_preview_options"].(map[string]any)
 	if preview["url"] != "https://lastfm.example/i/u/300x300/c.png" || preview["show_above_text"] != true {
@@ -72,6 +79,12 @@ func TestRichTelegram(t *testing.T) {
 	m = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformTelegram, URL: "TOKEN", ChatID: "42"}, msg).body)
 	if p, _ := m["link_preview_options"].(map[string]any); p["is_disabled"] != true {
 		t.Errorf("%v", m["link_preview_options"])
+	}
+	// 没链接:不带按钮。
+	msg = richMessage()
+	msg.Digest.Link = ""
+	if m = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformTelegram, URL: "TOKEN", ChatID: "42"}, msg).body); m["reply_markup"] != nil {
+		t.Errorf("%v", m["reply_markup"])
 	}
 	// 超过 4096 字:不排,推纯文本那份。
 	msg = richMessage()
@@ -142,9 +155,13 @@ func TestRichFeishuCard(t *testing.T) {
 		t.Fatalf("要是卡片且照旧带签名: %v", m)
 	}
 	card := m["card"].(map[string]any)
-	header := card["header"].(map[string]any)["title"].(map[string]any)
-	if header["content"] != "🎵 上周听歌小结（10-12~10-18）" {
-		t.Errorf("%v", header)
+	header := card["header"].(map[string]any)
+	if header["title"].(map[string]any)["content"] != "🎵 上周听歌小结（10-12~10-18）" ||
+		header["subtitle"].(map[string]any)["content"] != "共播放 601 次（前一周 883，↓32%） · 约 42 小时 3 分" {
+		t.Errorf("第一行是标题栏的副标题: %v", header)
+	}
+	if first, _ := json.Marshal(card["elements"].([]any)[0]); strings.Contains(string(first), "共播放") {
+		t.Errorf("正文不再重复第一行: %s", first)
 	}
 	raw, _ := json.Marshal(card)
 	s := string(raw)
@@ -162,11 +179,19 @@ func TestRichFeishuCard(t *testing.T) {
 func TestRichMarkdownPlatforms(t *testing.T) {
 	useDigestFeatures(t, featureFlags{DigestTopN: 2})
 	dd := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformDingtalk, URL: "https://oapi.dingtalk.com/robot/send?access_token=x"}, richMessage()).body)
-	md := dd["markdown"].(map[string]any)
-	text := md["text"].(string)
-	if dd["msgtype"] != "markdown" || md["title"] != "🎵 上周听歌小结（10-12~10-18）" || !strings.Contains(text, "![封面](https://lastfm.example/i/u/300x300/c.png)") ||
-		!strings.Contains(text, "1. 方大同 · 129  \n2. ") || !strings.HasSuffix(text, "###### Lyrimuse · 数据来自 Last.fm") {
-		t.Errorf("钉钉:\n%s", text)
+	ac := dd["actionCard"].(map[string]any)
+	text := ac["text"].(string)
+	if dd["msgtype"] != "actionCard" || ac["title"] != "🎵 上周听歌小结（10-12~10-18）" || !strings.Contains(text, "![封面](https://lastfm.example/i/u/300x300/c.png)") ||
+		!strings.Contains(text, "1. 方大同 · 129  \n2. ") || !strings.HasSuffix(text, "###### Lyrimuse · 数据来自 Last.fm") || strings.Contains(text, "](https://www.last.fm") ||
+		ac["singleTitle"] != "在 Last.fm 上看完整榜单" || ac["singleURL"] != "https://www.last.fm/user/u/library/artists?from=2026-10-12&to=2026-10-18" {
+		t.Errorf("钉钉有链接时发 actionCard、链接是按钮:\n%v", dd)
+	}
+	// 没链接:照旧 markdown。
+	noLink := richMessage()
+	noLink.Digest.Link = ""
+	dd = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformDingtalk, URL: "https://oapi.dingtalk.com/robot/send?access_token=x"}, noLink).body)
+	if dd["msgtype"] != "markdown" || !strings.HasSuffix(dd["markdown"].(map[string]any)["text"].(string), "###### Lyrimuse · 数据来自 Last.fm") {
+		t.Errorf("钉钉没链接: %v", dd)
 	}
 	wc := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformWecom, URL: "https://qyapi.weixin.qq.com/x"}, richMessage()).body)
 	content := wc["markdown_v2"].(map[string]any)["content"].(string)
@@ -182,20 +207,41 @@ func TestRichMarkdownPlatforms(t *testing.T) {
 	nr := buildFor(t, notifyChannel{Platform: platformServerChan, URL: "https://sctapi.ftqq.com/x.send"}, richMessage())
 	form, _ := url.ParseQuery(string(nr.body))
 	if desp := form.Get("desp"); !nr.rich || !strings.Contains(desp, "#### Top 歌手\n\n1. 方大同 · 129\n2. Guns N' \\<Roses\\> & \\*Co\\* · 12") ||
-		!strings.HasPrefix(desp, "![封面](") || form.Get("title") != "🎵 上周听歌小结（10-12~10-18）" {
-		t.Errorf("Server酱: %q", desp)
+		!strings.HasPrefix(desp, "![封面](") || form.Get("title") != "🎵 上周听歌小结（10-12~10-18）" ||
+		form.Get("short") != "共播放 601 次（前一周 883，↓32%） · 约 42 小时 3 分" {
+		t.Errorf("Server酱: %q short=%q", desp, form.Get("short"))
 	}
 }
 
 func TestRichBarkAndNtfyKeepPlainBody(t *testing.T) {
 	useDigestFeatures(t, featureFlags{DigestTopN: 2})
 	msg := richMessage()
+	summary := "共播放 601 次（前一周 883，↓32%） · 约 42 小时 3 分"
 	bk := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, msg).body)
-	if bk["body"] != msg.Body || bk["image"] != msg.Digest.CoverURL || bk["url"] != msg.Digest.Link || bk["markdown"] != nil {
-		t.Errorf("Bark: %v", bk)
+	if bk["subtitle"] != summary || bk["body"] != strings.TrimPrefix(msg.Body, summary+"\n\n") || bk["icon"] != richAppIcon ||
+		bk["image"] != msg.Digest.CoverURL || bk["url"] != msg.Digest.Link || bk["markdown"] != nil {
+		t.Errorf("Bark: 第一行进副标题、正文是其余几行、带图标: %v", bk)
+	}
+	// 没封面也没链接:照样带副标题和图标。
+	bare := richMessage()
+	bare.Digest.CoverURL, bare.Digest.Link = "", ""
+	if bk = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, bare).body); bk["subtitle"] != summary || bk["image"] != nil {
+		t.Errorf("Bark 无封面: %v", bk)
+	}
+	// 正文只有第一行(概况、没有新歌手):不挪,正文不能空。
+	only := richMessage()
+	only.Body = summary
+	if bk = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, only).body); bk["subtitle"] != nil || bk["body"] != summary {
+		t.Errorf("Bark 只有一行: %v", bk)
+	}
+	// 自定义内容:标题正文原样,不拆。
+	custom := richMessage()
+	custom.Custom, custom.Body = true, summary+"\n我的模板"
+	if bk = decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, custom).body); bk["subtitle"] != nil || bk["body"] != custom.Body {
+		t.Errorf("Bark 自定义: %v", bk)
 	}
 	nt := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformNtfy, URL: "https://ntfy.sh/topic"}, msg).body)
-	if nt["message"] != msg.Body || nt["attach"] != msg.Digest.CoverURL || nt["click"] != msg.Digest.Link || nt["markdown"] != nil {
+	if nt["message"] != msg.Body || nt["attach"] != msg.Digest.CoverURL || nt["click"] != msg.Digest.Link || nt["icon"] != richAppIcon || nt["markdown"] != nil {
 		t.Errorf("ntfy: %v", nt)
 	}
 }
@@ -250,7 +296,7 @@ func TestRichTestMessage(t *testing.T) {
 		t.Errorf("%v", fs)
 	}
 	bk := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformBark, URL: "https://api.day.app/k"}, msg).body)
-	if bk["title"] != notifyTestSampleTitle || bk["body"] != msg.Body {
+	if bk["title"] != notifyTestSampleTitle || bk["subtitle"] != digestSummaryLine(*msg.Digest) || bk["icon"] != richAppIcon {
 		t.Errorf("%v", bk)
 	}
 	brief := msg.forChannel(notifyChannel{DigestStyle: digestStyleBrief})

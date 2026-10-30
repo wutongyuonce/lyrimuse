@@ -98,10 +98,11 @@ func buildNtfyRequest(ch notifyChannel, msg notifyMessage, formatted bool) (noti
 		u.Path = "/"
 	}
 	m := map[string]any{"topic": topic, "title": msg.Title, "message": msg.Body, "tags": []string{"headphones"}}
-	// 按平台排版:正文仍是纯文本(ntfy 的 markdown 只有安卓和网页认,iPhone 上会显示一堆星号),只加封面(attach,
-	// 客户端拉下来显示成图)和点击跳转(click)。
+	// 按平台排版:正文仍是纯文本(ntfy 的 markdown 只有安卓和网页认,iPhone 上会显示一堆星号),只加 Lyrimuse 图标(icon,
+	// 安卓和网页显示)、封面(attach,客户端拉下来显示成图)和点击跳转(click)。
 	rich := false
 	if d := msg.Digest; d != nil && formatted {
+		m["icon"], rich = richAppIcon, true
 		if d.CoverURL != "" {
 			m["attach"], rich = d.CoverURL, true
 		}

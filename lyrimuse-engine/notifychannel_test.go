@@ -329,7 +329,7 @@ func TestNotifyTestRequestRoundTrip(t *testing.T) {
 		}
 		runNotifyTest(req)
 	}
-	if len(gotBodies) != 2 || gotBodies[0]["title"] != notifyTestSampleTitle || !strings.HasPrefix(gotBodies[0]["body"].(string), "共播放 42 次") ||
+	if len(gotBodies) != 2 || gotBodies[0]["title"] != notifyTestSampleTitle || !strings.HasPrefix(gotBodies[0]["subtitle"].(string), "共播放 42 次") ||
 		!strings.Contains(gotBodies[0]["body"].(string), "Top 歌手") {
 		t.Errorf("没连账号时推完整的示例报告, got %v", gotBodies)
 	}

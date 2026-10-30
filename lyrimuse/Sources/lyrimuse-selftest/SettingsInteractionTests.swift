@@ -584,6 +584,11 @@ func runSettingsInteractionTests() {
         expectEqual(realResult?.stats?.coverURL.hasPrefix("https://"), true, "预览真实数据: 封面地址")
         expectEqual(realResult?.stats?.sourceName, "Last.fm", "预览真实数据: 数据源")
         expectEqual(realResult.map { P.summaryLine($0.stats!) }, "共播放 286 次（前一周 241，↑19%） · 约 17 小时 52 分", "预览真实数据: 第一行同引擎")
+        // Bark 第一行进副标题:同引擎 TestRichBarkAndNtfyKeepPlainBody 的几种情况。
+        expectEqual(P.barkSplit("共播放 3 次\n\nTop 歌手：\n1. A · 2", summary: "共播放 3 次").map { [$0.subtitle, $0.rest] },
+                    ["共播放 3 次", "Top 歌手：\n1. A · 2"], "Bark 副标题: 第一行拆出去、去掉空行")
+        expectEqual(P.barkSplit("共播放 3 次", summary: "共播放 3 次") == nil, true, "Bark 副标题: 只有一行不拆")
+        expectEqual(P.barkSplit("别的开头\n共播放 3 次", summary: "共播放 3 次") == nil, true, "Bark 副标题: 第一行不是报告第一行不拆")
         expectEqual(NotificationTest.previewResult(id: "p-old", in: previewResultSample)?.reason, .empty, "预览真实数据: 取不到时读出原因")
         expectEqual(NotificationTest.previewResult(id: "zz", in: previewResultSample) == nil, true, "预览真实数据: 别人的结果不算")
         let realJSON = P.webhookJSON(event: "weekly_digest", title: "t", body: "b", sentAt: Date(timeIntervalSince1970: 0),

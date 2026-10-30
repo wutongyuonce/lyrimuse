@@ -1224,6 +1224,7 @@
 "循环播放" = "Repeat";
 "循环最多：《%1$@》— %2$@（%3$@ 次）" = "Most played: %1$@ — %2$@ (%3$@ plays)";
 "循环最多：《%1$@》— %2$@（%3$@ 次）#one" = "Most played: %1$@ — %2$@ (%3$@ play)";
+"微信提醒" = "WeChat alert";
 "快捷操作" = "Quick Actions";
 "快捷键" = "Keyboard Shortcuts";
 "快捷键：⌘↩" = "Shortcut: ⌘↩";

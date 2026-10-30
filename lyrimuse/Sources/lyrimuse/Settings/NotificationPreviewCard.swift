@@ -166,12 +166,16 @@ struct NotificationPreviewCard: View {
             .background(RoundedRectangle(cornerRadius: 3).fill(bg))
     }
 
-    /// Bark、ntfy:手机通知横幅,锁屏上只看得到前几行。
-    private func banner(title: String, text: String) -> some View {
+    /// Bark、ntfy:手机通知横幅,锁屏上只看得到前几行。subtitle:Bark 的副标题(报告第一行);appIcon:Bark 通知换成 Lyrimuse 图标。
+    private func banner(title: String, text: String, subtitle: String? = nil, appIcon: Bool = false) -> some View {
         VStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-                    NotificationPlatformBadge(platform: platform, size: 18)
+                    if appIcon {
+                        Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 18, height: 18)
+                    } else {
+                        NotificationPlatformBadge(platform: platform, size: 18)
+                    }
                     Text(platform.displayName.uppercased())
                     Spacer()
                     Text(L10n.t("现在"))
@@ -179,7 +183,8 @@ struct NotificationPreviewCard: View {
                 .font(.system(size: 11))
                 .foregroundStyle(Color.black.opacity(0.55))
                 Text(title).font(.system(size: 13, weight: .semibold))
-                Text(text).font(.system(size: 12.5)).lineLimit(4)
+                if let subtitle { Text(subtitle).font(.system(size: 12.5, weight: .medium)) }
+                Text(text).font(.system(size: 12.5)).lineLimit(subtitle == nil ? 4 : 3)
             }
             .foregroundStyle(Color(hex: 0x111111))
             .padding(.horizontal, 12)
@@ -342,10 +347,12 @@ extension NotificationPreviewCard {
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    /// Bark、ntfy:正文还是纯文本,锁屏横幅跟以前一样;长按展开多一张封面大图,点一下去完整榜单。
+    /// Bark、ntfy:正文还是纯文本;长按展开多一张封面大图,点一下去完整榜单。Bark 的第一行在副标题里、图标是 Lyrimuse
+    /// (引擎 barkSplitSummary、richAppIcon);ntfy 的图标只在安卓上换,这里照 iPhone 画。
     fileprivate func richBanner(title: String, text: String) -> some View {
-        VStack(spacing: 10) {
-            banner(title: title, text: text)
+        let split = platform == .bark && !custom ? NotificationPreview.barkSplit(text, summary: summary) : nil
+        return VStack(spacing: 10) {
+            banner(title: title, text: split?.rest ?? text, subtitle: split?.subtitle, appIcon: platform == .bark)
             VStack(alignment: .leading, spacing: 6) {
                 Text(L10n.t("长按展开")).font(.system(size: 11)).foregroundStyle(Color.black.opacity(0.55))
                 cover(nil, height: 120, corner: 10).frame(maxWidth: .infinity)
@@ -358,20 +365,31 @@ extension NotificationPreviewCard {
         }
     }
 
-    /// Telegram:封面在链接预览里、显示在文字上方;标题、小节名加粗,链接蓝色。
+    /// Telegram:封面在链接预览里、显示在文字上方;标题、小节名加粗;去完整榜单是气泡下面的一颗按钮。
     fileprivate func richTelegram(title: String) -> some View {
         HStack(alignment: .top, spacing: 8) {
             avatar(32)
-            VStack(alignment: .leading, spacing: 6) {
-                cover(nil, height: 150, corner: 8)
-                Text(senderName).font(.system(size: 12, weight: .semibold)).foregroundStyle(Color(hex: 0x3B8AD4))
-                Text(title).font(.system(size: 12.5, weight: .bold)).foregroundStyle(Color.black)
-                digestColumn(fg: .black, link: Color(hex: 0x2A8BD8), boldSummary: false).font(.system(size: 12.5))
-                Text(clock).font(.system(size: 10)).foregroundStyle(Color.black.opacity(0.45))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+            VStack(spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
+                    cover(nil, height: 150, corner: 8)
+                    Text(senderName).font(.system(size: 12, weight: .semibold)).foregroundStyle(Color(hex: 0x3B8AD4))
+                    Text(title).font(.system(size: 12.5, weight: .bold)).foregroundStyle(Color.black)
+                    digestColumn(fg: .black, link: Color(hex: 0x2A8BD8), boldSummary: false, showLink: false).font(.system(size: 12.5))
+                    Text(clock).font(.system(size: 10)).foregroundStyle(Color.black.opacity(0.45))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white))
+                HStack(spacing: 4) {
+                    Text(linkLabel)
+                    Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
+                }
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 7)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.black.opacity(0.22)))
             }
-            .padding(8)
-            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white))
             Spacer(minLength: 24)
         }
         .padding(12)
@@ -447,7 +465,7 @@ extension NotificationPreviewCard {
         .padding(12)
     }
 
-    /// 飞书:消息卡片,蓝色标题栏、三栏榜单、按钮、来源。不带封面。
+    /// 飞书:消息卡片,蓝色标题栏(第一行是副标题)、三栏榜单、按钮、来源。不带封面。
     fileprivate func richFeishu(title: String) -> some View {
         HStack(alignment: .top, spacing: 9) {
             avatar(32)
@@ -457,12 +475,15 @@ extension NotificationPreviewCard {
                     tag(L10n.t("机器人"), fg: Color(hex: 0x245BDB), bg: Color(hex: 0xE1EAFF))
                 }
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(title).font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 11).padding(.vertical, 8)
-                        .background(Color(hex: 0x3370FF))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(title).font(.system(size: 13, weight: .semibold))
+                        Text(summary).font(.system(size: 11.5)).opacity(0.85)
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 11).padding(.vertical, 8)
+                    .background(Color(hex: 0x3370FF))
                     VStack(alignment: .leading, spacing: 7) {
-                        Text(summary).font(.system(size: 12.5))
                         HStack(alignment: .top, spacing: 8) {
                             ForEach(sections, id: \.heading) { sec in
                                 VStack(alignment: .leading, spacing: 1) {
@@ -490,7 +511,7 @@ extension NotificationPreviewCard {
         .padding(12)
     }
 
-    /// 钉钉、企业微信:markdown 消息,气泡里大标题、封面、加粗第一行、小节、链接。
+    /// 钉钉、企业微信:markdown 消息,气泡里大标题、封面、加粗第一行、小节、链接。钉钉的链接是卡片底部的按钮(actionCard)。
     fileprivate func richGroupBot(title: String) -> some View {
         let (tagFG, tagBG, nameFG): (Color, Color, Color) = platform == .dingtalk
             ? (Color(hex: 0x3A7AFE), Color(hex: 0xE9F2FF), Color(hex: 0x858E9B))
@@ -505,9 +526,13 @@ extension NotificationPreviewCard {
                 VStack(alignment: .leading, spacing: 7) {
                     Text(title).font(.system(size: 14, weight: .bold))
                     cover(nil, height: 110)
-                    digestColumn(fg: Color(hex: 0x1F2329), link: Color(hex: 0x3A7AFE), boldSummary: true).font(.system(size: 12.5))
+                    digestColumn(fg: Color(hex: 0x1F2329), link: Color(hex: 0x3A7AFE), boldSummary: true, showLink: platform != .dingtalk)
+                        .font(.system(size: 12.5))
                     if platform == .dingtalk {
                         Text(footerText).font(.system(size: 10.5)).foregroundStyle(Color(hex: 0x8F959E))
+                        Divider()
+                        Text(linkLabel).font(.system(size: 12.5)).foregroundStyle(Color(hex: 0x3A7AFE))
+                            .frame(maxWidth: .infinity)
                     }
                 }
                 .foregroundStyle(Color(hex: 0x1F2329))
@@ -521,10 +546,18 @@ extension NotificationPreviewCard {
         .padding(12)
     }
 
-    /// Server酱:微信里收到的提醒跟以前一样只有几行;点进方糖看到的是这一页 markdown 详情。
+    /// Server酱:微信里收到的提醒卡片写标题和第一行(引擎发的 short);点进方糖看到的是这一页 markdown 详情。
     fileprivate func richServerChan(title: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(L10n.t("方糖 · 消息详情")).font(.system(size: 11)).foregroundStyle(Color(hex: 0x888888))
+            Text(L10n.t("微信提醒")).font(.system(size: 11)).foregroundStyle(Color(hex: 0x888888))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(.system(size: 13.5, weight: .semibold)).foregroundStyle(Color(hex: 0x111111))
+                Text(summary).font(.system(size: 12)).foregroundStyle(Color(hex: 0x555555))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 6, style: .continuous).stroke(Color(hex: 0xE5E5E5)))
+            Text(L10n.t("方糖 · 消息详情")).font(.system(size: 11)).foregroundStyle(Color(hex: 0x888888)).padding(.top, 4)
             Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x111111))
             cover(nil, height: 110)
             digestColumn(fg: Color(hex: 0x333333), link: Color(hex: 0x576B95), boldSummary: true).font(.system(size: 12.5))
