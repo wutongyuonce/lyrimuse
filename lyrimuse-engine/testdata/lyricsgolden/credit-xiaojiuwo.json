@@ -6,9 +6,9 @@
     "consensus_peers": 4,
     "title_accepted": true,
     "version_tags_ok": true,
-    "source_duration_delta_pct": 0.011925183235031812,
-    "lyrics_end_secs": 198.76,
-    "coverage_pct": 91.16343922284497,
+    "source_duration_delta_pct": 0,
+    "lyrics_end_secs": 197.89,
+    "coverage_pct": 90.76440424536523,
     "ending_corroborated": false,
     "album_score": 200,
     "live_mismatch": false,
@@ -111,7 +111,7 @@
     }
   },
   "expect": {
-    "winner": "qq",
+    "winner": "netease",
     "instrumental_marker": "lrclib",
     "verdicts": {
       "amll": "accepted",
@@ -121,6 +121,37 @@
       "qq": "accepted"
     },
     "ranked": [
+      {
+        "source": "netease",
+        "score": 1192,
+        "terms": [
+          {
+            "kind": "duration",
+            "points": 229
+          },
+          {
+            "kind": "wordTiming",
+            "points": 400
+          },
+          {
+            "kind": "lines",
+            "points": 43
+          },
+          {
+            "kind": "album",
+            "points": 150
+          },
+          {
+            "kind": "titleMatch",
+            "points": 120
+          },
+          {
+            "kind": "consensus",
+            "points": 250
+          }
+        ],
+        "has_word_timing": true
+      },
       {
         "source": "qq",
         "score": 1192,
@@ -154,11 +185,11 @@
       },
       {
         "source": "kugou",
-        "score": 1191,
+        "score": 1192,
         "terms": [
           {
             "kind": "duration",
-            "points": 228
+            "points": 229
           },
           {
             "kind": "wordTiming",
@@ -215,37 +246,6 @@
         "has_word_timing": true
       },
       {
-        "source": "netease",
-        "score": 1189,
-        "terms": [
-          {
-            "kind": "duration",
-            "points": 226
-          },
-          {
-            "kind": "wordTiming",
-            "points": 400
-          },
-          {
-            "kind": "lines",
-            "points": 43
-          },
-          {
-            "kind": "album",
-            "points": 150
-          },
-          {
-            "kind": "titleMatch",
-            "points": 120
-          },
-          {
-            "kind": "consensus",
-            "points": 250
-          }
-        ],
-        "has_word_timing": true
-      },
-      {
         "source": "musixmatch",
         "score": 1,
         "terms": [
@@ -280,6 +280,6 @@
         ]
       }
     ],
-    "winner_fingerprint": "a116b72361c97bc0"
+    "winner_fingerprint": "cd99e4e465f1f38a"
   }
 }

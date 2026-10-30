@@ -382,11 +382,11 @@
       },
       {
         "source": "lrclib",
-        "score": 751,
+        "score": 754,
         "terms": [
           {
             "kind": "duration",
-            "points": 205
+            "points": 208
           },
           {
             "kind": "lines",

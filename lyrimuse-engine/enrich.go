@@ -5218,6 +5218,7 @@ func mergeLyricCandidateRounds(artist, title, album string, durationSecs float64
 	applySourceDurationNearMissPenalty(out, durationSecs)
 	applyTimelineOffsetPenalty(out, durationSecs)
 	applyTimelineIntrusionPenalty(out, durationSecs)
+	applyDurationNearTie(out, durationSecs)
 	applyWordTimingTitleOverride(out)
 	sort.SliceStable(out, func(i, j int) bool { return out[i].Score > out[j].Score })
 	applyUnmaskedWords(out)
@@ -5896,6 +5897,7 @@ func rankLyricSourceResults(artist, title, album string, durationSecs float64, r
 	applySourceDurationNearMissPenalty(results, durationSecs)
 	applyTimelineOffsetPenalty(results, durationSecs)
 	applyTimelineIntrusionPenalty(results, durationSecs)
+	applyDurationNearTie(results, durationSecs)
 	applyWordTimingTitleOverride(results)
 	// 稳定排序:来源加分拿掉之后同分会变多(见 scoreLyricCandidateDetailed 里那段注释),
 	// 不稳定的排序会让同分候选的先后随运行变化,同一首歌两次解析可能选出不同的源。
