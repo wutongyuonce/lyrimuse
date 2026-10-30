@@ -38,8 +38,14 @@ struct PlaceholderTextView: NSViewRepresentable {
         tv.autoresizingMask = [.width]
         tv.textContainer?.widthTracksTextView = true
         if singleLine {
+            // 一行放不下时横着滚、光标跟着走(同系统单行输入框),不截成「…」。
+            let unbounded = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+            tv.isHorizontallyResizable = true
+            tv.maxSize = unbounded
+            tv.textContainer?.widthTracksTextView = false
+            tv.textContainer?.containerSize = unbounded
             tv.textContainer?.maximumNumberOfLines = 1
-            tv.textContainer?.lineBreakMode = .byTruncatingTail
+            tv.textContainer?.lineBreakMode = .byClipping
         }
         tv.string = text
         context.coordinator.highlight(tv)
@@ -57,8 +63,7 @@ struct PlaceholderTextView: NSViewRepresentable {
     func updateNSView(_ scroll: NSScrollView, context: Context) {
         context.coordinator.parent = self
         guard let tv = scroll.documentView as? NSTextView, tv.string != text else { return }
-        tv.string = text
-        context.coordinator.highlight(tv)
+        context.coordinator.replaceAll(tv, with: text)
     }
 
     static let baseFont = NSFont.systemFont(ofSize: 13)
@@ -66,13 +71,36 @@ struct PlaceholderTextView: NSViewRepresentable {
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: PlaceholderTextView
 
+        /// `replaceAll` 正在换文字:文字是外面给的,不回写 `parent.text`(SwiftUI 刷新途中改状态)。
+        private var replacing = false
+
         init(_ parent: PlaceholderTextView) { self.parent = parent }
+
+        /// 程序化换掉整段文字(点预设档、拆开默认正文、标题里的换行换成空格)。走 shouldChangeText / didChangeText,这一次替换
+        /// 本身进撤销栈;直接写 `string` 不登记撤销,之后 ⌘Z 会按旧文字里的位置去改新文字。
+        func replaceAll(_ tv: NSTextView, with text: String) {
+            let full = NSRange(location: 0, length: (tv.string as NSString).length)
+            guard tv.shouldChangeText(in: full, replacementString: text) else {
+                tv.string = text
+                tv.undoManager?.removeAllActions()
+                highlight(tv)
+                return
+            }
+            replacing = true
+            defer { replacing = false }
+            tv.replaceCharacters(in: full, with: text)
+            tv.didChangeText()
+        }
 
         func textDidChange(_ notification: Notification) {
             guard let tv = notification.object as? NSTextView else { return }
+            if replacing {
+                highlight(tv)
+                return
+            }
             if parent.singleLine, tv.string.contains("\n") {
                 // 粘贴进来的多行文字:标题里换行当空格。
-                tv.string = tv.string.replacingOccurrences(of: "\n", with: " ")
+                replaceAll(tv, with: tv.string.replacingOccurrences(of: "\n", with: " "))
             }
             parent.text = tv.string
             highlight(tv)
@@ -84,8 +112,9 @@ struct PlaceholderTextView: NSViewRepresentable {
                 || selector == #selector(NSResponder.insertLineBreak(_:)))
         }
 
+        /// 输入法正在组字时不上色:整段重设属性会抹掉组字的下划线和底色,上屏后 textDidChange 会再来一次。
         func highlight(_ tv: NSTextView) {
-            guard let storage = tv.textStorage else { return }
+            guard let storage = tv.textStorage, !tv.hasMarkedText() else { return }
             let full = NSRange(location: 0, length: storage.length)
             storage.beginEditing()
             storage.setAttributes([.font: PlaceholderTextView.baseFont, .foregroundColor: NSColor.labelColor], range: full)
