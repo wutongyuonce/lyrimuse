@@ -514,8 +514,20 @@ func runPlaybackPositionTests() {
                         "锚点滞后: 残差 >1.5s(seek / 换歌错位)不学")
             expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0, residual: -1.9, hasPrior: false)), 0,
                         "锚点滞后: 没先验时离谱残差同样不采")
-            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0.1, residual: -0.5, hasPrior: false)), 0,
+            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0.1, residual: -0.2, hasPrior: false)), 0,
                         "锚点滞后: 夹到 0 以下 —— 锚点反而超前真声不归这条路管(那是自然切歌偏置)")
+            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0.43, residual: -1.273, hasPrior: true)), 0.43,
+                        "锚点滞后: 推出来的滞后低于 -0.3(开播后补发的近 0 锚点,真机汽水 -1.273)不学")
+            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0, residual: -1.273, hasPrior: true)), 0,
+                        "锚点滞后: 已是 0 的条目同样不被它动")
+            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 0, residual: 0.387, hasPrior: true)), 0.387,
+                        "锚点滞后: 被夹成 0 的条目按没学过算,真样本直接采信(真机汽水 0.387,旧逻辑只学到 0.155)")
+            expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(
+                current: 0.155, residual: 0.25, hasPrior: true,
+                alpha: LocalPlaybackSource.anchorLagAlpha(bundleID: PlaybackPlayer.soda.bundleIdentifier))), 0.33,
+                        "锚点滞后: 汽水学过之后按 α=0.7 往新样本靠")
+            expectEqual(LocalPlaybackSource.anchorLagAlpha(bundleID: "company.thebrowser.Browser"), 0.4,
+                        "锚点滞后: 别的播放器仍按 α=0.4")
             expectEqual(r3(LocalPlaybackSource.learnedAnchorLag(current: 1.4, residual: 0.9, hasPrior: false)), 1.5,
                         "锚点滞后: 夹在上限,别把别的毛病当滞后补成偏快")
         }

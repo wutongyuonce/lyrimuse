@@ -103,6 +103,8 @@ func runPositionReplayTests() {
     replaySafariPreciseReadingOverNaturalBias()
     replayCaptureLag()
     replaySodaAnchorLag()
+    replaySodaAnchorLagSampleAge()
+    replaySodaStartReanchorNotLearned()
     replayBrowserProbeReopensOnEveryTrackChange()
     replayQQEarlyStartAnchor()
     replayQQEarlyStartGates()
@@ -1093,6 +1095,41 @@ private func replaySodaAnchorLag() {
                 "回放·汽水锚点滞后: 曲中重发的真值锚点学到 0.43(\(table[soda].map { String(format: "%.3f", $0) } ?? "nil"))")
     rig.tick(mediaControl(soda, "情话", anchor: 0, elapsed: 0.2, duration: 200), at: at(104.2))
     expectEqual(near(rig.shown(at: at(104.2)), 0.2 + lag, 0.01), true, "回放·汽水锚点滞后: 下一首开播预置 +0.43")
+}
+
+private func sodaLagTable(_ rig: ReplayRig) -> [String: Double] {
+    rig.defaults.string(forKey: "np:anchorLagByPlayer")
+        .flatMap { $0.data(using: .utf8) }
+        .flatMap { try? JSONDecoder().decode([String: Double].self, from: $0) } ?? [:]
+}
+
+/// 汽水曲中重发的锚点是 0.27 秒前发的、这一拍才处理:量的是播放器报的、外推到这一拍的位置,不是锚点值本身。
+@MainActor
+private func replaySodaAnchorLagSampleAge() {
+    let rig = ReplayRig("soda-lag-age")
+    defer { rig.tearDown() }
+    let soda = PlaybackPlayer.soda.bundleIdentifier
+    for t in stride(from: 0.0, through: 98, by: 2) {
+        rig.tick(mediaControl(soda, "千言萬語", anchor: 0, elapsed: 0.3 + t, duration: 104), at: at(t))
+    }
+    rig.tick(mediaControl(soda, "千言萬語", anchor: 100.73, elapsed: 101.0, duration: 104), at: at(100.27))
+    let learned = sodaLagTable(rig)[soda]
+    expectEqual(near(learned, 0.43, 0.01), true,
+                "回放·汽水锚点滞后: 锚点发出到处理隔 0.27 秒,仍学到 0.43(\(learned.map { String(format: "%.3f", $0) } ?? "nil"))")
+}
+
+/// 汽水开播约 1 秒后补发一个近 0 锚点(0.023):不是真位置,不能把学到的滞后拽回 0。
+@MainActor
+private func replaySodaStartReanchorNotLearned() {
+    let rig = ReplayRig("soda-lag-reanchor")
+    defer { rig.tearDown() }
+    let soda = PlaybackPlayer.soda.bundleIdentifier
+    rig.defaults.set("{\"\(soda)\":0.43}", forKey: "np:anchorLagByPlayer")
+    rig.tick(mediaControl(soda, "Loving You", anchor: 0, elapsed: 0.2, duration: 195), at: at(0))
+    rig.tick(mediaControl(soda, "Loving You", anchor: 0.023, elapsed: 0.27, duration: 195), at: at(0.8))
+    let learned = sodaLagTable(rig)[soda]
+    expectEqual(near(learned, 0.43, 0.001), true,
+                "回放·汽水锚点滞后: 开播后补发的近 0 锚点不学(\(learned.map { String(format: "%.3f", $0) } ?? "nil"))")
 }
 
 /// 精确读数是页面自己的钟,不在流读数的钟域里:流上已有自然切歌估的偏置时,不能先扣那份旧偏置再比。

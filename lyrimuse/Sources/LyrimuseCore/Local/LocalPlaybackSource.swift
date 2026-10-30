@@ -1499,6 +1499,12 @@ public final class LocalPlaybackSource: ObservableObject {
     public nonisolated static let anchorLagMaxResidualSecs: Double = 1.5
     /// 学过之后按这个系数往新样本靠(与 probeLead 同量级:单次样本不该整份顶掉历史)。
     public nonisolated static let anchorLagLearnAlpha: Double = 0.4
+    /// 汽水音乐学过之后的系数:它每首歌的滞后很稳,一首只出一份样本,
+    /// 按 0.4 从偏低的旧值追上来要好几首。见 02 章决策 218。
+    public nonisolated static let sodaAnchorLagLearnAlpha: Double = 0.7
+    /// 一份样本推出来的滞后量(current + residual)低于这个值就不是滞后的测量:锚点不会比真声超前这么多,
+    /// 这种样本是开播后一两秒内补发的近 0 锚点之类,学进去会把滞后整份拽回 0。见 02 章决策 218。
+    public nonisolated static let anchorLagMinImpliedSecs: Double = -0.3
     /// 学到的滞后量上限。比这还大的"滞后"更可能是别的毛病,补过去只会把歌词推成偏快。
     public nonisolated static let anchorLagMaxSecs: Double = 1.5
     /// 小于这个量不值得补:补偿本身有学习噪声,而这个量级肉眼无感。
@@ -1513,10 +1519,26 @@ public final class LocalPlaybackSource: ObservableObject {
     /// current + residual —— 跟 `learnedProbeLead` 同一个陷阱,把残差当真值会越学越离谱。
     /// 没学过的第一份直接采信,学过的按 α 往真值靠;结果夹进 [0, anchorLagMaxSecs]:
     /// 负的"滞后"(锚点反而超前)不在这条路的职责里,交给自然切歌偏置。
-    public nonisolated static func learnedAnchorLag(current: Double, residual: Double, hasPrior: Bool) -> Double {
-        guard abs(residual) <= anchorLagMaxResidualSecs else { return current }
-        let next = hasPrior ? current + residual * anchorLagLearnAlpha : current + residual
+    /// 学过但值是 0 的(被夹到 0 的条目)按没学过算,下一份真样本直接采信,别按 α 从 0 慢慢爬;
+    /// 推出来的滞后低于 `anchorLagMinImpliedSecs` 的样本原样退回。见 02 章决策 218。
+    public nonisolated static func learnedAnchorLag(current: Double, residual: Double, hasPrior: Bool,
+                                                    alpha: Double = anchorLagLearnAlpha) -> Double {
+        guard abs(residual) <= anchorLagMaxResidualSecs, current + residual >= anchorLagMinImpliedSecs else { return current }
+        let next = hasPrior && current > 0 ? current + residual * alpha : current + residual
         return min(max(next, 0), anchorLagMaxSecs)
+    }
+
+    /// 这个播放器学过之后往新样本靠的系数。纯函数,selftest 直接覆盖。
+    public nonisolated static func anchorLagAlpha(bundleID: String?) -> Double {
+        bundleID == PlaybackPlayer.soda.bundleIdentifier ? sodaAnchorLagLearnAlpha : anchorLagLearnAlpha
+    }
+
+    /// 这一拍快照报的位置,按读到的时刻补到处理那一刻(见 MediaControlSnapshot.capturedAt)。读到之后超过 2s 才处理的
+    /// 当读数本身不可信,不补。
+    nonisolated static func reportedSeconds(_ snapshot: MediaControlSnapshot, rate: Double, now: Date) -> Double {
+        let captureLag = snapshot.capturedAt.map { now.timeIntervalSince($0) } ?? 0
+        let lagFix = captureLag > 0 && captureLag <= 2 ? captureLag * rate : 0
+        return (snapshot.elapsedTime ?? 0) + lagFix
     }
 
     /// 按设备 UID 学到的领先量表。lazy:第一次用到时从 UserDefaults 读,顺带迁移旧的单值键。
@@ -1658,7 +1680,8 @@ public final class LocalPlaybackSource: ObservableObject {
         guard !PlaybackSimulation.isActive else { return }
         guard Self.learnsAnchorLag(bundleID: bundleID), let bundleID else { return }
         let prior = anchorLagByPlayer[bundleID]
-        let next = Self.learnedAnchorLag(current: prior ?? 0, residual: residual, hasPrior: prior != nil)
+        let next = Self.learnedAnchorLag(current: prior ?? 0, residual: residual, hasPrior: prior != nil,
+                                         alpha: Self.anchorLagAlpha(bundleID: bundleID))
         logger.notice("anchor lag learned: player=\(bundleID, privacy: .public) residual=\(residual, format: .fixed(precision: 3)) lag \(prior ?? 0, format: .fixed(precision: 3)) -> \(next, format: .fixed(precision: 3))")
         guard prior != next else { return }
         // "没学过 + 这次也没学出东西"不要建条目:建了之后 hasPrior 就成立,下一次真量到
@@ -4397,9 +4420,13 @@ public final class LocalPlaybackSource: ObservableObject {
             // 这一拍才算出来,此刻还是上一拍播放态留下的 nil,于是一次都学不成(酷狗只在暂停时
             // 报真值,整个漏光)。锚点要到下面的暂停分支才被清掉,这里还在。
             let oursMs = anchor == nil ? pausedPositionMs : anchor?.extrapolatedPositionMs(now: now)
+            // 在放时比的是播放器报的、外推到这一拍的位置,不是锚点值本身:锚点发出到这一拍处理已经过了一截
+            // (轮询间隔,0.1~0.3 秒),拿锚点值跟外推到此刻的位置比,滞后量每次都少算这一截。见 02 章决策 218。
+            let theirs = playing && snapshot.elapsedTime != nil
+                ? Self.reportedSeconds(snapshot, rate: (snapshot.playbackRate ?? 0) > 0 ? snapshot.playbackRate ?? 1 : 1, now: now)
+                : republished
             if let oursMs {
-                learnAnchorLag(bundleID: snapshot.bundleIdentifier,
-                               residual: republished - Double(oursMs) / 1000)
+                learnAnchorLag(bundleID: snapshot.bundleIdentifier, residual: theirs - Double(oursMs) / 1000)
             }
             if posReportedBiasSecs != 0 { setReportedBias(0, anchorElapsed: nil) }
             // 重发之后这一首的位置已经换了基准,后面再量的都不是开播锚点的滞后。
@@ -4480,10 +4507,8 @@ public final class LocalPlaybackSource: ObservableObject {
                 usedBrowserProbe = true // 名字沿用:含义是"这一笔是地面真值种子",见 resolvePositionSeconds
             } else {
                 // 读数在后台读到之后,主线程可能卡半秒多才轮到这里:按读到的时刻补到 now,别让卡顿伪装成
-                // 位置误差(见 MediaControlSnapshot.capturedAt)。上限 2s,再长就当读数本身不可信,不补。
-                let captureLag = snapshot.capturedAt.map { now.timeIntervalSince($0) } ?? 0
-                let lagFix = captureLag > 0 && captureLag <= 2 ? captureLag * rate : 0
-                rawReportedForResolve = (snapshot.elapsedTime ?? 0) + lagFix
+                // 位置误差(见 reportedSeconds)。
+                rawReportedForResolve = Self.reportedSeconds(snapshot, rate: rate, now: now)
                 effectiveTier = tier
                 // 位置来自精确播放时钟的那一拍(Kaset 内嵌网页那份会话,`MediaControlSnapshot.positionIsPrecise`)跟网页探针的
                 // 精确读数走同一条真值通道:差过 `BrowserPositionProbe.preciseSnapToleranceSecs` 就重锚,差在门槛内照常进伺服。
