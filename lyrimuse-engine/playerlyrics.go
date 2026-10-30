@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"maps"
 	"time"
@@ -97,16 +98,20 @@ func checkPlayerLyrics(ctx context.Context, key, artist, title, album string, du
 	_, scored := scoredLyricCandidates(ctx, artist, title, album, durationSecs)
 	var alt playerLyricsAlt
 	found := false
+	var seen []string
 	for _, c := range scored {
 		if c.Source != native {
 			continue
 		}
+		seen = append(seen, fmt.Sprintf("score=%d local=%v dur=%.2f lyrics=%v", c.Score, c.IdentityFromLocalClient,
+			c.SourceReportedDurationSecs, c.Lyrics != ""))
 		if alt, found = playerLyricsAltFrom(e.Lyrics.String(), e.LyricsYRC.String(), c, time.Now().Unix()); found {
 			break
 		}
 	}
 	if !found {
-		log.Printf("player lyrics: %s  %s did not give lyrics for the track %s has open, nothing recorded", key, native, bundleID)
+		log.Printf("player lyrics: %s  %s did not give lyrics for the track %s has open, nothing recorded (candidates: %v)",
+			key, native, bundleID, seen)
 		return
 	}
 	enrichMu.Lock()
