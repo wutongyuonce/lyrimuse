@@ -1943,6 +1943,41 @@ func runPlaybackPositionTests() {
                     "MV 标记: 换歌作废")
         expectEqual(L.musicVideoTrackKey(previous: nil, currentKey: "TWICE|THIS IS FOR", markedMusicVideo: false), nil,
                     "MV 标记: 普通歌不是 MV")
+        expectEqual(L.musicVideoTrackKey(previous: "ROSÉ|APT.", currentKey: "ROSÉ|APT.", markedMusicVideo: false,
+                                         unmarkedMusicVideo: true), nil,
+                    "MV 标记: 同一首切回音频、快照明说不是 MV 就当场作废")
+
+        // Spotify 的视频版:系统会话类型 Video 才算 MV,只认 Spotify;整份顶替后标记要带过去(02 章决策 216)。
+        let M = MediaControlClient.self
+        let spotifyID = PlaybackPlayer.spotify.bundleIdentifier
+        let videoType = "kMRMediaRemoteNowPlayingInfoTypeVideo", audioType = "kMRMediaRemoteNowPlayingInfoTypeAudio"
+        expectEqual(M.spotifyMusicVideoMark(bundleID: spotifyID, mediaType: videoType), true, "Spotify MV: 系统报 Video 是视频版")
+        expectEqual(M.spotifyMusicVideoMark(bundleID: spotifyID, mediaType: audioType), false, "Spotify MV: 系统报 Audio 明说不是")
+        expectEqual(M.spotifyMusicVideoMark(bundleID: spotifyID, mediaType: nil), nil, "Spotify MV: 没报类型不下结论")
+        expectEqual(M.spotifyMusicVideoMark(bundleID: "com.apple.Safari", mediaType: videoType), nil,
+                    "Spotify MV: 视频站同样报 Video,不认")
+        expectEqual(M.spotifyMusicVideoMark(bundleID: PlaybackPlayer.appleMusic.bundleIdentifier, mediaType: videoType), nil,
+                    "Spotify MV: 别家一律不认")
+        let systemVideo = decode(#"{"title":"APT.","artist":"ROSÉ & Bruno Mars","album":"APT.","bundleIdentifier":"com.spotify.client","isMusicVideo":true}"#)!
+        let systemAudio = decode(#"{"title":"APT.","artist":"ROSÉ & Bruno Mars","album":"APT.","bundleIdentifier":"com.spotify.client","isMusicVideo":false}"#)!
+        let script = decode(#"{"title":"APT.","artist":"ROSÉ & Bruno Mars","album":"APT.","duration":172.941,"bundleIdentifier":"com.spotify.client"}"#)!
+        let nextTrack = decode(#"{"title":"toxic till the end","artist":"ROSÉ","album":"rosie","bundleIdentifier":"com.spotify.client"}"#)!
+        expectEqual(M.carryingSpotifyMusicVideoMark(script, from: systemVideo).isMusicVideo, true,
+                    "Spotify MV: 脚本那份顶替后带上视频版标记")
+        expectEqual(M.carryingSpotifyMusicVideoMark(script, from: systemAudio).isMusicVideo, false,
+                    "Spotify MV: 音频那一位也带过去,好让切回音频当场作废")
+        expectEqual(M.carryingSpotifyMusicVideoMark(nextTrack, from: systemVideo).isMusicVideo, nil,
+                    "Spotify MV: 脚本已经换到下一首就不带")
+        expectEqual(M.carryingSpotifyMusicVideoMark(script, from: script).isMusicVideo, nil,
+                    "Spotify MV: 系统那份没标记(焦点回退、单问)时什么都不带")
+        let caughtUp = M.carryingSpotifyMusicVideoMark(
+            M.spotifyFallbackCaughtUp(systemVideo, waited: 0.5, now: Date()), from: systemVideo)
+        expectEqual(caughtUp.isMusicVideo, true, "Spotify MV: 问不到脚本、退回系统那份补时后标记还在")
+        expectEqual(L.snapshotSaysNotMusicVideo(systemAudio), true, "Spotify MV: Spotify 报音频算明说不是 MV")
+        expectEqual(L.snapshotSaysNotMusicVideo(script), false, "Spotify MV: 没带这一位不算")
+        let appleSong = decode(#"{"title":"黑白","artist":"方大同","album":"","bundleIdentifier":"com.apple.Music","isMusicVideo":false}"#)!
+        expectEqual(L.snapshotSaysNotMusicVideo(appleSong), false,
+                    "Spotify MV: Apple Music 的 false 可能是读 media kind 失败,不当场作废")
 
         // 《Blank Space》MV:片头 0–3.112、片尾 233.808–272.441,歌曲版 231 秒。
         let blank = T.make(cuts: [.init(start: 0, end: 3.112), .init(start: 233.808, end: 272.441)],

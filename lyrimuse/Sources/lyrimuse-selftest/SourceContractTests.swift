@@ -655,6 +655,8 @@ func runSourceContractTests() {
                         "Spotify 封面: LocalPlaybackSource 要给位置探针挂 artwork sink")
             expectEqual(lps.contains("BrowserPositionProbe.shared.setArtworkSink"), true,
                         "Spotify 封面: 网页版那条(BrowserPositionProbe)同样要挂 artwork sink")
+            expectEqual(count(lps, "unmarkedMusicVideo: Self.snapshotSaysNotMusicVideo("), 2,
+                        "Spotify MV: 查缓存用的时长与 MV 键两处都要认「明说不是 MV」")
             expectEqual(lps.contains("guard Self.pollResultIsCurrent(generation: generation"), true,
                         "poll 世代: poll() 要经 pollResultIsCurrent 决定用不用这一轮")
             expectEqual(lps.contains("self.pollAppliedGeneration = generation"), true,
@@ -666,6 +668,10 @@ func runSourceContractTests() {
                             "Spotify 回退: adaptedSnapshot 问不到 Spotify 时要经 spotifyFallbackCaughtUp 补上等掉的时间")
                 expectEqual(mcc.contains("if let fromNotice = spotifyNoticeReading(mediaControl, notice: currentSpotifyNotice(),"), true,
                             "Spotify 回退: 问不到 AppleScript 时先试 Spotify 通知里的位置")
+                expectEqual(mcc.contains("snapshot.isMusicVideo = Self.spotifyMusicVideoMark(bundleID: bundleID, mediaType: raw.mediaType)"), true,
+                            "Spotify MV: media-control 那份按系统会话类型打视频版标记")
+                expectEqual(mcc.contains("return carryingSpotifyMusicVideoMark(spotifyReading(mediaControl), from: mediaControl)"), true,
+                            "Spotify MV: adaptedSnapshot 整份顶替后要把视频版标记带过去")
                 // 只勾 Apple Music 那条路也要先过切歌那一下的重读(自动识别 / 多选那条见「适配优先」)。
                 expectEqual(mcc.contains("guard let snapshot = settledAppleMusicSnapshot() else { return nil }"), true,
                             "Apple Music 切歌: radioAwareAppleMusicSnapshot 要经 settledAppleMusicSnapshot 读")

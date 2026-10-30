@@ -471,6 +471,32 @@ public enum MediaControlClient {
         return decoded
     }
 
+    /// Spotify 此刻放的是不是视频版。设置里「视频和 Canvas → MV」开着时带 MV 的歌能切到视频,系统会话类型跟着从 Audio
+    /// 换成 Video,歌名歌手不变,脚本那份是另一首曲目、时长按视频报。视频 true、音频 false(明说不是 MV,切回音频那一拍就作废)、
+    /// 没报 nil。只认 Spotify:Safari 之类视频站同样报 Video,Apple Music 的 MV 反倒报 Music(02 章决策 33)。见 02 章决策 216。
+    /// 纯函数,selftest 覆盖。
+    public nonisolated static func spotifyMusicVideoMark(bundleID: String?, mediaType: String?) -> Bool? {
+        guard bundleID == PlaybackPlayer.spotify.bundleIdentifier else { return nil }
+        switch mediaType {
+        case systemMediaTypeVideo?: return true
+        case systemMediaTypeAudio?: return false
+        default: return nil
+        }
+    }
+    public nonisolated static let systemMediaTypeVideo = "kMRMediaRemoteNowPlayingInfoTypeVideo"
+    public nonisolated static let systemMediaTypeAudio = "kMRMediaRemoteNowPlayingInfoTypeAudio"
+
+    /// Spotify 那份整份顶替系统那份时把 MV 标记带过去:脚本、通知、补时这三份都不带这一位。两份是同一首才带,
+    /// 脚本已经换到下一首就不带。纯函数,selftest 覆盖。
+    public nonisolated static func carryingSpotifyMusicVideoMark(_ snapshot: MediaControlSnapshot,
+                                                                  from mediaControl: MediaControlSnapshot) -> MediaControlSnapshot {
+        guard snapshot.isMusicVideo == nil, let mark = mediaControl.isMusicVideo,
+              snapshot.trackKey == mediaControl.trackKey else { return snapshot }
+        var out = snapshot
+        out.isMusicVideo = mark
+        return out
+    }
+
     // MARK: - Kaset
 
     /// Kaset 的 AppleScript 读数:原样的 JSON 串连同读数调用返回那一刻的墙钟一起回(解读在
@@ -2365,6 +2391,22 @@ public enum MediaControlClient {
         return apple.withDuration(duration)
     }
 
+    /// Spotify 这一拍的读数:先问它自己,问不到退回它的通知,再退回系统那份补上等掉的时间。
+    private static func spotifyReading(_ mediaControl: MediaControlSnapshot) -> MediaControlSnapshot {
+        // 这里跟 Apple Music **不一样**:暂停态也问。Spotify 的两个钟不重合 ——
+        // MediaRemote 那个冻结值是音频位置,`player position` 是它自己的钟,两者差一段输出
+        // 链路的领先量。播放中显示后者、暂停那一拍换成前者,就是一次肉眼可见的回跳;从头到尾
+        // 只用一个钟才没有接缝。
+        let asked = Date()
+        if let spotify = fetchSpotifySnapshot() { return spotify }
+        let now = Date()
+        if let fromNotice = spotifyNoticeReading(mediaControl, notice: currentSpotifyNotice(),
+                                                 sampledAt: asked, now: now) {
+            return fromNotice
+        }
+        return spotifyFallbackCaughtUp(mediaControl, waited: now.timeIntervalSince(asked), now: now)
+    }
+
     private static func adaptedSnapshot(
         bundleID: String, mediaControl: MediaControlSnapshot
     ) -> MediaControlSnapshot? {
@@ -2387,18 +2429,7 @@ public enum MediaControlClient {
             let timed = fillingMissingAppleDuration(apple, from: mediaControl)
             return perTrackRadio ? timed.markedRadio() : timed
         case PlaybackPlayer.spotify.bundleIdentifier:
-            // 这里跟 Apple Music **不一样**:暂停态也问。Spotify 的两个钟不重合 ——
-            // MediaRemote 那个冻结值是音频位置,`player position` 是它自己的钟,两者差一段输出
-            // 链路的领先量。播放中显示后者、暂停那一拍换成前者,就是一次肉眼可见的回跳;从头到尾
-            // 只用一个钟才没有接缝。
-            let asked = Date()
-            if let spotify = fetchSpotifySnapshot() { return spotify }
-            let now = Date()
-            if let fromNotice = spotifyNoticeReading(mediaControl, notice: currentSpotifyNotice(),
-                                                     sampledAt: asked, now: now) {
-                return fromNotice
-            }
-            return spotifyFallbackCaughtUp(mediaControl, waited: now.timeIntervalSince(asked), now: now)
+            return carryingSpotifyMusicVideoMark(spotifyReading(mediaControl), from: mediaControl)
         case PlaybackPlayer.kaset.bundleIdentifier:
             // 跟 Spotify 一样暂停态也问:系统那份连歌名都可能是上一首的(见 KasetPlayerInfo 头注)。它此刻放的不是一首歌
             // (占位、播客单集)时也不退回去报系统那份,那份就是它自己发的同一条。
@@ -3693,6 +3724,7 @@ public enum MediaControlClient {
             ?? Self.foobarLoopCheckAt(bundleID: bundleID, playing: playing, position: foobarLoop ?? stretched,
                                       duration: raw.duration, now: sampledAt)
         snapshot.processIdentifier = raw.processIdentifier
+        snapshot.isMusicVideo = Self.spotifyMusicVideoMark(bundleID: bundleID, mediaType: raw.mediaType)
         return (snapshot, bundleID)
     }
 

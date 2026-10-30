@@ -2102,10 +2102,20 @@ public final class LocalPlaybackSource: ObservableObject {
     }
 
     /// 这一拍之后「认成 MV 的那首」是哪首。按曲目记住、换歌作废:Apple Music 暂停时不走 JXA
-    /// (`MediaControlClient.adaptedSnapshot`),快照里没有这一位;网页那一位要等探针,也不是每拍都有。纯函数,selftest 覆盖。
-    public nonisolated static func musicVideoTrackKey(previous: String?, currentKey: String, markedMusicVideo: Bool) -> String? {
+    /// (`MediaControlClient.adaptedSnapshot`),快照里没有这一位;网页那一位要等探针,也不是每拍都有。
+    /// `unmarkedMusicVideo`(快照明说不是 MV,见 `snapshotSaysNotMusicVideo`)当场作废。纯函数,selftest 覆盖。
+    public nonisolated static func musicVideoTrackKey(previous: String?, currentKey: String, markedMusicVideo: Bool,
+                                                      unmarkedMusicVideo: Bool = false) -> String? {
         if markedMusicVideo { return currentKey }
+        if unmarkedMusicVideo { return nil }
         return previous == currentKey ? previous : nil
+    }
+
+    /// 快照明说这一首此刻不是 MV。只认 Spotify 那一位(系统报音频,`MediaControlClient.spotifyMusicVideoMark`):同一首在
+    /// 视频、音频之间切,歌名歌手不变,不清就一直按 MV 处理。Apple Music 的 false 可能是读 `media kind` 失败,不算。
+    /// 纯函数,selftest 覆盖。
+    public nonisolated static func snapshotSaysNotMusicVideo(_ snapshot: MediaControlSnapshot) -> Bool {
+        snapshot.isMusicVideo == false && snapshot.bundleIdentifier == PlaybackPlayer.spotify.bundleIdentifier
     }
 
     /// 换歌 / 停播时清掉 MV 时间轴(偏移随下一次 applyOffsets 归零)。
@@ -3945,7 +3955,9 @@ public final class LocalPlaybackSource: ObservableObject {
         // 只用基条目、从不建时长变体;这边照传视频时长的话,听过音频版的歌再看 MV,视频时长跟基条目差出 12% 以上,
         // 就去找一个引擎永远不会建的 `~durN`,整首一直在转圈。是不是 MV 按下面同一套判据(这一拍还没更新 musicVideoKey)。
         let playingMusicVideo = Self.musicVideoTrackKey(previous: musicVideoKey, currentKey: rawSnapshot.trackKey,
-                                                        markedMusicVideo: rawSnapshot.isMusicVideo == true) == rawSnapshot.trackKey
+                                                        markedMusicVideo: rawSnapshot.isMusicVideo == true,
+                                                        unmarkedMusicVideo: Self.snapshotSaysNotMusicVideo(rawSnapshot))
+            == rawSnapshot.trackKey
         EnrichCacheReader.notePlayingDuration(
             artist: rawSnapshot.artist ?? "", title: rawSnapshot.title ?? "", album: rawSnapshot.album ?? "",
             secs: Self.lyricsLookupDuration(isRadio: rawSnapshot.isRadio == true, isMusicVideo: playingMusicVideo,
@@ -4023,7 +4035,8 @@ public final class LocalPlaybackSource: ObservableObject {
             && EnrichCacheReader.youtubeMusicIsMV(artist: newArtist, title: newTitle, album: newAlbum)
         if newListedMV != youtubeMusicIsMV { youtubeMusicIsMV = newListedMV }
         musicVideoKey = Self.musicVideoTrackKey(previous: musicVideoKey, currentKey: snapshot.trackKey,
-                                                markedMusicVideo: snapshot.isMusicVideo == true)
+                                                markedMusicVideo: snapshot.isMusicVideo == true,
+                                                unmarkedMusicVideo: Self.snapshotSaysNotMusicVideo(snapshot))
         let newIsMusicVideo = musicVideoKey == snapshot.trackKey
         if newIsMusicVideo != isMusicVideo { isMusicVideo = newIsMusicVideo }
         let newIsPlayingNow = snapshot.playing == true
