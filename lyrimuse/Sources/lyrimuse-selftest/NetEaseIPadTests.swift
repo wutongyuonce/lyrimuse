@@ -494,7 +494,7 @@ func runNetEaseIPadTests() {
                                "PlayerBundleAliases.isInstalled(player, includingOtherClients: false)")],
                     [true, true, true], "iPad 网易云 接线: 找进程、辅助功能和完全磁盘访问那两行不算它")
         expectEqual([sourceHas(client, "noteReportingClient(reportedBundleID, forBundleID: bundleID)"),
-                     sourceHas(probe, "MediaControlClient.noteReportingClient(id, forBundleID: PlayerBundleAliases.canonical(id))"),
+                     sourceHas(probe, "MediaControlClient.noteReportingClient(id, forBundleID: main)"),
                      sourceHas(sourceText("LyrimuseCore/Local/LocalPlaybackSource.swift"),
                                "client: MediaControlClient.reportingClient(forBundleID: lastSnapshot?.bundleIdentifier))")],
                     [true, true, true], "iPad 网易云 接线: 轮询、单问都记下是谁报的,伺服按它决定对不对齐")

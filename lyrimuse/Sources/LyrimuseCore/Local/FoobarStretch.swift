@@ -106,6 +106,9 @@ public enum FoobarStretch {
     private static let tracker = OSAllocatedUnfairLock(initialState: Tracker())
     private static let logger = Logger(subsystem: LyrimuseIdentity.logSubsystem, category: "foobar-stretch")
 
+    /// 记着的速度,不读进度条:焦点被别的 App 占着那段单问的那份按它走(`MediaControlClient.foobarProbedSnapshot`)。
+    public static var rememberedRate: Double { tracker.withLock { $0.rate } }
+
     /// 这一拍该按的速度。在放时读一次进度条,会阻塞跨进程调用,在轮询的后台线程上调。
     public static func rate(anchorKey: String, playing: Bool, duration: Double?, now: Date) -> Double {
         let value = playing && !SourceKnockout.isOut(.foobarSlider) ? FoobarSliders.progress(duration: duration) : nil

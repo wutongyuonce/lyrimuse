@@ -34,8 +34,13 @@ public enum PlayerBundleAliases {
     /// 单问会话、封面时的次序:正在运行的排前面(常见情况第一次就问到),其余照 `all(for:)`。
     public static func inProbeOrder(for bundleID: String) -> [String] {
         let ids = all(for: bundleID)
-        let running = ids.filter { !NSRunningApplication.runningApplications(withBundleIdentifier: $0).isEmpty }
+        let running = ids.filter(isRunning)
         return running + ids.filter { !running.contains($0) }
+    }
+
+    /// 这个 bundle id 的 App 此刻在跑。
+    public static func isRunning(_ bundleID: String) -> Bool {
+        !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty
     }
 
     /// 正在运行的那一个的 App 包,其次装在这台 Mac 上的(本体优先);都没装为 nil。

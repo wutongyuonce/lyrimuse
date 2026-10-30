@@ -56,12 +56,13 @@ func runFoobarTests() {
         expectEqual(check(11).map { ($0 * 1000).rounded() / 1000 }, 1.15, "foobar 循环: 离曲尾不到 3 秒时排一次补查,刚过绕回点那一刻")
         expectEqual([check(5), check(12.2)].map { $0 == nil }, [true, true], "foobar 循环: 离曲尾还远、已经过了绕回点都不排")
 
-        func probed(_ elapsed: Double, playing: Bool = true, bundle: String = PlaybackPlayer.foobar2000.bundleIdentifier) -> MediaControlSnapshot {
+        func probed(_ elapsed: Double, playing: Bool = true, bundle: String = PlaybackPlayer.foobar2000.bundleIdentifier,
+                    stretch: Double = 1) -> MediaControlSnapshot {
             var s = MediaControlSnapshot.forReplay(title: "Click Loop", artist: "Lyrimuse", album: "", duration: 12,
                                                    elapsedTime: elapsed, playing: playing, playbackRate: 1,
                                                    bundleIdentifier: bundle, anchorElapsedTime: 0.055)
             s.processIdentifier = 4242
-            return MC.foobarProbedSnapshot(s, now: t)
+            return MC.foobarProbedSnapshot(s, now: t, stretch: stretch)
         }
         let wrapped = probed(26.5)
         expectEqual([wrapped.elapsedTime, wrapped.anchorElapsedTime].map { $0.map { ($0 * 1000).rounded() / 1000 } }, [2.5, 2.5],
@@ -71,6 +72,13 @@ func runFoobarTests() {
                     "foobar 单问: 离曲尾不到 3 秒时同样排补查")
         expectEqual(probed(26.5, playing: false).elapsedTime, 26.5, "foobar 单问: 暂停着不动")
         expectEqual(probed(26.5, bundle: PlaybackPlayer.pinePlayer.bundleIdentifier).elapsedTime, 26.5, "foobar 单问: 只对 foobar2000")
+        // 开着 DSP 变速、焦点被占着:按记着的速度换算锚点以来那段,速率交出去;换算后越过曲长再取余。
+        let stretched = probed(8, stretch: 1.32)
+        expectEqual([stretched.elapsedTime, stretched.playbackRate].map { $0.map { ($0 * 1000).rounded() / 1000 } }, [10.542, 1.32],
+                    "foobar 单问: 变速时位置按记着的速度换算,速率也交出去")
+        expectEqual(probed(10, stretch: 1.32).elapsedTime.map { ($0 * 1000).rounded() / 1000 }, 1.182,
+                    "foobar 单问: 变速换算后越过曲长再取余")
+        expectEqual(probed(8, playing: false, stretch: 1.32).elapsedTime, 8, "foobar 单问: 暂停着不按速度换算")
     }
 
     // ---- 当前文件、封面、轮询 ----

@@ -17,6 +17,15 @@ func runQQIPadTests() {
                      PlayerProcess.otherClient(reporting: nil)], [Q.bundleID, nil, nil], "iPad QQ: 认得出是另一个程序报的")
     }
 
+    // ---- 两个版本都开着:按 bundle id 单问时挑在放的那份 ----
+    do {
+        let pick = NowPlayingClientsProbe.preferredAnswer
+        expectEqual(pick([(mac, false), (Q.bundleID, true)], mac), 1, "iPad QQ 单问: Mac 版暂停着、iPad 版在放,挑 iPad 版")
+        expectEqual(pick([(mac, false), (Q.bundleID, false)], Q.bundleID), 1, "iPad QQ 单问: 都没在放,挑最近一份会话报的那个")
+        expectEqual(pick([(mac, false), (Q.bundleID, false)], nil), 0, "iPad QQ 单问: 都没在放、没记过,挑第一份")
+        expectEqual(pick([], mac), nil, "iPad QQ 单问: 一份都没答上")
+    }
+
     // ---- 两个版本都开着:会话是 iPad 版报的,本体当没在跑 ----
     do {
         defer { MediaControlClient.noteReportingClient(mac, forBundleID: mac) }
@@ -153,6 +162,9 @@ func runQQIPadTests() {
                      sourceHas(client, "(keyTitle, keyArtist) = QQIPadNowPlaying.names(title: keyTitle, artist: keyArtist, bundleID: raw.bundleIdentifier)")],
                     [true, true, true], "iPad QQ 接线: 轮询解码、取封面那一路整理")
         let probe = sourceText("LyrimuseCore/Local/NowPlayingClientsProbe.swift")
+        expectEqual(sourceHas(sourceBody("public static func snapshotWithAnchor(forBundleID", in: probe),
+                              "if found.snapshot.playing == true { break }"), true,
+                    "iPad QQ 单问: 问到的没在放、还有别的版本在跑时接着问")
         expectEqual([sourceHas(probe, "let data = QQIPadNowPlaying.normalizedPayload(NetEaseIPadNowPlaying.normalizedPayload(raw))"),
                      sourceHas(probe, "(title, artist) = QQIPadNowPlaying.names(title: title, artist: artist, bundleID: foundID)")],
                     [true, true], "iPad QQ 接线: 单问会话、单问封面都整理")

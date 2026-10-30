@@ -174,20 +174,35 @@ public enum NowPlayingClientsProbe {
         -> (snapshot: MediaControlSnapshot, anchor: SessionAnchor)? {
         guard !bundleID.isEmpty, let paths = helperPaths() else { return nil }
         let ratePlaying = PlaybackPlayer.builtin(forBundleID: bundleID)?.playingFromRate == true
-        // 同一个播放器的别的版本(`PlayerBundleAliases`)逐个问,在跑的先问,问到的那份 bundle id 换成本体的。
+        let main = PlayerBundleAliases.canonical(bundleID)
+        // 同一个播放器的别的版本(`PlayerBundleAliases`)逐个问,在跑的先问。问到一份没在放、还有别的版本在跑时接着问:两个版本
+        // 都开着(Mac 版和 iPad 版 QQ 音乐)时挑在放的那份(`preferredAnswer`)。问到的那份 bundle id 换成本体的。见 02 章决策 215。
+        var answers: [(id: String, found: (snapshot: MediaControlSnapshot, anchor: SessionAnchor))] = []
         for id in PlayerBundleAliases.inProbeOrder(for: bundleID) {
+            if !answers.isEmpty, !PlayerBundleAliases.isRunning(id) { break }
             var arguments = [paths.script, paths.library, id]
             if ratePlaying { arguments.append("rate-playing") }
             guard let r = snapshotServerRequest(bundleID: id, ratePlaying: ratePlaying)
                     .flatMap({ snapshotServer.request($0, timeout: timeout) })
                     ?? ProcessRunner.run("/usr/bin/perl", arguments, timeout: timeout),
-                r.succeeded, var found = decodeSnapshot(r.stdout)
+                r.succeeded, let found = decodeSnapshot(r.stdout)
             else { continue }
-            found.snapshot.bundleIdentifier = found.snapshot.bundleIdentifier.map(PlayerBundleAliases.canonical)
-            MediaControlClient.noteReportingClient(id, forBundleID: PlayerBundleAliases.canonical(id))
-            return found
+            answers.append((id, found))
+            if found.snapshot.playing == true { break }
         }
-        return nil
+        guard let index = preferredAnswer(answers.map { ($0.id, $0.found.snapshot.playing == true) },
+                                          remembered: MediaControlClient.reportingClient(forBundleID: main))
+        else { return nil }
+        var (id, found) = answers[index]
+        found.snapshot.bundleIdentifier = found.snapshot.bundleIdentifier.map(PlayerBundleAliases.canonical)
+        MediaControlClient.noteReportingClient(id, forBundleID: main)
+        return found
+    }
+
+    /// 同一个播放器的几个版本都答上时用哪一份:在放的那份;都没在放时取最近一份会话实际报的那个版本(`remembered`);再不然第一份。
+    /// 一份都没有为 nil。纯函数,selftest 覆盖。
+    public static func preferredAnswer(_ answers: [(id: String, playing: Bool)], remembered: String?) -> Int? {
+        answers.firstIndex { $0.playing } ?? answers.firstIndex { $0.id == remembered } ?? (answers.isEmpty ? nil : 0)
     }
 
     // MARK: - 常驻 helper(见 02 章决策 146)

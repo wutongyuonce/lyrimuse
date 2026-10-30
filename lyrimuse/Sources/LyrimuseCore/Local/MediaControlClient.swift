@@ -3370,14 +3370,22 @@ public enum MediaControlClient {
     }
 
     /// 按 bundle id 单问到的 foobar2000 那份(焦点被别的 App 占着时):单问那份同样按旧锚点外推、越过曲长,取余和补查跟主路径
-    /// 同一套(`foobarLoopPosition`、`foobarLoopCheckAt`)。不是 foobar2000 的原样返回。见 02 章决策 212。纯函数,selftest 覆盖。
-    public nonisolated static func foobarProbedSnapshot(_ snapshot: MediaControlSnapshot, now: Date) -> MediaControlSnapshot {
+    /// 同一套(`foobarLoopPosition`、`foobarLoopCheckAt`)。不是 foobar2000 的原样返回。`stretch` 是 DSP 变速的速度,缺省取
+    /// `FoobarStretch.rememberedRate`。见 02 章决策 212。除缺省的速度外是纯函数,selftest 覆盖。
+    public nonisolated static func foobarProbedSnapshot(_ snapshot: MediaControlSnapshot, now: Date,
+                                                        stretch: Double = FoobarStretch.rememberedRate) -> MediaControlSnapshot {
         let bundleID = snapshot.bundleIdentifier
         guard bundleID == PlaybackPlayer.foobar2000.bundleIdentifier else { return snapshot }
+        // 焦点被占着这段不读进度条(见 FoobarStretch),变速按记着的速度换算,单曲循环取余也按换算后的位置。见 02 章决策 214。
+        let rate = snapshot.playing == true ? stretch : 1
+        let stretched = rate != 1
+            ? snapshot.elapsedTime.map { FoobarStretch.position(anchor: snapshot.anchorElapsedTime ?? $0, oneX: $0, rate: rate) }
+            : snapshot.elapsedTime
         var out = snapshot
-        if let loop = foobarLoopPosition(bundleID: bundleID, playing: snapshot.playing, position: snapshot.elapsedTime,
-                                         duration: snapshot.duration) {
-            out = snapshot.withPlayerClock(loop, capturedAt: now)
+        let loop = foobarLoopPosition(bundleID: bundleID, playing: snapshot.playing, position: stretched,
+                                      duration: snapshot.duration)
+        if let position = loop ?? (rate != 1 ? stretched : nil) {
+            out = snapshot.withPlayerClock(position, capturedAt: now, rate: rate != 1 ? rate : nil)
             out.processIdentifier = snapshot.processIdentifier
         }
         out.republishDueBy = foobarLoopCheckAt(bundleID: bundleID, playing: out.playing, position: out.elapsedTime,
