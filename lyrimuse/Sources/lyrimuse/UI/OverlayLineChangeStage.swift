@@ -148,6 +148,7 @@ final class OverlayLineChangeStageView: NSView {
             carriesAnnotations = slot.carriesAnnotations
             host = NSHostingController(rootView: Self.root(slot.content, slot.alignment))
             host.sizingOptions = []
+            host.safeAreaRegions = []
             if let tail = slot.tail { tailHost = Self.makeHost(Self.root(tail, slot.alignment)) }
         }
 
@@ -201,6 +202,9 @@ final class OverlayLineChangeStageView: NSView {
         private static func makeHost(_ root: AnyView) -> NSHostingController<AnyView> {
             let host = NSHostingController(rootView: root)
             host.sizingOptions = []
+            // 嵌套的托管视图别吃窗口的安全区:设置页编辑台里超宽的卡片伸到侧边栏底下时,会把那块当成安全区让出来,
+            // 居中的字整体右移(见 04 章决策 79)。主格那个托管视图(Cell.init)同样关掉。
+            host.safeAreaRegions = []
             host.view.wantsLayer = true
             return host
         }

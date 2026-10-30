@@ -2280,6 +2280,8 @@ func runSourceContractSurfaceTests() {
                 expectEqual(view.contains(".padding(.leading, animatesLineChange ? 0 : duetPadding.leading)")
                             && stage.contains("let offset = CGVector(dx: from.minX + from.width * fraction - anchor.x, dy: from.minY - box.minY)"), true,
                             "悬浮换句动画: 对唱留白在格子里、换人唱时舞台不横移;新主句起步横向对上预览那一块")
+                expectEqual(stage.components(separatedBy: "host.safeAreaRegions = []").count - 1, 2,
+                            "悬浮换句动画: 两种托管视图都不吃窗口安全区,编辑台超宽卡片伸到侧边栏底下时字不右移(04 章决策 79)")
             } else {
                 expectEqual(true, false, "悬浮换句动画: 读不到 UI/OverlayLineChangeStage.swift(路径挪了?)")
             }

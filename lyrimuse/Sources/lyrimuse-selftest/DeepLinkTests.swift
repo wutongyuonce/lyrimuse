@@ -238,6 +238,11 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/notch-style?style=coverArt&expanded=same"),
                     .debug(.notchStyle(style: "coverArt", expanded: "same")), "debug: 背景、展开背景一起设")
         expectEqual(link("lyrimuse://debug/notch-style"), nil, "debug: 灵动岛风格什么都没带不认")
+        expectEqual(link("lyrimuse://debug/overlay-layout?width=1270&line-change=0"),
+                    .debug(.overlayLayout(width: 1270, lineChange: false)), "debug: 悬浮歌词宽度、换句动画一起设")
+        expectEqual(link("lyrimuse://debug/overlay-layout?width=abc") == nil
+                    && link("lyrimuse://debug/overlay-layout?width=-5") == nil
+                    && link("lyrimuse://debug/overlay-layout") == nil, true, "debug: 宽度不是正数、什么都没带不认")
         expectEqual(link("lyrimuse://debug/japanese-reading?style=Kana"), .debug(.japaneseReading(.kana)),
                     "debug: 日语读音切到假名,大小写不敏感")
         expectEqual(link("lyrimuse://debug/japanese-reading?style=furigana") == nil
@@ -387,6 +392,8 @@ func runDeepLinkTests() {
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, allScreens: false)),
             .debug(.notchStyle(style: "solidBlack", expanded: "coverArt")),
             .debug(.notchStyle(style: nil, expanded: "same")),
+            .debug(.overlayLayout(width: 640, lineChange: true)),
+            .debug(.overlayLayout(width: nil, lineChange: false)),
             .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: true)),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, lyricRowFade: false)),

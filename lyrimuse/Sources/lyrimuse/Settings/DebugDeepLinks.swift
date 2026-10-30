@@ -85,6 +85,10 @@ enum DebugDeepLinks {
                 AppSettings.shared.notchShowsProgressLine = progressLine.shows
             }
             logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public) lyricRowFade=\(String(describing: lyricRowFade), privacy: .public)")
+        case let .overlayLayout(width, lineChange):
+            if let width { AppSettings.shared.overlayWidth = OverlayEditorStage.snappedWidth(width) }
+            if let lineChange { AppSettings.shared.overlayLineChangeAnimation = lineChange }
+            logger.notice("debug overlay layout width=\(width.map { String($0) } ?? "nil", privacy: .public) lineChange=\(String(describing: lineChange), privacy: .public)")
         case let .notchStyle(style, expanded):
             if let style, let parsed = NotchCardStyle(rawValue: style) { AppSettings.shared.notchCardStyle = parsed }
             if let expanded {

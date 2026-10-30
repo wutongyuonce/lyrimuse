@@ -1232,6 +1232,9 @@ struct OverlayEditorStage: View {
     /// 只约束滑杆自己产生的值,不约束模型。
     ///
     /// 先夹后量化的顺序是安全的:区间两端 300/1400 都是 widthStep 的整数倍,量化不会把值顶出界。
+    /// 调试深链(`debug/overlay-layout?width=`)写宽度也走这一道,跟调整条落盘的值同一个口径。
+    static func snappedWidth(_ raw: Double) -> Double { snap(raw) }
+
     private static func snap(_ raw: Double) -> Double {
         let clamped = min(max(raw, widthRange.lowerBound), widthRange.upperBound)
         return (clamped / widthStep).rounded() * widthStep

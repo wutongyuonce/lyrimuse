@@ -135,6 +135,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 灵动岛「风格」里的「背景」「展开背景」,跟设置页走同两个设置:`debug/notch-style?style=coverArt&expanded=solidBlack|same`
         /// (值是 `NotchCardStyle` 的 rawValue,`same` = 展开背景「同上」),至少带一个。认不认得这个值由 App 判。
         case notchStyle(style: String?, expanded: String?)
+        /// 悬浮歌词的宽度(pt,按设置的区间夹取、量化)和「换句动画」,跟设置页走同两个设置:
+        /// `debug/overlay-layout?width=1270&line-change=0|1`,至少带一个。
+        case overlayLayout(width: Double?, lineChange: Bool?)
         /// 当作指针停在灵动岛卡片的这一点上(卡片局部坐标,原点左上角),走真指针那一条判区域:落在只显示的那一截就穿透、挖洞
         /// (`debug/notch-pass-through?x=200&y=50`)。不动真鼠标验穿透和洞的位置。
         case notchPassThrough(x: Double, y: Double)
@@ -292,6 +295,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                     || lyricRowFade != nil else { return nil }
             self = .debug(.notchBehavior(collapseWhenPaused: collapse, hideWhenNotPlaying: hide, progressLine: progressLine,
                                          allScreens: allScreens, showLyrics: showLyrics, lyricRowFade: lyricRowFade))
+        case ("debug", "/overlay-layout"):
+            let width = value("width").flatMap(Double.init).flatMap { $0.isFinite && $0 > 0 ? $0 : nil }
+            let lineChange = value("line-change").flatMap(Self.parseBool)
+            guard width != nil || lineChange != nil else { return nil }
+            self = .debug(.overlayLayout(width: width, lineChange: lineChange))
         case ("debug", "/notch-style"):
             let style = value("style").flatMap { $0.isEmpty ? nil : $0 }
             let expanded = value("expanded").flatMap { $0.isEmpty ? nil : $0 }
@@ -462,6 +470,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 if let showLyrics { items.append(URLQueryItem(name: "show-lyrics", value: showLyrics ? "1" : "0")) }
                 if let lyricRowFade { items.append(URLQueryItem(name: "lyric-row-fade", value: lyricRowFade ? "1" : "0")) }
                 components.queryItems = items
+            case let .overlayLayout(width, lineChange):
+                components.path = "/overlay-layout"
+                components.queryItems = (width.map { [URLQueryItem(name: "width", value: String($0))] } ?? [])
+                    + (lineChange.map { [URLQueryItem(name: "line-change", value: $0 ? "1" : "0")] } ?? [])
             case let .notchStyle(style, expanded):
                 components.path = "/notch-style"
                 components.queryItems = (style.map { [URLQueryItem(name: "style", value: $0)] } ?? [])
