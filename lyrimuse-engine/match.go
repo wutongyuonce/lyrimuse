@@ -165,18 +165,21 @@ var copyrightLabelRe = regexp.MustCompile(`(?i)^(OP|SP|OA|SA)[\s\x{3000}]*[:：]
 
 // 中文职务后面紧跟英文职务再冒号:`作曲Composer : 甲`、`母带工程师 Mastering Engineer : 乙`、
 // `编曲 & 制作Arrangers & Producers：丙`(网易云纯音乐占位前面的职员表常这么写)。上面两条都要求汉字之后直接是冒号或空白加冒号,
-// 认不出。英文那段只认字母、空白和 & / . ' ( ) -,冒号前最多 60 个字符。只进宽松版,见 09 章决策 235。
-var bilingualCreditLabelRe = regexp.MustCompile(`^\p{Han}{1,8}(?:[\s\x{3000}]*[&/、][\s\x{3000}]*\p{Han}{1,8})*[\s\x{3000}]*[A-Za-z][A-Za-z\s&/.'()\-]{0,60}[:：]`)
+// 认不出。英文那段只认字母、空白和 & / . ' ( ) -,冒号前最多 60 个字符,至少两个字母(`A&R` 算):只有一个字母的是
+// 句中插进来的演唱者标签(`一句歌词 G：下一句`),别放宽成一个。只进宽松版,见 09 章决策 235。
+var bilingualCreditLabelRe = regexp.MustCompile(`^\p{Han}{1,8}(?:[\s\x{3000}]*[&/、][\s\x{3000}]*\p{Han}{1,8})*[\s\x{3000}]*[A-Za-z][\s&/.'()\-]*[A-Za-z][A-Za-z\s&/.'()\-]{0,60}[:：]`)
 
 // isRelaxedCreditLine 是 isCreditLineWithSpeakers 多认上面两种排版的版本。
 //
 // 两套判据是**故意**分开的,别合并成一套:
-//   - 严格版(isCreditLine / isCreditLineWithSpeakers)喂着**共识比对**、只剩署名的判废、内嵌
-//     译文对齐 —— 那几处误判的代价是整份歌词被判废或对错行,宁可漏也不能多杀。
-//   - 宽松版只喂**翻译选行**、**曲长端点**和**纯音乐占位判定**。前两处误判的代价小得多:多跳一行 = 少翻一句 /
-//     曲长端点往前挪一句;占位判定先要有一行「纯音乐」占位,多认一种署名排版不会把真歌词判成纯音乐。
+//   - 严格版(isCreditLine / isCreditLineWithSpeakers)喂着只剩署名的判废(isCreditOnlyLRC)和内嵌译文对齐 ——
+//     那几处误判的代价是整份歌词被判废或对错行,宁可漏也不能多杀。
+//   - 宽松版喂打分里所有「哪几行算正文」的口径:曲长端点(lastLRCTimestampSecs)、整首显示轴(timelineLines /
+//     displayedTimeline)、正文共识与行数(lyricConsensusBody / eachContentLyricLine),外加**翻译选行**和**纯音乐占位判定**。
+//     这几处多认一行署名只是少算一行正文,同一首歌各家署名排版不同,用严格版会让带这类排版的那家正文里多出几行、
+//     共识相似度、行数、时间轴分组都被拖偏。见 09 章决策 354。
 //
-// 演唱者标签(男：/女：)的豁免两套都走,理由见 lyricspeaker.go。
+// 演唱者标签(男：/女：)的豁免两套都走,理由见 lyricspeaker.go;正文那几处先按标签剥出正文,剩下的才判署名。
 func isRelaxedCreditLine(text string, speakers map[string]bool) bool {
 	text = normalizeHanCompat(text)
 	if isCreditLineWithSpeakers(text, speakers) {
@@ -256,8 +259,8 @@ func lyricsAreCreditsOnly(lrc string) bool {
 // 点的候选)。逐行从后往前找,跳过"去掉时间戳后剩余文本为空"的行。frac 部分可能是两位
 // (百分之几秒)或三位(毫秒),按其实际代表的小数位数换算,不假设固定是哪一种。
 //
-// v15起**尾部署名行同样跳过**(isCreditLineWithSpeakers,跟 isCreditOnlyLRC /
-// lyricConsensusBody 同一条判据):网易云习惯在真正的末句之后再补一行「监制：xxx」之类的
+// v15起**尾部署名行同样跳过**(宽松版 isRelaxedCreditLine,跟 lyricConsensusBody 等正文口径
+// 同一条判据):网易云习惯在真正的末句之后再补一行「监制：xxx」之类的
 // 职员表,时间戳往往是末句 +20s 这种人工凑出来的数(陈奕迅《K歌之王》案:末句 [03:19.53],
 // 署名行 [03:39.53],曲长 222.35s——署名行把 duration 项从 217 抬到 289,+72 分凭空多出来)。
 // 它跟上面那种空白占位尾行是同一形态——"没有对应歌词正文的时间戳",只是行里有字;
@@ -548,7 +551,7 @@ const lyricOvershootToleranceSecs = 5.0
 // (按版本号可查,如决策 31/33/36/43/44/49/50/58/64/69/82)——这里不重复。
 const lyricsScoringVersion = 30
 
-const lyricsScoringRevision = 5
+const lyricsScoringRevision = 6
 
 // lyricsScoringStamp 是一条歌词按哪一版打分规则选出来的:主版本号 + 开发修订号。存成两个整数、按这两段比大小,
 // 不存小数:小数比大小时 29.10 会排在 29.9 前面。
@@ -3660,7 +3663,7 @@ func isLRCMetaTagLine(line string) bool {
 	return strings.HasSuffix(trimmed, "]") && lrcMetaTagPrefixRe.MatchString(trimmed)
 }
 
-// lyricConsensusBody 把一份 LRC 归一成"可跨源比对的正文":逐行去时间戳、丢署名行、源塞进来的声明行(isBodyNoticeLine)、
+// lyricConsensusBody 把一份 LRC 归一成"可跨源比对的正文":逐行去时间戳、丢署名行(宽松版)、源塞进来的声明行(isBodyNoticeLine)、
 // 元数据标签行与空行,每行 normLoose 后拼接。给 contentConsensusPeers 的 3-gram 比对用。歌词行几乎不重复,
 // 走 normLooseUncached,别灌进 normLoose 的备忘表把歌名、歌手的条目挤掉。
 func lyricConsensusBody(lyrics string) string {
@@ -3689,7 +3692,7 @@ func lyricConsensusBody(lyrics string) string {
 			}
 			continue
 		}
-		if isCreditLine(text) || isBodyNoticeLine(text) {
+		if isRelaxedCreditLine(text, speakers) || isBodyNoticeLine(text) {
 			continue
 		}
 		b.WriteString(normLooseUncached(text))
@@ -3698,7 +3701,7 @@ func lyricConsensusBody(lyrics string) string {
 }
 
 // eachContentLyricLine 逐行交出"真的在唱的"正文(去掉时间戳,演唱者标记行只交标记后面那段):元信息标签行、空行、
-// 只有演唱者标记的行、职员表行、声明行都跳过。口径跟 lyricConsensusBody 逐条对齐,两边要一起改。
+// 只有演唱者标记的行、职员表行(宽松版)、声明行都跳过。口径跟 lyricConsensusBody 逐条对齐,两边要一起改。
 func eachContentLyricLine(lyrics string, fn func(text string)) {
 	speakers := lyricSpeakerLabels(lyrics)
 	for _, line := range splitLyricLines(lyrics) {
@@ -3715,7 +3718,7 @@ func eachContentLyricLine(lyrics string, fn func(text string)) {
 			}
 			continue
 		}
-		if isCreditLine(text) || isBodyNoticeLine(text) {
+		if isRelaxedCreditLine(text, speakers) || isBodyNoticeLine(text) {
 			continue
 		}
 		fn(text)

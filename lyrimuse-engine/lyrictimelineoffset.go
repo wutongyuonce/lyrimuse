@@ -72,7 +72,7 @@ type timelineLine struct {
 // displayedTimeline 是 App 实际拿来显示的那条时间轴,口径与 LyricsSyncEngine.load 一致:有逐字轴、
 // 且逐字行数不少于整行 LRC 的一半时按逐字轴的行首,否则按整行 LRC;[offset:] 先取 LRC 里的,
 // 为 0 再取 YRC 里的。只看整行 LRC 会冤枉"整行 LRC 错开、逐字轴是对的"的候选。
-// 行首的演唱者标签(「v1：」「男：」,见 lyricSpeakerLabels)不算正文,剥掉再配对,同 lyricConsensusBody。
+// 哪几行进轴、进的是哪段正文同 timelineLines(timelineBodyText)。
 func displayedTimeline(lrc, yrc string) []timelineLine {
 	off := lrcOffsetTagMs(lrc)
 	if off == 0 {
@@ -85,10 +85,7 @@ func displayedTimeline(lrc, yrc string) []timelineLine {
 	}
 	var words []timelineLine
 	for _, h := range yrcLineHeads(yrc) {
-		if isCreditLine(h.text) || isBodyNoticeLine(h.text) {
-			continue
-		}
-		if n := normTimelineText(timelineSungText(h.text, speakers)); n != "" {
+		if n := normTimelineText(timelineBodyText(h.text, speakers)); n != "" {
 			words = append(words, timelineLine{ms: h.ms - off, norm: n})
 		}
 	}
@@ -107,8 +104,21 @@ func timelineSungText(text string, speakers map[string]bool) string {
 	return text
 }
 
+// timelineBodyText:一行在整首显示轴里算哪段正文,不算的返回空串。口径同 lyricConsensusBody:演唱者标签先认
+// (标签后面那段是正文,独占一行的标签没有正文),剩下的署名行(宽松版)、声明行不算。别把署名判在标签前面:
+// 「男：」这种标签本身就是「短汉字 + 冒号」,先判署名会把整行对唱摘掉。
+func timelineBodyText(text string, speakers map[string]bool) string {
+	if label, rest, ok := lyricSplitLabel(text); ok && speakers[label] {
+		return rest
+	}
+	if isRelaxedCreditLine(text, speakers) || isBodyNoticeLine(text) {
+		return ""
+	}
+	return text
+}
+
 // timelineLines 把 LRC 展开成按显示时刻排序的(毫秒, 归一化正文):一行多戳按戳展开,已扣掉
-// offsetMs;署名行、声明行(isBodyNoticeLine)与归一化后为空的行不参与,行首的演唱者标签剥掉(timelineSungText)。
+// offsetMs;只取 timelineBodyText 交出的正文,归一化后为空的行不参与。
 func timelineLines(lrc string, offsetMs int, speakers map[string]bool) []timelineLine {
 	var out []timelineLine
 	for _, line := range strings.Split(lrc, "\n") {
@@ -117,10 +127,7 @@ func timelineLines(lrc string, offsetMs int, speakers map[string]bool) []timelin
 			continue
 		}
 		text := strings.TrimSpace(lrcTimestampRe.ReplaceAllString(line, ""))
-		if text == "" || isCreditLine(text) || isBodyNoticeLine(text) {
-			continue
-		}
-		n := normTimelineText(timelineSungText(text, speakers))
+		n := normTimelineText(timelineBodyText(text, speakers))
 		if n == "" {
 			continue
 		}

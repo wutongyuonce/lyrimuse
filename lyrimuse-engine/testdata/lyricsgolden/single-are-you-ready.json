@@ -87,7 +87,7 @@
     "ranked": [
       {
         "source": "qq",
-        "score": 894,
+        "score": 892,
         "terms": [
           {
             "kind": "duration",
@@ -99,7 +99,7 @@
           },
           {
             "kind": "lines",
-            "points": 47
+            "points": 45
           },
           {
             "kind": "album",

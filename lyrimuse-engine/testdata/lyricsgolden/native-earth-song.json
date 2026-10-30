@@ -116,7 +116,7 @@
     "ranked": [
       {
         "source": "netease",
-        "score": 1255,
+        "score": 1245,
         "terms": [
           {
             "kind": "duration",
@@ -128,7 +128,7 @@
           },
           {
             "kind": "lines",
-            "points": 97
+            "points": 87
           },
           {
             "kind": "album",

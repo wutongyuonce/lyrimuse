@@ -329,7 +329,7 @@
       },
       {
         "source": "netease",
-        "score": 755,
+        "score": 754,
         "terms": [
           {
             "kind": "duration",
@@ -337,7 +337,7 @@
           },
           {
             "kind": "lines",
-            "points": 27
+            "points": 26
           },
           {
             "kind": "album",
@@ -356,7 +356,7 @@
       },
       {
         "source": "musixmatch",
-        "score": 755,
+        "score": 754,
         "terms": [
           {
             "kind": "duration",
@@ -364,7 +364,7 @@
           },
           {
             "kind": "lines",
-            "points": 27
+            "points": 26
           },
           {
             "kind": "album",

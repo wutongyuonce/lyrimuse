@@ -3,7 +3,7 @@
   "category": "version-tag-mismatch",
   "note": "版本限定词:本地是 Guitar Version,musixmatch 那条是演唱会经典实录(限定词集合对不上,-600);QQ 那条是原版录音室(自报时长与末句都对不上,durationOff + sourceDurationOff)——正确答案是网易云的 (Guitar) 版",
   "label_evidence": {
-    "consensus_peers": 3,
+    "consensus_peers": 4,
     "title_accepted": true,
     "version_tags_ok": true,
     "source_duration_delta_pct": 0.2773681189485736,
@@ -121,7 +121,7 @@
     "ranked": [
       {
         "source": "netease",
-        "score": 1123,
+        "score": 1122,
         "terms": [
           {
             "kind": "duration",
@@ -133,7 +133,7 @@
           },
           {
             "kind": "lines",
-            "points": 24
+            "points": 23
           },
           {
             "kind": "album",

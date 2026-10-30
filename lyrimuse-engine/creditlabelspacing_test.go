@@ -30,6 +30,10 @@ func TestIsRelaxedCreditLineLabelSpacing(t *testing.T) {
 		{"康熙部首写的职务", "⺟带⼯程师 Mastering Engineer : 乙", true},
 		{"几个中文职务连写再接英文", "编曲 & 制作Arrangers & Producers：丙 / 丁", true},
 		{"中英混写的真歌词没有冒号", "我爱你Baby 别走", false},
+		{"中文职务接 A&R", "企划制作 A&R：丙", true},
+		{"中文乐器接两个字母的缩写", "木吉他 AG：丁", true},
+		{"中文乐器紧跟两个字母的缩写", "电吉他EG：丁", true},
+		{"句中插进来的单字母演唱者标签", "我知你爱我 G：讲我知你爱我", false},
 		{"英文段太长不像职务", "我说Hello and goodbye to everything we used to have in that summer by the sea : 甲", false},
 	}
 	for _, c := range cases {
