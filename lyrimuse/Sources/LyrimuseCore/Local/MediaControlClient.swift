@@ -142,13 +142,15 @@ public enum MediaControlClient {
 
     /// 这一拍是「播放器在放、但不是音乐」(KKBOX / Amazon 的播客单集,见 `TrustedPlayers.artistlessContent`;网易云的
     /// 播客单集,见 `NeteasePodcastQueue`;Spotify 的播客单集与 DJ 口播,见 `spotifyNoticeSaysNotMusic`;reAMP 电台流连上、攒缓冲
-    /// 那几拍,见 `PlayerTitleSplit.streamPlaceholder`;Pine 放网络电台、放视频,见 `PinePlayerInfo.isNetworkRadio` / `isVideo`)就当没在放:
+    /// 那几拍,见 `PlayerTitleSplit.streamPlaceholder`;Pine 放网络电台、放视频,见 `PinePlayerInfo.isNetworkRadio` / `isVideo`;
+    /// 网易云放 MV 时拿 App 名当歌名,见 `TrustedPlayers.appNameAsTitle`)就当没在放:
     /// 切歌间隙保持当场放手(不然会把上一首撑满整个窗口),调用方直接交回 nil、不退回去问别家的暂停会话。
     private static func playerContentNotMusic(bundleID: String, snapshot: MediaControlSnapshot) -> Bool {
         let artistless = TrustedPlayers.artistlessContent(bundleID: bundleID, artist: snapshot.artist,
                                                           duration: snapshot.duration, playing: snapshot.playing)
         guard artistless || neteasePodcastEpisode(bundleID: bundleID, snapshot: snapshot)
                 || spotifyContentNotMusic(bundleID: bundleID, snapshot: snapshot)
+                || appNameAsTitle(bundleID: bundleID, snapshot: snapshot)
                 || PlayerTitleSplit.streamPlaceholder(bundleID: bundleID, title: snapshot.title, artist: snapshot.artist,
                                                       duration: snapshot.duration, playing: snapshot.playing)
                 || PinePlayerInfo.isNetworkRadio(snapshot) || PinePlayerInfo.isVideo(snapshot)
@@ -180,6 +182,26 @@ public enum MediaControlClient {
         neteasePodcastLogLock.unlock()
         if log {
             logger.notice("netease: podcast episode, not reported as a song track=\(snapshot.title ?? "", privacy: .public)")
+        }
+        return true
+    }
+
+    /// 认成「App 名当歌名」时打过日志的那个播放器,换了别的内容再认到才再打。
+    private static var appNameTitleLoggedBundle: String?
+
+    private static func appNameAsTitle(bundleID: String, snapshot: MediaControlSnapshot) -> Bool {
+        guard TrustedPlayers.appNameAsTitle(bundleID: bundleID, title: snapshot.title, artist: snapshot.artist) else {
+            neteasePodcastLogLock.lock()
+            if appNameTitleLoggedBundle == bundleID { appNameTitleLoggedBundle = nil }
+            neteasePodcastLogLock.unlock()
+            return false
+        }
+        neteasePodcastLogLock.lock()
+        let log = appNameTitleLoggedBundle != bundleID
+        if log { appNameTitleLoggedBundle = bundleID }
+        neteasePodcastLogLock.unlock()
+        if log {
+            logger.notice("now playing: \(bundleID, privacy: .public) reports its app name as the title (embedded video), not reported as a song duration=\(snapshot.duration ?? 0, format: .fixed(precision: 2))")
         }
         return true
     }

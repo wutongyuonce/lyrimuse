@@ -185,6 +185,20 @@ public enum TrustedPlayers {
         return (duration ?? 0) > 0 && playing == true
     }
 
+    /// 播放器把自己的 App 名当歌名报、歌手空:不是一首歌。网易云在主窗口里放 MV 时,内嵌网页没设媒体元数据,系统那份拿页面标题
+    /// 「网易云音乐」当歌名,时长、位置是那段视频的。只认 `appNameTitles` 登记的播放器,在不在放都算;酷狗冷启动那份「酷狗音乐」
+    /// 占位不登记(见 02 章决策 217)。调用方当成「没在放音乐」(`MediaControlClient.playerContentNotMusic`)。纯函数,selftest 覆盖。
+    public static func appNameAsTitle(bundleID: String?, title: String?, artist: String?) -> Bool {
+        guard let bundleID, let names = appNameTitles[bundleID] else { return false }
+        guard (artist ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        return names.contains((title ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    /// `appNameAsTitle` 认的 App 名:网易云内嵌网页的 `<title>`(只有中文这一份)和英文系统下的显示名。
+    public static let appNameTitles: [String: Set<String>] = [
+        PlaybackPlayer.netease.bundleIdentifier: ["网易云音乐", "NetEaseMusic"],
+    ]
+
     /// 信任列表里有 App 后来成了内置播放器(KKBOX 就是先被用户加进信任列表、后来才内置的):把它从信任列表
     /// 挪进播放器选择。
     ///

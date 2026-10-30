@@ -563,6 +563,31 @@ func runPlayerIdentityTests() {
         expectEqual(TP.artistlessContent(bundleID: PlaybackPlayer.kugou.bundleIdentifier, artist: "", duration: 200,
                                          playing: true), false,
                     "KKBOX: 只管 artistArrivesLate 的播放器(决策 41)")
+        // 网易云放 MV:系统那份歌名是 App 名「网易云音乐」、歌手空、时长是视频的,当没在放音乐。
+        let neMV = PlaybackPlayer.netease.bundleIdentifier
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: "网易云音乐", artist: ""), true, "网易云 MV: App 名当歌名、歌手空")
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: " 网易云音乐 ", artist: nil), true, "网易云 MV: 两头空白、没报歌手也算")
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: "NetEaseMusic", artist: ""), true, "网易云 MV: 英文系统下的显示名也认")
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: "网易云音乐", artist: "某歌手"), false,
+                    "网易云 MV: 有歌手的是一首真叫这个名字的歌")
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: "自由的你", artist: ""), false, "网易云 MV: 别的歌名不认")
+        expectEqual(TP.appNameAsTitle(bundleID: neMV, title: "网易云音乐 Live", artist: ""), false, "网易云 MV: 只认整串")
+        expectEqual(TP.appNameAsTitle(bundleID: PlaybackPlayer.kugou.bundleIdentifier, title: "酷狗音乐", artist: ""), false,
+                    "网易云 MV: 酷狗冷启动占位不登记")
+        expectEqual(TP.appNameAsTitle(bundleID: PlaybackPlayer.qqMusic.bundleIdentifier, title: "网易云音乐", artist: ""), false,
+                    "网易云 MV: 只认登记的播放器")
+        expectEqual(TP.appNameAsTitle(bundleID: nil, title: "网易云音乐", artist: ""), false, "网易云 MV: 没有 bundle id 不算")
+        expectEqual(TP.appNameTitles.keys.allSatisfy { PlaybackPlayer.builtin(forBundleID: $0) != nil }, true,
+                    "网易云 MV: 登记的都是内置播放器")
+        do {
+            let sources = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            let client = (try? String(contentsOfFile: sources.appendingPathComponent(
+                "LyrimuseCore/Local/MediaControlClient.swift").path, encoding: .utf8)) ?? ""
+            let gate = sourceBody("private static func playerContentNotMusic(", in: client)
+            expectEqual(gate.contains("|| appNameAsTitle(bundleID: bundleID, snapshot: snapshot)")
+                            && sourceHas(client, "guard TrustedPlayers.appNameAsTitle(bundleID: bundleID, title: snapshot.title, artist: snapshot.artist) else {"),
+                        true, "网易云 MV 契约: 跟播客走同一道「不是音乐」的闸")
+        }
         // 开播那一帧当在加载,不去问别家暂停着的会话(02 章决策 106)。
         expectEqual(TP.artistNotYetReported(bundleID: kk, artist: ""), true, "KKBOX: 开播那一帧(没有歌手)当在加载")
         expectEqual(TP.artistNotYetReported(bundleID: kk, artist: "  "), true, "KKBOX: 只有空白也算没报歌手")
