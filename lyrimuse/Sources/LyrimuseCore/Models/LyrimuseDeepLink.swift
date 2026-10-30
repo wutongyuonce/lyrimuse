@@ -138,6 +138,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 悬浮歌词的宽度(pt,按设置的区间夹取、量化)和「换句动画」,跟设置页走同两个设置:
         /// `debug/overlay-layout?width=1270&line-change=0|1`,至少带一个。
         case overlayLayout(width: Double?, lineChange: Bool?)
+        /// 把标题为 `title` 的那扇 App 窗口挪到 (x, y):全局坐标、左上角原点(同 `check-windows.swift` 打印的),不改大小、
+        /// 不激活。`debug/move-window?title=搜索歌词…&x=-200&y=-1200`:把预览会停表的窗口挪到没被盖住的屏上再录帧。
+        case moveWindow(title: String, x: Double, y: Double)
         /// 当作指针停在灵动岛卡片的这一点上(卡片局部坐标,原点左上角),走真指针那一条判区域:落在只显示的那一截就穿透、挖洞
         /// (`debug/notch-pass-through?x=200&y=50`)。不动真鼠标验穿透和洞的位置。
         case notchPassThrough(x: Double, y: Double)
@@ -295,6 +298,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                     || lyricRowFade != nil else { return nil }
             self = .debug(.notchBehavior(collapseWhenPaused: collapse, hideWhenNotPlaying: hide, progressLine: progressLine,
                                          allScreens: allScreens, showLyrics: showLyrics, lyricRowFade: lyricRowFade))
+        case ("debug", "/move-window"):
+            guard let title = value("title"), !title.isEmpty,
+                  let x = value("x").flatMap(Double.init), let y = value("y").flatMap(Double.init),
+                  x.isFinite, y.isFinite else { return nil }
+            self = .debug(.moveWindow(title: title, x: x, y: y))
         case ("debug", "/overlay-layout"):
             let width = value("width").flatMap(Double.init).flatMap { $0.isFinite && $0 > 0 ? $0 : nil }
             let lineChange = value("line-change").flatMap(Self.parseBool)
@@ -470,6 +478,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 if let showLyrics { items.append(URLQueryItem(name: "show-lyrics", value: showLyrics ? "1" : "0")) }
                 if let lyricRowFade { items.append(URLQueryItem(name: "lyric-row-fade", value: lyricRowFade ? "1" : "0")) }
                 components.queryItems = items
+            case let .moveWindow(title, x, y):
+                components.path = "/move-window"
+                components.queryItems = [URLQueryItem(name: "title", value: title),
+                                         URLQueryItem(name: "x", value: String(x)), URLQueryItem(name: "y", value: String(y))]
             case let .overlayLayout(width, lineChange):
                 components.path = "/overlay-layout"
                 components.queryItems = (width.map { [URLQueryItem(name: "width", value: String($0))] } ?? [])

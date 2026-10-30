@@ -4546,7 +4546,7 @@ func runSourceContractSettingsTests() {
                     "歌词管理: 逐字歌词的编辑框只改字、套回逐字,只改字时单曲偏移跟着搬")
         // 预览时间列:▶ 不进排版、悬停状态在每一行自己身上;图标进排版的话悬停会来回切换停不下来(11 章决策 61)。
         let previewRow = (managerParts.components(separatedBy: "private struct LyricsManagerPreviewRow: View").dropFirst().first ?? "")
-            .components(separatedBy: "/// 手动滚动正在播放那首的预览就暂停").first ?? ""
+            .components(separatedBy: "/// 当前句逐字染色的上面那层").first ?? ""
         expectEqual(!previewRow.isEmpty && previewRow.contains("@State private var hovered = false")
                     && !managerParts.contains("hoveredTime"), true,
                     "歌词管理: 预览的悬停状态在每一行自己身上,不放在整张预览上")
@@ -4591,16 +4591,24 @@ func runSourceContractSettingsTests() {
                     && karaokeOverlay.contains(".textRenderer(LyricsManagerKaraokeRenderer(")
                     && sourceHas(karaokeOverlay, "return (coordinator.anchor?.extrapolatedPositionMs(now: date) ?? coordinator.pausedPositionMs ?? 0)\n            + (offsetMs ?? coordinator.currentLyricsOffsetMs)"),
                     true, "歌词管理: 预览当前句的逐字染色画在 overlay 里,时间基准含歌词偏移(搜索候选传它自己的偏移)")
-        // 换句过渡:各行同一个字重(当前句只换颜色,不重新折行),颜色和逐字染色那一层按同一条曲线淡入淡出,滚动跟歌词窗口同一条曲线。
+        // 换句过渡:各行同一个字重(当前句只换颜色,不重新折行),颜色和逐字染色那一层按同一条曲线淡入淡出。
         expectEqual(!managerParts.contains("weight: isCurrent ? .semibold : .regular")
                     && previewRow.contains(".animation(LyricsManagerPreviewMotion.line, value: isCurrent)")
                     && sourceHas(previewRow, "offsetMs: karaokeOffsetMs)\n.transition(LyricsManagerPreviewMotion.karaokeLayer)")
                     && managerParts.contains("static let karaokeLayer: AnyTransition = .asymmetric(insertion: .identity, removal: .opacity)")
                     && !managerParts.contains("pausedMs: pausedMs)\n                            .transition(.opacity)")
-                    && sourceHas(karaokeOverlay, "text\n.font(.system(size: 16))")
-                    && managerParts.contains("withAnimation(LyricsManagerPreviewMotion.scroll) { proxy.scrollTo(target, anchor: anchor) }")
-                    && managerParts.contains("static let scroll: Animation = .smooth(duration: 0.45)"),
-                    true, "歌词管理: 预览换句时颜色淡入淡出、逐字染色层进场直接出现(不吃掉第一个字)退场淡出,字重不变,滚动用平滑曲线")
+                    && sourceHas(karaokeOverlay, "text\n.font(.system(size: 16))"),
+                    true, "歌词管理: 预览换句时颜色淡入淡出、逐字染色层进场直接出现(不吃掉第一个字)退场淡出,字重不变")
+        // 预览的滚动容器是 AppKit NSScrollView,跟随播放由 clip view 的 animator 滚过去;别换回 SwiftUI ScrollView + scrollTo(11 章决策 146)。
+        let previewScroll = read("LyricsManager/LyricsPreviewScrollView.swift") ?? ""
+        expectEqual(managerParts.contains("LyricsPreviewScrollView(scrollRequest: scrollRequest, topFadeHeight: Self.topFadeHeight,")
+                    && !managerParts.contains("ScrollViewReader { proxy in\n            ScrollView {\n                LazyVStack(alignment: .leading, spacing: 13)")
+                    && managerParts.contains(".lyricsPreviewRowFrame(index)")
+                    && previewScroll.contains("clip.animator().setBoundsOrigin(origin)")
+                    && previewScroll.contains("static var scrollAnimationDuration: TimeInterval { 0.45 }")
+                    && previewScroll.contains("host.safeAreaRegions = []")
+                    && previewScroll.contains("override func scrollWheel(with event: NSEvent) {\n        onUserScroll?()"),
+                    true, "歌词管理: 预览滚动用 NSScrollView、AppKit 动画滚到当前句,手动滚动暂停跟随")
         // 标签和小标记的颜色都读 LyricsFeatureTint,跟搜索候选歌词面板同一份,不在调用点各写一份(11 章决策 79)。
         let headerTagsSource = (manager.components(separatedBy: "private func headerTags(").dropFirst().first ?? "")
             .components(separatedBy: "private func factsRow(").first ?? ""

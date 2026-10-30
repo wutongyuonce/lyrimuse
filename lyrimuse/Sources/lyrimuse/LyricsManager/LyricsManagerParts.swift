@@ -965,7 +965,6 @@ struct LyricsManagerStackedCovers: View {
 /// 那就没法平滑过渡。
 enum LyricsManagerPreviewMotion {
     static let line: Animation = .smooth(duration: 0.35)
-    static let scroll: Animation = .smooth(duration: 0.45)
     /// 逐字染色那一层:进场直接出现,退场淡出。别给进场也加淡入:当前句在第一个字开唱那一刻才切过来,第一个字常常只唱
     /// 0.2～0.4 秒,整段都在淡入里,看着像跳过了第一个字(11 章决策 143)。唱完那句退场时已经染满,淡回正文色不碍事。
     static let karaokeLayer: AnyTransition = .asymmetric(insertion: .identity, removal: .opacity)
@@ -1002,6 +1001,8 @@ struct LyricsManagerPreviewList: View {
     /// 这份预览自己的逐帧时钟,挂在所在窗口上、窗口看不见时停表(`FrameClockHost(pausesWhenOccluded:)`)。不挂的话
     /// 逐字染色用环境里的默认时钟,它跟着主屏走,窗口被挡住、最小化了照样每秒刷新。
     @State private var frameClock = FrameClock()
+    /// 交给滚动容器的那次「滚到哪」(见 `LyricsPreviewScrollView`);`serial` 每发一次加一。
+    @State private var scrollRequest: LyricsPreviewScrollRequest?
     private static let topFadeHeight: CGFloat = 24
 
     var body: some View {
@@ -1009,9 +1010,10 @@ struct LyricsManagerPreviewList: View {
         let karaoke = karaokeSegments(at: current)
         // 逐字染色的时间基准叠哪份偏移:在用的那份跟播放侧一样,别的候选按它采纳后会生效的算。
         let karaokeOffset: Int? = highlight == .playingLine ? nil : highlight.offsetMs
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 13) {
+        LyricsPreviewScrollView(scrollRequest: scrollRequest, topFadeHeight: Self.topFadeHeight,
+                                onUserScroll: { if isNowPlaying, follow { follow = false } }) {
+                // 不用 LazyVStack:几十到一两百行,整份常驻,滚动途中不现建行。
+                VStack(alignment: .leading, spacing: 13) {
                     ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
                         let isCurrent = index == current
                         LyricsManagerPreviewRow(row: row, mode: mode, isCurrent: isCurrent,
@@ -1025,35 +1027,25 @@ struct LyricsManagerPreviewList: View {
                                                 compareCurrentIndex: compare == nil ? nil : comparePosition.index,
                                                 comparePlaying: compare != nil && playback.isPlaying,
                                                 comparePausedMs: compare == nil ? nil : playback.pausedMs)
-                            .id(index)
+                            .lyricsPreviewRowFrame(index)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, horizontalInset)
+                // 顶部留白等于渐隐高度:没滚动时第一行完整不受影响。
                 .padding(.top, Self.topFadeHeight)
                 .padding(.bottom, 60)
+                // 滚动容器里是另一个托管视图,不继承外面的环境:逐字染色那一层的时钟在这里挂进去。
+                .environment(\.frameClock, frameClock)
             }
-            // 滚上去的行在顶边渐隐,不在上面那排控件底下被齐刷刷切掉半行。渐隐高度等于内容的顶部留白,
-            // 没滚动时第一行完整不受影响。
-            .mask {
-                ScrollerSafeMask {
-                    VStack(spacing: 0) {
-                        LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
-                            .frame(height: Self.topFadeHeight)
-                        Color.black
-                    }
-                }
-            }
-            .modifier(LyricsManagerPauseFollowOnScroll(follow: $follow, isNowPlaying: isNowPlaying))
-            .environment(\.frameClock, frameClock)
             .background(FrameClockHost(clock: frameClock, pausesWhenOccluded: true).frame(width: 0, height: 0))
-            .onChange(of: current) { _, _ in scrollToCurrent(proxy, animated: true) }
-            .onChange(of: follow) { _, _ in scrollToCurrent(proxy, animated: true) }
+            .onChange(of: current) { _, _ in scrollToCurrent(animated: true) }
+            .onChange(of: follow) { _, _ in scrollToCurrent(animated: true) }
             // 行换了也重新对一次位:换歌时新歌的行在预览出现之后才算好,切原文 / 译文 / 读音也换行;当前句的值可能没变,
             // 上面那条不会触发,列表就停在按旧行滚到的地方。
             .onChange(of: rows) { _, _ in
                 updatePosition()
-                scrollToCurrent(proxy, animated: false)
+                scrollToCurrent(animated: false)
             }
             .onChange(of: highlight) { _, _ in updatePosition() }
             .onChange(of: compareTimes) { _, _ in updatePosition() }
@@ -1061,9 +1053,8 @@ struct LyricsManagerPreviewList: View {
             .onChange(of: hostVisible) { _, _ in updatePosition() }
             .onAppear {
                 updatePosition()
-                scrollToCurrent(proxy, animated: false)
+                scrollToCurrent(animated: false)
             }
-        }
     }
 
     private func updatePosition() {
@@ -1075,15 +1066,11 @@ struct LyricsManagerPreviewList: View {
 
     /// 跟随时把当前句滚到中间。还没唱到第一句(前奏,或刚换歌、播放位置还没对上)时回到顶上:当前句变成「没有」时
     /// 不滚的话,列表会停在上一刻滚到的地方。
-    private func scrollToCurrent(_ proxy: ScrollViewProxy, animated: Bool) {
+    private func scrollToCurrent(animated: Bool) {
         guard follow, isNowPlaying, !rows.isEmpty else { return }
-        let target = currentIndex ?? 0
-        let anchor: UnitPoint = currentIndex == nil ? .top : .center
-        if animated {
-            withAnimation(LyricsManagerPreviewMotion.scroll) { proxy.scrollTo(target, anchor: anchor) }
-        } else {
-            proxy.scrollTo(target, anchor: anchor)
-        }
+        let current = currentIndex
+        scrollRequest = LyricsPreviewScrollRequest(row: current ?? 0, anchor: current == nil ? .top : .center,
+                                                   animated: animated, serial: (scrollRequest?.serial ?? 0) + 1)
     }
 
     /// 当前句是第几行:按字找、找不到按时间(见 LyricsPreviewText.currentRow)。一次 body 只算一次,传给各行。
@@ -1505,23 +1492,6 @@ private struct LyricsManagerPreviewRow: View {
             .allowsHitTesting(canSeek)
             .onHover { hovered = $0 }
             .help(canSeek ? L10n.t("从此句开始播放") : "")
-        }
-    }
-}
-
-/// 手动滚动正在播放那首的预览就暂停「跟随播放」;翻看别的歌时滚动不碰它(那里没有跟随按钮,关了也看不出来)。
-/// 滚动阶段的通知是 macOS 15 才有的,更早的系统上只能点按钮关。
-private struct LyricsManagerPauseFollowOnScroll: ViewModifier {
-    @Binding var follow: Bool
-    let isNowPlaying: Bool
-
-    func body(content: Content) -> some View {
-        if #available(macOS 15.0, *) {
-            content.onScrollPhaseChange { _, phase in
-                if phase == .interacting, isNowPlaying, follow { follow = false }
-            }
-        } else {
-            content
         }
     }
 }

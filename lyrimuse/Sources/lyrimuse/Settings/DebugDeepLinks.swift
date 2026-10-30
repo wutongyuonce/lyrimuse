@@ -85,6 +85,15 @@ enum DebugDeepLinks {
                 AppSettings.shared.notchShowsProgressLine = progressLine.shows
             }
             logger.notice("debug notch behavior collapse=\(String(describing: collapse), privacy: .public) hide=\(String(describing: hide), privacy: .public) progressLine=\(progressLine?.rawValue ?? "nil", privacy: .public) allScreens=\(String(describing: allScreens), privacy: .public) showLyrics=\(String(describing: showLyrics), privacy: .public) lyricRowFade=\(String(describing: lyricRowFade), privacy: .public)")
+        case let .moveWindow(title, x, y):
+            // 全局坐标的原点是主屏左上角;NSWindow 的原点在左下角、y 朝上。
+            guard let window = NSApp.windows.first(where: { $0.title == title && $0.isVisible }),
+                  let mainHeight = NSScreen.screens.first?.frame.height else {
+                logger.notice("debug move window: no visible window titled \(title, privacy: .public)")
+                return
+            }
+            window.setFrameOrigin(NSPoint(x: x, y: mainHeight - y - window.frame.height))
+            logger.notice("debug move window \(title, privacy: .public) to \(x, privacy: .public),\(y, privacy: .public)")
         case let .overlayLayout(width, lineChange):
             if let width { AppSettings.shared.overlayWidth = OverlayEditorStage.snappedWidth(width) }
             if let lineChange { AppSettings.shared.overlayLineChangeAnimation = lineChange }

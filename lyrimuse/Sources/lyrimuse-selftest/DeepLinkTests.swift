@@ -238,6 +238,10 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/notch-style?style=coverArt&expanded=same"),
                     .debug(.notchStyle(style: "coverArt", expanded: "same")), "debug: 背景、展开背景一起设")
         expectEqual(link("lyrimuse://debug/notch-style"), nil, "debug: 灵动岛风格什么都没带不认")
+        expectEqual(link("lyrimuse://debug/move-window?title=%E6%90%9C%E7%B4%A2&x=-200&y=-1200.5"),
+                    .debug(.moveWindow(title: "搜索", x: -200, y: -1200.5)), "debug: 按标题挪窗口")
+        expectEqual(link("lyrimuse://debug/move-window?title=a&x=1") == nil
+                    && link("lyrimuse://debug/move-window?x=1&y=2") == nil, true, "debug: 挪窗口缺标题或坐标不认")
         expectEqual(link("lyrimuse://debug/overlay-layout?width=1270&line-change=0"),
                     .debug(.overlayLayout(width: 1270, lineChange: false)), "debug: 悬浮歌词宽度、换句动画一起设")
         expectEqual(link("lyrimuse://debug/overlay-layout?width=abc") == nil
@@ -393,6 +397,7 @@ func runDeepLinkTests() {
             .debug(.notchStyle(style: "solidBlack", expanded: "coverArt")),
             .debug(.notchStyle(style: nil, expanded: "same")),
             .debug(.overlayLayout(width: 640, lineChange: true)),
+            .debug(.moveWindow(title: "搜索歌词…", x: 7, y: 33)),
             .debug(.overlayLayout(width: nil, lineChange: false)),
             .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: true)),

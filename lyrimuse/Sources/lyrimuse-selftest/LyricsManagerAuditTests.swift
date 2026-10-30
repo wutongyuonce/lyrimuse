@@ -42,7 +42,7 @@ func checkLyricsManagerAudit() {
                     "歌词管理: 放弃修改顺手收掉保存失败的红字")
         expectEqual(manager.contains(".disabled(editMode != .preview || detailIncomplete)"), true,
                     "歌词管理: 正文读不回来时偏移框同保存键一起禁掉")
-        expectEqual(parts.contains("if phase == .interacting, isNowPlaying, follow { follow = false }"), true,
+        expectEqual(parts.contains("onUserScroll: { if isNowPlaying, follow { follow = false } })"), true,
                     "歌词管理: 只有滚动正在播放那首的预览才关跟随播放")
         expectEqual(sourceHas(manager, ".onReceive(LocalPlaybackSource.shared.$romanizationScripts.removeDuplicates().dropFirst()) { scripts in")
                     && sourceHas(manager, "lyrics: loadedLyrics, tr: loadedTr, roma: loadedRoma,\n scripts: scripts)"), true,
