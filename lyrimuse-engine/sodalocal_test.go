@@ -97,7 +97,8 @@ func resetSodaLocalIndex(t *testing.T, path string) {
 }
 
 // TestSodaLocalTrackIDBareTitle:缓存 key 的歌名去了括号(「Untitled」),汽水队列里记的是整名,整名查不到时按去掉括号的
-// 歌名找到它;整名有记录时用整名那条;时长对不上的同名另一版不认。
+// 歌名找到它;整名有记录时用整名那条,整名那几条全被闸刷掉时再试去括号那几条;时长对不上的同名另一版不认;放的是原版时
+// 同一张单曲里的伴奏版(时长几乎一样)不认,不然整首被判成纯音乐。
 func TestSodaLocalTrackIDBareTitle(t *testing.T) {
 	untitled := sodaTestTrack("Untitled (How Does It Feel)", "D'Angelo", "Voodoo", 430667, 1, 15000)
 	untitled["id"] = "6732381759981225985"
@@ -105,7 +106,9 @@ func TestSodaLocalTrackIDBareTitle(t *testing.T) {
 	live["id"] = "live-1"
 	studio := sodaTestTrack("Swish", "测试歌手", "录音室", 200000, 1, 1000)
 	studio["id"] = "studio-1"
-	resetSodaLocalIndex(t, writeTestSodaQueue(t, []map[string]any{untitled, live, studio}))
+	inst := sodaTestTrack("歌（伴奏）", "单曲歌手", "歌", 240000, sodaLocalVocalInstrumental, -1)
+	inst["id"] = "inst-1"
+	resetSodaLocalIndex(t, writeTestSodaQueue(t, []map[string]any{untitled, live, studio, inst}))
 
 	cases := []struct {
 		name, artist, title, album string
@@ -116,6 +119,9 @@ func TestSodaLocalTrackIDBareTitle(t *testing.T) {
 		{"key 去了括号:按去括号的歌名认出整名那条", "D'Angelo", "Untitled", "Voodoo", 430.667, "6732381759981225985"},
 		{"去括号那条时长对不上不认", "D'Angelo", "Untitled", "Voodoo", 250, ""},
 		{"整名有记录时用整名那条,不去拿带括号的另一版", "测试歌手", "Swish", "录音室", 200, "studio-1"},
+		{"整名那条被专辑 / 时长闸刷掉:再试去括号那几条", "测试歌手", "Swish", "现场", 300, "live-1"},
+		{"放的是原版:同单曲的伴奏版不认", "单曲歌手", "歌", "歌", 240, ""},
+		{"放的就是伴奏版:整名照认", "单曲歌手", "歌（伴奏）", "歌", 240, "inst-1"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -123,6 +129,12 @@ func TestSodaLocalTrackIDBareTitle(t *testing.T) {
 				t.Fatalf("sodaLocalTrackID(%q,%q) = %q, 期望 %q", c.artist, c.title, got, c.want)
 			}
 		})
+	}
+	if sodaLocalInstrumental("单曲歌手", "歌", "歌", 240) {
+		t.Fatalf("放的是原版时不该拿同单曲伴奏版的 vocal==2 判成纯音乐")
+	}
+	if !sodaLocalInstrumental("单曲歌手", "歌（伴奏）", "歌", 240) {
+		t.Fatalf("放的就是伴奏版时照旧按 vocal==2 判纯音乐")
 	}
 }
 

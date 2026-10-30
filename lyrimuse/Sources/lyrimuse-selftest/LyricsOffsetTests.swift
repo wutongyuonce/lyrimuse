@@ -379,6 +379,13 @@ func runLyricsOffsetTests() {
         store.syncPinToOffset(forKey: keyA, pinKey: pinKey)
         expectEqual(pins.isPinned(pinKey), false, "自愈: 下次播放到就该把飘着的 pin 解开")
 
+        // 显示播放器自家那份时传空 pinKey(08 章决策 65):主歌词那条的校正值不挪过来,主歌词的钉住不动。
+        store.setOffset(500, forKey: keyA, pinKey: pinKey, siblings: .none)
+        store.syncPinToOffset(forKey: keyB, pinKey: "")
+        expectEqual([store.offset(forKey: keyA), store.offset(forKey: keyB)], [500, 0], "播放器那份: 不把主歌词的校正值挪过来")
+        expectEqual(pins.isPinned(pinKey), true, "播放器那份: 主歌词的钉住不动")
+        store.reset(forKey: keyA, pinKey: pinKey, siblings: .none)
+
         // ---- 「清空全部时间轴校正」----
         store.setGlobalOffset(700)
         store.setPlayerOffset(-300, forBundleID: "company.thebrowser.Browser")
@@ -558,8 +565,8 @@ func runLyricsOffsetTests() {
         expectEqual(sourceBytes(lps, contain: "currentOffsetSiblings = EnrichCacheReader.offsetSiblings(")
                     && sourceBytes(lps, contain: "let track = LyricsOffsetStore.shared.offset(forKey: currentOffsetKey, siblings: currentOffsetSiblings)")
                     && sourceHas(lps, "radioKey: radioKey,\n            siblings: currentOffsetSiblings\n")
-                    && sourceHas(lps, "pinKey: currentPinKey,\n                                           siblings: currentOffsetSiblings)")
-                    && sourceBytes(lps, contain: "LyricsOffsetStore.shared.reset(forKey: currentOffsetKey, pinKey: currentPinKey, siblings: currentOffsetSiblings)"),
+                    && sourceHas(lps, "pinKey: offsetPinKey,\n                                           siblings: currentOffsetSiblings)")
+                    && sourceBytes(lps, contain: "LyricsOffsetStore.shared.reset(forKey: currentOffsetKey, pinKey: offsetPinKey, siblings: currentOffsetSiblings)"),
                     true, "读穿接线(契约): 播放时生效、加减、重置都按这首的其它写法读穿")
         expectEqual(sourceBytes(manager, contain: "offsetSiblings = EnrichCacheReader.offsetSiblings(forKey: key)")
                     && !sourceBytes(manager, contain: "siblings: .none"), true, "读穿接线(契约): 歌词管理的偏移输入框按这首的其它写法读穿")

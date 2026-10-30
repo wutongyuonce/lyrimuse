@@ -482,6 +482,9 @@ public final class LocalPlaybackSource: ObservableObject {
     /// `audioAt` 是设备转起来的时刻(后台盯着记)。用过一次、暂停、等过点、洛雪这一拍走开放 API、设备转起来超过
     /// `lxMusicColdStartMaxAgeSecs` 都清掉。
     private var lxColdStart: (signalAt: Date, signalAnchor: Double?, audioAt: Date?)?
+    /// 记下这次冷恢复时洛雪在它设置里选了别的输出设备:那台可能一直闲着,洛雪的读数不等默认设备(见 02 章决策 134);
+    /// foobar2000 照等,它自己选的设备读不到(见 02 章决策 213)。
+    private var lxColdStartSkipsLXMusic = false
     private var lxColdStartWatch: Task<Void, Never>?
     /// 洛雪中途改速度(见 lxMusicRateCorrected):这一拍按哪次改速度修正过读数,`lxRateAnchoredChange` 是已经按它重锚过的那次。
     private var lxRateChange: Date?
@@ -2361,7 +2364,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 let resumeSignalAge = Self.resumeSignalAge(resumeSignalAt: posResumeSignalAt, now: now)
                 let sinceSignal = resumeSignalAge ?? freshSignalAge ?? Self.resumeMaxForwardCapSecs
                 // 冷启动还在等设备转起来:还没出声,先停在暂停位置,转起来再按 lxMusicColdStartPosition 重算。
-                let awaitingAudio = Self.waitsForOutputDeviceOnColdStart(bundleID: lastSnapshot?.bundleIdentifier) && !lxOpenAPIActive
+                let awaitingAudio = coldStartWaitsForOutputDevice(bundleID: lastSnapshot?.bundleIdentifier) && !lxOpenAPIActive
                     && lxColdStart.map { $0.audioAt == nil } ?? false
                 // 洛雪开放 API 推的是它音频元素的进度,恢复时声音没走起来它也停着,跟 Kaset 一样原样采信。
                 trackPosSeconds = Self.resumeReadingNeverLeads(
@@ -2853,6 +2856,12 @@ public final class LocalPlaybackSource: ObservableObject {
         if lxColdStart != nil { lxColdStart?.audioAt = date }
     }
 
+    /// 这一拍的读数要不要按这次冷恢复等默认设备:`waitsForOutputDeviceOnColdStart` 的播放器,洛雪选了别的输出设备时除外。
+    private func coldStartWaitsForOutputDevice(bundleID: String?) -> Bool {
+        Self.waitsForOutputDeviceOnColdStart(bundleID: bundleID)
+            && !(lxColdStartSkipsLXMusic && bundleID == PlaybackPlayer.lxMusic.bundleIdentifier)
+    }
+
     /// 见 lxMusicColdStartPosition。`watch` 为真时在后台每 10 毫秒看一次默认输出设备,转起来就记下时刻、马上轮询一次。
     private func beginLXMusicColdStart(signalAt: Date, watch: Bool) {
         lxColdStartWatch?.cancel()
@@ -3130,11 +3139,11 @@ public final class LocalPlaybackSource: ObservableObject {
             // 选了别的输出设备时不等默认设备:那台可能一直闲着,等满 3 秒歌词就定住 3 秒(见 02 章决策 134)。
             dropStaleLXMusicColdStart(now: Date())
             if lxColdStart == nil, ProcessAudioOutput.defaultOutputDeviceIsRunning() == false {
-                if LXMusicOpenAPI.outputsToDefaultDevice(LXMusicOpenAPI.shared.currentConfig()) {
-                    beginLXMusicColdStart(signalAt: Date(), watch: true)
-                } else {
-                    logger.notice("lx cold start: LX Music outputs to a device of its own choosing, not waiting for the default one")
+                lxColdStartSkipsLXMusic = !LXMusicOpenAPI.outputsToDefaultDevice(LXMusicOpenAPI.shared.currentConfig())
+                if lxColdStartSkipsLXMusic {
+                    logger.notice("lx cold start: LX Music outputs to a device of its own choosing, only other players wait for the default one")
                 }
+                beginLXMusicColdStart(signalAt: Date(), watch: true)
             }
         }
         if freezeExtrapolation { freezeExtrapolationUntilNextPoll() }
@@ -4568,7 +4577,7 @@ public final class LocalPlaybackSource: ObservableObject {
                 groundTruthFromBrowser: browserProbePrecise,
                 anchorElapsedTime: snapshot.anchorElapsedTime, streamRaw: snapshot.elapsedTime,
                 anchorLagSeed: usedBrowserProbe ? 0 : anchorLag(forBundleID: snapshot.bundleIdentifier))
-            if let cold = lxColdStart, Self.waitsForOutputDeviceOnColdStart(bundleID: snapshot.bundleIdentifier),
+            if let cold = lxColdStart, coldStartWaitsForOutputDevice(bundleID: snapshot.bundleIdentifier),
                let started = Self.lxMusicColdStartPosition(anchorElapsed: snapshot.anchorElapsedTime, signalAnchor: cold.signalAnchor,
                                                            audioAt: cold.audioAt, rate: rate, now: now) {
                 logger.notice("lx cold start: output device started \(cold.audioAt.map { $0.timeIntervalSince(cold.signalAt) } ?? -1, format: .fixed(precision: 3))s after the playing signal, anchor \(snapshot.anchorElapsedTime ?? -1, format: .fixed(precision: 3)) → \(started, format: .fixed(precision: 3)) (was \(positionSeconds, format: .fixed(precision: 3)))")
@@ -4907,7 +4916,7 @@ public final class LocalPlaybackSource: ObservableObject {
         if !radioKey.isEmpty {
             LyricsOffsetStore.shared.nudgeRadio(by: deltaMs, forKey: radioKey)
         } else {
-            LyricsOffsetStore.shared.nudge(by: deltaMs, forKey: currentOffsetKey, pinKey: currentPinKey,
+            LyricsOffsetStore.shared.nudge(by: deltaMs, forKey: currentOffsetKey, pinKey: offsetPinKey,
                                            siblings: currentOffsetSiblings)
         }
         applyOffsets()
@@ -4926,7 +4935,7 @@ public final class LocalPlaybackSource: ObservableObject {
         if !radioKey.isEmpty {
             LyricsOffsetStore.shared.setRadioOffset(0, forKey: radioKey)
         } else {
-            LyricsOffsetStore.shared.reset(forKey: currentOffsetKey, pinKey: currentPinKey, siblings: currentOffsetSiblings)
+            LyricsOffsetStore.shared.reset(forKey: currentOffsetKey, pinKey: offsetPinKey, siblings: currentOffsetSiblings)
         }
         applyOffsets()
     }
@@ -4963,7 +4972,7 @@ public final class LocalPlaybackSource: ObservableObject {
     private func applyOffsets() {
         // 播放到这首歌时把 pin 状态跟当前校正值重新对一遍(双向,见那个方法的注释)。只看这条写法自己键下的值,
         // 读穿来的不算。幂等,状态已经一致时是纯内存判断。
-        LyricsOffsetStore.shared.syncPinToOffset(forKey: currentOffsetKey, pinKey: currentPinKey)
+        LyricsOffsetStore.shared.syncPinToOffset(forKey: currentOffsetKey, pinKey: offsetPinKey)
         let track = LyricsOffsetStore.shared.offset(forKey: currentOffsetKey, siblings: currentOffsetSiblings)
         // 播放器那层按**这一刻真正在播的那个 App** 算。拿不到身份(还没有快照)时传 nil,
         // 那层就按 0 算 —— 绝不能猜一个,否则会把浏览器的补偿套到 Apple Music 上。
@@ -5025,6 +5034,10 @@ public final class LocalPlaybackSource: ObservableObject {
     // 内容",这个决定"哪首歌不许后台再换歌词源"。内容指纹恰恰是会变的那一半,拿它当 pin
     // 的身份等于"内容一换 pin 也失效",正好把要防的事情放过去(见 LyricsPinStore)。
     private var currentPinKey = ""
+
+    /// 单曲校正值跟钉住联动时用的 pin key。显示的是播放器自家那份(currentPlayerLyricsSource 非 nil)时为空串:那份的校正值
+    /// 只属于那份正文,不钉主歌词那条缓存,也不在两份之间挪值(syncPinToOffset 遇空串不动)。见 08 章决策 65。
+    private var offsetPinKey: String { currentPlayerLyricsSource == nil ? currentPinKey : "" }
 
     /// 同一首歌的其它写法,单曲偏移按它读穿(见 LyricsOffsetSiblings)。跟 currentOffsetKey 同一刻算。
     private var currentOffsetSiblings = LyricsOffsetSiblings.none

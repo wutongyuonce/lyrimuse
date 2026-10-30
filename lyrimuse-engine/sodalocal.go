@@ -265,14 +265,28 @@ func refreshSodaLocalIndexLocked() {
 	sodaLocalIndex, sodaLocalBareIndex = idx, bare
 }
 
-// sodaLocalEntriesLocked:同歌手同名的本地记录。整名查不到时按去掉括号的歌名再查一次:缓存 key 的歌名常去了括号
-// (「Untitled」),汽水记的是整名(「Untitled (How Does It Feel)」),只按整名查,在放汽水时这首拿不到本地曲目 id、
-// 同源加权也跟着没了。同名的另一版由 pickSodaLocalEntry 的时长闸挡。见 09 章决策 348。调用方持有 sodaLocalMu。
-func sodaLocalEntriesLocked(artist, title string) []sodaLocalTrack {
-	if ents := sodaLocalIndex[sodaLocalKey(artist, title)]; len(ents) > 0 {
-		return append([]sodaLocalTrack(nil), ents...)
+// sodaLocalEntriesLocked:同歌手同名的本地记录,分两档:整名那几条(whole),和按去掉括号的歌名挂着的那几条(bare)。缓存 key
+// 的歌名常去了括号(「Untitled」),汽水记的是整名(「Untitled (How Does It Feel)」),只按整名查,在放汽水时这首拿不到本地曲目
+// id、同源加权也跟着没了。调用方先在整名里挑、挑不中再在 bare 里挑(pickSodaLocalTiered)。同名的另一版由 pickSodaLocalEntry
+// 的时长闸挡;伴奏版跟原版常在同一张单曲里、时长几乎一样,挡不住,bare 里伴奏与否跟查的这首不一致的不收(认成伴奏会把整首
+// 判成纯音乐)。见 09 章决策 348。调用方持有 sodaLocalMu。
+func sodaLocalEntriesLocked(artist, title, album string) (whole, bare []sodaLocalTrack) {
+	whole = append([]sodaLocalTrack(nil), sodaLocalIndex[sodaLocalKey(artist, title)]...)
+	instrumental := localIsInstrumentalVersion(title, album)
+	for _, e := range sodaLocalBareIndex[sodaLocalKey(artist, stripParens(title))] {
+		if localIsInstrumentalVersion(e.Name, e.Album.Name) == instrumental {
+			bare = append(bare, e)
+		}
 	}
-	return append([]sodaLocalTrack(nil), sodaLocalBareIndex[sodaLocalKey(artist, stripParens(title))]...)
+	return whole, bare
+}
+
+// pickSodaLocalTiered:先在整名记录里挑,一条都过不了(没有,或全被专辑 / 时长闸刷掉)再在 bare 里挑。
+func pickSodaLocalTiered(whole, bare []sodaLocalTrack, album string, durationSecs float64) (sodaLocalTrack, bool) {
+	if t, ok := pickSodaLocalEntry(whole, album, durationSecs); ok {
+		return t, true
+	}
+	return pickSodaLocalEntry(bare, album, durationSecs)
 }
 
 // pickSodaLocalEntry 在同名同歌手的多条记录里挑一条。判据与 pickQQLocalEntry /
@@ -317,9 +331,9 @@ func sodaLocalTrackID(artist, title, album string, durationSecs float64) string 
 	}
 	sodaLocalMu.Lock()
 	refreshSodaLocalIndexLocked()
-	ents := sodaLocalEntriesLocked(artist, title)
+	whole, bare := sodaLocalEntriesLocked(artist, title, album)
 	sodaLocalMu.Unlock()
-	if t, ok := pickSodaLocalEntry(ents, album, durationSecs); ok {
+	if t, ok := pickSodaLocalTiered(whole, bare, album, durationSecs); ok {
 		return strings.TrimSpace(t.ID)
 	}
 	return sodaPreloadTrackID(artist, title, album, durationSecs)
@@ -335,12 +349,12 @@ func sodaLocalInstrumental(artist, title, album string, durationSecs float64) bo
 	}
 	sodaLocalMu.Lock()
 	refreshSodaLocalIndexLocked()
-	ents := sodaLocalEntriesLocked(artist, title)
+	whole, bare := sodaLocalEntriesLocked(artist, title, album)
 	sodaLocalMu.Unlock()
-	if len(ents) == 0 {
+	if len(whole) == 0 && len(bare) == 0 {
 		return false
 	}
-	t, ok := pickSodaLocalEntry(ents, album, durationSecs)
+	t, ok := pickSodaLocalTiered(whole, bare, album, durationSecs)
 	if !ok || t.Vocal != sodaLocalVocalInstrumental {
 		return false
 	}

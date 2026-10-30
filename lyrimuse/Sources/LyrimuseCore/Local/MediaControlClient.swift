@@ -3437,8 +3437,10 @@ public enum MediaControlClient {
         var out = snapshot
         let loop = foobarLoopPosition(bundleID: bundleID, playing: snapshot.playing, position: stretched,
                                       duration: snapshot.duration)
+        // 只变速、没取余时锚点留原值,同主路径(anchorElapsedTime 是 foobarLoop ?? raw.elapsedTime):锚点每拍都变的话,下游按
+        // 「锚点重发」清掉冷恢复对着原锚点记的偏置、还当成滞后样本学。
         if let position = loop ?? (rate != 1 ? stretched : nil) {
-            out = snapshot.withPlayerClock(position, capturedAt: now, rate: rate != 1 ? rate : nil)
+            out = snapshot.withPlayerClock(position, capturedAt: now, rate: rate != 1 ? rate : nil, keepsAnchor: loop == nil)
             out.processIdentifier = snapshot.processIdentifier
         }
         out.republishDueBy = foobarLoopCheckAt(bundleID: bundleID, playing: out.playing, position: out.elapsedTime,

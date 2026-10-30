@@ -62,7 +62,8 @@ struct PlaceholderTextView: NSViewRepresentable {
 
     func updateNSView(_ scroll: NSScrollView, context: Context) {
         context.coordinator.parent = self
-        guard let tv = scroll.documentView as? NSTextView, tv.string != text else { return }
+        // 输入法组字期间不同步:没上屏的拼音已在 tv.string 里、parent.text 里没有,这时换整段会把组字抹掉。上屏后 textDidChange 回写。
+        guard let tv = scroll.documentView as? NSTextView, !tv.hasMarkedText(), tv.string != text else { return }
         context.coordinator.replaceAll(tv, with: text)
     }
 

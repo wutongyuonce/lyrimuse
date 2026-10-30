@@ -32,11 +32,13 @@ const (
 )
 
 type digestPreviewResult struct {
-	ID     string       `json:"id"`
-	Kind   string       `json:"kind"`
-	OK     bool         `json:"ok"`
-	Reason string       `json:"reason,omitempty"`
-	Title  string       `json:"title,omitempty"`
+	ID     string `json:"id"`
+	Kind   string `json:"kind"`
+	OK     bool   `json:"ok"`
+	Reason string `json:"reason,omitempty"`
+	Title  string `json:"title,omitempty"`
+	// Key:按简体算的标题,不进结果文件。「测一下」拿它当消息的 Key,钉钉 / 飞书关键词没过时按它重推,同正式报告(15 章决策 99)。
+	Key    string       `json:"-"`
 	Digest *digestStats `json:"digest,omitempty"`
 	At     int64        `json:"at"`
 	// Lang:标题、上一期叫法按哪种报告语言算的。App 切了界面语言、引擎还没热重读时会对不上,App 不缓存那一份。
@@ -92,17 +94,20 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 	}
 
 	type candidate struct {
-		from, to time.Time
-		title    string
-		period   digestPeriod
+		from, to   time.Time
+		title, key string
+		period     digestPeriod
 	}
+	hans := digestWordsFor(digestLangHans)
 	var cands []candidate
 	switch kind {
 	case "daily":
 		midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 		yesterday := midnight.AddDate(0, 0, -1)
-		today := candidate{midnight, now, dailyDigestTitle(dw(), now, midnight), dailyDigestPeriod(midnight, now)}
-		prev := candidate{yesterday, midnight, dailyDigestTitle(dw(), now, yesterday), dailyDigestPeriod(yesterday, midnight)}
+		today := candidate{midnight, now, dailyDigestTitle(dw(), now, midnight), dailyDigestTitle(hans, now, midnight),
+			dailyDigestPeriod(midnight, now)}
+		prev := candidate{yesterday, midnight, dailyDigestTitle(dw(), now, yesterday), dailyDigestTitle(hans, now, yesterday),
+			dailyDigestPeriod(yesterday, midnight)}
 		// 跟真推送选同一种:推送时间在中午以后推当天,先看今天;在中午以前推前一天,先看昨天(dailyDigestTarget)。
 		cands = []candidate{today, prev}
 		if digestPushMinutes() < digestPushSameDayFrom {
@@ -114,7 +119,8 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 			res.Reason = digestPreviewFetch
 			return res
 		}
-		cands = []candidate{{time.Unix(from, 0), time.Unix(to, 0), weeklyDigestTitle(dw(), source, from, to), weeklyDigestPeriod(from, to)}}
+		cands = []candidate{{time.Unix(from, 0), time.Unix(to, 0), weeklyDigestTitle(dw(), source, from, to),
+			weeklyDigestTitle(hans, source, from, to), weeklyDigestPeriod(from, to)}}
 	default:
 		res.Reason = digestPreviewFetch
 		return res
@@ -137,7 +143,7 @@ func computeDigestPreview(ctx context.Context, cfg *config, kind string, now tim
 			continue // 日报:这一天没听,看另一天
 		}
 		addDigestExtras(env, source, c.period, &stats, now)
-		res.OK, res.Title, res.Digest, res.At = true, c.title, &stats, now.Unix()
+		res.OK, res.Title, res.Key, res.Digest, res.At = true, c.title, c.key, &stats, now.Unix()
 		// 缓存里只留要显示的那些:原始收听、榜单原始行(ListenBrainz 周报最多几千条)用完就不要了。键带着这一期的
 		// 起点,每天都会多一条,写的时候顺手删掉过期的,常驻进程里不越攒越多。
 		kept := *res.Digest

@@ -4036,6 +4036,8 @@ func runSourceContractSettingsTests() {
                         && sourceHas(placeholderView, "tv.textContainer?.widthTracksTextView = false")
                         && !placeholderView.contains(".byTruncatingTail"), true,
                     "推送内容编辑器: 点预设换文字可撤销、标题超宽横着滚不截断")
+        expectEqual(sourceHas(sourceBody("func updateNSView(", in: placeholderView), "!tv.hasMarkedText(), tv.string != text"), true,
+                    "推送内容编辑器: 输入法组字期间不拿外部文字整段替换(会抹掉没上屏的拼音)")
         expectEqual(sourceHas(tab, "SettingsTileGrid(title: L10n.t(\"四档共用\"), columns: 1) {")
                         && sourceHas(sourceBody("private func digestTile(", in: tab), "SettingsToggleTile(icon: icon, title: title, detail: subtitle,")
                         && !section.contains("SettingsGlassTabPicker") && !editorSource.contains("SettingsGlassTabPicker")

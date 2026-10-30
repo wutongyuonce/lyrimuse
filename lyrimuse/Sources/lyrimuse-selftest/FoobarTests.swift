@@ -76,8 +76,10 @@ func runFoobarTests() {
         let stretched = probed(8, stretch: 1.32)
         expectEqual([stretched.elapsedTime, stretched.playbackRate].map { $0.map { ($0 * 1000).rounded() / 1000 } }, [10.542, 1.32],
                     "foobar 单问: 变速时位置按记着的速度换算,速率也交出去")
-        expectEqual(probed(10, stretch: 1.32).elapsedTime.map { ($0 * 1000).rounded() / 1000 }, 1.182,
-                    "foobar 单问: 变速换算后越过曲长再取余")
+        expectEqual(stretched.anchorElapsedTime, 0.055, "foobar 单问: 只变速、没取余时锚点留原值(同主路径)")
+        let stretchedLoop = probed(10, stretch: 1.32)
+        expectEqual([stretchedLoop.elapsedTime, stretchedLoop.anchorElapsedTime].map { $0.map { ($0 * 1000).rounded() / 1000 } },
+                    [1.182, 1.182], "foobar 单问: 变速换算后越过曲长再取余,位置和锚点一起换")
         expectEqual(probed(8, playing: false, stretch: 1.32).elapsedTime, 8, "foobar 单问: 暂停着不按速度换算")
     }
 

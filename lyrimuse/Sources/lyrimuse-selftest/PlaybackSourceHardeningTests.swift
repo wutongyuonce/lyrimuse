@@ -480,8 +480,11 @@ private func wiringContracts() {
                 "洛雪退路: 洛雪开着就保持订阅,不只在系统报洛雪时;连着的不因一拍没认出它就断开")
     expectEqual(code("LyrimuseCore/Local/LXMusicOpenAPI.swift").contains(#"NetworkAuditLog.record(service: "image", operation: "lxmusic.artwork""#),
                 true, "洛雪退路: 下开放 API 推的封面记进对外请求审计日志")
-    expectEqual(sourceHas(source, "if LXMusicOpenAPI.outputsToDefaultDevice(LXMusicOpenAPI.shared.currentConfig()) {\n                    beginLXMusicColdStart(signalAt: Date(), watch: true)"),
-                true, "洛雪冷恢复: 洛雪选了别的输出设备时不等默认设备")
+    expectEqual([sourceHas(source, "lxColdStartSkipsLXMusic = !LXMusicOpenAPI.outputsToDefaultDevice(LXMusicOpenAPI.shared.currentConfig())"),
+                 sourceHas(source, "&& !(lxColdStartSkipsLXMusic && bundleID == PlaybackPlayer.lxMusic.bundleIdentifier)"),
+                 source.components(separatedBy: "Self.waitsForOutputDeviceOnColdStart(bundleID:").count - 1],
+                [true, true, 1] as [AnyHashable],
+                "洛雪冷恢复: 洛雪选了别的输出设备时只有洛雪的读数不等默认设备,foobar2000 照等;两处用读数的地方都走这一条")
     expectEqual(sourceHas(source, "if let lxTrack, let own = Self.lxMusicOwnArtwork(title: lxTrack.title, artist: lxTrack.artist, listed: lxTrack.listed) {\n"
                             + "                        if Self.lxOwnArtworkLoggedKey.withLock({ last in defer { last = expectedKey }; return last != expectedKey }) {\n"
                             + "                            logger.notice(\"artwork: using LX Music's own cover for \\(expectedKey, privacy: .public) (from \\(own.from, privacy: .public))\")\n"

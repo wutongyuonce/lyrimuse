@@ -577,5 +577,10 @@ func runLyricsParsingTests() {
                      sourceHas(reload, "lyrics: raw, lyricsYRC: shownYRC"),
                      sourceHas(playback, "if !trackChanged, syncEngine.hasContent { reloadCurrentLyrics() applyOffsets() }")],
                     [true, true, true, true], "按播放器的那份 接线: 取词挑这份、校正值按显示的正文算 key、同一首换播放器重载")
+        expectEqual([sourceHas(playback, "private var offsetPinKey: String { currentPlayerLyricsSource == nil ? currentPinKey : \"\" }"),
+                     sourceHas(sourceBody("private func applyOffsets(", in: playback),
+                               "syncPinToOffset(forKey: currentOffsetKey, pinKey: offsetPinKey)"),
+                     playback.components(separatedBy: "pinKey: currentPinKey").count - 1],
+                    [true, true, 0] as [AnyHashable], "按播放器的那份 接线: 显示它时单曲校正值不钉主歌词、不在两份间挪值")
     }
 }

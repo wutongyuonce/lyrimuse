@@ -100,6 +100,22 @@ func TestDigestPreviewDailyToday(t *testing.T) {
 	}
 }
 
+// 英文界面:标题按英文写,另带一份简体标题(Key)给「测一下」当消息的 Key;命中缓存的那份也带着。示例报告同理。
+func TestDigestPreviewCarriesHansKey(t *testing.T) {
+	useDigestFeatures(t, featureFlags{DigestTopN: 3, ReportLanguage: digestLangEn})
+	clearDigestPreviewCache(t)
+	now := time.Date(2026, 10, 21, 23, 5, 0, 0, time.Local)
+	useRangeLastfm(t, func(int64) []string { return []string{sampleTrackChart, sampleArtistChart, sampleAlbumChart} }, nil)
+	res := computeDigestPreview(context.Background(), previewCfg, "daily", now)
+	again := computeDigestPreview(context.Background(), previewCfg, "daily", now.Add(time.Minute))
+	if !res.OK || res.Title == res.Key || res.Key != "🎧 今日听歌报告（10-21）" || again.Key != res.Key {
+		t.Fatalf("title=%q key=%q again=%q", res.Title, res.Key, again.Key)
+	}
+	if msg, sample := notifyTestMessage(now, 0); !sample || msg.Key != digestWordsFor(digestLangHans)["title_sample"] || msg.Title == msg.Key {
+		t.Errorf("示例报告也带简体标题当 Key: title=%q key=%q sample=%v", msg.Title, msg.Key, sample)
+	}
+}
+
 // 推送时间在中午以前(推前一天一整天):今天、昨天都听了,预览也先取昨天,跟真推送那一期一样。
 func TestDigestPreviewDailyMorningPushShowsYesterday(t *testing.T) {
 	useDigestFeatures(t, featureFlags{DigestTopN: 3, DigestPushTime: digestClock{minutes: 8 * 60, set: true}})

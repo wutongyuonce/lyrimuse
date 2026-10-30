@@ -4,8 +4,8 @@
 extension LyricNotices {
     static let rules: [Rule] = [
         Rule(id: "translation-copyright", pattern: "翻[译譯]作品的?著作[权權]", ignoreCase: false, translation: true, body: true),
-        Rule(id: "qq-copyright", pattern: "QQ音乐.*著作[权權]|著作[权權].*QQ音乐", ignoreCase: false, translation: true, body: true),
-        Rule(id: "translator-notice", pattern: "歌词翻译由.*提供|提供.*歌词翻译由", ignoreCase: false, translation: true, body: true),
+        Rule(id: "qq-copyright", pattern: "QQ音[乐樂].*著作[权權]|著作[权權].*QQ音[乐樂]", ignoreCase: false, translation: true, body: true),
+        Rule(id: "translator-notice", pattern: "歌[词詞]翻[译譯]由.*提供|提供.*歌[词詞]翻[译譯]由", ignoreCase: false, translation: true, body: true),
         Rule(id: "unlicensed-use", pattern: "未[经經][^。]{0,12}(许可|許可|授权|授權|同意)", ignoreCase: true, translation: false, body: true),
         Rule(id: "forbidden-use", pattern: "不得(翻录|翻錄|翻唱|复制|複製|转载|轉載|使用|下载|下載)", ignoreCase: true, translation: false, body: true),
         Rule(id: "rights-reserved-zh", pattern: "版[权權]所有|保留(所有)?[权權]利", ignoreCase: true, translation: false, body: true),

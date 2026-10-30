@@ -72,7 +72,8 @@ func setNotifyPaths() {
 
 // 「测一下」推的内容:这一期的真实日报,同预览取数(computeDigestPreview,结果也进预览的缓存)。取不到(没连账号、今天昨天
 // 都没听、取数出错)或等了 notifyTestDigestBudget 还没取完时推示例报告(digestSampleStats),标题写明是示例(title_sample);没取完的那次
-// 照旧在后台取完、留给下一次。标题里都有「听歌」二字,钉钉 / 飞书机器人的自定义关键词填它就能过。见 15 章决策 96。
+// 照旧在后台取完、留给下一次。消息带简体标题当 Key:繁体、英文界面下钉钉 / 飞书关键词(多半按简体填的「听歌」)没过时,跟正式报告
+// 一样按它重推一次,测试结论跟真推一致。见 15 章决策 96、99。
 const (
 	notifyTestDigestBudget = 20 * time.Second
 )
@@ -146,15 +147,15 @@ func notifyTestMessage(now time.Time, budget time.Duration) (notifyMessage, bool
 		defer cancel()
 		done <- computeDigestPreview(ctx, liveConfig(), "daily", now)
 	}()
-	title, stats, sample := dw()["title_sample"], digestSampleStats(), true
+	title, key, stats, sample := dw()["title_sample"], digestWordsFor(digestLangHans)["title_sample"], digestSampleStats(), true
 	select {
 	case res := <-done:
 		if res.OK && res.Digest != nil {
-			title, stats, sample = res.Title, *res.Digest, false
+			title, key, stats, sample = res.Title, res.Key, *res.Digest, false
 		}
 	case <-time.After(budget):
 	}
-	return notifyMessage{Event: notifyEventTest, Title: title, Body: digestBody(stats), Digest: &stats}, sample
+	return notifyMessage{Event: notifyEventTest, Title: title, Body: digestBody(stats), Digest: &stats, Key: key}, sample
 }
 
 // digestSampleStats:示例日报,同 App 预览的测试数据(Core `NotificationPreview.sample(.daily)`,两边对得上靠共用样例
