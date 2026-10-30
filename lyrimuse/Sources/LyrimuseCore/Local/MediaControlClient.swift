@@ -1054,6 +1054,9 @@ public enum MediaControlClient {
             if target.bundleID == PinePlayerInfo.bundleID {
                 snapshot = pineProbedSnapshot(probed.snapshot, anchor: probed.anchor, now: now)
             }
+            if target.bundleID == PlaybackPlayer.foobar2000.bundleIdentifier {
+                snapshot = foobarProbedSnapshot(probed.snapshot, now: now)
+            }
             if let reading = amazonMusicReading(
                 bundleID: target.bundleID, trackKey: probed.snapshot.trackKey, title: probed.snapshot.title,
                 metadataTimestamp: probed.anchor.timestamp.map { Date(timeIntervalSince1970: $0) },
@@ -2047,6 +2050,9 @@ public enum MediaControlClient {
                 probed.snapshot, anchorTimestamp: probed.anchor.timestamp, pid: probed.anchor.processIdentifier, now: now))
             if target.bundleID == PinePlayerInfo.bundleID {
                 snapshot = pineProbedSnapshot(probed.snapshot, anchor: probed.anchor, now: now)
+            }
+            if target.bundleID == PlaybackPlayer.foobar2000.bundleIdentifier {
+                snapshot = snapshot.map { foobarProbedSnapshot($0, now: now) }
             }
             if let reading = amazonMusicReading(
                 bundleID: target.bundleID, trackKey: probed.snapshot.trackKey, title: probed.snapshot.title,
@@ -3361,6 +3367,22 @@ public enum MediaControlClient {
         let remaining = duration + foobarLoopSlackSecs - position
         guard remaining > 0, remaining <= 3 else { return nil }
         return now.addingTimeInterval(remaining)
+    }
+
+    /// 按 bundle id 单问到的 foobar2000 那份(焦点被别的 App 占着时):单问那份同样按旧锚点外推、越过曲长,取余和补查跟主路径
+    /// 同一套(`foobarLoopPosition`、`foobarLoopCheckAt`)。不是 foobar2000 的原样返回。见 02 章决策 212。纯函数,selftest 覆盖。
+    public nonisolated static func foobarProbedSnapshot(_ snapshot: MediaControlSnapshot, now: Date) -> MediaControlSnapshot {
+        let bundleID = snapshot.bundleIdentifier
+        guard bundleID == PlaybackPlayer.foobar2000.bundleIdentifier else { return snapshot }
+        var out = snapshot
+        if let loop = foobarLoopPosition(bundleID: bundleID, playing: snapshot.playing, position: snapshot.elapsedTime,
+                                         duration: snapshot.duration) {
+            out = snapshot.withPlayerClock(loop, capturedAt: now)
+            out.processIdentifier = snapshot.processIdentifier
+        }
+        out.republishDueBy = foobarLoopCheckAt(bundleID: bundleID, playing: out.playing, position: out.elapsedTime,
+                                               duration: out.duration, now: now)
+        return out
     }
 
     /// foobar2000 拿到这一首的封面时把整份会话重设一遍,开播锚点跟着重报:位置是 0 或零点几秒,时刻换成那一刻,

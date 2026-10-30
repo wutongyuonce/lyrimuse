@@ -55,6 +55,22 @@ func runFoobarTests() {
         }
         expectEqual(check(11).map { ($0 * 1000).rounded() / 1000 }, 1.15, "foobar 循环: 离曲尾不到 3 秒时排一次补查,刚过绕回点那一刻")
         expectEqual([check(5), check(12.2)].map { $0 == nil }, [true, true], "foobar 循环: 离曲尾还远、已经过了绕回点都不排")
+
+        func probed(_ elapsed: Double, playing: Bool = true, bundle: String = PlaybackPlayer.foobar2000.bundleIdentifier) -> MediaControlSnapshot {
+            var s = MediaControlSnapshot.forReplay(title: "Click Loop", artist: "Lyrimuse", album: "", duration: 12,
+                                                   elapsedTime: elapsed, playing: playing, playbackRate: 1,
+                                                   bundleIdentifier: bundle, anchorElapsedTime: 0.055)
+            s.processIdentifier = 4242
+            return MC.foobarProbedSnapshot(s, now: t)
+        }
+        let wrapped = probed(26.5)
+        expectEqual([wrapped.elapsedTime, wrapped.anchorElapsedTime].map { $0.map { ($0 * 1000).rounded() / 1000 } }, [2.5, 2.5],
+                    "foobar 单问: 焦点被占时单问那份越过曲长同样取余,位置和锚点一起换")
+        expectEqual([wrapped.capturedAt == t, wrapped.processIdentifier == 4242], [true, true], "foobar 单问: 带上读到的时刻,进程号不丢")
+        expectEqual(probed(11).republishDueBy.map { ($0.timeIntervalSince(t) * 1000).rounded() / 1000 }, 1.15,
+                    "foobar 单问: 离曲尾不到 3 秒时同样排补查")
+        expectEqual(probed(26.5, playing: false).elapsedTime, 26.5, "foobar 单问: 暂停着不动")
+        expectEqual(probed(26.5, bundle: PlaybackPlayer.pinePlayer.bundleIdentifier).elapsedTime, 26.5, "foobar 单问: 只对 foobar2000")
     }
 
     // ---- 当前文件、封面、轮询 ----
@@ -166,6 +182,18 @@ func runFoobarTests() {
         tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(40, 20), now: at(20))
         tracker = S.step(tracker, anchorKey: "c", playing: true, sample: sample(42.5, 22.5), now: at(22.5))
         expectEqual(tracker.rate, 1, "foobar 变速: 记着变速、锚点后头两次读数粗量是 1 倍就马上放掉")
+        var looped = S.step(S.Tracker(), anchorKey: "l", playing: true, sample: sample(0.1, 0), now: at(0))
+        for (value, secs) in [(3.1, 3.0), (7.1, 7.0), (11.1, 11.0), (1.1, 13.0), (5.1, 17.0), (9.1, 21.0)] {
+            looped = S.step(looped, anchorKey: "l", playing: true, sample: sample(value, secs), now: at(secs))
+        }
+        expectEqual(looped.rate == 1 && looped.first == sample(5.1, 17), true,
+                    "foobar 变速: 单曲循环绕回(同一份锚点下进度条往回跳)从那里重新量,跨圈的读数不算成慢放(实测量成 0.25~0.45 倍)")
+        var gapped = S.step(S.Tracker(), anchorKey: "g", playing: true, sample: sample(0.1, 0), now: at(0))
+        for (value, secs) in [(3.1, 3.0), (5.1, 5.0), (7.1, 37.0), (9.1, 39.0), (11.1, 41.0)] {
+            gapped = S.step(gapped, anchorKey: "g", playing: true, sample: sample(value, secs), now: at(secs))
+        }
+        expectEqual(gapped.rate == 1 && gapped.first == sample(11.1, 41) && gapped.probe == sample(7.1, 37), true,
+                    "foobar 变速: 隔了 30 秒才再读到(焦点被占那段不读)从那里重新量,不拿跨了几圈的旧读数算(实测量成 0.28 倍)")
         var fresh = S.step(S.Tracker(), anchorKey: "d", playing: true, sample: sample(0.5, 0), now: at(0))
         fresh = S.step(fresh, anchorKey: "d", playing: true, sample: sample(3.1, 2), now: at(2))
         expectEqual(fresh.rate, 1.3, "foobar 变速: 记着 1 倍、粗量偏离 15% 以上先用粗量的")
@@ -199,6 +227,11 @@ func runFoobarTests() {
                     "foobar 接线: 量出的速度交给下游外推")
         expectEqual(sourceHas(client, "Self.foobarLoopPosition(bundleID: bundleID, playing: playing, position: stretched, duration: raw.duration)"), true,
                     "foobar 接线: 单曲循环按变速后的位置取余")
+        let focusLost = sourceBody("private static func snapshotAfterFocusLost()", in: client)
+        let pausedFocus = sourceBody("private static func pausedFocusReading(", in: client)
+        expectEqual([focusLost.contains("snapshot = snapshot.map { foobarProbedSnapshot($0, now: now) }"),
+                     pausedFocus.contains("snapshot = foobarProbedSnapshot(probed.snapshot, now: now)")], [true, true],
+                    "foobar 接线: 焦点被占时单问的两条路(焦点回退、暂停焦点顶替)都过单曲循环取余")
         expectEqual(sourceHas(sourceText("LyrimuseCore/Local/FoobarStretch.swift"),
                               "let value = playing && !SourceKnockout.isOut(.foobarSlider) ? FoobarSliders.progress(duration: duration) : nil"), true,
                     "foobar 接线: 进度条那条腿能拔(foobar-slider)")
