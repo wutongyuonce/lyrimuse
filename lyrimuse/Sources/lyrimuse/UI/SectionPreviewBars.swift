@@ -428,34 +428,43 @@ struct MenuBarPreviewBar<Lane: View>: View {
             .environment(\.colorScheme, menuBarAppearance.colorScheme)
     }
 
-    /// 铺满舞台的那片桌面。
+    /// 铺满舞台的那片桌面:屏幕**右上角**那一块,按屏幕上的真实比例(`DesktopWallpaperTopBand`)。
     ///
-    /// **壁纸顶端对齐**:菜单栏在屏幕最上面,透出来的本来就是壁纸的上边缘那一条 ——
-    /// 所以是 `.frame(height: stageHeight, alignment: .top).clipped()`,不是 `OverlayDesktopSurface`
-    /// 那种居中裁切。这也是这里没有直接复用那个共用组件的唯一原因(另一个是读不到壁纸时的
-    /// 兜底:那边退回"表示透明"的棋盘格,而菜单栏这一块底下压的是桌面、不是透明,退回一块
-    /// 中性深色才对)。
+    /// 舞台演的是菜单栏右端(状态栏项、时钟),所以整屏宽的那一条靠右对齐、一点对一点,不缩放;
+    /// 舞台顶边就是屏幕顶边,仿菜单栏条底下透出来的正是真菜单栏那一段后面的壁纸。
+    /// 读不到壁纸时退回一块中性深色,不用 `OverlayDesktopSurface` 的棋盘格:菜单栏底下压的是桌面、不是透明。
     ///
-    /// 那层 16% 的薄纱**必须均匀**盖住整块舞台(照 `NotchEditorStage.desktopSurround`):
-    /// 任何"只压某一块"的遮罩都会随宽度模式/宽度变形,那就变成"改宽度把背景也改了"。
+    /// 16% 的薄纱只压仿菜单栏条下面那片桌面,条子本身留真实颜色(macOS 26 起真菜单栏全透明,见 `menuBarStrip`)。
+    /// 薄纱横向始终铺满整宽:随宽度模式 / 宽度变形的遮罩会变成「改宽度把背景也改了」。见 06 章决策 77。
     private var desktopSurface: some View {
         ZStack(alignment: .top) {
-            if let wallpaper = DesktopWallpaperSample.image {
-                Image(nsImage: wallpaper)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: stageHeight, alignment: .top)
-                    .clipped()
+            if let band = DesktopWallpaperTopBand.image {
+                GeometryReader { geo in
+                    let w = max(band.size.width, geo.size.width)
+                    Image(nsImage: band)
+                        .resizable()
+                        .frame(width: w, height: band.size.height * w / band.size.width)
+                        .frame(width: geo.size.width, height: geo.size.height, alignment: .topTrailing)
+                        .clipped()
+                }
             } else {
-                // 读不到壁纸(动态壁纸/没权限/无屏)就退回一块中性深色 —— 它至少还是
-                // 一片"压在别的东西上的地",不会退化成跟页面同色的空白。
                 Color(nsColor: .textColor).opacity(0.14)
             }
             // 把这一小片屏幕压得别在设置页里太抢眼,同灵动岛那块舞台。
-            Color(nsColor: .windowBackgroundColor).opacity(0.16)
+            VStack(spacing: 0) {
+                if Self.stripShowsBareWallpaper { Color.clear.frame(height: Self.cardHeight) }
+                Color(nsColor: .windowBackgroundColor).opacity(0.16)
+            }
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+
+    /// macOS 26 起真菜单栏默认全透明、直接透出壁纸:仿菜单栏条不铺材质、也不压薄纱。更早的系统真菜单栏
+    /// 自带一层半透明底,照旧铺 `.ultraThinMaterial`。
+    private static var stripShowsBareWallpaper: Bool {
+        if #available(macOS 26.0, *) { return true }
+        return false
     }
 
     /// 一小段仿菜单栏。**左端一枚苹果标**,歌词格和右边那几个参照物靠右 —— 跟真菜单栏上
@@ -536,18 +545,11 @@ struct MenuBarPreviewBar<Lane: View>: View {
         .overlay {
             if centerInUse { outlinedLyricsSlot(p) }
         }
-        // 只铺 .bar 材质是不够的:那层材质压在设置窗自己的背景上几乎同色,整条读起来
-        // 就是"悬空的文字",完全不像菜单栏(实拍确认)。真菜单栏之所以
-        // 一眼认得出来,是因为它半透明地压在**桌面壁纸**上。
-        //
-        // 壁纸**不在这一层**:它由 `desktopSurface` 铺满整块舞台,这一条只
-        // 负责把材质压上去。壁纸从这里搬走的理由见 `stage` 头注(两份各按各的高度做
-        // scaledToFill,缩放比对不上,菜单栏条的下边缘会露出一道接缝)。
-        //
-        // 材质用 `.ultraThinMaterial` 而不是 `.bar`:`.bar` 在浅色外观下几乎不透明,压上去
-        // 直接把壁纸糊成一块灰(实拍确认),而真菜单栏的透明度高得多 ——
-        // 深色壁纸下整条菜单栏是深的、文字自动转白,那正是它一眼认得出来的原因。
-        .background(.ultraThinMaterial)
+        // 壁纸**不在这一层**:它由 `desktopSurface` 铺满整块舞台(两份各按各的高度缩放,菜单栏条的下边缘会露出
+        // 一道接缝,见 `stage` 头注)。这一条只按系统决定要不要压材质(`stripShowsBareWallpaper`):
+        // macOS 26 起不压,透出的就是真菜单栏那一段的颜色;更早的系统压 `.ultraThinMaterial`,别换成 `.bar`
+        // —— `.bar` 在浅色外观下几乎不透明,会把壁纸糊成一块灰。
+        .background { if !Self.stripShowsBareWallpaper { Rectangle().fill(.ultraThinMaterial) } }
         .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
     }
 

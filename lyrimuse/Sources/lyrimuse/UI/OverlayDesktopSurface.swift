@@ -48,6 +48,72 @@ struct OverlayDesktopSurface: View {
 }
 
 
+/// 屏幕最上面那一条桌面:壁纸按它在带菜单栏那块屏幕上的铺法(等比铺满、居中)缩放之后,最上面
+/// `bandHeight` 高、整屏宽的那一条,点尺寸就是屏幕上的点尺寸。菜单栏预览垫它,透出来的颜色才跟真菜单栏
+/// 那一段对得上;别改回拿 `DesktopWallpaperSample` 按预览宽度放大 —— 那样露出的是壁纸上面四分之一,
+/// 上深下浅的壁纸会浅出一大截。只读一次,换壁纸要等下次启动(同 `DesktopWallpaperSample`)。见 06 章决策 77。
+@MainActor
+enum DesktopWallpaperTopBand {
+    /// 留多高(pt)。要盖住菜单栏预览整块舞台(仿菜单栏条 + 下沿留白 + 宽度通道)。
+    static let bandHeight: CGFloat = 96
+
+    private static var loaded = false
+    private static var cache: NSImage?
+
+    static var image: NSImage? {
+        if !loaded {
+            loaded = true
+            cache = load()
+        }
+        return cache
+    }
+
+    private static func load() -> NSImage? {
+        // 菜单栏在主屏(第一块屏)上;`NSScreen.main` 是键盘焦点所在的屏,多屏时可能是另一块。
+        guard let screen = NSScreen.screens.first,
+              let url = NSWorkspace.shared.desktopImageURL(for: screen),
+              let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let props = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let pixelWidth = (props[kCGImagePropertyPixelWidth] as? NSNumber)?.doubleValue,
+              let pixelHeight = (props[kCGImagePropertyPixelHeight] as? NSNumber)?.doubleValue,
+              pixelWidth > 0, pixelHeight > 0
+        else { return nil }
+        let screenW = Double(screen.frame.width), screenH = Double(screen.frame.height)
+        guard screenW > 0, screenH > 0 else { return nil }
+        // 铺满屏幕时原图每个像素占几个点;解一张够屏幕像素密度的缩略图,原图更小就按原图。
+        let pointsPerPixel = max(screenW / pixelWidth, screenH / pixelHeight)
+        let longSide = max(pixelWidth, pixelHeight)
+        let maxPixel = min(longSide, longSide * pointsPerPixel * Double(screen.backingScaleFactor))
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel,
+        ]
+        guard let thumb = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        // 缩略图里每个点几个像素;铺满后超出屏幕的部分两边各裁一半。
+        let pixelsPerPoint = Double(thumb.width) / (pixelWidth * pointsPerPixel)
+        let offsetX = (pixelWidth * pointsPerPixel - screenW) / 2
+        let offsetY = (pixelHeight * pointsPerPixel - screenH) / 2
+        let bandH = min(Double(bandHeight), screenH)
+        let outW = Int((screenW * pixelsPerPoint).rounded()), outH = Int((bandH * pixelsPerPoint).rounded())
+        guard outW > 0, outH > 0,
+              let ctx = CGContext(data: nil, width: outW, height: outH, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
+                                      | CGBitmapInfo.byteOrder32Little.rawValue)
+        else { return nil }
+        // 画进一张只有这一条大的位图:`CGImage.cropping` 出来的图还攥着整张缩略图的像素。
+        // CGContext 原点在左下:把缩略图往左挪 offsetX、顶边对齐到这一条的顶边。
+        let drawW = Double(thumb.width), drawH = Double(thumb.height)
+        let originX = -offsetX * pixelsPerPoint
+        let originY = Double(outH) - (drawH - offsetY * pixelsPerPoint)
+        ctx.interpolationQuality = .high
+        ctx.draw(thumb, in: CGRect(x: originX, y: originY, width: drawW, height: drawH))
+        guard let band = ctx.makeImage() else { return nil }
+        return NSImage(cgImage: band, size: NSSize(width: screenW, height: bandH))
+    }
+}
+
 /// 预览里垫在悬浮歌词卡底下的那张桌面壁纸。
 ///
 /// 只读一次并缩到预览用得着的尺寸:壁纸动辄几千像素,每次渲染都去读原图既慢又占内存。
