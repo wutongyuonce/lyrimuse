@@ -1192,7 +1192,8 @@ struct LastfmStatsSection: View {
                         .padding(.top, 1)
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 5) {
-                            Text(title).font(.system(size: 13))
+                            // 一行放不下时缩字号,别在单词中间折行(尾部控件宽的语言里会被挤到只剩几个字母宽)
+                            Text(title).font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.75)
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 9, weight: .semibold))
                                 .foregroundStyle(.tertiary)
@@ -1205,6 +1206,7 @@ struct LastfmStatsSection: View {
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     }
+                    .layoutPriority(1)
                     if help == nil && accessory == nil { Spacer(minLength: 12) }
                 }
                 .contentShape(Rectangle())
