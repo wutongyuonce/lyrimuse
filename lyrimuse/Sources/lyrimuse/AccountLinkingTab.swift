@@ -458,21 +458,29 @@ struct AccountSidebarRow: View {
     // 的 List 里,父视图理论上会因为语言变化重新构造子行,这里独立再观察一份是保险,
     // 不依赖 ForEach 复用行为的具体细节。
     @ObservedObject private var languageSettings = AppSettings.shared
-    // 只保留一个状态图标,不带文字——"读取+写入已配置"这类描述性文案在
-    // 侧边栏这个只有 170~220pt 宽的位置本来就容易被挤断行,颜色/图标本身已经足够表达
-    // "配好了没有";需要具体缺了哪个字段这种细节,详情页头部(AccountLinkingTab.
-    // detailHeader)仍然用带文字的 .label,那里空间够、也更需要具体信息。
+    // 跟旁边的分类行一个样:平时只有图标和名字,出了问题(红 / 橙)才在名字后面挂一个状态图标,
+    // 配好了、正常的绿勾不显示(同「播放器」只在有警告时挂计数、「实验室」那一行只报要处理的)。
+    // 具体是什么问题看详情页头部的状态胶囊。
     var body: some View {
         Label {
             HStack(spacing: 6) {
                 Text(destination.title)
-                destinationStatus(for: destination, config: config, lastfmConnect: lastfmConnect,
-                                  mirrorInfo: mirrorStatus.info, relayVerdict: relayStatus.verdict, lbInfo: lbStatus.info,
-                                  notifyLatest: notifyLog.latestByChannel)
-                    .indicator
+                if let attention {
+                    attention.indicator
+                }
             }
         } icon: {
             accountIconBadge(destination)
+        }
+    }
+
+    private var attention: DestinationStatus? {
+        let status = destinationStatus(for: destination, config: config, lastfmConnect: lastfmConnect,
+                                       mirrorInfo: mirrorStatus.info, relayVerdict: relayStatus.verdict, lbInfo: lbStatus.info,
+                                       notifyLatest: notifyLog.latestByChannel)
+        switch status {
+        case .error, .missingCreds, .warning: return status
+        default: return nil
         }
     }
 }
