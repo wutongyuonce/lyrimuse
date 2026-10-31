@@ -108,14 +108,14 @@ struct NotchLyricsView<Chrome: NotchChromeSource>: View {
                         .opacity(controller.milestone == nil ? revealContentOpacity : 0)
                 } else if !controller.isCollapsed {
                     // 没有曲目:hover 展开只长出一块「空闲面板」(决策 #31),高度与
-                    // `NotchChromeSource.cardHeight` 的 !hasTrack 分支读同一个值。跟 cardBodyLayer 里
+                    // `NotchChromeSource.cardHeight` 的 !hasTrack 分支读同一个值(`controller.idlePanelHeight`)。跟 cardBodyLayer 里
                     // 各块同一套做法 —— 常驻、定宽、定 y、只切透明度(NotchCardLayerActive),稳态下
                     // 它透明地挂在顶行下面、被外层裁剪裁掉,展开时在最终位置原地淡入。
                     // 有「发现新播放器」的信任提议挂着时(决策 #37)这一块换成提议的变体,
                     // 同高同排法,由宿主子视图自己订阅、自己切,见 NotchIdlePanelHost。
                     NotchIdlePanelHost(prompt: prompt, tint: accentOrWhite) { idleExpandedPanel }
                         .frame(width: controller.expandedCardWidth,
-                               height: NotchExpandedMetrics.idlePanelHeight, alignment: .top)
+                               height: controller.idlePanelHeight, alignment: .top)
                         .padding(.top, controller.contentTopInset)
                         .modifier(NotchCardLayerActive(active: controller.isExpanded))
                         .opacity(revealContentOpacity)
@@ -509,8 +509,8 @@ struct NotchIdleEarIconHost<Fallback: View>: View {
 ///     Podcasts · 正在放:热可可 - 28. …
 ///
 /// 排法、字号、行距、按钮档位**逐项照抄** `idleExpandedPanel`(左边两行字按头部歌名 / 歌手两档行高,右边一排
-/// 22pt 键,同样的 16pt 左右内边距与 `trackInfoTopSpacing`)—— 高度必须跟它**一样**:`NotchChromeSource.cardHeight`
-/// 的 `!hasTrack` 分支只认 `idlePanelHeight` 一个数,这里若高一截就被窗口硬裁、矮一截就底下留空。第一行只用
+/// 22pt 键,同样的 16pt 左右内边距与 `trackInfoTopSpacing`)—— 高度是两行字那一档:提议挂着时 `NotchIdleLastTrack.panelHeight`
+/// 按「没有上次那首」算,这里若高一截就被裁、矮一截就底下留空。第一行只用
 /// 通知那条现成的标题键,播放器名挪到第二行行首(`名字 · 正在放:…`),不新造带占位符的词条 —— 本地化表是四份
 /// 手写文件 + 一份 xcstrings 真源,加一条键要动五个文件、且 xcstrings 多会话并发改会丢更新(11 章有记录)。
 ///

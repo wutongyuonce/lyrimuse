@@ -183,17 +183,23 @@ public enum NotchExpandedMetrics {
     /// 10pt 底边距(`controlsBlock` 里那份)取同一档。
     public static let idlePanelBottomSpacing: CGFloat = 10
 
-    /// 没有曲目时 hover 展开只长出这一块:两行字(「没有在播放」+ 一句提示,按头部的
-    /// 歌名 / 歌手两档行高)+ 右侧一排 22pt 快捷键,上面留 `trackInfoTopSpacing`、下面留
-    /// `idlePanelBottomSpacing`。复用头部的行高账,是为了让这一块跟有曲目时的头部看起来是
-    /// 同一个位置上的同一种东西,而不是另起一套尺寸。
+    /// 没有曲目时 hover 展开只长出这一块,版式照有曲目时的头部:左边文字、右边一排 22pt 快捷键,上面留
+    /// `trackInfoTopSpacing`、下面留 `idlePanelBottomSpacing`。三种内容三档高度:
+    ///   - 没有上次那首(从没放过歌)或挂着「发现新播放器」:两行字(「未在播放」+ 提示),按歌名 / 歌手两档行高;
+    ///   - 有上次那首:左边加一枚头部那么大的封面,文字是歌名 +「上次播放 · 歌手」;
+    ///   - 再挑得出一句歌词:第三行放那一句,字号和行高同歌手那一行。
     ///
-    /// 改这个值之前先看 selftest 那条「空闲面板放得进窗口」:窗口恒按 `顶行 + 歌词行 44 + maxHeight`
-    /// 开,空闲面板必须 ≤ 歌词行 + 最省配置下的 maxHeight(只剩进度条那 24pt),否则会被窗口硬裁。
-    public static var idlePanelHeight: CGFloat {
-        trackInfoHeight(showsArtwork: false, showsTitle: true, showsArtist: true, showsAlbum: false, showsActions: true)
-            + trackInfoTopSpacing + idlePanelBottomSpacing
+    /// 窗口高度(真窗口、编辑台舞台)按 `idlePanelMaxHeight` 留,三档都放得进。
+    public static func idlePanelHeight(showsLastTrack: Bool, showsQuote: Bool) -> CGFloat {
+        let twoLines = trackInfoHeight(showsArtwork: showsLastTrack, showsTitle: true, showsArtist: true,
+                                       showsAlbum: false, showsActions: true)
+        let quoteLine = showsLastTrack && showsQuote ? trackInfoLineSpacing + trackInfoArtistLineHeight : 0
+        let content = max(twoLines, trackInfoTitleLineHeight + trackInfoLineSpacing + trackInfoArtistLineHeight + quoteLine)
+        return content + trackInfoTopSpacing + idlePanelBottomSpacing
     }
+
+    /// 空闲面板最高那一档(上次那首 + 一句歌词)。
+    public static var idlePanelMaxHeight: CGFloat { idlePanelHeight(showsLastTrack: true, showsQuote: true) }
 
     /// 展开区的**最大**高度,给定当前设置。窗口恒按这个尺寸开(卡片在里面自己变大变小),
     /// 设置页那条预览的容器也按它定高 —— 两处都不能跟着曲目内容变,否则窗口/整页会被

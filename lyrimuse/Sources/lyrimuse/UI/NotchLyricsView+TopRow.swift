@@ -106,15 +106,16 @@ extension NotchLyricsView {
         let collapsed = controller.isCollapsed
         let leftModule: NotchEarModule = collapsed ? .artwork : playback.leftEar
         let rightModule: NotchEarModule = collapsed ? .none : playback.rightEar
-        let equalizerOnLeft = !collapsed && showsEqualizer(on: .left, module: playback.leftEar)
-        let equalizerOnRight = collapsed || showsEqualizer(on: .right, module: playback.rightEar)
+        // 没有曲目时不画音浪:停着的音浪只是一排不动的点,看着像「加载中」。
+        let equalizerOnLeft = !isIdleNoTrack && !collapsed && showsEqualizer(on: .left, module: playback.leftEar)
+        let equalizerOnRight = !isIdleNoTrack && (collapsed || showsEqualizer(on: .right, module: playback.rightEar))
         // 音浪**独占**这只耳朵时的位置:非展开态一律贴外缘(左耳最左、右耳最右);只有
         // 卡片顶在宽度下限(最小宽,耳朵窄到音浪几乎填满可视段)时保持居中 —— 那是居中
         // 修好偏心的那个状态,宽度一放开居中就成了"飘在中间"。其余情况(耳朵里还有模块)
         // 本来就贴外缘 —— 那时音浪跟模块是一组,而文字跑马灯溢出时必须从外缘起排,不能居中。
         // **hover 展开态也不居中**(「展开要在最边上」):展开时耳朵宽出一大截,居中
         // 就成了飘在中间 —— 判据与推导见 soloEqualizerInset 的注释。
-        let soloEqualizerLeft = equalizerOnLeft && !isIdleNoTrack && !controller.isAdBreakNow
+        let soloEqualizerLeft = equalizerOnLeft && !controller.isAdBreakNow
             && leftModule == .none
         let soloEqualizerRight = equalizerOnRight && rightModule == .none
         let soloInset = NotchWidthBounds.soloEqualizerInset(

@@ -73,6 +73,8 @@ public struct NotchCardLayout: Equatable, Sendable {
     public var trackInfoShowsArtist: Bool
     public var trackInfoShowsAlbum: Bool
     public var expandedShowsQuickActions: Bool
+    /// 没有曲目时展开出来那块空闲面板的高度(`NotchExpandedMetrics.idlePanelHeight(showsLastTrack:showsQuote:)` 三档之一)。
+    public var idlePanelHeight: CGFloat
 
     public init(metrics: Metrics, isCollapsed: Bool, isExpanded: Bool, notchWidth: CGFloat, contentTopInset: CGFloat,
                 steadyCardWidth: CGFloat, expandedCardWidth: CGFloat, lyricRowHeight: CGFloat,
@@ -80,7 +82,8 @@ public struct NotchCardLayout: Equatable, Sendable {
                 hasTrackDrop: Bool, transientBannerActive: Bool, showsProgressLine: Bool,
                 progressLineStyle: NotchProgressLineStyle, showsLyrics: Bool, trackHasLyricPreview: Bool, trackHasScrubber: Bool, expandedShowsNextLine: Bool,
                 expandedShowsControls: Bool, trackInfoShowsArtwork: Bool, trackInfoShowsTitle: Bool,
-                trackInfoShowsArtist: Bool, trackInfoShowsAlbum: Bool, expandedShowsQuickActions: Bool) {
+                trackInfoShowsArtist: Bool, trackInfoShowsAlbum: Bool, expandedShowsQuickActions: Bool,
+                idlePanelHeight: CGFloat = NotchExpandedMetrics.idlePanelHeight(showsLastTrack: false, showsQuote: false)) {
         self.metrics = metrics
         self.isCollapsed = isCollapsed
         self.isExpanded = isExpanded
@@ -107,6 +110,7 @@ public struct NotchCardLayout: Equatable, Sendable {
         self.trackInfoShowsArtist = trackInfoShowsArtist
         self.trackInfoShowsAlbum = trackInfoShowsAlbum
         self.expandedShowsQuickActions = expandedShowsQuickActions
+        self.idlePanelHeight = idlePanelHeight
     }
 
     /// 收起态判据。`collapsesWhenPaused` 关掉暂停时就不收;`hideWhenNotPlaying` 开着时暂停直接缩进刘海、不经过收起态,
@@ -226,7 +230,7 @@ public struct NotchCardLayout: Equatable, Sendable {
     /// 关着歌词行时只给掉出来的歌名 / 横幅留一截)+ 关着歌词行时底边进度线那一截 + 展开区。
     public func cardHeight(expanded: Bool) -> CGFloat {
         if !hasTrack {
-            return contentTopInset + (expanded ? NotchExpandedMetrics.idlePanelHeight : 0)
+            return contentTopInset + (expanded ? idlePanelHeight : 0)
         }
         let lyricCell: CGFloat
         if showsLyrics || expanded {

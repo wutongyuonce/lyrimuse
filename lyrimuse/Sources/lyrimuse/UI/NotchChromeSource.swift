@@ -187,6 +187,9 @@ protocol NotchChromeSource: ObservableObject {
     /// 展开时多行歌词那一格的高度(`AppSettings.notchExpandedLyricListHeight`),关着「多行歌词」时为 0。
     /// 决定展开区高度,走"镜像 + 重算几何"那条链路(同 `lyricRowHeight`)。
     var expandedLyricListHeight: CGFloat { get }
+    /// 没有曲目时展开出来那块空闲面板的高度(`NotchIdleLastTrack.panelHeight`):真窗口还看「发现新播放器」挂没挂着,
+    /// 编辑台预览不挂那条提议。
+    var idlePanelHeight: CGFloat { get }
     /// 快捷操作里那颗 ✕:关掉「灵动岛歌词」总开关。真窗口走 `setVisible(false)`(跟设置页开关、菜单栏
     /// 面板同一个唯一入口),预览里是空实现 —— 预览卡整块 `allowsHitTesting(false)`,本来也点不到。
     func closeFromQuickAction()
@@ -209,7 +212,7 @@ extension NotchChromeSource {
             expandedShowsNextLine: expandedShowsNextLine, expandedShowsControls: expandedShowsControls,
             trackInfoShowsArtwork: expandedTrackInfoShowsArtwork, trackInfoShowsTitle: expandedTrackInfoShowsTitle,
             trackInfoShowsArtist: expandedTrackInfoShowsArtist, trackInfoShowsAlbum: expandedTrackInfoShowsAlbum,
-            expandedShowsQuickActions: expandedShowsQuickActions)
+            expandedShowsQuickActions: expandedShowsQuickActions, idlePanelHeight: idlePanelHeight)
     }
 
     var showsLyricRow: Bool { cardLayout.showsLyricRow }

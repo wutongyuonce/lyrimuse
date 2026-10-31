@@ -300,12 +300,13 @@ extension NotchLyricsView {
 
     /// 没有曲目时 hover 展开出来的那一块。卡片高度给它留的就是这一块(`cardHeight(expanded:)` 的无曲目分支),
     /// 不照有曲目的通式留「三键 + 进度条」—— 那块内容整个被 `hasTrack` 挡掉,留了就是一大块空黑。排法照曲目信息头部
-    /// (`trackInfoHeader`):左边两行字、右边一排 22pt 图标键,左内边距同样是歌词那一列的 16pt,上面留
+    /// (`trackInfoHeader`):左边封面和文字、右边一排 22pt 图标键,左内边距同样是歌词那一列的 16pt,上面留
     /// `trackInfoTopSpacing`,下面留 `idlePanelBottomSpacing`(它贴底,4pt 太紧)—— 有曲目和没曲目时
     /// 展开出来的是"同一个位置上的同一种东西",不是两套版式。
     ///
-    /// 文案与动作全部复用歌词窗口停播页那套(`IdleStandbyView.noTrackHero` / `IdlePlaybackActions`):
-    /// 「没有在播放」+「在 X 播放任意歌曲,歌词会自动出现」;第一颗键 AM / Spotify 是「继续播放」(三段式,
+    /// 左边是停播前最后那首(封面、歌名、「上次播放 · 歌手」、挑得出时一句歌词,`NotchIdleLastTrackInfo`),从没放过歌时是
+    /// 「未在播放」+ 提示;高度跟着分三档(`controller.idlePanelHeight`)。动作复用歌词窗口停播页那套(`IdlePlaybackActions`):
+    /// 第一颗键 AM / Spotify 是「继续播放」(三段式,
     /// 失败兜底激活 App),其它播放器没有 AppleScript、只给「打开 X」。后两颗是「设置…」「关闭灵动岛歌词」,
     /// 跟头部快捷操作同款、同分组线 —— 但**不看** `expandedShowsQuickActions` 那个开关:那开关管的是"头部
     /// 右侧那块空地要不要塞按钮",而这里的键是空闲面板存在的全部理由,关掉就只剩两行字。不放「搜索歌词」
@@ -318,20 +319,7 @@ extension NotchLyricsView {
         let canResume = IdlePlaybackActions.canResume(player)
         let name = player.displayName
         return HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: NotchExpandedMetrics.trackInfoLineSpacing) {
-                Text(L10n.t("未在播放"))
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(accentOrWhite.opacity(0.9))
-                // 提示句不点名播放器——
-                // 灵动岛这句是泛指,不像歌词窗口停播页那句要跟旁边「打开 X」按钮对上;右边那颗键的
-                // tooltip 仍带具体名字(那是一个具体动作的目标)。
-                Text(L10n.t("在播放器中播放任意歌曲，歌词将自动显示"))
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(accentOrWhite.opacity(0.6))
-            }
-            .lineLimit(1)
-            .truncationMode(.tail)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            NotchIdleLastTrackInfo(tint: accentOrWhite)
             HStack(spacing: 2) {
                 quickActionButton(canResume ? "play.fill" : "arrow.up.forward.app",
                                   label: canResume ? L10n.t("继续播放") : String(format: L10n.t("打开 %@"), name)) {

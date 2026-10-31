@@ -150,22 +150,40 @@ func runNotchTests() {
                     "播放控制键: maxHeight 关掉控制键必须比开着时矮")
     }
 
-    // ---- 没有曲目时的空闲面板(05 章决策 #31)----
+    // ---- 没有曲目时的空闲面板(05 章决策 #31、05 章决策 127)----
     //
-    // 窗口恒按「顶行 + 歌词行 + maxHeight」开,而空闲面板是 !hasTrack 时展开唯一长出的一块。它必须
-    // 放得进**最省配置**(歌词行调到最矮、下一句预览关、控制键关、头部全关 → maxHeight 只剩进度条 24pt)下的窗口,
-    // 否则关了那几个开关的用户 hover 上去面板底部会被窗口边界硬裁。
+    // 三档:两行字 49、上次那首(封面 32)54、再加一句歌词 62。编辑台舞台按「顶行 + 歌词行上限 + maxHeight」留,
+    // 最省配置(下一句预览关、控制键关、头部全关 → maxHeight 只剩进度条 24pt)下最高那档也得放得进;真窗口的高度里单独有一项兜着它。
     do {
         typealias M = NotchExpandedMetrics
-        let roomiestFloor = NotchLyricRowMetrics.minimumRowHeight
+        expectEqual(M.idlePanelHeight(showsLastTrack: false, showsQuote: false), 49, "空闲面板: 两行字那一档")
+        expectEqual(M.idlePanelHeight(showsLastTrack: false, showsQuote: true), 49, "空闲面板: 没有上次那首时不留歌词那一行")
+        expectEqual(M.idlePanelHeight(showsLastTrack: true, showsQuote: false), 54, "空闲面板: 上次那首按封面高度留")
+        expectEqual(M.idlePanelHeight(showsLastTrack: true, showsQuote: true), 62, "空闲面板: 再加一句歌词,行高同歌手那一行")
+        expectEqual(M.idlePanelMaxHeight, 62, "空闲面板: 最高那一档")
+        let stageFloor = NotchLyricRowMetrics.rowHeight
             + M.maxHeight(hasLyricPreviewPossible: false, hasControlsPossible: false, trackInfoHeight: 0)
-        expectEqual(M.idlePanelHeight <= roomiestFloor, true,
-                    "空闲面板: 高度 \(M.idlePanelHeight) 必须放得进最省配置下的窗口(歌词行 + maxHeight = \(roomiestFloor))")
-        // 两行字 + 上下留白的账,跟头部的行高常量同源 —— 改任何一个常量这里都会跟着动,不钉死具体数字。
-        expectEqual(M.idlePanelHeight,
-                    M.trackInfoHeight(showsArtwork: false, showsTitle: true, showsArtist: true, showsAlbum: false,
-                                      showsActions: true) + M.trackInfoTopSpacing + M.idlePanelBottomSpacing,
-                    "空闲面板: 高度 = 头部两行字(含快捷键那一档) + 顶部间距 + 底部间距")
+        expectEqual(M.idlePanelMaxHeight <= stageFloor, true,
+                    "空闲面板: 最高 \(M.idlePanelMaxHeight) 必须放得进最省配置下的编辑台舞台(歌词行上限 + maxHeight = \(stageFloor))")
+        let controller = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("lyrimuse/UI/NotchLyricsWindowController.swift"), encoding: .utf8)) ?? ""
+        expectEqual(sourceHas(controller, "geo.notchHeight + NotchExpandedMetrics.idlePanelMaxHeight"), true,
+                    "空闲面板(契约): 真窗口高度单独留一项最高那档,歌词行调到最矮时面板也不被裁")
+        func ui(_ name: String) -> String {
+            (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("lyrimuse/UI/" + name), encoding: .utf8)) ?? ""
+        }
+        let view = ui("NotchLyricsView.swift"), topRow = ui("NotchLyricsView+TopRow.swift"), preview = ui("NotchPreviewChrome.swift")
+        expectEqual(sourceHas(view, "height: controller.idlePanelHeight, alignment: .top)"), true,
+                    "空闲面板(契约): 面板的框跟卡片高度读同一个 idlePanelHeight")
+        expectEqual(sourceHas(controller, "NotchIdleLastTrack.panelHeight(track: track, quote: quote, promptShowing: offer != nil)")
+                    && sourceHas(preview, "NotchIdleLastTrack.panelHeight(track: track, quote: quote, promptShowing: false)"), true,
+                    "空闲面板(契约): 真窗口和编辑台预览按同一份「上次那首」定高度,真窗口另看新播放器提议")
+        expectEqual(sourceHas(controller, "if hoverOpening, !hasTrack { NotchIdleLastTrack.shared.rerollQuote() }"), true,
+                    "空闲面板(契约): 每次悬停展开换一句")
+        expectEqual(sourceHas(topRow, "let equalizerOnLeft = !isIdleNoTrack &&")
+                    && sourceHas(topRow, "let equalizerOnRight = !isIdleNoTrack && (collapsed ||"), true,
+                    "空闲面板(契约): 没有曲目时两只耳朵都不画音浪")
     }
 
     // MARK: - VocalEnvelope:灵动岛音浪的人声包络(起音脉冲 + 换气泄放)
@@ -343,6 +361,8 @@ func runNotchTests() {
         let idle = with { $0.hasTrack = false }
         expectEqual(idle.cardHeight, 32, "卡片布局: 没曲目时稳态只剩顶行")
         expectEqual(idle.cardHeight(expanded: true), 81, "卡片布局: 没曲目时展开只长出空闲面板 49")
+        expectEqual(with { $0.hasTrack = false; $0.idlePanelHeight = 62 }.cardHeight(expanded: true), 94,
+                    "卡片布局: 空闲面板按承载方给的那一档高度长")
         expectEqual(idle.showsLyricRow || idle.showsExpandedTrackInfo, false, "卡片布局: 没曲目时歌词行、头部都不画")
         // 关着「显示歌词」:稳态退成状态栏,掉歌名 / 横幅 / 进度线各多长一截;展开照常留歌词行。
         let noLyrics = with { $0.showsLyrics = false }
@@ -500,7 +520,7 @@ func runNotchTests() {
                      "expandedShowsNextLine: expandedShowsNextLine", "expandedShowsControls: expandedShowsControls",
                      "trackInfoShowsArtwork: expandedTrackInfoShowsArtwork", "trackInfoShowsTitle: expandedTrackInfoShowsTitle",
                      "trackInfoShowsArtist: expandedTrackInfoShowsArtist", "trackInfoShowsAlbum: expandedTrackInfoShowsAlbum",
-                     "expandedShowsQuickActions: expandedShowsQuickActions"]
+                     "expandedShowsQuickActions: expandedShowsQuickActions", "idlePanelHeight: idlePanelHeight"]
         expectEqual(pairs.filter { !wiring.contains($0) }, [], "卡片布局接线: 承载方每一项状态填进 NotchCardLayout 对应的参数(05 章决策 109)")
     }
 
@@ -1531,7 +1551,7 @@ func runNotchTests() {
                         && ctrlSrc.contains("ListenMilestoneCenter.shared.$current.removeDuplicates().sink")
                         && ctrlSrc.contains("subscriptions.removeAll()"), true,
                         "里程碑契约: 控制器镜像报喜、撑开卡片,收尾取消订阅")
-            expectEqual(ctrlSrc.contains("geo.notchHeight + NotchMetrics.milestonePanelHeight + NotchMetrics.milestoneConfettiReach))"), true,
+            expectEqual(ctrlSrc.contains("geo.notchHeight + NotchMetrics.milestonePanelHeight + NotchMetrics.milestoneConfettiReach,"), true,
                         "里程碑契约: 窗口高度兜得住报喜卡片和它下沿落出去的碎屑")
             let confettiSrc = src("NotchMilestonePanel.swift")
             expectEqual(confettiSrc.contains("dy: .random(in: NotchMetrics.milestoneConfettiDrop)")
@@ -1807,7 +1827,7 @@ func runNotchTests() {
         expectEqual(view.contains("var trackInfoShowsTrackFields: Bool { cardLayout.trackInfoShowsTrackFields }")
                     && view.contains("isAdBreak: isAdBreakNow,"), true,
                     "广告态契约: 头部四项曲目字段在广告期间不画")
-        expectEqual(view.contains("expandedShowsQuickActions: expandedShowsQuickActions)"), true,
+        expectEqual(view.contains("expandedShowsQuickActions: expandedShowsQuickActions,"), true,
                     "广告态契约: 快捷操作不受广告态挡(广告期间头部照样画那四颗键)")
         expectEqual(view.contains("var expandedTrackInfoHeight: CGFloat { cardLayout.expandedTrackInfoHeight }"), true,
                     "广告态契约: 头部高度算术按广告态去掉四项曲目字段")

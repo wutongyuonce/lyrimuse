@@ -46,6 +46,8 @@ final class NotchPreviewChrome: ObservableObject, NotchChromeSource {
     /// 真窗口一样画空闲那一套(左耳 App 图标、整卡纯黑、展开是空闲面板);别写死成 true,那样预览会画出一张
     /// 真窗口从来不会出现的「有曲目但全空」的卡片(空歌词行、播放键)。
     @Published private(set) var hasTrack = false
+    /// 空闲面板的高度:跟真窗口读同一份「上次那首」,预览不挂「发现新播放器」提议。
+    @Published private(set) var idlePanelHeight = NotchIdleLastTrack.panelHeight(track: nil, quote: nil, promptShowing: false)
     /// 此刻在放的是不是广告:跟真窗口同源(`PlaybackCoordinator.isCurrentTrackAdBreak`),预览跟真窗口一样进广告态。
     /// 广告态的门槛轮询不归预览登记,见 `NotchLyricsView.drivesAdSkipGate`。
     @Published private(set) var isAdBreakNow = false
@@ -115,11 +117,18 @@ final class NotchPreviewChrome: ObservableObject, NotchChromeSource {
                 if self.hasTrack != present { self.hasTrack = present }
                 if self.isAdBreakNow != isAd { self.isAdBreakNow = isAd }
             }
+        let idleTrack = NotchIdleLastTrack.shared
+        idlePanelSubscription = idleTrack.$track.combineLatest(idleTrack.$quote)
+            .sink { [weak self] track, quote in
+                let height = NotchIdleLastTrack.panelHeight(track: track, quote: quote, promptShowing: false)
+                if self?.idlePanelHeight != height { self?.idlePanelHeight = height }
+            }
     }
 
     private var screenSubscription: AnyCancellable?
     private var cornerSubscription: AnyCancellable?
     private var trackSubscription: AnyCancellable?
+    private var idlePanelSubscription: AnyCancellable?
 
     /// 快捷操作的 ✕ 在预览里**故意**是空实现:预览卡整块 `allowsHitTesting(false)`,点不到;真要能点到
     /// 也不该让"预览"把用户的灵动岛关掉(预览卡上的可点区域只开浮层、不产生副作用,见 05 章)。

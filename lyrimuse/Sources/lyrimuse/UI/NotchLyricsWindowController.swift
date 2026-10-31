@@ -181,6 +181,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 此刻有没有一首曲目 —— 决定歌词行整行占不占高度(见协议 NotchChromeSource.hasTrack)。
     /// 由 CombineLatest3 一次给全三个值,不存在"回头读存储属性拿到旧值"那个坑。
     @Published private(set) var hasTrack: Bool = false
+    /// 空闲面板此刻的高度,见协议 `NotchChromeSource.idlePanelHeight`。
+    @Published private(set) var idlePanelHeight: CGFloat = NotchIdleLastTrack.panelHeight(track: nil, quote: nil, promptShowing: false)
 
     /// 有没有曲目的判据:歌名、歌手有一个不空,或正在放广告。设置页编辑台的预览(`NotchPreviewChrome`)用同一个。
     static func trackPresent(title: String, artist: String, isAdBreak: Bool) -> Bool {
@@ -403,6 +405,15 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
             self?.isAdBreakNow = isAd
         }
         .store(in: &subscriptions)
+
+        // 空闲面板三档高度:上次那首、挑出的那句、「发现新播放器」提议一起定,存 sink 参数值。
+        let idleTrack = NotchIdleLastTrack.shared
+        Publishers.CombineLatest3(idleTrack.$track, idleTrack.$quote, NotchUnknownPlayerPrompt.shared.$offer)
+            .sink { [weak self] track, quote, offer in
+                let height = NotchIdleLastTrack.panelHeight(track: track, quote: quote, promptShowing: offer != nil)
+                if self?.idlePanelHeight != height { self?.idlePanelHeight = height }
+            }
+            .store(in: &subscriptions)
 
         // 有没有曲目(没曲目时歌词行不该全空还占着高度)。三个输入必须**同时**拿到才能算,所以用
         // CombineLatest3 而不是三个独立 sink —— 独立 sink 里只能拿到自己那一个参数,另外两个得回头读
@@ -978,6 +989,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         // 回读播放模式、「喜欢」只在指针悬停展开时做:提醒、报喜撑开卡片时那几颗键被盖着,而且每块屏的副本会同时撑开。
         let hoverOpening = opening && hoverExpanded && !alertHold && !milestoneHold
         if next != isExpanded { isExpanded = next }
+        if hoverOpening, !hasTrack { NotchIdleLastTrack.shared.rerollQuote() }
         // 展开区的随机 / 循环键(只给随机、循环此刻都能切的播放器)跟播放器对一次表:用户可能在那边自己改过模式,
         // 没有事件通知得到。只在两颗键会出现时读,别的播放器不为这次悬停起脚本子进程。
         if hoverOpening, expandedShowsControls,
@@ -1658,7 +1670,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
             width: expandedCardWidth,
             // 歌词那一格按两种排法里高的那种留:这首有歌词、开着多行歌词时是列表,别的歌照旧是一行歌词。
             height: max(geo.notchHeight + max(lyricRowHeight, expandedLyricListHeight) + expandedExtraHeightMax,
-                        geo.notchHeight + NotchMetrics.milestonePanelHeight + NotchMetrics.milestoneConfettiReach))
+                        geo.notchHeight + NotchMetrics.milestonePanelHeight + NotchMetrics.milestoneConfettiReach,
+                        geo.notchHeight + NotchExpandedMetrics.idlePanelMaxHeight))
         // 必须先取成整点,规则跟 AppKit 自己对窗口 frame 做的一致(实测:原点向下取整、宽高
         // 向上取整)。刘海高度 `safeAreaInsets.top` 在部分机型 / 缩放档下带小数(如 33.5),
         // 不取整的话:① 下面的判等永远不等(window.frame 已被取整),每次调用都白做一次同步
