@@ -75,10 +75,10 @@ func runTelemetryTests() {
 
     do {
         print("\n== 遥测:每日活动记账 ==")
-        let suiteName = "lyrimuse-selftest-telemetry-\(getpid())"
-        let defaults = UserDefaults(suiteName: suiteName)!
-        defer { defaults.removePersistentDomain(forName: suiteName) }
-        let activity = TelemetryActivity(defaults: defaults)
+        // 用本进程自己的偏好域、带 pid 的键:另开 suite 会在 ~/Library/Preferences 留下一个文件。
+        let key = "selftest.telemetryActivity.\(getpid())"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
+        let activity = TelemetryActivity(defaults: .standard, key: key)
         let day1 = Date(timeIntervalSince1970: 1_793_300_000)
         let day2 = day1.addingTimeInterval(86_400)
         let music = PlaybackPlayer.appleMusic.bundleIdentifier
