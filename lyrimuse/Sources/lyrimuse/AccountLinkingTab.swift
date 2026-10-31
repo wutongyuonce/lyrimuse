@@ -197,11 +197,11 @@ enum AccountDestination: Hashable, CaseIterable, Identifiable {
         }
     }
 
-    /// 住在侧栏的「实验室」里(总览页 LabsPage 列出它们)。Last.fm、Discord 在顶上的身份区。
+    /// 住在侧栏的「实验室」里(总览页 LabsPage 列出它们)。Last.fm、Discord 在顶上的身份区,推送提醒是分类组里的一行。
     var livesInLabs: Bool {
         switch self {
-        case .listenBrainz, .stateRelay, .bark: return true
-        case .lastfm, .discord: return false
+        case .listenBrainz, .stateRelay: return true
+        case .lastfm, .discord, .bark: return false
         }
     }
 }
@@ -472,7 +472,6 @@ struct AccountSidebarRow: View {
         } icon: {
             accountIconBadge(destination)
         }
-        .padding(.vertical, 2)
     }
 }
 
@@ -576,7 +575,7 @@ struct AccountLinkingTab: View {
                         if destination == .discord {
                             discordAccountChip
                                 .padding(.top, 4)
-                        } else if destination.livesInLabs {
+                        } else if destination != .lastfm {
                             labsStatusChip
                                 .padding(.top, 4)
                         }

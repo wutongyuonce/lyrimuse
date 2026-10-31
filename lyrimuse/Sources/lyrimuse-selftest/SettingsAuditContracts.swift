@@ -76,6 +76,10 @@ func runSettingsAuditContracts() {
                 && sourceHas(view, "Button { selection = .account(.lastfm) } label: {")
                 && sourceHas(view, "Button { selection = .labs } label: {"), true,
                 "侧栏: 会被当成上一级亮着的三行包在按钮里,亮着时点它照样回到它自己那一页")
+    let sidebarRows = sourceBody("@ViewBuilder private var sidebarSections: some View", in: view)
+    expectEqual(sourceHas(app("AccountLinkingTab.swift"), "case .listenBrainz, .stateRelay: return true\n        case .lastfm, .discord, .bark: return false")
+                && sourceHas(sidebarRows, "sidebarLabel(.shortcuts)\n            AccountSidebarRow(destination: .bark)\n                .tag(SettingsSidebarItem.account(.bark))\n            sidebarLabel(.general)"), true,
+                "侧栏: 推送提醒不在实验室,是分类组里「通用」前面的一行")
     let deleteCopies = sourceBody("private func confirmDeleteLyricsWordFormatCopies()", in: view)
     expectEqual(sourceHas(deleteCopies, "guard alert.runModal() == .alertFirstButtonReturn else { return }")
                 && (deleteCopies.range(of: "runModal")?.lowerBound ?? deleteCopies.endIndex)

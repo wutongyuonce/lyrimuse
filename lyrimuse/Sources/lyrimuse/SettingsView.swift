@@ -482,7 +482,7 @@ struct SettingsView: View {
     /// 平时(不在搜索)的侧栏内容,按系统「设置」的侧栏排布(对照表见
     /// Settings/SettingsSidebarChrome.swift 头注):
     ///   ① 身份区(Last.fm 头像 + 用户名,其下「关联平台」一行)+ 有待处理建议时的「Last.fm 账号建议」行 + 有新版本时的「有软件更新可用」行;
-    ///   ② 六个分类,分组之间只留空白、不加小标题 —— 系统设置的侧栏没有这种标题;
+    ///   ② 六个分类和「推送提醒」(排在「通用」前面,行尾带推送状态),分组之间只留空白、不加小标题 —— 系统设置的侧栏没有这种标题;
     ///   ③ 「实验室」单独一组、一行普通分类,点进去是总览页(LabsPage)。别改回可折叠的 Section:折叠标题是一行淡灰小字,
     ///      看不出能点,而且每次开窗都是收起的,里面的功能不翻就不知道有。见 14 章决策 106。
     @ViewBuilder private var sidebarSections: some View {
@@ -514,6 +514,8 @@ struct SettingsView: View {
             sidebarLabel(.player)
             sidebarLabel(.appearance)
             sidebarLabel(.shortcuts)
+            AccountSidebarRow(destination: .bark)
+                .tag(SettingsSidebarItem.account(.bark))
             sidebarLabel(.general)
             Button { selection = .tab(.about) } label: {
                 sidebarLabel(.about)
@@ -748,6 +750,7 @@ struct SettingsView: View {
         }
         rows.append(.label(LinkedPlatformsRow.title))
         rows.append(.account(LabsSidebarRow.title))
+        rows.append(.account(AccountDestination.bark.title))
         rows += [.badge(SoftwareUpdateSidebarRow.title), .badge(LastfmSuggestionsSidebarRow.title),
                  .identityTitle(LastfmIdentityRow.connectTitle),
                  .identitySubtitle(LastfmIdentityRow.connectSubtitle), .identitySubtitle(LastfmIdentityRow.connectedSubtitle)]

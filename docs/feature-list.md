@@ -56,7 +56,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Scrobble to ListenBrainz too](#feature-listenbrainz) | Settings › Labs › ListenBrainz › Account Info |
 | [Show what you're playing on Discord](#feature-discord) | Settings › Discord › Show on Discord |
 | [A shareable now-playing web page](#feature-now-playing-page) | Settings › Labs › Web Push › Connection Info |
-| [Daily, weekly, monthly and yearly listening digests](#feature-digests) | Settings › Labs › Push Alerts › Push Channels |
+| [Daily, weekly, monthly and yearly listening digests](#feature-digests) | Settings › Push Alerts › Push Channels |
 | [Launch silently](#feature-silent-launch) | Settings › General › Startup & Notifications › Launch Silently |
 | [Notify when the song changes](#feature-song-notifications) | Settings › General › Startup & Notifications › Notify When the Song Changes |
 | [Automatic updates and betas](#feature-updates) | Settings › Software Update › Update Settings › Check Automatically |
@@ -722,19 +722,19 @@ A public page with what you are playing and your history, with optional guestboo
 
 ### Daily, weekly, monthly and yearly listening digests
 
-Pushed to the channels you set up, as many as you like: Bark, ntfy, ServerChan, Feishu, DingTalk, WeCom, Telegram, Discord, Slack or a generic webhook. Each channel can preview how a push will look and send a test, and the delivery history shows whether each push arrived, with a resend for the ones that didn't. Reports compare with the previous period, name the artists you listened to for the first time and estimate how long you listened, formatted for each platform with the album cover and a link to the full chart. Each of the four has its own switch and, with several channels, its own choice of channels; you pick the time they're pushed (in the Mac's current time zone) and how many top items each list shows, and each channel can use the full, brief or summary report, or your own title and body with placeholders. Under Labs.
+Pushed to the channels you set up, as many as you like: Bark, ntfy, ServerChan, Feishu, DingTalk, WeCom, Telegram, Discord, Slack or a generic webhook. Each channel can preview how a push will look and send a test, and the delivery history shows whether each push arrived, with a resend for the ones that didn't. Reports compare with the previous period, name the artists you listened to for the first time and estimate how long you listened, formatted for each platform with the album cover and a link to the full chart. Each of the four has its own switch and, with several channels, its own choice of channels; you pick the time they're pushed (in the Mac's current time zone) and how many top items each list shows, and each channel can use the full, brief or summary report, or your own title and body with placeholders.
 
 - Off by default
-- Settings: Labs › Push Alerts › Push Channels
-- Settings: Labs › Push Alerts › Push Time
-- Settings: Labs › Push Alerts › Listening Digests
-- Settings: Labs › Push Alerts › Data Source
-- Settings: Labs › Push Alerts › Items per List
-- Settings: Labs › Push Alerts › Daily Listening Report
-- Settings: Labs › Push Alerts › Weekly Listening Digest
-- Settings: Labs › Push Alerts › Monthly Listening Digest
-- Settings: Labs › Push Alerts › Yearly Listening Digest
-- Settings: Labs › Push Alerts › Delivery History
+- Settings: Push Alerts › Push Channels
+- Settings: Push Alerts › Push Time
+- Settings: Push Alerts › Listening Digests
+- Settings: Push Alerts › Data Source
+- Settings: Push Alerts › Items per List
+- Settings: Push Alerts › Daily Listening Report
+- Settings: Push Alerts › Weekly Listening Digest
+- Settings: Push Alerts › Monthly Listening Digest
+- Settings: Push Alerts › Yearly Listening Digest
+- Settings: Push Alerts › Delivery History
 
 <a id="section-general"></a>
 
@@ -1308,7 +1308,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **Connection Info**: Deploy the web app first and get an access token. Setup steps are in the project README: https://github.com/Yudaotor/lyrimuse
 
-### Labs › Push Alerts
+### Push Alerts
 
 - **Push Channels**: Listening reports go to every enabled channel. With several channels, pick channels for each report under Listening Reports below. Click a row to edit or send a test; right-click to delete
 - **Push Time**
