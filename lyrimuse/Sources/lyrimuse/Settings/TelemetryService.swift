@@ -112,7 +112,7 @@ final class TelemetryService {
             let activity = TelemetryActivity.shared.completedDays(before: today)
             let beat = TelemetryHeartbeat(installID: installID, day: today, env: env, features: features(),
                                           activity: activity)
-            if await post(beat, to: Telemetry.heartbeatURL, operation: "heartbeat") {
+            if let status = await post(beat, to: Telemetry.heartbeatURL, operation: "heartbeat"), (200..<300).contains(status) {
                 defaults.set(today, forKey: Keys.lastHeartbeatDay)
                 TelemetryActivity.shared.remove(days: activity.map(\.day))
             }
@@ -125,20 +125,30 @@ final class TelemetryService {
         var count = crashesSent(on: today)
         guard count < Telemetry.maxCrashesPerDay else { return }
         let cutoff = max(since, Date().addingTimeInterval(-Telemetry.crashLookback))
-        let scan = await Task.detached { DiagnosticsExporter.scanCrashReports(since: cutoff) }.value
         var sent = defaults.stringArray(forKey: Keys.sentCrashReports) ?? []
+        let alreadySent = Set(sent)
+        // 发过的按文件名先跳过,不再读、不再解析。
+        let scan = await Task.detached {
+            DiagnosticsExporter.scanCrashReports(since: cutoff) { alreadySent.contains(Telemetry.reportID(fileName: $0)) }
+        }.value
         for report in scan.reports.sorted(by: { $0.modified < $1.modified }) {
             guard count < Telemetry.maxCrashesPerDay else { break }
             let id = Telemetry.reportID(fileName: report.summary.fileName)
-            guard !sent.contains(id) else { continue }
             let crash = TelemetryCrash(summary: report.summary, reportID: id,
                                        executableName: DiagnosticsExporter.crashExecutableName,
                                        installID: installID, env: env)
-            guard await post(crash, to: Telemetry.crashURL, operation: "crash") else { break }
+            let status = await post(crash, to: Telemetry.crashURL, operation: "crash")
+            // 4xx 是这一份本身不合格(过大、字段不对),重发也一样,记为发过、接着发下一份;连不上、5xx 才停下等下次。
+            if let status, (400..<500).contains(status) {
+                logger.notice("telemetry: crash report rejected with \(status, privacy: .public), skipped")
+            } else if !(status.map { (200..<300).contains($0) } ?? false) {
+                break
+            } else {
+                count += 1
+                defaults.set("\(today)|\(count)", forKey: Keys.crashesSentDay)
+            }
             sent.append(id)
-            count += 1
             defaults.set(Array(sent.suffix(Telemetry.sentCrashMemory)), forKey: Keys.sentCrashReports)
-            defaults.set("\(today)|\(count)", forKey: Keys.crashesSentDay)
         }
     }
 
@@ -192,19 +202,20 @@ final class TelemetryService {
             romanization: settings.showRomanization || settings.overlayShowRomanization,
             machineTranslation: store.lyricsMachineTranslation,
             accounts: accounts.filter(\.0).map(\.1),
-            trustedPlayers: Array(store.trustedPlayers.keys.prefix(40)),
+            trustedPlayers: Array(store.trustedPlayers.keys),
             webPlatforms: settings.browserPlatformPairs.filter { !$0.value.isEmpty }.map(\.key),
             showInDock: settings.showInDock,
             launchAtLogin: settings.launchAtLoginEnabled,
             betaUpdates: settings.receiveBetaUpdates)
     }
 
-    /// 发一条;2xx 才算发出去。等回应的这段时间里用户关掉了遥测,这一条照样发完,之后不再发。
-    private func post<T: Encodable>(_ payload: T, to url: URL, operation: String) async -> Bool {
-        guard AppSettings.shared.telemetryEnabled else { return false }
+    /// 发一条,返回 HTTP 状态码;没发(关着、编码失败)或连不上为 nil。等回应的这段时间里用户关掉了遥测,这一条照样发完,
+    /// 之后不再发。
+    private func post<T: Encodable>(_ payload: T, to url: URL, operation: String) async -> Int? {
+        guard AppSettings.shared.telemetryEnabled else { return nil }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        guard let body = try? encoder.encode(payload) else { return false }
+        guard let body = try? encoder.encode(payload) else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 15
@@ -219,12 +230,12 @@ final class TelemetryService {
             let status = (response as? HTTPURLResponse)?.statusCode
             NetworkAuditLog.record(service: "telemetry", operation: operation, host: host, statusCode: status,
                                    durationMs: Date().timeIntervalSince(start) * 1000, error: nil)
-            return status.map { (200..<300).contains($0) } ?? false
+            return status
         } catch {
             NetworkAuditLog.record(service: "telemetry", operation: operation, host: host, statusCode: nil,
                                    durationMs: Date().timeIntervalSince(start) * 1000, error: error)
             logger.notice("telemetry: \(operation, privacy: .public) not sent: \(error.localizedDescription, privacy: .public)")
-            return false
+            return nil
         }
     }
 }

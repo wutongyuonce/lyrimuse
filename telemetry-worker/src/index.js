@@ -10,10 +10,12 @@
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
-const TAG_RE = /^[a-z0-9][a-z0-9.-]{0,31}$/;
+// 枚举值:PlaybackPlayer 的 rawValue(apple_music)、网页平台 id(youtubeMusic)、arch(x86_64) 都要过。
+// selftest telemetry 组拿 App 侧真实取值逐个对这两个正则。
+const TAG_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const HEX16_RE = /^[0-9a-f]{16}$/;
-// bundle id:内置播放器的 id 也符合这个写法。
-const ID_RE = /^[A-Za-z0-9][A-Za-z0-9.-]{0,99}$/;
+// bundle id 与 players_played 里的播放器(内置的 rawValue 带下划线)。
+const ID_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
 const MAX_BODY = 32 * 1024;
 const MAX_CRASHES_PER_INSTALL_DAY = 20;
 const DAY_MS = 86_400_000;
@@ -243,8 +245,8 @@ async function stats(request, env, url) {
                 GROUP BY install_id) l ON h.install_id = l.install_id AND h.day = l.d`).bind(since).all(),
     db.prepare(`SELECT install_id, players_played, hangs FROM activity WHERE day >= ?1`).bind(since).all(),
     db.prepare(`SELECT signature, process, exception_type, termination_indicator, COUNT(*) AS n,
-                       COUNT(DISTINCT install_id) AS installs, MIN(app_version) AS min_version,
-                       MAX(app_version) AS max_version, MAX(received_at) AS last_at,
+                       COUNT(DISTINCT install_id) AS installs, GROUP_CONCAT(DISTINCT app_version) AS versions,
+                       MAX(received_at) AS last_at,
                        (SELECT frames FROM crashes c2 WHERE c2.signature = c.signature ORDER BY received_at DESC LIMIT 1) AS frames,
                        (SELECT termination_reasons FROM crashes c3 WHERE c3.signature = c.signature ORDER BY received_at DESC LIMIT 1) AS reasons
                 FROM crashes c WHERE day >= ?1 GROUP BY signature ORDER BY n DESC LIMIT 50`).bind(since).all(),
@@ -283,8 +285,24 @@ async function stats(request, env, url) {
     players_played: Object.entries(playedByInstall).map(([k, v]) => [k, v.size]).sort((a, b) => b[1] - a[1]),
     hangs: { total: hangs, installs: installsWithHangs.size },
     machines: rows.length,
-    crashes: crashes.results.map((c) => ({ ...c, frames: safeJSON(c.frames, []), reasons: safeJSON(c.reasons, []) })),
+    crashes: crashes.results.map(({ versions, ...c }) => {
+      const sorted = (versions || "").split(",").filter(Boolean).sort(compareVersions);
+      return { ...c, min_version: sorted[0] || null, max_version: sorted[sorted.length - 1] || null,
+               frames: safeJSON(c.frames, []), reasons: safeJSON(c.reasons, []) };
+    }),
   });
+}
+
+// 按点分的数字段比较(1.9.0 < 1.12.0),预发布后缀按字符串比。
+function compareVersions(a, b) {
+  const pa = a.split(/[.-]/), pb = b.split(/[.-]/);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const x = pa[i] ?? "", y = pb[i] ?? "";
+    const nx = /^\d+$/.test(x) ? Number(x) : NaN, ny = /^\d+$/.test(y) ? Number(y) : NaN;
+    if (!Number.isNaN(nx) && !Number.isNaN(ny)) { if (nx !== ny) return nx - ny; continue; }
+    if (x !== y) return x < y ? -1 : 1;
+  }
+  return 0;
 }
 
 function safeJSON(text, fallback) {

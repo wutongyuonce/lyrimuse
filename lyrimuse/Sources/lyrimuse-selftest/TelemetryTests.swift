@@ -4,11 +4,11 @@ import LyrimuseCore
 func runTelemetryTests() {
     do {
         print("\n== 遥测:日期、心跳判据、写法 ==")
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
         // 北京时间刚过零点、UTC 还是前一天:按本地日期算。
         let justAfterMidnight = Date(timeIntervalSince1970: 1_793_377_800)
-        expectEqual(Telemetry.day(justAfterMidnight, calendar: calendar), "2026-10-31", "日期: 按本地自然日")
+        expectEqual(Telemetry.day(justAfterMidnight, timeZone: TimeZone(identifier: "Asia/Shanghai")!), "2026-10-31",
+                    "日期: 按本地自然日")
+        expectEqual(Telemetry.day(justAfterMidnight, timeZone: TimeZone(identifier: "UTC")!), "2026-10-30", "日期: 跟着时区走")
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: nil), true, "心跳: 从没发过要发")
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: "2026-10-30"), true, "心跳: 新的一天要发")
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: "2026-10-31"), false, "心跳: 今天发过不再发")
@@ -28,11 +28,16 @@ func runTelemetryTests() {
                     PlaybackPlayer.appleMusic.rawValue, "播放器: 内置的照旧用目录 id")
         expectEqual(Telemetry.playerTag(forBundleID: "weird id/with space", trusted: ["weird id/with space"]), "other",
                     "播放器: 不像 bundle id 的写法不发")
-        expectEqual(TelemetryFeatures(surfaces: [], playersSelected: [], lyricsSourceMode: "smart", lyricsSourcesEnabled: 1,
-                                      translation: false, romanization: false, machineTranslation: false, accounts: [],
-                                      trustedPlayers: ["com.b", "/Users/x/a.app", "com.a"], webPlatforms: [],
-                                      showInDock: false, launchAtLogin: false, betaUpdates: false).trustedPlayers,
-                    ["com.a", "com.b"], "信任列表: 只发 bundle id、排好序")
+        func features(trusted: [String]) -> TelemetryFeatures {
+            TelemetryFeatures(surfaces: [], playersSelected: [], lyricsSourceMode: "smart", lyricsSourcesEnabled: 1,
+                              translation: false, romanization: false, machineTranslation: false, accounts: [],
+                              trustedPlayers: trusted, webPlatforms: [], showInDock: false, launchAtLogin: false, betaUpdates: false)
+        }
+        expectEqual(features(trusted: ["com.b", "/Users/x/a.app", "com.a"]).trustedPlayers, ["com.a", "com.b"],
+                    "信任列表: 只发 bundle id、排好序")
+        let many = (0..<50).map { String(format: "com.app%02d", $0) }
+        expectEqual(features(trusted: many.shuffled() + ["bad id"]).trustedPlayers, Array(many.prefix(TelemetryFeatures.maxTrustedPlayers)),
+                    "信任列表: 先过滤排序再截,每次发的是同一批")
 
         expectEqual(TelemetryEnvironment.languageOnly("zh-Hans-CN"), "zh-Hans", "语言: 去掉地区、留文字")
         expectEqual(TelemetryEnvironment.languageOnly("en-US"), "en", "语言: 去掉地区")
@@ -79,6 +84,12 @@ func runTelemetryTests() {
         expectEqual(crash.terminationReasons, ["Library not loaded: <path>", "a", "b"], "终止原因: 脱敏、最多三条")
         expectEqual(crash.frames.count, Telemetry.maxCrashFrames, "帧: 截到上限")
         expectEqual(crash.frames.first, TelemetryCrash.Frame(image: "lyrimuse", symbol: "f0", offset: 0), "帧: 只带镜像、符号、偏移")
+        var huge = summary
+        huge.terminationReasons = [String(repeating: "x", count: 5000)]
+        huge.frames = [CrashReportSummary.Frame(imageName: "lyrimuse", symbol: String(repeating: "S", count: 5000), imageOffset: 1)]
+        let clipped = TelemetryCrash(summary: huge, reportID: id, executableName: "lyrimuse", installID: "i", env: env)
+        expectEqual(clipped.terminationReasons.first?.count, Telemetry.crashReasonLimit, "崩溃负载: 终止原因截到上限")
+        expectEqual(clipped.frames.first?.symbol?.count, Telemetry.crashSymbolLimit, "崩溃负载: 符号截到上限")
         let json = (try? JSONEncoder().encode(crash)).flatMap { String(data: $0, encoding: .utf8) } ?? ""
         expectEqual(json.contains("/Users") || json.contains("alice") || json.contains("Foo.swift"), false,
                     "崩溃负载: 不带路径、用户名、源码文件")
@@ -149,6 +160,23 @@ func runTelemetryTests() {
                                                    "exception_type", "termination_indicator", "frames"]
         let missing = fields.filter { !worker.contains($0) }
         expectEqual(missing, [], "Worker: 认得 App 发的每个字段")
+        // Worker 的两个白名单正则要放过 App 真实会发的每个取值(只比键名测不出取值被丢)。
+        func workerRegex(_ name: String) -> NSRegularExpression? {
+            guard let line = worker.split(separator: "\n").first(where: { $0.hasPrefix("const \(name) = /") }),
+                  let open = line.firstIndex(of: "/"), let close = line.lastIndex(of: "/"), open < close else { return nil }
+            return try? NSRegularExpression(pattern: String(line[line.index(after: open)..<close]))
+        }
+        func passes(_ re: NSRegularExpression?, _ value: String) -> Bool {
+            re?.firstMatch(in: value, range: NSRange(value.startIndex..., in: value)) != nil
+        }
+        let tagRE = workerRegex("TAG_RE"), idRE = workerRegex("ID_RE")
+        expectEqual(tagRE != nil && idRE != nil, true, "Worker: 读得到 TAG_RE、ID_RE")
+        let tagValues = PlaybackPlayer.allCases.map(\.rawValue) + BrowserPositionProbe.supportedPlatforms.map(\.id)
+            + ["arm64", "x86_64", "smart", "priority", "web-lyrics", "apple-music"]
+        expectEqual(tagValues.filter { !passes(tagRE, $0) }, [], "Worker: TAG_RE 放过播放器 id、网页平台 id、芯片、匹配算法")
+        let idValues = PlaybackPlayer.allCases.map(\.rawValue) + ["com.apple.Safari", "company.thebrowser.Browser", "other"]
+        expectEqual(idValues.filter { !passes(idRE, $0) }, [], "Worker: ID_RE 放过内置播放器 id 和 bundle id")
+        expectEqual(passes(idRE, "bad id/x") || passes(tagRE, "<script>"), false, "Worker: 不像标识的写法照样挡掉")
     }
 
     do {
@@ -160,7 +188,8 @@ func runTelemetryTests() {
         expectEqual(sourceHas(sourceText("lyrimuse/AppDelegate.swift"), "TelemetryService.shared.start()"), true,
                     "接线: 启动时开始")
         expectEqual(sourceHas(sourceText("LyrimuseCore/Local/LocalPlaybackSource.swift"),
-                              "TelemetryActivity.shared.notePlayer(bundleID: bundleID)"), true, "接线: 换播放器记一笔")
+                              "if trackChanged || bundleID != lastAppliedBundleID { TelemetryActivity.shared.notePlayer(bundleID: bundleID) }"),
+                    true, "接线: 换歌、换播放器都记一笔(连着几天用同一个播放器也每天记到)")
         expectEqual(sourceHas(sourceText("LyrimuseCore/Diagnostics/MainThreadWatchdog.swift"),
                               "TelemetryActivity.shared.noteHang()"), true, "接线: 主线程卡住记一笔")
         expectEqual(sourceHas(sourceText("lyrimuse/SettingsView.swift"), "Toggle(\"\", isOn: $settings.telemetryEnabled)"), true,
@@ -176,7 +205,12 @@ func runTelemetryTests() {
         expectEqual(sourceHas(sourceBody("private func apply(enabled: Bool)", in: service), "TelemetryActivity.shared.clear()"),
                     true, "接线: 关掉时清空活动")
         expectEqual(sourceHas(sourceBody("private func post<T: Encodable>", in: service),
-                              "guard AppSettings.shared.telemetryEnabled else { return false }"), true, "接线: 关着不发")
+                              "guard AppSettings.shared.telemetryEnabled else { return nil }"), true, "接线: 关着不发")
+        let crashes = sourceBody("private func sendNewCrashes(", in: service)
+        expectEqual(sourceHas(crashes, "if let status, (400..<500).contains(status) {"), true,
+                    "接线: 崩溃负载被拒(4xx)记为发过,不卡住后面的")
+        expectEqual(sourceHas(crashes, "DiagnosticsExporter.scanCrashReports(since: cutoff) { alreadySent.contains(Telemetry.reportID(fileName: $0)) }"),
+                    true, "接线: 发过的崩溃报告按文件名先跳过,不再读")
         expectEqual(sourceHas(service, "TelemetryActivity.shared.trustedBundleIDs = Set(trusted.keys)"), true,
                     "接线: 信任列表变了同步给活动记账")
         let portability = sourceText("lyrimuse/Settings/ConfigPortability.swift")

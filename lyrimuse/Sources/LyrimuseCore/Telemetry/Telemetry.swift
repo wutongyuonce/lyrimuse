@@ -24,9 +24,14 @@ public enum Telemetry {
     public static let sentCrashMemory = 50
     /// 崩溃摘要最多带几帧。
     public static let maxCrashFrames = 12
+    /// 崩溃摘要里各字符串的长度上限,跟 Worker(telemetry-worker/src/index.js 的 crash())截的一致,两处要一起改。
+    public static let crashSymbolLimit = 300, crashImageLimit = 80, crashReasonLimit = 300, crashIndicatorLimit = 200
+    public static let crashShortFieldLimit = 80
 
-    /// 本地自然日,`yyyy-MM-dd`。
-    public static func day(_ date: Date, calendar: Calendar = .current) -> String {
+    /// 本地自然日,`yyyy-MM-dd`,一律按公历算:系统日历设成佛历、和历时 `Calendar.current` 的年份不是公历年,Worker 会拒收。
+    public static func day(_ date: Date, timeZone: TimeZone = .current) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
         let c = calendar.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
     }
@@ -131,8 +136,9 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
     public var machineTranslation: Bool
     /// 连上了的账号与服务:lastfm / listenbrainz / apple-music / relay / push。只说连没连,不带账号名。
     public var accounts: [String]
-    /// 用户信任的第三方播放器与浏览器(bundle id,`Telemetry.bundleIDTag` 过滤),不带名字。
+    /// 用户信任的第三方播放器与浏览器(bundle id,`Telemetry.bundleIDTag` 过滤、排序后取前 `maxTrustedPlayers` 个),不带名字。
     public var trustedPlayers: [String]
+    public static let maxTrustedPlayers = 40
     /// 网页版配了浏览器的平台(`BrowserPositionProbe.supportedPlatforms` 的 id)。
     public var webPlatforms: [String]
     public var showInDock: Bool
@@ -151,7 +157,7 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
         self.romanization = romanization
         self.machineTranslation = machineTranslation
         self.accounts = accounts.sorted()
-        self.trustedPlayers = trustedPlayers.compactMap(Telemetry.bundleIDTag).sorted()
+        self.trustedPlayers = Array(Set(trustedPlayers.compactMap(Telemetry.bundleIDTag)).sorted().prefix(Self.maxTrustedPlayers))
         self.webPlatforms = webPlatforms.sorted()
         self.showInDock = showInDock
         self.launchAtLogin = launchAtLogin
@@ -251,7 +257,9 @@ public struct TelemetryCrash: Codable, Equatable, Sendable {
     /// 由崩溃报告摘要组出要发的那份:路径换成 `<path>`,源码文件与行号不带,帧数截到 `Telemetry.maxCrashFrames`。
     public init(summary: CrashReportSummary, reportID: String, executableName: String, installID: String,
                 env: TelemetryEnvironment) {
-        let redact: (String?) -> String? = { $0.map(Telemetry.redactPaths) }
+        func redact(_ text: String?, _ limit: Int = Telemetry.crashShortFieldLimit) -> String? {
+            text.map { String(Telemetry.redactPaths($0).prefix(limit)) }
+        }
         self.installID = installID
         self.reportID = reportID
         process = summary.processName?.lowercased() == executableName.lowercased() ? "app" : "engine"
@@ -261,10 +269,13 @@ public struct TelemetryCrash: Codable, Equatable, Sendable {
         exceptionType = redact(summary.exceptionType)
         exceptionSignal = redact(summary.exceptionSignal)
         terminationNamespace = redact(summary.terminationNamespace)
-        terminationIndicator = redact(summary.terminationIndicator)
-        terminationReasons = summary.terminationReasons.prefix(3).map(Telemetry.redactPaths)
+        terminationIndicator = redact(summary.terminationIndicator, Telemetry.crashIndicatorLimit)
+        terminationReasons = summary.terminationReasons.prefix(3).map {
+            String(Telemetry.redactPaths($0).prefix(Telemetry.crashReasonLimit))
+        }
         frames = summary.frames.prefix(Telemetry.maxCrashFrames).map {
-            Frame(image: redact($0.imageName), symbol: redact($0.symbol), offset: $0.imageOffset)
+            Frame(image: redact($0.imageName, Telemetry.crashImageLimit), symbol: redact($0.symbol, Telemetry.crashSymbolLimit),
+                  offset: $0.imageOffset)
         }
         self.env = env
     }

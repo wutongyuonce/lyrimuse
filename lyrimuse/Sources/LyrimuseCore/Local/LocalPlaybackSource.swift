@@ -4279,9 +4279,10 @@ public final class LocalPlaybackSource: ObservableObject {
         // 放在 reload 判断之后:换歌那一支已经经 reloadCurrentLyrics → applyOffsets 算过一遍,
         // 这里只补"没换歌但换了播放器"这一种情况,不重复跑。
         let bundleID = snapshot.bundleIdentifier
+        // 换歌、换播放器都记一笔(同一天同一个播放器在 TelemetryActivity 里去重):只在换播放器时记,连着几天只用一个播放器就只记到第一天。
+        if trackChanged || bundleID != lastAppliedBundleID { TelemetryActivity.shared.notePlayer(bundleID: bundleID) }
         if bundleID != lastAppliedBundleID {
             lastAppliedBundleID = bundleID
-            TelemetryActivity.shared.notePlayer(bundleID: bundleID)
             // 同一首换了播放器:这个播放器有它自家那份时换成它(PlayerLyricsVersion),正文没变时 reload 自己早退。
             if !trackChanged, syncEngine.hasContent {
                 reloadCurrentLyrics()
