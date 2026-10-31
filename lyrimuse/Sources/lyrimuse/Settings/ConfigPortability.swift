@@ -216,6 +216,7 @@ enum ConfigPortability {
         TelemetryService.Keys.crashesSentDay,
         TelemetryService.Keys.enabledSince,
         TelemetryActivity.storageKey,
+        TelemetryNotice.seenKey,
     ]
 
     /// 导出/导入都要跳过的键 = 机器专属的 + 已经死掉的。

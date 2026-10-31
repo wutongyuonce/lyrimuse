@@ -1093,6 +1093,30 @@ struct SettingsBetaBadge: View {
     }
 }
 
+/// 「这里有新东西」的小蓝点:设置侧栏标题、设置行标题后面用,看过就撤。
+struct SettingsUnseenDot: View {
+    var body: some View {
+        Circle()
+            .fill(Color.accentColor)
+            .frame(width: 7, height: 7)
+            .accessibilityHidden(true)
+    }
+}
+
+extension View {
+    /// 至少一半滚进所在滚动区时调一次 `action`。macOS 14 没有滚动可见回调,出现即算。
+    @ViewBuilder
+    func onScrolledIntoView(_ action: @escaping () -> Void) -> some View {
+        if #available(macOS 15.0, *) {
+            onScrollVisibilityChange(threshold: 0.5) { visible in
+                if visible { action() }
+            }
+        } else {
+            onAppear(perform: action)
+        }
+    }
+}
+
 /// 几组 `SettingsRowGroup` 摞在一起:浮层里组与组之间留 10pt,卡片里紧贴(组名那行小标题自己隔开)。
 struct SettingsRowGroupStack<Content: View>: View {
     @ViewBuilder let content: () -> Content
@@ -1190,6 +1214,8 @@ struct SettingsRow<Trailing: View>: View {
     var subtitleTint: Color?
     /// 标题后面标「Beta」(`SettingsBetaBadge`)。
     var beta = false
+    /// 标题后面挂一个小蓝点(`SettingsUnseenDot`)。
+    var unseenDot = false
     @ViewBuilder let trailing: () -> Trailing
 
     var body: some View {
@@ -1223,6 +1249,7 @@ struct SettingsRow<Trailing: View>: View {
                     Text(title)
                         .font(.system(size: 13))
                     if beta { SettingsBetaBadge() }
+                    if unseenDot { SettingsUnseenDot() }
                     if let help { HelpButton(text: help) }
                 }
                 // 对齐基准取标题这一行,不取整块文字:有副标题时控件对着标题,副标题往下排。

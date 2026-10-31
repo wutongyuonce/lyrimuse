@@ -96,6 +96,10 @@ New / 新功能
   听歌报告可按渠道选完整、精简、概况三套内容，或用占位符自己写
 - Added a Clean Up button in Settings to clear re-downloadable caches
   设置中新增清理缓存，删除可重新获取的封面与查询结果
+- Added anonymous usage data, on by default, to help improve Lyrimuse.
+  It never includes song titles or accounts; turn it off in Settings ›
+  About › Diagnostics & Data
+  新增「发送匿名使用数据」（默认开启），用于改进 Lyrimuse，不含歌名和账号；可在 设置 › 关于 › 诊断与数据 中关闭
 
 Improved / 改进
 - Moved data to ~/Library/Application Support, caches to ~/Library/Caches
