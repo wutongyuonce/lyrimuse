@@ -475,7 +475,7 @@ func runDeepLinkTests() {
         }
     }
 
-    // ---- 对外文档 docs/url-scheme(.zh-CN).md:每个动作、播放模式、设置页和分段都写到 ----
+    // ---- 对外文档 docs/url-scheme(.<语言>).md:每一份都写到每个动作、播放模式、设置页和分段 ----
     do {
         let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent()
@@ -486,7 +486,7 @@ func runDeepLinkTests() {
         // 分段别名(web-lyrics、obs 跳到同页的另一个分段)不写进对外文档。
         let sections = SettingsDeepLink.sectionTable.values.flatMap { $0.values.keys }
             .filter { !["web-lyrics", "obs"].contains($0) }.map { "/" + $0 }
-        for file in ["docs/url-scheme.md", "docs/url-scheme.zh-CN.md"] {
+        for file in ["docs/url-scheme.md", "docs/url-scheme.zh-CN.md"] + LyrimuseDeepLink.docsLanguages.map({ "docs/url-scheme.\($0).md" }) {
             let doc = (try? String(contentsOf: repo.appendingPathComponent(file), encoding: .utf8)) ?? ""
             expectEqual(doc.isEmpty, false, "对外文档: \(file) 在")
             let missing = names.filter { !doc.contains("`\($0)`") && !doc.contains("action/\($0)") }
@@ -496,6 +496,9 @@ func runDeepLinkTests() {
         expectEqual(LyrimuseDeepLink.referenceURL(language: "zh-hant").lastPathComponent, "url-scheme.zh-CN.md",
                     "对外文档: 中文界面开中文那份")
         expectEqual(LyrimuseDeepLink.referenceURL(language: "en").lastPathComponent, "url-scheme.md", "对外文档: 英文界面开英文那份")
+        expectEqual(["ja", "ko", "es", "fr"].map { LyrimuseDeepLink.referenceURL(language: $0).lastPathComponent },
+                    ["url-scheme.ja.md", "url-scheme.ko.md", "url-scheme.es.md", "url-scheme.md"],
+                    "对外文档: 日韩西界面开各自那份,认不出的语言开英文")
     }
 
     // ---- App 侧接线:只有一处分派,认不出的不落进授权回调 ----
