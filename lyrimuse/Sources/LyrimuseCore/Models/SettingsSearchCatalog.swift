@@ -665,7 +665,7 @@ public enum SettingsSearchCatalog {
         about("运行日志", sub: "歌词引擎的原始日志，供自行排查", kw: ["日志", "log", "排查", "访达"], group: "诊断与数据"),
         about("数据文件夹", sub: "纯文本格式，不含账号凭证、外观与快捷键；完整迁移请使用「备份与迁移」",
               kw: ["config", "data", "配置", "数据", "文件夹", "路径", "Application Support"], group: "诊断与数据"),
-        about("发送匿名使用数据", sub: "版本、系统、用了哪些功能和崩溃报告，不含歌名和账号",
+        about("发送匿名使用数据", sub: "用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号",
               kw: ["遥测", "telemetry", "analytics", "统计", "隐私", "privacy", "匿名"], group: "诊断与数据"),
         about("缓存", sub: "可重新获取的封面与查询结果", kw: ["cache", "清理", "空间", "磁盘", "Caches"], group: "诊断与数据"),
 

@@ -545,7 +545,7 @@ struct OnboardingView: View {
                     .toggleStyle(.switch)
                     .controlSize(.mini)
             }
-            .help(L10n.t("版本、系统、用了哪些功能和崩溃报告，不含歌名和账号"))
+            .help(L10n.t("用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号"))
             .padding(.leading, 14)
             .padding(.trailing, 10)
             .padding(.vertical, 7)

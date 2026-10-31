@@ -8300,7 +8300,7 @@ private struct AboutSettingsTab: View {
             SettingsRow(
                 icon: "chart.bar",
                 title: L10n.t("发送匿名使用数据"),
-                subtitle: L10n.t("版本、系统、用了哪些功能和崩溃报告，不含歌名和账号")
+                subtitle: L10n.t("用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号")
             ) {
                 Toggle("", isOn: $settings.telemetryEnabled)
             }

@@ -2085,7 +2085,6 @@
 "点按此处查看受影响的播放器" = "Click to see which players are affected";
 "热力图、收听时段、那年今日" = "Heatmap, listening hours and On This Day";
 "版本 %@" = "Version %@";
-"版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Version, system, features in use and crash reports. Never song titles or accounts";
 "版本不符" = "Version mismatch";
 "版本尾缀写法" = "Version suffix style";
 "版权说明" = "Copyright Notice";
@@ -2097,6 +2096,7 @@
 "现在" = "now";
 "现场版场次不符" = "Live recording from a different show";
 "玻璃浓淡" = "Glass Density";
+"用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Helps improve Lyrimuse: version, system, features in use and crash reports. Never song titles or accounts";
 "用当前配色覆盖" = "Overwrite with Current Colors";
 "用户名下方显示" = "Shown Under Your Name";
 "用这一期的真实数据看看推送在这个平台上的样子" = "See how a push looks on this platform, using real data from this period";

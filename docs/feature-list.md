@@ -1305,7 +1305,7 @@ Every setting in the Settings window, by where it lives: 298 in all. Type a name
 - **Export Diagnostics**: Logs, crash reports and app state in one file, with account credentials removed. Track names and local paths stay in, so review it before posting publicly
 - **Activity Log**: The lyrics engine’s raw log, for your own troubleshooting
 - **Data Folder**: Plain text. Account credentials, appearance and shortcuts aren’t included; to migrate everything, use Backup & Migration
-- **Share Anonymous Usage Data**: Version, system, features in use and crash reports. Never song titles or accounts
+- **Share Anonymous Usage Data**: Helps improve Lyrimuse: version, system, features in use and crash reports. Never song titles or accounts
 - **Cache**: Artwork and lookups that can be fetched again
 
 ### Labs › ListenBrainz
