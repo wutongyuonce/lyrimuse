@@ -2324,6 +2324,26 @@
               "反馈问题"
             ]
           ]
+        },
+        {
+          "id": "telemetry",
+          "title": {
+            "zh-Hans": "匿名使用数据，随时可关",
+            "en": "Anonymous usage data you can turn off",
+            "zh-Hant": "匿名使用資料，隨時可關"
+          },
+          "desc": {
+            "zh-Hans": "每天最多一次，把版本、系统、开着哪些功能和崩溃摘要发给作者自己的服务器，用来判断该优先修什么。不含歌名、歌手、本机路径和账号。默认开，设置里和首次启动的欢迎页上都能关。",
+            "en": "At most once a day, sends the version, macOS, which features are on and crash summaries to the author's own server, to decide what to fix first. Never song titles, artists, local paths or accounts. On by default; turn it off in Settings or on the welcome screen.",
+            "zh-Hant": "每天最多一次，把版本、系統、開著哪些功能和當機摘要傳給作者自己的伺服器，用來判斷該優先修什麼。不含歌名、歌手、本機路徑和帳號。預設開啟，設定裡和首次啟動的歡迎頁上都能關。"
+          },
+          "settings": [
+            [
+              "关于",
+              "诊断与数据",
+              "发送匿名使用数据"
+            ]
+          ]
         }
       ]
     }

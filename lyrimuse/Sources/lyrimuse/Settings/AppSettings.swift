@@ -565,6 +565,8 @@ final class AppSettings: ObservableObject {
         /// 「接收测试版更新」。这台机器的偏好,不随配置搬家(见 ConfigPortability.machineLocalDefaultsKeys)。
         static let receiveBetaUpdates = "np:receiveBetaUpdates"
         static let youTubeMusicAutoSkipAds = "np:youTubeMusicAutoSkipAds"
+        /// 「发送匿名使用数据」。随配置搬家;安装 ID 等遥测记账键是机器专属的(TelemetryService.Keys)。
+        static let telemetryEnabled = "np:telemetryEnabled"
     }
 
     // 字体/字号的默认值,跟配色四项(见下方 init())一样单独给一个有名字的默认值:
@@ -805,6 +807,15 @@ final class AppSettings: ObservableObject {
         didSet {
             defaults.set(receiveBetaUpdates, forKey: Keys.receiveBetaUpdates)
             SparkleUpdaterManager.shared.betaChannelPreferenceChanged(enabled: receiveBetaUpdates)
+        }
+    }
+
+    /// 「发送匿名使用数据」,默认开。didSet 通知 TelemetryService:关掉时清空记下的活动、不再发,打开时排一次检查。
+    /// 发什么见 Core `Telemetry` 头注、14 章决策 149。
+    @Published var telemetryEnabled: Bool {
+        didSet {
+            defaults.set(telemetryEnabled, forKey: Keys.telemetryEnabled)
+            TelemetryService.shared.preferenceChanged(enabled: telemetryEnabled)
         }
     }
 
@@ -2475,6 +2486,7 @@ final class AppSettings: ObservableObject {
         silentLaunch = (defaults.object(forKey: Keys.silentLaunch) as? Bool) ?? false
         receiveBetaUpdates = (defaults.object(forKey: Keys.receiveBetaUpdates) as? Bool) ?? false
         youTubeMusicAutoSkipAds = (defaults.object(forKey: Keys.youTubeMusicAutoSkipAds) as? Bool) ?? false
+        telemetryEnabled = (defaults.object(forKey: Keys.telemetryEnabled) as? Bool) ?? true
         if let raw = defaults.array(forKey: Keys.launchPlayersOnLyrimuseOpen) as? [String] {
             launchPlayersOnLyrimuseOpen = Set(raw.compactMap(PlaybackPlayer.init(rawValue:)))
         } else {

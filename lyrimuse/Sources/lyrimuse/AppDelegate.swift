@@ -201,6 +201,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         PlayerQueryServer.shared.start()
         // 主线程卡住几秒就记一行、卡久了采一次调用栈(见 MainThreadWatchdog)。
         MainThreadWatchdog.shared.start()
+        // 匿名遥测:开着时每天一条心跳、有新的崩溃报告各发一条(见 TelemetryService)。
+        TelemetryService.shared.start()
 
         // 这一句决定 App 是普通应用(占 Dock + 进 Cmd-Tab)还是菜单栏专属应用。build.sh 打包时写了
         // LSUIElement=true(plist 让它默认不占 Dock),这一行按用户的设置再决定要不要占:showInDock 的

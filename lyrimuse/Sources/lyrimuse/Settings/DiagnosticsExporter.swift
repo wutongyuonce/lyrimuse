@@ -382,52 +382,68 @@ enum DiagnosticsExporter {
         return lines.count == header ? lines + ["(no entries in the last \(hours)h)"] : lines
     }
 
-    /// 最近 `days` 天内本 App 家族(App 本体 + 包内引擎)的崩溃报告摘要,每个进程最多 `perProcessLimit` 份
-    ///。文件名前缀粗筛(`<可执行名>-*.ips` / 引擎的新旧两个名字 `-*.ips`),正文再按 bundle id /
-    /// 包路径确认是本变体的(别的 App 也可能有叫 collector 的进程;Dev 与正式版互不混入)。目录列不出、单个文件
-    /// 读不到或解不开都只留一行,不抛、不让整份导出失败;「没有匹配」也写出来。家目录改写成 ~。
+    /// 最近 `days` 天内本 App 家族的崩溃报告摘要(`scanCrashReports`),每个进程最多 `perProcessLimit` 份。目录列不出、
+    /// 单个文件读不到或解不开都只留一行,不抛、不让整份导出失败;「没有匹配」也写出来。家目录改写成 ~。
     private static func recentCrashReportLines(days: Int = 7, perProcessLimit: Int = 3) -> [String] {
-        let fm = FileManager.default
-        let home = fm.homeDirectoryForCurrentUser
-        let dir = home.appendingPathComponent("Library/Logs/DiagnosticReports")
+        let home = FileManager.default.homeDirectoryForCurrentUser
         func tilde(_ text: String) -> String { text.replacingOccurrences(of: home.path, with: "~") }
-        let names: [String]
-        do {
-            names = try fm.contentsOfDirectory(atPath: dir.path)
-        } catch {
-            return [tilde("(cannot list \(dir.path): \(error.localizedDescription))")]
-        }
-        // 进程名取自运行时,不写死:正式版与 Dev 的可执行文件同名,.ips 文件名前缀就是它。
-        let executable = Bundle.main.executableURL?.lastPathComponent ?? "lyrimuse"
-        let cutoff = Date().addingTimeInterval(-Double(days) * 86_400)
-        var matched: [CrashReportSummary] = []
-        var scanned = 0
-        var problems: [String] = []
-        for name in names where name.hasSuffix(".ips") && (name.hasPrefix("\(executable)-") || LyrimuseIdentity.engineProcessNames.contains { name.hasPrefix("\($0)-") }) {
-            let url = dir.appendingPathComponent(name)
-            guard let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate,
-                  modified >= cutoff else { continue }
-            scanned += 1
-            guard let data = FileIO.read(url) else { problems.append("\(name): unreadable"); continue }
-            guard let summary = CrashReportSummary.parse(fileName: name, data: data) else {
-                problems.append("\(name): unparseable"); continue
-            }
-            guard summary.belongsToApp(executableName: executable,
-                                       bundleIdentifier: LyrimuseIdentity.bundleIdentifier,
-                                       appDisplayName: LyrimuseIdentity.displayName) else { continue }
-            matched.append(summary)
-        }
+        let scan = scanCrashReports(since: Date().addingTimeInterval(-Double(days) * 86_400))
+        if let listError = scan.listError { return [tilde(listError)] }
+        let matched = scan.reports.map(\.summary)
         var lines: [String] = []
         if matched.isEmpty {
-            lines.append("(no crash reports for \(LyrimuseIdentity.displayName) / engine in the last \(days) days; \(scanned) candidate file(s) scanned)")
+            lines.append("(no crash reports for \(LyrimuseIdentity.displayName) / engine in the last \(days) days; \(scan.scanned) candidate file(s) scanned)")
         } else {
             let shown = CrashReportSummary.select(matched, perProcessLimit: perProcessLimit)
             lines.append("\(matched.count) report(s) in the last \(days) days; showing up to \(perProcessLimit) per process (\(shown.count) shown)")
             for summary in shown { lines.append(contentsOf: summary.renderLines()) }
         }
-        lines.append(contentsOf: problems.map { "(\($0))" })
+        lines.append(contentsOf: scan.problems.map { "(\($0))" })
         return lines.map(tilde)
     }
+
+    struct CrashReportScan {
+        var reports: [(summary: CrashReportSummary, modified: Date)] = []
+        var scanned = 0
+        var problems: [String] = []
+        /// 目录列不出时的一行说明(带完整路径)。
+        var listError: String?
+    }
+
+    /// `cutoff` 之后改过的、本 App 家族(App 本体 + 包内引擎)的崩溃报告。文件名前缀粗筛(`<可执行名>-*.ips` / 引擎的
+    /// 新旧两个名字 `-*.ips`),正文再按 bundle id / 包路径确认是本变体的(别的 App 也可能有叫 collector 的进程;Dev 与
+    /// 正式版互不混入)。诊断导出和遥测(TelemetryService)共用。
+    static func scanCrashReports(since cutoff: Date) -> CrashReportScan {
+        let fm = FileManager.default
+        let dir = fm.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/DiagnosticReports")
+        var scan = CrashReportScan()
+        let names: [String]
+        do {
+            names = try fm.contentsOfDirectory(atPath: dir.path)
+        } catch {
+            scan.listError = "(cannot list \(dir.path): \(error.localizedDescription))"
+            return scan
+        }
+        // 进程名取自运行时,不写死:正式版与 Dev 的可执行文件同名,.ips 文件名前缀就是它。
+        let executable = crashExecutableName
+        for name in names where name.hasSuffix(".ips") && (name.hasPrefix("\(executable)-") || LyrimuseIdentity.engineProcessNames.contains { name.hasPrefix("\($0)-") }) {
+            let url = dir.appendingPathComponent(name)
+            guard let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate,
+                  modified >= cutoff else { continue }
+            scan.scanned += 1
+            guard let data = FileIO.read(url) else { scan.problems.append("\(name): unreadable"); continue }
+            guard let summary = CrashReportSummary.parse(fileName: name, data: data) else {
+                scan.problems.append("\(name): unparseable"); continue
+            }
+            guard summary.belongsToApp(executableName: executable,
+                                       bundleIdentifier: LyrimuseIdentity.bundleIdentifier,
+                                       appDisplayName: LyrimuseIdentity.displayName) else { continue }
+            scan.reports.append((summary, modified))
+        }
+        return scan
+    }
+
+    static var crashExecutableName: String { Bundle.main.executableURL?.lastPathComponent ?? "lyrimuse" }
 
     private static func recentAppStderrLines(maxLines: Int = 100) -> [String] {
         guard let content = FileIO.readString(LogFiles.appStderr) else {

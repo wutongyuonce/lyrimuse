@@ -209,6 +209,13 @@ enum ConfigPortability {
         // 「标注读音的语言」的两个一次性标记:新加的语言要不要默认打开,由 np:romanizationScriptsKnown 判。
         "np:romanizationWorldMigrated",
         "np:romanizationScriptsWorldAware",
+        // 遥测的记账:安装 ID 带去新机器会让两台机器算成一台;哪天发过心跳、发过哪些崩溃报告、记下的活动都是这台机器的。
+        TelemetryService.Keys.installID,
+        TelemetryService.Keys.lastHeartbeatDay,
+        TelemetryService.Keys.sentCrashReports,
+        TelemetryService.Keys.crashesSentDay,
+        TelemetryService.Keys.enabledSince,
+        TelemetryActivity.storageKey,
     ]
 
     /// 导出/导入都要跳过的键 = 机器专属的 + 已经死掉的。

@@ -863,11 +863,19 @@ Bundles logs, crash reports and app state into one file with credentials and you
 - Settings: About › Diagnostics & Data › Export Diagnostics
 - Settings: About › Updates & Help › Report an Issue
 
+<a id="feature-telemetry"></a>
+
+### Anonymous usage data you can turn off
+
+At most once a day, sends the version, macOS, which features are on and crash summaries to the author's own server, to decide what to fix first. Never song titles, artists, local paths or accounts. On by default; turn it off in Settings or on the welcome screen.
+
+- Settings: About › Diagnostics & Data › Share Anonymous Usage Data
+
 <a id="section-all-settings"></a>
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 297 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 298 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1297,6 +1305,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Export Diagnostics**: Logs, crash reports and app state in one file, with account credentials removed. Track names and local paths stay in, so review it before posting publicly
 - **Activity Log**: The lyrics engine’s raw log, for your own troubleshooting
 - **Data Folder**: Plain text. Account credentials, appearance and shortcuts aren’t included; to migrate everything, use Backup & Migration
+- **Share Anonymous Usage Data**: Version, system, features in use and crash reports. Never song titles or accounts
 - **Cache**: Artwork and lookups that can be fetched again
 
 ### Labs › ListenBrainz

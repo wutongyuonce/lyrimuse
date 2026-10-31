@@ -90429,6 +90429,76 @@
           }
         }
       }
+    },
+    "发送匿名使用数据" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Anonymous Usage Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匿名の使用状況データを送信"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "익명 사용 데이터 보내기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送匿名使用数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "傳送匿名使用資料"
+          }
+        }
+      }
+    },
+    "版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version, system, features in use and crash reports. Never song titles or accounts"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョン、システム、使用中の機能、クラッシュレポート。曲名やアカウントは含みません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버전, 시스템, 사용 중인 기능과 충돌 기록입니다. 곡명과 계정은 포함하지 않습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本、系统、用了哪些功能和崩溃报告，不含歌名和账号"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本、系統、用了哪些功能和當機報告，不含歌名和帳號"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

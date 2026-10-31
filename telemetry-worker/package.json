@@ -1,0 +1,7 @@
+{
+  "name": "lyrimuse-telemetry-worker",
+  "private": true,
+  "scripts": {
+    "deploy": "npx wrangler deploy"
+  }
+}

@@ -8296,6 +8296,15 @@ private struct AboutSettingsTab: View {
                 .buttonBorderShape(.capsule)
             }
             CardDivider()
+            // 发什么见 Core Telemetry 头注;引导欢迎页有同一个开关。
+            SettingsRow(
+                icon: "chart.bar",
+                title: L10n.t("发送匿名使用数据"),
+                subtitle: L10n.t("版本、系统、用了哪些功能和崩溃报告，不含歌名和账号")
+            ) {
+                Toggle("", isOn: $settings.telemetryEnabled)
+            }
+            CardDivider()
             // 「清理缓存」跟「清除全部设置」(备份与迁移卡)、uninstall.sh --purge(删除全部数据)是三件事:这一行只删能重新获取的。
             SettingsRow(
                 icon: "internaldrive",

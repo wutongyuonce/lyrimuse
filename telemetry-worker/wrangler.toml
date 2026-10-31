@@ -1,0 +1,16 @@
+name = "lyrimuse-telemetry"
+main = "src/index.js"
+compatibility_date = "2025-07-18"
+workers_dev = false
+
+# 自定义域名(国内可达):zone yudaotor.me 托管在作者的 Cloudflare 账号,App 写死这个地址(Core Telemetry.endpoint)。
+[[routes]]
+pattern = "telemetry.yudaotor.me"
+custom_domain = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lyrimuse-telemetry"
+database_id = "91b9af83-1f3c-4ad9-abd2-9725e0d4b0dd"
+
+# 统计页 / GET /v1/stats 的令牌:wrangler secret put ADMIN_TOKEN,不写进这里。

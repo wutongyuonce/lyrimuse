@@ -533,6 +533,26 @@ struct OnboardingView: View {
             .onboardingCardBackground(cornerRadius: 18, fallbackFill: Color.primary.opacity(0.035),
                                       fallbackStroke: Color.primary.opacity(0.08))
             .onboardingReveal(3, when: welcomeRevealed)
+            // 同 设置 › 关于 › 诊断与数据 那个开关,默认开;说明放在悬停提示里。
+            HStack(spacing: 8) {
+                Image(systemName: "chart.bar")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                Text(L10n.t("发送匿名使用数据"))
+                    .font(.system(size: 13))
+                Toggle(L10n.t("发送匿名使用数据"), isOn: $settings.telemetryEnabled)
+                    .labelsHidden()
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+            }
+            .help(L10n.t("版本、系统、用了哪些功能和崩溃报告，不含歌名和账号"))
+            .padding(.leading, 14)
+            .padding(.trailing, 10)
+            .padding(.vertical, 7)
+            .onboardingCardBackground(cornerRadius: 18, fallbackFill: Color.primary.opacity(0.035),
+                                      fallbackStroke: Color.primary.opacity(0.08))
+            .padding(.top, 10)
+            .onboardingReveal(4, when: welcomeRevealed)
             // 一句不阻断的告知 + 链接,正文在 README(见 LegalNotices 头注),设置「关于」页
             // 还有同一个入口。刻意**不做**阻断式的「接受」页:引导的原则是介绍性内容不锁下一步,GPL 个人
             // 工具也没有需要「接受」的条款 —— 「接受版本号存偏好」那套是分发渠道场景的产物。
@@ -544,7 +564,7 @@ struct OnboardingView: View {
             }
             .font(.callout)
             .padding(.top, 12)
-            .onboardingReveal(4, when: welcomeRevealed)
+            .onboardingReveal(5, when: welcomeRevealed)
         }
         .frame(maxWidth: .infinity)
         // 内容在滚动区里,要撑满可见高度,语言胶囊才落到底部(上下内边距共 44)。

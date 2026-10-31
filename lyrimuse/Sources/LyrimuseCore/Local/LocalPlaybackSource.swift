@@ -4281,6 +4281,7 @@ public final class LocalPlaybackSource: ObservableObject {
         let bundleID = snapshot.bundleIdentifier
         if bundleID != lastAppliedBundleID {
             lastAppliedBundleID = bundleID
+            TelemetryActivity.shared.notePlayer(bundleID: bundleID)
             // 同一首换了播放器:这个播放器有它自家那份时换成它(PlayerLyricsVersion),正文没变时 reload 自己早退。
             if !trackChanged, syncEngine.hasContent {
                 reloadCurrentLyrics()

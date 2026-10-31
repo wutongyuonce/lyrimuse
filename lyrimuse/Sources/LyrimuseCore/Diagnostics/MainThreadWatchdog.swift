@@ -137,6 +137,7 @@ public final class MainThreadWatchdog: @unchecked Sendable {
         case .recovered(let seconds):
             logger.notice("main thread: stalled for \(String(format: "%.1f", seconds), privacy: .public)s")
         case .stillStalled(let seconds):
+            TelemetryActivity.shared.noteHang()
             let sample = lastSampleAt.map { now - $0 >= Self.sampleCooldown } ?? true
             logger.error("main thread: unresponsive for \(Int(seconds), privacy: .public)s\(sample ? ", sampling its stack" : "", privacy: .public)")
             if sample {
