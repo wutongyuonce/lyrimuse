@@ -569,8 +569,6 @@ struct OnboardingView: View {
         .frame(maxWidth: .infinity)
         // 内容在滚动区里,要撑满可见高度,语言胶囊才落到底部(上下内边距共 44)。
         .containerRelativeFrame(.vertical) { height, _ in max(height - 44, 0) }
-        // 这一页有遥测开关:看过就不再在设置里挂蓝点。
-        .onAppear { TelemetryNotice.shared.seenInOnboarding() }
     }
 
     /// 标题问句 + 一句交代 Lyrimuse 跟着谁显示歌词;下面是装在一张淡玻璃卡里的 `PlayerPicker`

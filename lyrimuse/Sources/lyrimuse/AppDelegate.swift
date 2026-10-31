@@ -203,6 +203,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         MainThreadWatchdog.shared.start()
         // 匿名遥测:开着时每天一条心跳、有新的崩溃报告各发一条(见 TelemetryService)。
         TelemetryService.shared.start()
+        // 这次启动的基准版本、要挂蓝点的新设置、面板顶部要不要出「已更新」(见 NewSettingsMarks)。
+        NewSettingsMarks.shared.start()
 
         // 这一句决定 App 是普通应用(占 Dock + 进 Cmd-Tab)还是菜单栏专属应用。build.sh 打包时写了
         // LSUIElement=true(plist 让它默认不占 Dock),这一行按用户的设置再决定要不要占:showInDock 的

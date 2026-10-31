@@ -12,9 +12,6 @@ func runTelemetryTests() {
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: nil), true, "心跳: 从没发过要发")
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: "2026-10-30"), true, "心跳: 新的一天要发")
         expectEqual(Telemetry.heartbeatDue(today: "2026-10-31", lastSentDay: "2026-10-31"), false, "心跳: 今天发过不再发")
-        expectEqual(Telemetry.noticePending(hasCompletedOnboarding: true, noticeSeen: false), true, "告知: 升级上来、没看过要挂蓝点")
-        expectEqual(Telemetry.noticePending(hasCompletedOnboarding: true, noticeSeen: true), false, "告知: 看过不再挂")
-        expectEqual(Telemetry.noticePending(hasCompletedOnboarding: false, noticeSeen: false), false, "告知: 还没走完引导的不挂(欢迎页有开关)")
 
         expectEqual(Telemetry.playerTag(forBundleID: PlaybackPlayer.appleMusic.bundleIdentifier),
                     PlaybackPlayer.appleMusic.rawValue, "播放器: 内置的用目录 id")
@@ -230,20 +227,9 @@ func runTelemetryTests() {
         }
         let machineLocal = section("private static let machineLocalDefaultsKeys", "\n    ]")
         let obsolete = section("static let obsoleteDefaultsKeys", "\n    ]")
-        expectEqual(sourceHas(machineLocal, "TelemetryService.Keys.installID,") && sourceHas(machineLocal, "TelemetryNotice.seenKey,")
+        expectEqual(sourceHas(machineLocal, "TelemetryService.Keys.installID,") && sourceHas(machineLocal, "TelemetryActivity.storageKey,")
                     && sourceHas(machineLocal, "TelemetryService.Keys.lastHeartbeatDay,"), true,
                     "接线: 安装 ID 等记账键是机器专属的,不随配置搬家")
         expectEqual(obsolete.contains("Telemetry"), false, "接线: 遥测的键不在过时键表里(那张表启动时就删)")
-        let settingsView = sourceText("lyrimuse/SettingsView.swift")
-        expectEqual(sourceHas(settingsView, "if tab == .about, telemetryNotice.pending { SettingsUnseenDot() }"), true,
-                    "告知接线: 侧栏「关于」挂蓝点")
-        expectEqual(sourceHas(settingsView, "unseenDot: telemetryNotice.pending")
-                    && sourceHas(settingsView, ".onScrolledIntoView { telemetryNotice.rowShown() }"), true,
-                    "告知接线: 那一行挂蓝点,滚进屏幕记为已告知")
-        expectEqual(sourceHas(sourceText("lyrimuse/OnboardingView.swift"), ".onAppear { TelemetryNotice.shared.seenInOnboarding() }"),
-                    true, "告知接线: 欢迎页出现即记为已告知")
-        let notice = sourceBody("final class TelemetryNotice", in: service)
-        expectEqual(sourceHas(sourceBody("func rowShown()", in: notice), "pending = false"), true,
-                    "告知接线: 那一行滚进屏幕蓝点就撤")
     }
 }

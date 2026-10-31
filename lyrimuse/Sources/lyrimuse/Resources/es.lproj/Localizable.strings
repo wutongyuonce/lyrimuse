@@ -2117,6 +2117,7 @@
 "直连失败时，经下方代理服务器重试" = "Si falla la conexión directa, reintentar a través del servidor proxy de abajo";
 "直连失败时，经系统代理或本机检测到的代理重试" = "Si falla la conexión directa, reintentar a través del proxy del sistema o de uno detectado en este Mac";
 "相邻短句可容纳于一行时合并显示" = "Las líneas cortas contiguas se unen si caben en una línea";
+"看看新功能" = "Ver novedades";
 "真实数据 · %@" = "Datos reales · %@";
 "短句合并" = "Unir líneas cortas";
 "码率" = "Tasa de bits";

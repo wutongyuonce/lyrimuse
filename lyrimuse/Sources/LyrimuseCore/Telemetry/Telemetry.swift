@@ -43,12 +43,6 @@ public enum Telemetry {
 
     public static func newInstallID() -> String { UUID().uuidString.lowercased() }
 
-    /// 要不要在设置里挂「遥测已开启」的小蓝点:走完过引导(从旧版本升级上来)、本机还没告知过。新用户在引导欢迎页
-    /// 看到开关的那一刻记为已告知。见 14 章决策 149。
-    public static func noticePending(hasCompletedOnboarding: Bool, noticeSeen: Bool) -> Bool {
-        hasCompletedOnboarding && !noticeSeen
-    }
-
     /// 崩溃报告的去重键:文件名的 SHA-256 前 16 位。
     public static func reportID(fileName: String) -> String {
         SHA256.hash(data: Data(fileName.utf8)).prefix(8).map { String(format: "%02x", $0) }.joined()

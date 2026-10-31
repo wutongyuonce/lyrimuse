@@ -83,7 +83,11 @@ enum ConfigPortability {
         TelemetryService.Keys.crashesSentDay,
         TelemetryService.Keys.enabledSince,
         TelemetryActivity.storageKey,
-        TelemetryNotice.seenKey,
+        // 更新后的新功能提示(NewSettingsMarks):上次启动的版本、基准、看过哪些、面板横条关掉的是哪一版,都是这台机器的。
+        NewSettingsMarks.Keys.lastLaunchedVersion,
+        NewSettingsMarks.Keys.baseline,
+        NewSettingsMarks.Keys.seen,
+        NewSettingsMarks.Keys.bannerDismissed,
         "np:romanizationDefaultMigrated",
         "np:hasShownAutomationOnboarding",
         "np:hasOfferedICloudImport",

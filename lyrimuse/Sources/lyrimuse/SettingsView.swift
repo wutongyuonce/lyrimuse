@@ -261,7 +261,7 @@ struct SettingsView: View {
     @AppStorage(SettingsTab.lastTabStorageKey) private var lastTabRaw = SettingsTab.lyrics.rawValue
     /// 侧栏「播放器」项的警告徽标数据源,随设置窗口出现/消失启停。
     @StateObject private var playerHealth = PlayerHealthMonitor()
-    @ObservedObject private var telemetryNotice = TelemetryNotice.shared
+    @ObservedObject private var newSettings = NewSettingsMarks.shared
     /// 这扇窗口看不看得见。「歌词显示」页的几块预览靠它在被遮住 / 最小化时停表,
     /// 见 PreviewHostVisibility.swift。
     @StateObject private var windowSurface = SettingsWindowSurface()
@@ -730,8 +730,8 @@ struct SettingsView: View {
         Label {
             HStack(spacing: 6) {
                 Text(tab.title)
-                // 升级上来、还没看过遥测开关的用户(TelemetryNotice)。
-                if tab == .about, telemetryNotice.pending { SettingsUnseenDot() }
+                // 这个分类里有这次更新新加、还没看过的设置(NewSettingsMarks)。
+                if newSettings.pendingTabs.contains(tab.rawValue) { SettingsUnseenDot() }
                 if tab == .player, let warning = playerHealth.warningText {
                     Spacer(minLength: 4)
                     SidebarCountBadge(count: max(1, playerHealth.warnings.count))
@@ -7983,7 +7983,6 @@ private struct AboutSettingsTab: View {
     // 离开设置页再回来不该重读缓存、更不该重复发请求。
     @ObservedObject private var updater = SparkleUpdaterManager.shared
     @ObservedObject private var githubStars = GitHubStarsService.shared
-    @ObservedObject private var telemetryNotice = TelemetryNotice.shared
     /// 这一页不读 AppSettings 的任何字段,订阅它是为了切界面语言时重跑 body、让下面的 `.id(L10n.current)`
     /// 换身份整页重建(不订阅的话切语言后这一页不刷新)。
     @ObservedObject private var settings = AppSettings.shared
@@ -8311,16 +8310,14 @@ private struct AboutSettingsTab: View {
                 .buttonBorderShape(.capsule)
             }
             CardDivider()
-            // 发什么见 Core Telemetry 头注;引导欢迎页有同一个开关。升级上来的用户标题后挂蓝点,滚进屏幕记为已告知(TelemetryNotice)。
+            // 发什么见 Core Telemetry 头注;引导欢迎页有同一个开关。升级上来的用户看到的蓝点走 NewSettingsMarks(1.12.0 新加)。
             SettingsRow(
                 icon: "chart.bar",
                 title: L10n.t("发送匿名使用数据"),
-                subtitle: L10n.t("用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号"),
-                unseenDot: telemetryNotice.pending
+                subtitle: L10n.t("用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号")
             ) {
                 Toggle("", isOn: $settings.telemetryEnabled)
             }
-            .onScrolledIntoView { telemetryNotice.rowShown() }
             CardDivider()
             // 「清理缓存」跟「清除全部设置」(备份与迁移卡)、uninstall.sh --purge(删除全部数据)是三件事:这一行只删能重新获取的。
             SettingsRow(

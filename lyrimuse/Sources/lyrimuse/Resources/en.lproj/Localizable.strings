@@ -2117,6 +2117,7 @@
 "直连失败时，经下方代理服务器重试" = "If a direct connection fails, retry through the proxy server below";
 "直连失败时，经系统代理或本机检测到的代理重试" = "If a direct connection fails, retry through the system proxy or a proxy detected on this Mac";
 "相邻短句可容纳于一行时合并显示" = "Adjacent short lines are merged when they fit on one line";
+"看看新功能" = "See What's New";
 "真实数据 · %@" = "Real data · %@";
 "短句合并" = "Join Short Lines";
 "码率" = "Bitrate";

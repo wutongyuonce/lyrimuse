@@ -1116,7 +1116,7 @@ struct SettingsBetaBadge: View {
     }
 }
 
-/// 「这里有新东西」的小蓝点:设置侧栏标题、设置行标题后面用,看过就撤。
+/// 「这里有新东西」的小蓝点:设置侧栏分类、设置行和卡头标题后面用(NewSettingsMarks),看过就撤。
 struct SettingsUnseenDot: View {
     var body: some View {
         Circle()
@@ -1185,6 +1185,7 @@ struct SettingsCardHeader<Trailing: View>: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .tracking(0.5)
+                NewSettingDot(title: title)
                 if let help { HelpButton(text: help) }
                 Spacer(minLength: 0)
                 trailing()
@@ -1237,8 +1238,6 @@ struct SettingsRow<Trailing: View>: View {
     var subtitleTint: Color?
     /// 标题后面标「Beta」(`SettingsBetaBadge`)。
     var beta = false
-    /// 标题后面挂一个小蓝点(`SettingsUnseenDot`)。
-    var unseenDot = false
     @ViewBuilder let trailing: () -> Trailing
 
     var body: some View {
@@ -1273,7 +1272,8 @@ struct SettingsRow<Trailing: View>: View {
                         .font(.system(size: 13))
                         .settingsTitleFit(title)
                     if beta { SettingsBetaBadge() }
-                    if unseenDot { SettingsUnseenDot() }
+                    // 这次更新新加的设置挂小蓝点,看到就撤(NewSettingsMarks)。
+                    NewSettingDot(title: title)
                     if let help { HelpButton(text: help) }
                 }
                 // 对齐基准取标题这一行,不取整块文字:有副标题时控件对着标题,副标题往下排。

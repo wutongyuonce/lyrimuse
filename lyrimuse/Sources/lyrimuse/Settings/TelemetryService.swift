@@ -2,37 +2,8 @@ import Combine
 import Foundation
 import LyrimuseCore
 import OSLog
-import SwiftUI
 
 private let logger = Logger(subsystem: LyrimuseIdentity.logSubsystem, category: "telemetry")
-
-/// 升级上来的用户怎么知道遥测开着:设置侧栏「关于」和那一行标题后面各挂一个小蓝点(`Telemetry.noticePending`)。
-/// 那一行滚进屏幕就记为已告知(机器专属键),两个蓝点同时淡出。引导欢迎页出现时直接记为已告知。见 14 章决策 149。
-@MainActor
-final class TelemetryNotice: ObservableObject {
-    static let shared = TelemetryNotice()
-    static let seenKey = "np:telemetryNoticeSeen"
-
-    @Published private(set) var pending: Bool
-
-    private init() {
-        pending = Telemetry.noticePending(hasCompletedOnboarding: AppSettings.shared.hasCompletedOnboarding,
-                                          noticeSeen: UserDefaults.standard.bool(forKey: Self.seenKey))
-    }
-
-    /// 关于页那一行滚进了屏幕。
-    func rowShown() {
-        guard pending else { return }
-        UserDefaults.standard.set(true, forKey: Self.seenKey)
-        withAnimation(.easeOut(duration: 0.25)) { pending = false }
-    }
-
-    /// 引导欢迎页出现(那里有同一个开关)。
-    func seenInOnboarding() {
-        UserDefaults.standard.set(true, forKey: Self.seenKey)
-        pending = false
-    }
-}
 
 /// 匿名遥测的发送端。启动一分钟后查一次、之后每三小时查一次:今天还没发过心跳就发一条,有新的崩溃报告就各发一条。
 /// 发什么、怎么脱敏在 Core `Telemetry`;这边只读设置、扫崩溃报告、发请求、记账。
