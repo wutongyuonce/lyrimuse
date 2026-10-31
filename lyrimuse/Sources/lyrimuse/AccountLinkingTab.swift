@@ -1065,7 +1065,7 @@ struct AccountLinkingTab: View {
     // 拿到最终 frame 就先合成了一帧,肉眼看到的就是"两个控件暂时叠在一起"。不包 withAnimation,
     // 切 tab 就是硬切,没有这个过渡窗口。
     private var lastfmSectionPicker: some View {
-        SettingsGlassTabPicker(
+        SettingsPageTabPicker(
             selection: Binding(
                 get: { lastfmSection },
                 set: { next in lastfmSectionRaw = next.rawValue }
@@ -1073,7 +1073,6 @@ struct AccountLinkingTab: View {
             options: LastfmSection.allCases,
             label: \.title
         )
-        .fixedSize()
         .padding(.bottom, 2)
     }
 

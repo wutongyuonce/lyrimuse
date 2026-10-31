@@ -2072,6 +2072,24 @@ struct SettingsGlassTabPicker<T: Hashable>: View {
     private static var space: String { "SettingsGlassTabPicker" }
 }
 
+/// 页头下面单独成行的页内 tab(「歌词」「歌词显示」「Last.fm」):放得下用 `SettingsGlassTabPicker` 原样,
+/// 放不下换紧凑档,再放不下退成下拉。tab 自己定宽、压不扁,内容列比它窄时会把整个分栏撑出窗口
+/// (侧边栏被推到窗口左边外面);西语这类档名长的语言在窗口拖窄时就会碰上。
+/// 外面别再套 `.fixedSize()`:那样 ViewThatFits 拿到的是不限宽的提议,永远选第一档。
+struct SettingsPageTabPicker<T: Hashable>: View {
+    @Binding var selection: T
+    let options: [T]
+    let label: (T) -> String
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            SettingsGlassTabPicker(selection: $selection, options: options, label: label)
+            SettingsGlassTabPicker(selection: $selection, options: options, label: label, compact: true)
+            SettingsGlassMenuPicker(selection: $selection, options: options, label: label)
+        }
+    }
+}
+
 private struct GlassTabItemFramesKey: PreferenceKey {
     static var defaultValue: [Int: CGRect] = [:]
     static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {

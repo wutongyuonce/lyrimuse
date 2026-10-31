@@ -981,7 +981,9 @@ private struct LyricsSettingsTab: View {
     }
 
     private var sectionPicker: some View {
-        SettingsGlassTabPicker(
+        // 不铺满整列:居中的固定宽度跟上面居中的标题/说明是同一根轴,铺满会让它看起来像
+        // 一条工具栏,而不是页头的一部分。
+        SettingsPageTabPicker(
             selection: Binding(
                 get: { section },
                 set: { next in
@@ -992,9 +994,6 @@ private struct LyricsSettingsTab: View {
             options: Section.allCases,
             label: \.title
         )
-        // 不铺满整列:居中的固定宽度跟上面居中的标题/说明是同一根轴,铺满会让它看起来像
-        // 一条工具栏,而不是页头的一部分。
-        .fixedSize()
         .padding(.bottom, 2)
     }
 
@@ -2856,7 +2855,7 @@ private struct AppearanceSettingsTab: View {
     private var section: Section { Section(rawValue: sectionRaw) ?? .overlay }
 
     private var sectionPicker: some View {
-        SettingsGlassTabPicker(
+        SettingsPageTabPicker(
             selection: Binding(
                 get: { section },
                 set: { next in
@@ -2867,7 +2866,6 @@ private struct AppearanceSettingsTab: View {
             options: Section.allCases,
             label: \.title
         )
-        .fixedSize()
         .padding(.bottom, 2)
     }
 

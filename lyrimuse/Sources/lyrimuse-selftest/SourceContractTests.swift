@@ -2682,8 +2682,13 @@ func runSourceContractSurfaceTests() {
                             "歌词窗口预览: 顶部信息可点区域悬停是虚线框(跟灵动岛编辑台同一套)")
                 expectEqual(stage.contains(".popover(isPresented: $headerPopoverShown, arrowEdge: .bottom) { headerPopover() }"), true,
                             "歌词窗口预览: 点顶部信息弹出浮层")
-                expectEqual(sourceHas(stage, "preview\n            if mini, let headerRect {"), true,
+                expectEqual(sourceHas(stage, "preview(scale: Self.miniScale)\n                    if let headerRect {"), true,
                             "歌词窗口预览: 可点区域叠在预览外面(预览本体仍整块 allowsHitTesting(false))")
+                expectEqual(sourceHas(sourceBody("private var fullStage: some View {", in: stage),
+                                      ".aspectRatio(Self.contentSize, contentMode: .fit)\n            .frame(maxWidth: Self.previewWidth)"), true,
+                            "歌词窗口预览: 完整尺寸跟着列宽缩放、不钉死宽度(07 章决策 189)")
+                expectEqual(sourceHas(sourceBody("private var sectionPicker: some View {", in: settings), "SettingsPageTabPicker("), true,
+                            "设置页头 tab: 放不下时换紧凑档 / 下拉,不把分栏撑出窗口(07 章决策 189)")
                 expectEqual(view.components(separatedBy: "anchorPreference(key: LyricsWindowPreviewHeaderAnchorKey.self").count - 1, 2,
                             "歌词窗口预览: 迷你顶部信息两种形态(有文字 / 只有封面)都报出范围")
                 // 迷你窗的停播页(07 章决策 64、67):跟完整布局同一个判据、同一层柔光底,停播时不出控制条。

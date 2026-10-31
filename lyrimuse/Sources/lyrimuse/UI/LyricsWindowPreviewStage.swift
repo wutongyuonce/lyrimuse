@@ -76,12 +76,9 @@ struct LyricsWindowPreviewStage: View {
     private var contentSize: CGSize {
         mini ? LyricsWindowMiniMetrics.size : Self.contentSize
     }
-    /// 完整尺寸缩到内容列那么宽;迷你按 1:1 画、在内容列里居中 —— 放大到列宽的话 420 宽的迷你窗
-    /// 会被画成约 600 宽,比用户桌面上那扇真窗大一截,预览就不是"它真打开的样子"了。
-    private var scale: CGFloat { mini ? 1 : Self.previewWidth / contentSize.width }
-    /// 舞台(缩放后)的宽高。
-    private var stageWidth: CGFloat { contentSize.width * scale }
-    private var previewHeight: CGFloat { contentSize.height * scale }
+    /// 迷你按 1:1 画、在内容列里居中 —— 放大到列宽的话 420 宽的迷你窗会被画成约 600 宽,比用户
+    /// 桌面上那扇真窗大一截,预览就不是"它真打开的样子"了。完整尺寸的缩放比由 `fullStage` 按实际列宽算。
+    private static let miniScale: CGFloat = 1
 
     /// 圆角跟设置卡片同一档(`settingsCardBackground` 用的也是 continuous),让它在这一页里
     /// 读起来是"一块内容",而不是一张贴上去的截图。
@@ -104,19 +101,38 @@ struct LyricsWindowPreviewStage: View {
     }
 
     private var stage: some View {
-        ZStack(alignment: .topLeading) {
-            preview
-            if mini, let headerRect {
-                headerHotspot(headerRect)
+        Group {
+            if mini {
+                ZStack(alignment: .topLeading) {
+                    preview(scale: Self.miniScale)
+                    if let headerRect {
+                        headerHotspot(headerRect)
+                    }
+                }
+                .frame(width: contentSize.width, height: contentSize.height, alignment: .topLeading)
+            } else {
+                fullStage
             }
         }
-        .frame(width: stageWidth, height: previewHeight, alignment: .topLeading)
         .onChange(of: mini) { _, isMini in
             if !isMini { headerPopoverShown = false }
         }
     }
 
-    private var preview: some View {
+    /// 完整尺寸缩到内容列那么宽,最宽 `previewWidth`。宽度只取上层给的列宽、不能写成固定 frame:
+    /// 内容列比它窄时(侧边栏宽的语言、窗口拖窄)固定宽度会把整个分栏撑出窗口,侧边栏被挤到左边外面。
+    private var fullStage: some View {
+        Color.clear
+            .aspectRatio(Self.contentSize, contentMode: .fit)
+            .frame(maxWidth: Self.previewWidth)
+            .overlay(alignment: .topLeading) {
+                GeometryReader { geo in
+                    preview(scale: geo.size.width / Self.contentSize.width)
+                }
+            }
+    }
+
+    private func preview(scale: CGFloat) -> some View {
         let shape = RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous)
         return LyricsWindowView(previewMode: true, previewMini: mini)
             // 玻璃里的内容不吃下面的 scaleEffect 和裁切,会按原尺寸画到预览框外面;预览里一律不用玻璃(07 章决策 156)。
@@ -134,7 +150,7 @@ struct LyricsWindowPreviewStage: View {
             .scaleEffect(scale, anchor: .topLeading)
             // scaleEffect 是渲染期变换、**不改变布局尺寸**,所以要再套一层缩小后的 frame 把
             // 版面占位收回来,否则这一块会按原尺寸占位、把下面的卡片全顶到屏幕外。
-            .frame(width: stageWidth, height: previewHeight, alignment: .topLeading)
+            .frame(width: contentSize.width * scale, height: contentSize.height * scale, alignment: .topLeading)
             .clipShape(shape)
             // 一条发丝描边,理由同 settingsCardBackground:窗口自己的背景是模糊封面,亮暗随歌
             // 变化,没有描边时边界时有时无。
@@ -152,6 +168,7 @@ struct LyricsWindowPreviewStage: View {
     /// 在缩放后的舞台坐标里画(范围乘 scale),线宽才是实打实的 1pt;四周外扩 6pt,框不贴着字。
     /// 用 padding 定位而不是 offset:浮层认的是布局 frame,offset 是几何效果、挪不动它。
     private func headerHotspot(_ contentRect: CGRect) -> some View {
+        let scale = Self.miniScale
         let rect = CGRect(x: contentRect.minX * scale, y: contentRect.minY * scale,
                           width: contentRect.width * scale, height: contentRect.height * scale)
             .insetBy(dx: -6, dy: -6)
