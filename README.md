@@ -321,7 +321,7 @@ The same check, run from Terminal:
 - **Problems and ideas**: in the app, open Settings › About › **Report an Issue**, or right-click the menu bar icon and choose **Help › Report an Issue…**. It opens a new GitHub issue with your version, macOS and current player already filled in; pick the kind of report: bug, lyrics missing or wrong, player request, or feature request.
 - **Wrong lyrics for one song**: open **Search for Lyrics** for that song in the **Lyrics Manager** and click **Can't find the right lyrics? Report it on GitHub** at the bottom left. The song details, the lyrics source in use and the sources that returned results come along.
 - **Questions**: ask in the [Q&A category](https://github.com/Yudaotor/lyrimuse/discussions/categories/q-a) of Discussions.
-- **Chat with other users**: join the [Discord server](https://discord.gg/N7gVy66Gp3), the [Telegram group](https://t.me/lyrimuse) or the [QQ group](https://qm.qq.com/q/Nb4TlwfnQy) (791558369, in Chinese). Ask questions, report problems or suggest features there too; Chinese has its own chat channel and feedback forum on Discord, and its own topic on Telegram.
+- **Chat with other users**: join the [Discord server](https://discord.gg/N7gVy66Gp3), the [Telegram group](https://t.me/lyrimuse) or the [QQ group](https://qm.qq.com/q/Nb4TlwfnQy) (791558369, in Chinese). Ask questions, report problems or suggest features there too; Chinese has its own chat channel and feedback forum on Discord.
 - **No GitHub account**: email yudaotor@qq.com. The envelope button on the **Report an Issue** row in Settings › About fills in your version and macOS; right-click it to copy the address.
 - **Security issues**: report them privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
 
