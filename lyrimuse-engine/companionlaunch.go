@@ -29,7 +29,7 @@ import (
 // companionLaunchInterval 起**一个** `ps -axco pid=,comm=`,一次拿到全部进程的名字和 PID;别改成每个
 // 盯着的播放器各跑一次 `pgrep -x`:勾满五个就是每轮五次 fork,而且记在临时子进程头上,活动监视器里的
 // 引擎看不出来。名字取 `-c` 那一列(内核 p_comm),跟 `pgrep -x` 比的是同一个东西:16 字节上限照旧
-// (见 knownPlayerProcessNames),中文的「酷狗音乐」实测能对上。别换成 `pgrep -l`:它打印的
+// (见 knownPlayerProcessNames),中文名要 ps 在 UTF-8 locale 下才原样输出(processSnapshotEnv)。别换成 `pgrep -l`:它打印的
 // 名字跟匹配用的不是同一个来源(拿符号链接起的进程实测,按「酷狗音乐」匹配上、打印出来却是
 // 链接目标的名字)。
 
@@ -207,11 +207,17 @@ func companionJustStarted(names []string, prev, now map[string][]int) string {
 	return ""
 }
 
+// processSnapshotEnv 是 ps 的环境,显式给 UTF-8 locale:引擎由 launchd 拉起、没有 LANG / LC_*,ps 在 C locale 下把
+// 非 ASCII 的进程名打成 `M-fM-1M-=…` 这种转义,「汽水音乐」「酷狗音乐」永远对不上(见 02 章决策 219)。别去掉,也别改成继承引擎的环境。
+var processSnapshotEnv = []string{"LC_ALL=en_US.UTF-8", "PATH=/usr/bin:/bin"}
+
 // processSnapshot 起一次 ps,返回 进程名(内核 p_comm) → PID 列表。选这条路的理由见文件头注。
 func processSnapshot() (map[string][]int, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, "/bin/ps", "-axco", "pid=,comm=").Output()
+	cmd := exec.CommandContext(ctx, "/bin/ps", "-axco", "pid=,comm=")
+	cmd.Env = processSnapshotEnv
+	out, err := cmd.Output()
 	if err != nil {
 		return nil, false
 	}

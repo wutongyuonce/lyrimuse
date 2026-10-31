@@ -3,6 +3,9 @@ package main
 import (
 	"maps"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -191,6 +194,31 @@ func TestCompanionLaunchProcessNamesHonorsChosenPlayers(t *testing.T) {
 }
 
 // ps -axco pid=,comm= 的输出:PID 前面有对齐空格,名字可能带空格、可能是中文。
+// 引擎由 launchd 拉起时没有 UTF-8 locale:中文名的播放器进程照样要按名字认出来。父进程设成 C locale,
+// 经名叫「汽水音乐」的符号链接起一个 sleep(p_comm 取链接名;拷一份系统二进制会被拒绝执行),processSnapshot 必须原样
+// 读到这个名字。
+func TestProcessSnapshotReadsNonASCIINamesWithoutLocale(t *testing.T) {
+	t.Setenv("LC_ALL", "C")
+	t.Setenv("LANG", "")
+	t.Setenv("LC_CTYPE", "")
+	bin := filepath.Join(t.TempDir(), "汽水音乐")
+	if err := os.Symlink("/bin/sleep", bin); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command(bin, "30")
+	if err := cmd.Start(); err != nil {
+		t.Skipf("起不了拷出来的 sleep: %v", err)
+	}
+	defer func() { _ = cmd.Process.Kill(); _ = cmd.Wait() }()
+	procs, ok := processSnapshot()
+	if !ok {
+		t.Fatal("ps 没跑成")
+	}
+	if !slices.Contains(procs["汽水音乐"], cmd.Process.Pid) {
+		t.Fatalf("C locale 下没按名字认出「汽水音乐」(pid %d)", cmd.Process.Pid)
+	}
+}
+
 func TestParseProcessList(t *testing.T) {
 	out := "    1 launchd\n  512 Google Chrome Helper\n98009 Music\n 9465 酷狗音乐\n98010 Music\n\nbogus line\n"
 	got := parseProcessList(out)
