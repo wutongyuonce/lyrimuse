@@ -33,10 +33,15 @@ enum IdlePlaybackActions {
         }
     }
 
+    /// 正在「继续播放」的播放器。冷启动要等几秒,这期间再点一次不另起一轮:两轮各按一次播放 / 暂停会停在暂停。
+    private static var resuming: Set<PlaybackPlayer> = []
+
     /// 「继续播放」:AM 走三段式(裸 play → 上次那首 → 都不行),Spotify 自带恢复;任何失败都兜底把
     /// 播放器 App 带到前台 —— 点了必须有可见反应(实测"点了没反应":裸 play 对空队列
     /// 静默 no-op)。
     static func resume(player: PlaybackPlayer) {
+        guard !resuming.contains(player) else { return }
+        resuming.insert(player)
         let lastTitle = UserDefaults.standard.string(forKey: "np:lastTrackTitle")
         let lastArtist = UserDefaults.standard.string(forKey: "np:lastTrackArtist")
         Task.detached(priority: .userInitiated) {
@@ -56,8 +61,9 @@ enum IdlePlaybackActions {
             default:
                 ok = false
             }
-            if !ok {
-                await MainActor.run { openPlayerApp(player) }
+            await MainActor.run {
+                resuming.remove(player)
+                if !ok { openPlayerApp(player) }
             }
         }
     }
@@ -99,7 +105,9 @@ enum IdlePlaybackActions {
     /// 没开着就后台启动(不激活、隐藏窗口)。开着、启动成了为 true。
     nonisolated static func launchHiddenIfNeeded(_ player: PlaybackPlayer) async -> Bool {
         guard PlayerProcess.pid(bundleID: player.bundleIdentifier) == nil else { return true }
-        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: player.bundleIdentifier) else { return false }
+        guard let url = PlayerBundleAliases.applicationURL(forBundleID: player.bundleIdentifier, includingOtherClients: false) else {
+            return false
+        }
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.activates = false
         configuration.hides = true
@@ -110,7 +118,7 @@ enum IdlePlaybackActions {
     static func openPlayerApp(_ player: PlaybackPlayer) {
         let id = PlayerProcess.otherClient(reporting: MediaControlClient.reportingClient(forBundleID: player.bundleIdentifier))
             ?? player.bundleIdentifier
-        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: id) else { return }
+        guard let url = PlayerBundleAliases.applicationURL(forBundleID: id) else { return }
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 }

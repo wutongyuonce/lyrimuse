@@ -241,6 +241,13 @@ func runFoobarTests() {
         expectEqual(sourceHas(client, "if bundleID == PinePlayerInfo.bundleID || bundleID == PlaybackPlayer.foobar2000.bundleIdentifier,"),
                     true, "foobar 接线: 推的是光盘时先找同目录的图")
         let idle = sourceText("lyrimuse/UI/IdlePlaybackActions.swift")
+        expectEqual(sourceHas(sourceBody("static func resume(player: PlaybackPlayer) {", in: idle), "guard !resuming.contains(player) else { return }\nresuming.insert(player)")
+                    && sourceHas(idle, "resuming.remove(player)\nif !ok { openPlayerApp(player) }"), true,
+                    "停播页「继续播放」: 冷启动期间再点不另起一轮")
+        expectEqual(sourceHas(idle, "PlayerBundleAliases.applicationURL(forBundleID: player.bundleIdentifier, includingOtherClients: false)")
+                    && sourceHas(idle, "guard let url = PlayerBundleAliases.applicationURL(forBundleID: id) else { return }")
+                    && !idle.contains("urlForApplication(withBundleIdentifier:"), true,
+                    "停播页「继续播放」: 找 App 认别名(只装了别的版本也能启动、打开)")
         expectEqual(sourceHas(idle, "let outcome = PlaybackMenuControl.pressStart(for: player)"), true,
                     "foobar 接线: 停播页「继续播放」按开播那一项")
         expectEqual(sourceHas(idle, "return PlaybackMenuControl.isStopped(for: player) == false"), true,

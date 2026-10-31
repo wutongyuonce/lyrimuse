@@ -217,6 +217,9 @@ func runPineTests() {
         expectEqual([snap("9.223372036854776e18").trackDuration, snap("0").trackDuration, snap("-1").trackDuration],
                     [nil, nil, nil], "无限时长: Int64 最大值那么长、0、负数都当没有时长")
         expectEqual([snap("223.5").trackDuration, snap("36000").trackDuration], [223.5, 36000], "无限时长: 真实曲长原样给,十小时的也是")
+        expectEqual([nil, 0, -1, .infinity, .nan, MediaControlSnapshot.endlessDurationSecs, 1e300].map { LocalPlaybackSource.durationMs($0) },
+                    [nil, nil, nil, nil, nil, nil, nil], "无限时长: 暂停时换成毫秒也不溢出,没有时长、无限长、NaN 都当没有")
+        expectEqual(LocalPlaybackSource.durationMs(223.5), 223_500, "无限时长: 真实曲长换成毫秒")
     }
 
     // ---- 位置:真机那一串锚点回放 ----
@@ -485,6 +488,8 @@ func runPineTests() {
         let local = sourceText("LyrimuseCore/Local/LocalPlaybackSource.swift")
         expectEqual([sourceHas(local, "if playing, snapshot.trackDuration == nil {"), sourceHas(local, "if playing, let duration = snapshot.trackDuration {")],
                     [true, true], "无限时长: 建进度锚点前按 trackDuration 判(换成毫秒整数不溢出)")
+        expectEqual(sourceHas(local, "let newDurationMs = Self.durationMs(playingDuration(snapshot))"), true,
+                    "无限时长: 暂停态记时长也走不溢出的换算")
         let info = sourceText("LyrimuseCore/Local/PinePlayerInfo.swift")
         expectEqual(sourceHas(info, "guard !SourceKnockout.isOut(.pineFile) else { return nil }"), true, "Pine 接线: 文件那条腿能拔")
         expectEqual(sourceHas(info, ".map { (path: $0, tags: cachedTags(path: $0)) }")

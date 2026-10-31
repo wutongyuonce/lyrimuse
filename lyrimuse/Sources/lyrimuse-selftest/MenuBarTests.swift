@@ -1873,6 +1873,10 @@ func runMenuBarTests() {
         expectEqual(center.contains("AXUIElementSetMessagingTimeout(app, messagingTimeout)")
                     && center.contains("queue.async"), true,
                     "菜单栏正中: 辅助功能读两侧放后台队列、带超时")
+        expectEqual(sourceHas(center, "for pid in failed { next[pid] = self.statusItemFrames[pid] }")
+                    && sourceHas(center, "guard let frames = Self.menuBarFrames(pid: pid) else { return }")
+                    && sourceHas(center, "if error == .attributeUnsupported || error == .noValue { return [] }"), true,
+                    "菜单栏正中: 读两侧超时、出错沿用上一次的读数,不当成没有图标;没有那一栏才是空")
         let item = src("MenuBarStatusItem.swift")
         expectEqual(sourceHas(item, "let centerScreens = centerWanted ? MenuBarCenterLyrics.targetScreens() : []")
                     && sourceHas(item, "MenuBarOccupancy.shared.setActive(\n!centerScreens.isEmpty && !screensHidden && (lyricsActive || centerLyrics.isShowing))\nif !centerScreens.isEmpty {")

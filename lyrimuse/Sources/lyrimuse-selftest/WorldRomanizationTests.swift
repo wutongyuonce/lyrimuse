@@ -127,6 +127,11 @@ func checkWorldRomanization() {
     expectEqual(ThaiRomanization.romanize("จ\u{0E4D}\u{0E32}"), ThaiRomanization.romanize("จำ"),
                 "泰语: 「ํ + า」拆写跟「ำ」读音一样")
     expectEqual(ThaiRomanization.romanize("คนดี 123 Love you"), "khon di 123 Love you", "泰语: 非泰文字符原样保留")
+    let syncEngine = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        .appendingPathComponent("LyrimuseCore/Lyrics/LyricsSyncEngine.swift"), encoding: .utf8)) ?? ""
+    expectEqual(sourceHas(syncEngine,
+                          "if songScript == .thai || ThaiRomanization.containsThai(lyrics) { ThaiRomanization.prewarm() }"), true,
+                "泰语: 整首判成别的语言、夹着泰文的歌词也预热词典")
     // 词与词空格、复合词连写(ลูกเสือ luksuea,RTGS 写词规则的例子);词典把短语写成几个词的照分;词典不认识的词连写。
     for (th, latin) in [("ลูกเสือ", "luksuea"), ("หัวใจ", "huachai"), ("โลมา", "loma"), ("ไม่ต้อง", "mai tong"),
                         ("ตอนนี้", "tonni"), ("สามารถ", "samat"), ("ปรารถนา", "pratthana")] {

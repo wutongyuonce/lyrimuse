@@ -2350,8 +2350,8 @@ func runCoverArtTests() {
         expectEqual(sourceHas(canvasRefresh, "enabled ?? AppSettings.shared.spotifyCanvasEnabled")
                         && sourceHas(canvasRefresh, "AppSettings.shared.lyricsWindowBackgroundMode == .artwork")
                         && sourceHas(canvasRefresh, "!ProcessInfo.processInfo.isLowPowerModeEnabled, MotionCoverDemand.cardShown")
-                        && sourceHas(canvasRefresh, "guard !Task.isCancelled, LocalPlaybackSource.shared.title == title else { return }"), true,
-                    "Canvas(契约): 开关、封面背景、低电量、封面卡在屏上四道闸;下完换了歌不挂")
+                        && sourceHas(canvasRefresh, "guard !Task.isCancelled, Self.stillTrack(title, artist, album) else { return }"), true,
+                    "Canvas(契约): 开关、封面背景、低电量、封面卡在屏上四道闸;下完换了歌(同名的也算)不挂")
         expectEqual(sourceHas(coordinator, "self?.refreshMotionCover()\n                    self?.refreshSpotifyCanvas()")
                         && sourceHas(coordinator, ".sink { [weak self] enabled in self?.refreshSpotifyCanvas(enabled: enabled) },")
                         && sourceHas(coordinator, "self?.refreshMotionCover(onlyIfMissing: true)\n                    self?.refreshSpotifyCanvas(onlyIfMissing: true)"), true,

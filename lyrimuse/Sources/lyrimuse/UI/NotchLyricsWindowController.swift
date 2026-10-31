@@ -1374,7 +1374,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 窗口收走之后指针的「离开」事件不一定会来(点 ✕、暂停时隐藏,指针都还停在卡片上):不清的话下次露面
     /// 卡片直接停在展开态,要把指针移上去再移开才收回。
     private func resetHoverAfterHide() {
-        passThrough?.end()
+        passThrough?.suspend()
         pendingHoverWork?.cancel()
         pendingHoverWork = nil
         cardHovered = false

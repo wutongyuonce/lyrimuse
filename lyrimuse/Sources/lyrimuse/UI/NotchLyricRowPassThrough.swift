@@ -11,7 +11,7 @@ import QuartzCore
 ///
 /// `ignoresMouseEvents` 设过 true 之后再设回 false,AppKit 让整扇窗连透明处都接点击(没设过时透明像素的点击落到下层),
 /// 没有公开接口回到没设过的样子,换前台、重新上屏也不行。所以第一次穿透结束后不再把整扇窗设回接点击,改成按指针位置
-/// 显式管(`managesHitTesting`):在卡片上收点击、卡片外放过去,监听器从那以后一直装着(同经典悬浮窗);没穿透过的窗不装。
+/// 显式管(`managesHitTesting`):在卡片上收点击、卡片外放过去,监听器从那以后窗口露着就装着(同经典悬浮窗),收起时卸;没穿透过的窗不装。
 /// 见 05 章决策 126。
 ///
 /// 淡化挂在 hosting view 的 layer 上(`CALayer.mask`),只在穿透期间存在。别改成 SwiftUI 里常驻的 `.mask`:灵动岛的逐字填色
@@ -80,6 +80,7 @@ final class NotchLyricRowPassThrough {
     /// 卡片尺寸或形态变了(展开、广告开始、换行高)时复查一次:指针没动也可能已经不在只显示那一截上了,
     /// 显式管点击时卡片的范围也跟着变。
     func refresh() {
+        if managesHitTesting, window?.isVisible == true { installMonitors() }
         track()
     }
 
@@ -95,6 +96,14 @@ final class NotchLyricRowPassThrough {
         syncHitTesting()
         unfade()
         NotchLyricsWindowController.hoverLog.notice("pass-through end")
+    }
+
+    /// 窗口收起(隐藏)时调:退出穿透、卸监听,不然指针在哪动都唤醒 App。显式管点击照旧(回不去,见头注),
+    /// 重新露面时 `refresh()` 把监听装回来。
+    func suspend() {
+        end()
+        monitors.forEach(NSEvent.removeMonitor)
+        monitors.removeAll()
     }
 
     /// 窗口收掉时调:退出穿透、卸监听。

@@ -641,7 +641,7 @@ func runLyricsOffsetTests() {
                     true, "在放时长(契约): 只选 Apple Music 那条路记系统时长")
         expectEqual(sourceBody("private func currentSpatialAudioOffsetMs", in: source).contains("playingDuration(snapshot)"),
                     true, "在放时长(契约): 认空间音频版用在放的时长")
-        expectEqual(sourceBytes(source, contain: "if let d = playingDuration(snapshot), d > 0 { return Int(d * 1000) }"), true,
+        expectEqual(sourceBytes(source, contain: "let newDurationMs = Self.durationMs(playingDuration(snapshot))"), true,
                     "在放时长(契约): 界面总时长用在放的时长")
     }
 

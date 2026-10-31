@@ -166,8 +166,14 @@ final class MenuBarOccupancy {
         if full { fullScanInFlight = true }
         queue.async { [weak self] in
             var found: [pid_t: [CGRect]] = [:]
+            // 读失败(超时、卡住)的那家沿用上一次的读数:当成没有图标的话歌词会铺过去、盖住它的图标还吞掉点击。
+            var failed: [pid_t] = []
             for pid in pids {
-                if let frames = Self.extrasFrames(pid: pid), !frames.isEmpty { found[pid] = frames }
+                guard let frames = Self.extrasFrames(pid: pid) else {
+                    failed.append(pid)
+                    continue
+                }
+                if !frames.isEmpty { found[pid] = frames }
             }
             let elapsed = Date().timeIntervalSince(started)
             DispatchQueue.main.async {
@@ -180,6 +186,7 @@ final class MenuBarOccupancy {
                     } else {
                         for pid in pids { next[pid] = found[pid] }
                     }
+                    for pid in failed { next[pid] = self.statusItemFrames[pid] }
                     if full {
                         logger.debug("""
                             status items scanned: apps=\(pids.count, privacy: .public) \
@@ -201,7 +208,8 @@ final class MenuBarOccupancy {
         let pid = app.processIdentifier
         let generation = generation
         queue.async { [weak self] in
-            let frames = Self.menuBarFrames(pid: pid) ?? []
+            // 读失败沿用上一次的读数,同上。
+            guard let frames = Self.menuBarFrames(pid: pid) else { return }
             DispatchQueue.main.async {
                 MainActor.assumeIsolated {
                     guard let self, self.active, self.generation == generation, frames != self.frontMenuFrames else { return }
@@ -224,8 +232,10 @@ final class MenuBarOccupancy {
         let app = AXUIElementCreateApplication(pid)
         AXUIElementSetMessagingTimeout(app, messagingTimeout)
         var bar: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(app, attribute as CFString, &bar) == .success, let bar,
-              CFGetTypeID(bar) == AXUIElementGetTypeID() else { return nil }
+        // 没有这一栏(多数 App 没有状态栏图标)是空,不是读失败;只有读失败(超时、出错)返回 nil。
+        let error = AXUIElementCopyAttributeValue(app, attribute as CFString, &bar)
+        if error == .attributeUnsupported || error == .noValue { return [] }
+        guard error == .success, let bar, CFGetTypeID(bar) == AXUIElementGetTypeID() else { return nil }
         // 超时只管设过的那一个元素,往下取到的菜单栏、各项都要各设一次,不然卡住的 App 每一步按系统默认等 6 秒。
         let barElement = bar as! AXUIElement
         AXUIElementSetMessagingTimeout(barElement, messagingTimeout)

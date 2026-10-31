@@ -1713,8 +1713,8 @@ final class PlaybackCoordinator: ObservableObject {
         clear()
         spotifyCanvasTask = Task { [weak self] in
             let file = await SpotifyCanvasStore.shared.prepare(remote)
-            // 下载这段时间换歌了 —— 这份是上一首的。
-            guard !Task.isCancelled, LocalPlaybackSource.shared.title == title else { return }
+            // 下载这段时间换歌了 —— 这份是上一首的。只比歌名会把上一首的 Canvas 挂到同名的下一首上。
+            guard !Task.isCancelled, Self.stillTrack(title, artist, album) else { return }
             if self?.spotifyCanvasFile != file { self?.spotifyCanvasFile = file }
         }
     }

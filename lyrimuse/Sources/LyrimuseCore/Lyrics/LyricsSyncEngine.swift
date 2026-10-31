@@ -2021,7 +2021,8 @@ public final class LyricsSyncEngine {
         if songScript == .chinese || songScript == .korean, songIsCantonese {
             songScript = .cantonese
         }
-        if songScript == .thai { ThaiRomanization.prewarm() }
+        // 整首判成别的语言、里面夹着泰文的也预热:词典第一次现解析约 45ms,读音在主线程上算。
+        if songScript == .thai || ThaiRomanization.containsThai(lyrics) { ThaiRomanization.prewarm() }
         // 歌词源自带的假名标注(酷狗的 [kana:] 标签),不带时用引擎从别的源借来的那份(kanaDonor)。对不齐时
         // parse 返回 nil,读音自动退回形态分析 —— 见 KanaAnnotation 顶部注释里"半对半错比不标更糟"那段。
         kanaAnnotation = KanaAnnotation.parse(lrc: lyrics, donor: kanaDonor)

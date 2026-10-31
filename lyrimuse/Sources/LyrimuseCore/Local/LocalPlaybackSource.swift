@@ -2099,6 +2099,13 @@ public final class LocalPlaybackSource: ObservableObject {
         return diff > spatialDurationToleranceSecs && diff <= spatialDurationMaxSecs ? system : script
     }
 
+    /// 时长(秒)换成毫秒整数;非有限、不大于 0、到了 `MediaControlSnapshot.endlessDurationSecs` 的(网络流报的 Int64 最大值)
+    /// 都当没有时长,换算不溢出。纯函数,selftest 覆盖。
+    public nonisolated static func durationMs(_ seconds: Double?) -> Int? {
+        guard let seconds, seconds.isFinite, seconds > 0, seconds < MediaControlSnapshot.endlessDurationSecs else { return nil }
+        return Int(seconds * 1000)
+    }
+
     /// 挑同名不同录音变体(`~durN`)用的时长,口径跟引擎的 `lyricsDurationSecs` 一致:电台(整档节目的时长)、
     /// MV(视频比录音室版长)都当未知。纯函数,selftest 覆盖。
     public nonisolated static func lyricsLookupDuration(isRadio: Bool, isMusicVideo: Bool, bundleID: String?,
@@ -4660,10 +4667,7 @@ public final class LocalPlaybackSource: ObservableObject {
         // 冻结位置(AppleScript 对 Apple Music、media-control 的原始 elapsedTime 对其它
         // 播放器都是"暂停即冻结",见 MediaControlClient.fetchRawMediaControlSnapshot
         // 里暂停分支的注释),不需要再经过 resolvePositionSeconds 平滑。
-        let newDurationMs: Int? = {
-            if let d = playingDuration(snapshot), d > 0 { return Int(d * 1000) }
-            return nil
-        }()
+        let newDurationMs = Self.durationMs(playingDuration(snapshot))
         if newDurationMs != currentDurationMs { currentDurationMs = newDurationMs }
         // 暂停态也要挡住 seek 之后的陈旧读数——播放分支走 resolvePositionSeconds,那个
         // 函数一进门就有 shouldRejectStalePositionAfterSeek 这层保护;这里若直接采信

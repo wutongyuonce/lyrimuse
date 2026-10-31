@@ -2786,8 +2786,10 @@ func runNotchTests() {
         expectEqual(sourceHas(sourceBody("private func installMask(on layer: CALayer)", in: pass), "layer.mask = container")
                         && !root.contains(".mask"), true,
                     "歌词行穿透: 淡化只在穿透期间挂在 layer 上,SwiftUI 里不常驻遮罩")
-        expectEqual(sourceHas(sourceBody("private func resetHoverAfterHide()", in: ctrl), "passThrough?.end()"), true,
-                    "歌词行穿透: 窗口收走时退出穿透")
+        expectEqual(sourceHas(sourceBody("private func resetHoverAfterHide()", in: ctrl), "passThrough?.suspend()")
+                        && sourceHas(sourceBody("func suspend()", in: pass), "end()\nmonitors.forEach(NSEvent.removeMonitor)\nmonitors.removeAll()")
+                        && sourceHas(sourceBody("func refresh()", in: pass), "if managesHitTesting, window?.isVisible == true { installMonitors() }"), true,
+                    "歌词行穿透: 窗口收起时退出穿透、卸掉全局指针监听,重新露面再装回来")
         expectEqual(ctrl.contains("LyrimuseActionRunner.perform(.nextTrackHotkey)")
                     && ctrl.contains("VolumeMonitor.adjustSystemVolume(by: delta)"), true,
                     "灵动岛五项: 切歌走快捷键那一条(先查自动化权限),音量调的是系统音量")
