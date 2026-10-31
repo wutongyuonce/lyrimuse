@@ -147,7 +147,7 @@ struct MenuBarEditorStage: View {
     /// 两段编辑台的「行为」按钮同一份归约)。
     private var behaviorSummary: String {
         SettingsToggleSummary.text([
-            (title: L10n.t("悬停显示播放控制"), isOn: settings.menuBarHoverShowsControls),
+            (title: L10n.t("悬停时显示播放控制"), isOn: settings.menuBarHoverShowsControls),
             (title: L10n.t("无歌词时显示歌名"), isOn: settings.menuBarShowsTitleWhenNoLyrics),
         ])
     }
@@ -381,7 +381,7 @@ struct MenuBarHoverControlsTile: View {
     var body: some View {
         SettingsToggleTile(
             icon: "playpause.circle",
-            title: L10n.t("悬停显示播放控制"),
+            title: L10n.t("悬停时显示播放控制"),
             help: L10n.t("指针移到菜单栏歌词上时显示「上一曲 / 播放暂停 / 下一曲」三个按钮，移开后恢复。暂停后歌词收起为图标，或区域过窄放不下三个按钮时不显示。点按按钮以外的区域仍会打开面板"),
             isOn: $settings.menuBarHoverShowsControls)
     }
@@ -730,7 +730,7 @@ struct MenuBarAlignmentRow: View {
             icon: "text.alignleft",
             // 用「对齐方式」而不是「对齐模式」:悬浮歌词那个同名设置就叫「对齐方式」
             // (OverlayStyleSettingsRows),统一措辞正是为了"和软件其他地方对齐"。
-            // 顺带复用已有词条(含 Left-Aligned/Center/Right-Aligned 三个选项名)。
+            // 顺带复用已有词条(含 Left/Center/Right 三个选项名)。
             title: L10n.t("对齐方式"),
             help: L10n.t("能完整显示的句子在这一格里靠哪边，显示不下的会横向滚动")
         ) {

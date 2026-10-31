@@ -30,10 +30,11 @@ struct OverlayPlacementSettingsRows: View {
             // 自绘的一行不会自动挂搜索高亮(只有 SettingsRow / SettingsCardHeader 会),手挂。
             .settingsSearchHighlight(title: L10n.t("位置"))
             // 标题和两档同一行、说明另起一行铺满:浮层宽 420,说明放在标题下面会被分段控件挤成一窄条。
-            SettingsRawRow {
+            // 行名、图标跟灵动岛「屏幕」那一行同一套(「显示在」+ display)。
+            SettingsRawRow(insetToText: true, icon: "display") {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 8) {
-                        Text(L10n.t("所在屏幕"))
+                        Text(L10n.t("显示在"))
                         Spacer(minLength: 8)
                         SettingsPillSegmentedControl(
                             selection: $settings.overlayFollowsActiveScreen,
@@ -42,14 +43,14 @@ struct OverlayPlacementSettingsRows: View {
                             minWidth: 56)
                     }
                     Text(settings.overlayFollowsActiveScreen
-                         ? L10n.t("跟随当前使用的屏幕，位置保持不变")
+                         ? L10n.t("随当前窗口切换屏幕，相对位置不变")
                          : L10n.t("始终停留在所放置的屏幕"))
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .settingsSearchHighlight(title: L10n.t("所在屏幕"))
+            .settingsSearchHighlight(title: L10n.t("显示在"))
         }
     }
 
@@ -75,7 +76,7 @@ struct OverlayPlacementSegmentedControl: View {
     var fillsWidth = false
 
     /// 不能存成 `static let`:`L10n.t` 要在每次取值时现算(切语言之后标签要跟着变)。
-    /// 「行为」工具栏按钮的摘要(`OverlayEditorStage.behaviorSummary`)也读这份,两处一个口径。
+    /// 「位置」工具栏按钮的摘要也读这份,两处一个口径。
     static func label(for mode: OverlayPlacementMode) -> String {
         switch mode {
         case .free: return L10n.t("自由")

@@ -10,18 +10,20 @@ import SwiftUI
 /// 不能存成 `static let`:`L10n.t` 要在每次取值时现算,存进 static let 等于把首次访问时的
 /// 语言冻在里面(同 OverlayAlignmentSegmentedControl.label(for:) 那条)。
 @MainActor
+/// 报短名:胶囊上留给摘要的只有五六十 pt。「跟随当前窗口」报「跟随窗口」,内建屏报「内建屏幕」
+/// (`localizedName` 是「内建视网膜显示器」/「Built-in Retina Display」),外接屏照报 `localizedName`。
 enum NotchScreenSummary {
     static var current: String {
         let settings = AppSettings.shared
         if settings.notchAllScreens { return L10n.t("全部屏幕") }
-        if settings.notchFollowsActiveScreen { return L10n.t("跟随当前窗口") }
+        if settings.notchFollowsActiveScreen { return L10n.t("跟随窗口") }
         if settings.notchScreenID.isEmpty { return L10n.t("自动") }
         if let screen = ScreenIdentity.screen(withID: settings.notchScreenID) {
-            return screen.localizedName
+            return ScreenIdentity.isBuiltIn(screen) ? L10n.t("内建屏幕") : screen.localizedName
         }
         // 存着的那块屏现在没接着。报"自动"是撒谎(偏好还在,屏幕插回来就会恢复),
         // 报一个空串更糟。
-        return L10n.t("已断开的屏幕")
+        return L10n.t("已断开")
     }
 }
 
@@ -61,7 +63,7 @@ struct NotchShowLyricsRow: View {
         SettingsRow(
             icon: "text.alignleft",
             title: L10n.t("收起时显示歌词"),
-            help: L10n.t("关闭后，常态下仅保留刘海高度，不显示歌词；指针悬停展开时，播放控制、进度条和下一句预览仍照常显示")
+            help: L10n.t("关闭后平时只保留刘海高度，悬停展开时照常显示")
         ) {
             Toggle("", isOn: $settings.notchShowLyrics)
         }
@@ -382,8 +384,9 @@ struct NotchEarSettingsRows: View {
         settings.notchShowsEqualizer && settings.notchEqualizerEar == equalizerEarValue
     }
 
+    /// ⓘ 交代两侧是同一个开关:左右两张卡上下排着,不说的话会以为两边能同时开。
     private var equalizerRow: some View {
-        SettingsRow(icon: "waveform", title: L10n.t("音浪")) {
+        SettingsRow(icon: "waveform", title: L10n.t("音浪"), help: L10n.t("同一时间只能显示在一侧")) {
             Toggle("", isOn: Binding(
                 get: { showsEqualizerHere },
                 set: { on in
@@ -500,7 +503,7 @@ struct NotchScreenSettingsRows: View {
             SettingsRow(
                 icon: "display",
                 title: L10n.t("显示在"),
-                help: L10n.t("「自动」选择带刘海的屏幕；「跟随当前窗口」显示在正在使用的窗口所在的屏幕；「全部屏幕」在每块屏幕上各显示一个；指定的屏幕断开时按「自动」显示，插回后回到那块屏幕")
+                help: L10n.t("「自动」优先带刘海的屏幕；指定的屏幕断开时暂按「自动」显示")
             ) {
                 let options = screenOptions
                 SettingsGlassMenuPicker(

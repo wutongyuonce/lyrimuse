@@ -82,8 +82,8 @@ final class OverlayQuickSettingsMenu: NSObject, NSMenuDelegate {
         if LocalPlaybackSource.shared.currentLyricsSupportsChineseVariant {
             menu.addItem(submenu(L10n.t("繁简转换"), symbol: "character.bubble", menu: chineseVariantMenu(settings)))
         }
-        // 「悬停时显示控制条」不放这里:这个菜单只能从控制条上的 ⚙ 打开,在这里关掉控制条,菜单自己也就打不开了。
-        menu.addItem(submenu(L10n.t("配色主题"), symbol: "paintpalette", menu: colorThemeMenu(settings)))
+        // 「悬停时显示播放控制」不放这里:这个菜单只能从播放控制上的 ⚙ 打开,在这里关掉它,菜单自己也就打不开了。
+        menu.addItem(submenu(L10n.t("主题"), symbol: "paintpalette", menu: colorThemeMenu(settings)))
         // 「位置」:自由 / 顶部居中 / 底部居中。放在这里是因为预设模式下
         // 想拖窗口只会得到一条「🔒 已固定为…，在 ⚙ 菜单里可改」+ 抖一下,用户下一步最可能就是想切模式 —— 就近给出口,
         // 不必去设置页翻「行为」浮层。写的是同一个 AppSettings 值,控制器订阅它自己落位。
@@ -130,7 +130,7 @@ final class OverlayQuickSettingsMenu: NSObject, NSMenuDelegate {
         return m
     }
 
-    /// 「配色主题」子菜单:内置主题 → 用户自存主题,每项左边一张四段色条。跟设置页「主题」预览卡
+    /// 「主题」子菜单:内置主题 → 用户自存主题,每项左边一张四段色条。跟设置页「主题」预览卡
     /// 同一张清单、同一条选中判据(`ColorTheme.hasSameColors`,含两处「跟随封面」开关)。
     ///
     /// 这里不单独放「跟随封面」:它是「文字颜色」「未唱颜色」各自的取值(设置页「文字」浮层),一个菜单项

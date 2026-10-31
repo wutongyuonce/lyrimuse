@@ -163,4 +163,73 @@ func runSettingsAuditContracts() {
                 && sourceHas(channels, "L10n.formatNames(L10n.t(\"这个地址看起来是%@的。要换平台，请删除这个渠道后重新添加\"), mismatch.displayName)")
                 && sourceHas(channels, "L10n.formatNames(L10n.t(\"已识别为%@，平台已自动切换\"), detected.displayName)"), true,
                 "中英文间距: 推送渠道里贴着汉字的平台名走 formatNames")
+
+    // ---- 编辑台工具栏胶囊:摘要读得完(悬浮歌词 / 灵动岛) ----
+    let designSystem = app("Settings/SettingsDesignSystem.swift")
+    let toggleText = sourceBody("static func text(_ entries: [(title: String, isOn: Bool)]) -> String", in: designSystem)
+    expectEqual(sourceHas(toggleText, "return String(format: L10n.t(\"%@ 项开启\"), \"\\(onCount)\")") && !toggleText.contains("L10n.list"), true,
+                "工具栏摘要: 开关类部分开着时只报开了几项,不列标题")
+    expectEqual(sourceHas(sourceBody("static func detail(_ entries: [(title: String, isOn: Bool)]) -> String", in: designSystem),
+                          "return L10n.list(onTitles)"), true, "工具栏摘要: 开着的是哪几项放进悬停说明")
+    expectEqual(sourceHas(app("UI/EditorToolbarButtonLabel.swift"), ".help(title + \" · \" + (detail ?? summary))"), true,
+                "工具栏摘要: 悬停说明优先用整句")
+    let styleRows = app("UI/OverlayStyleSettingsRows.swift")
+    expectEqual(sourceHas(sourceBody("static func fontText(family: String, weight: OverlayFontWeight, size: Int) -> String", in: styleRows),
+                          "guard !family.isEmpty else { return \"\\(weight.displayName) \\(sizeText)\" }"), true,
+                "工具栏摘要: 系统字体(空串)不报字体名")
+    let layoutBody = sourceBody("static var layout: String", in: styleRows)
+    expectEqual(sourceHas(layoutBody, "OverlayAlignmentSegmentedControl.label(for: AppSettings.shared.overlayDuetAlignmentOverride)")
+                && !layoutBody.contains("OverlayLineOverflowLabel"), true, "工具栏摘要: 排版只报对齐方式")
+    let screenSummary = sourceBody("enum NotchScreenSummary", in: app("UI/NotchSettingsRows.swift"))
+    expectEqual(sourceHas(screenSummary, "if settings.notchFollowsActiveScreen { return L10n.t(\"跟随窗口\") }")
+                && sourceHas(screenSummary, "return ScreenIdentity.isBuiltIn(screen) ? L10n.t(\"内建屏幕\") : screen.localizedName")
+                && sourceHas(screenSummary, "return L10n.t(\"已断开\")"), true, "工具栏摘要: 屏幕报短名")
+    let overlayStage = app("UI/OverlayEditorStage.swift")
+    let notchStage = app("UI/NotchEditorStage.swift")
+    expectEqual(sourceHas(overlayStage, "detail: SettingsToggleSummary.detail(behaviorEntries),")
+                && sourceHas(overlayStage, "detail: OverlayStyleSummary.contentDetail,")
+                && sourceHas(notchStage, "detail: SettingsToggleSummary.detail(expandedEntries),")
+                && sourceHas(notchStage, "detail: SettingsToggleSummary.detail(behaviorEntries),"), true,
+                "工具栏摘要: 报数量的几颗按钮都带悬停整句")
+    // 胶囊上每截摘要约 55pt(中文 600pt 卡片列),固定文案得在这个量级里:中文 ≤5 字、英文 ≤13 个字符、繁体 ≤5 字。
+    let packageDir = coreDir.deletingLastPathComponent().deletingLastPathComponent()
+    var localized: [String: [String: String]] = [:]
+    if let data = try? Data(contentsOf: packageDir.appendingPathComponent("Localization/Localizable.xcstrings")),
+       let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+       let strings = root["strings"] as? [String: Any] {
+        for (key, entry) in strings {
+            guard let locs = (entry as? [String: Any])?["localizations"] as? [String: Any] else { continue }
+            for lang in ["en", "zh-Hant"] {
+                if let value = ((locs[lang] as? [String: Any])?["stringUnit"] as? [String: Any])?["value"] as? String {
+                    localized[key, default: [:]][lang] = value
+                }
+            }
+        }
+    }
+    expectEqual(localized.isEmpty, false, "工具栏摘要: 读到了 Localizable.xcstrings")
+    let summaryKeys = ["全部开启", "全部关闭", "%@ 项开启", "自动", "居中", "左对齐", "右对齐", "自由", "顶部居中", "底部居中",
+                       "已开启", "未开启", "跟随窗口", "全部屏幕", "内建屏幕", "已断开"]
+    let tooLong = summaryKeys.filter { key in
+        guard let en = localized[key]?["en"], let hant = localized[key]?["zh-Hant"] else { return true }
+        let filled = { (s: String) in s.replacingOccurrences(of: "%@", with: "9") }
+        return filled(key).count > 5 || filled(hant).count > 5 || filled(en).count > 13
+    }
+    expectEqual(tooLong, [], "工具栏摘要: 固定文案中文 / 繁体 ≤5 字、英文 ≤13 个字符")
+
+    // ---- 悬浮歌词 / 灵动岛设置的排版 ----
+    let gallery = app("UI/OverlayThemeGallery.swift")
+    expectEqual(sourceHas(gallery, "return (sung + unsung)") && !sourceBody("private func sample(", in: gallery).contains("HStack"), true,
+                "主题卡: 示例字两半拼成一个 Text,整串一起缩放")
+    expectEqual(sourceHas(sourceBody("private var totalHeight: CGFloat", in: notchStage), "(Self.toolbarHeight + Self.toolbarSpacing) * 2 + stageHeight")
+                && !notchStage.contains("caption(stageWidth:"), true,
+                "灵动岛编辑台: 舞台底下不留说明行,缩放提示在舞台里(到总开关卡的间距同悬浮歌词)")
+    let notchBehavior = sourceBody("struct NotchBehaviorSettingsRows: View", in: app("SettingsView.swift"))
+    expectEqual(sourceHas(notchBehavior, "SettingsTileGrid(title: L10n.t(\"收起与隐藏\"), columns: 3) { collapseAndHideTiles }")
+                && sourceHas(notchBehavior, "SettingsTileGrid(title: L10n.t(\"提示\"), columns: 3) { notificationTiles }")
+                && sourceHas(notchBehavior, "if inPopover {"), true,
+                "灵动岛「行为」: 抽屉里分三组,浮层里平铺")
+    let overlayBehavior = app("UI/OverlayBehaviorSettingsRows.swift")
+    expectEqual(sourceHas(overlayBehavior, "case .dragNeedsLongPress: return AppSettings.shared.overlayPlacementMode == .free")
+                && sourceHas(overlayBehavior, ".disabled(!item.isApplicable)"), true,
+                "悬浮歌词「长按拖动」: 位置不是「自由」时置灰")
 }

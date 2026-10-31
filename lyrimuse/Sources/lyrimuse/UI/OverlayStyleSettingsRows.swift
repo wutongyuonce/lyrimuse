@@ -449,14 +449,14 @@ struct OverlayAlignmentSegmentedControl: View {
 
 // MARK: - 主题
 
-/// 「主题」那一组:内置预设和「我的配色主题」都画成预览卡(`ThemePreviewCard`),点一下套用。
+/// 「主题」那一组:内置预设和「我的主题」都画成预览卡(`ThemePreviewCard`),点一下套用。
 ///
 /// 当前生效的那张描强调色边框,判据是配色字段完全相等(`ColorTheme.hasSameColors`,含两处「跟随封面」
 /// 开关;跟随时不比那个备用色)。套用会按主题自己的值写两处跟随封面(`ColorTheme.apply(to:)`)。
-/// 悬浮窗右键的「配色主题」子菜单(`OverlayQuickSettingsMenu.colorThemeMenu`)是同一张清单、同一条判据。
+/// 悬浮窗右键的「主题」子菜单(`OverlayQuickSettingsMenu.colorThemeMenu`)是同一张清单、同一条判据。
 ///
 /// 自存主题的改名 / 用当前配色覆盖 / 删除挂在卡片的右键菜单上。命名、改名与删除确认都摆在
-/// 「我的配色主题」那行标题的右侧,不另起一行:编辑台里这组视图是从舞台上沿往上弹的浮层,高度封顶在
+/// 「我的主题」那行标题的右侧,不另起一行:编辑台里这组视图是从舞台上沿往上弹的浮层,高度封顶在
 /// 舞台上方的剩余空间里,多长一行就得滚动才看得见。也不用 `.alert`:宿主之一是 transient 的
 /// `NSPopover`,alert 以 sheet 挂在窗口上,点进去时承载状态的视图树可能已随浮层销毁。空名禁用「保存」
 /// 而不是静默丢弃;删除必须二次确认(`customColorThemes` 的 didSet 立刻落盘、没有撤销)。
@@ -502,7 +502,7 @@ struct OverlayThemeSettingsRows: View {
         .animation(.default, value: settings.customColorThemes)
     }
 
-    /// 「我的配色主题」那一段只剩空状态提示:当前配色对得上某套、没有可恢复的那套、也没存过主题(判据同 customSection)。
+    /// 「我的主题」那一段只剩空状态提示:当前配色对得上某套、没有可恢复的那套、也没存过主题(判据同 customSection)。
     private func customSectionIsEmpty(current: ColorTheme) -> Bool {
         guard UnsavedColorThemeSnapshot.isKnown(current, settings: settings) else { return false }
         let restorable = UnsavedColorThemeSnapshot.load().flatMap {
@@ -523,7 +523,7 @@ struct OverlayThemeSettingsRows: View {
         }
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Text(L10n.t("我的配色主题"))
+                Text(L10n.t("我的主题"))
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .fixedSize()
@@ -729,22 +729,19 @@ enum OverlayStyleDefaults {
 /// 把它缓存成 @State:那就又多了一份要跟设置同步的真相,正是这次抽取要消灭的东西。
 @MainActor
 enum OverlayStyleSummary {
-    /// 例:「系统字体 加粗 31pt」。字体名复用 FontFamilyPicker 的同一份显示口径 ——
-    /// 空串要显示成「系统字体」这条规则只能有一处。
-    ///
-    /// 加了中间那截字重。**三项全报**,跟 `layout` 那条同一个理由:这个浮层里总共就
-    /// 这三项,少报一项等于让人为了确认它再点开一次浮层,那这截摘要就白给了。代价是长字体名
-    /// 下更容易触发截断 —— 那本来就有兜底(`EditorToolbarButtonLabel` 里 140pt 限宽 + `.layoutPriority(-1)`,
-    /// 摘要先被压、标题始终完整),不为多这一截另写一套。
+    /// 例:「较粗 31pt」/「PingFang SC 较粗 31pt」。用的是系统字体(默认)时不报字体名,只报粗细和字号:
+    /// 「系统字体」四个字占掉胶囊上大半截摘要宽度,却是绝大多数人的恒定值。
     static var text: String {
         let settings = AppSettings.shared
         return fontText(family: settings.fontFamilyName, weight: settings.overlayFontWeight, size: Int(settings.fontSize))
     }
 
-    /// 上面那句的本体(抽出来,灵动岛编辑台「字体」按钮的摘要走同一份):字体名复用 `FontFamilyPicker`
-    /// 的显示口径("空串 = 系统字体"只能有一处),中间是粗细的显示名,末尾字号。两个编辑台各拼一遍迟早漂开。
+    /// 上面那句的本体(抽出来,灵动岛编辑台「字体」按钮的摘要走同一份,两个编辑台各拼一遍迟早漂开):换了字体时
+    /// 字体名在前(复用 `FontFamilyPicker.displayName`,含「未安装」标记),中间是粗细的显示名,末尾字号。
+    /// 空串就是系统字体,判据跟 `FontFamilyPicker.displayName` 同一个。
     static func fontText(family: String, weight: OverlayFontWeight, size: Int) -> String {
         let sizeText = String(format: L10n.t("%@pt"), "\(size)")
+        guard !family.isEmpty else { return "\(weight.displayName) \(sizeText)" }
         return "\(FontFamilyPicker.displayName(for: family)) \(weight.displayName) \(sizeText)"
     }
 
@@ -789,25 +786,25 @@ enum OverlayStyleSummary {
             ? L10n.t("纯色") : L10n.t("透明")
     }
 
-    /// 例:「自动 · 换行」。对齐方式 / 长句处理两项都报 —— 摘要少报一项等于让人为了确认另一项再点开一次浮层,
-    /// 那这截摘要就白给了。读音 / 译文 / 下一句三项间距不报:三个数字挤在按钮上读不出是哪一行的。
+    /// 例:「自动」/「左对齐」。只报对齐方式:长句处理、几项间距看预览就知道,一起报的话胶囊上读不完。
     ///
-    /// 两截都复用控件的同一份标签(`OverlayAlignmentSegmentedControl.label(for:)` / `OverlayLineOverflowLabel`),
-    /// 不在这里另写一套短名:控件里选中的是「左对齐」、摘要里却写「左」,是同一个值两种叫法。
+    /// 复用控件的同一份标签(`OverlayAlignmentSegmentedControl.label(for:)`),不在这里另写一套短名:控件里选中的是
+    /// 「左对齐」、摘要里却写「左」,是同一个值两种叫法。
     static var layout: String {
-        let settings = AppSettings.shared
-        let alignment = OverlayAlignmentSegmentedControl.label(for: settings.overlayDuetAlignmentOverride)
-        return "\(alignment) · \(OverlayLineOverflowLabel.text(for: settings.overlayLineOverflow))"
+        OverlayAlignmentSegmentedControl.label(for: AppSettings.shared.overlayDuetAlignmentOverride)
     }
 
-    /// 「内容」按钮的摘要:读音 / 译文 / 下一句开着哪几项(全开报「全部开启」、全关报「全部关闭」)。
-    static var content: String {
+    /// 「内容」按钮的摘要:读音 / 译文 / 下一句开了几项(`SettingsToggleSummary`),`contentDetail` 是悬停时列出的那几项。
+    static var content: String { SettingsToggleSummary.text(contentEntries) }
+    static var contentDetail: String { SettingsToggleSummary.detail(contentEntries) }
+
+    private static var contentEntries: [(title: String, isOn: Bool)] {
         let settings = AppSettings.shared
-        return SettingsToggleSummary.text([
+        return [
             (title: L10n.t("读音"), isOn: settings.overlayShowRomanization),
             (title: L10n.t("译文"), isOn: settings.overlayShowTranslation),
             (title: L10n.t("下一句"), isOn: settings.showNextLinePreview),
-        ])
+        ]
     }
 }
 

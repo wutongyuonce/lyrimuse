@@ -5,7 +5,7 @@ import SwiftUI
 // 「纯音乐/无歌词时收起歌词行」「广告时收起」:不整卡隐藏,标题和 ⓘ 按形态分开写。
 //
 // 这几项放在各形态的「行为」入口里,不单独开一张「自动隐藏」卡:它们跟「行为」里那几项(锁定位置 /
-// 长按拖动 / 悬浮淡化 / 暂停时收起)是同一类东西 —— **设一次就不动、而且在编辑台上看不出任何变化**
+// 长按拖动 / 悬停时淡化 / 暂停时收起)是同一类东西 —— **设一次就不动、而且在编辑台上看不出任何变化**
 // (判据见 OverlayBehaviorSettingsRows.swift 顶部)。
 //
 // **值按形态分两份,不能合成一份**(悬浮歌词 `hideDuringScreenCapture` / `hideWhenNotPlaying` /
@@ -22,8 +22,8 @@ import SwiftUI
 //   ① 悬浮歌词:`OverlayBehaviorSettingsRows`(OverlayBehaviorSettingsRows.swift)
 //   ② 灵动岛:`NotchBehaviorSettingsRows`(SettingsView.swift)
 // 各自的工具栏「行为」浮层和「全部设置」抽屉「行为」组调的是同一份视图,自动隐藏这几项都经
-// `AutoHideToggleTiles` 渲染。此外两个编辑台工具栏按钮上那句摘要(`OverlayEditorStage.behaviorSummary` /
-// `NotchEditorStage.behaviorSummary`)也要把这几项算进去 —— 漏了就会出现"浮层里开关开着、按钮摘要
+// `AutoHideToggleTiles` 渲染。此外两个编辑台工具栏按钮上那句摘要(`OverlayEditorStage.behaviorEntries` /
+// `NotchEditorStage.behaviorEntries`)也要把这几项算进去 —— 漏了就会出现"浮层里开关开着、按钮摘要
 // 仍然写着「全部关闭」"这种会撒谎的派生值。
 
 /// 自动隐藏这几项服务的是哪个形态。用来分流 Binding(各自的 AppSettings 键 + 各自的 WindowController);
@@ -96,8 +96,8 @@ enum AutoHideItem: String, CaseIterable, Identifiable {
     ///
     /// `get:` 分支必须是**纯 AppSettings 读**,一个 `.shared` 都不许有。两条路径会在形态
     /// **关着**的时候求值 get:① 宿主的 body(设置项刻意不跟总开关联动,关着也照样渲染);
-    /// ② 两个编辑台工具栏按钮上那句摘要(`OverlayEditorStage.behaviorSummary` /
-    /// `NotchEditorStage.behaviorSummary`)为了拼串会读 `wrappedValue`。
+    /// ② 两个编辑台工具栏按钮上那句摘要(`OverlayEditorStage.behaviorEntries` /
+    /// `NotchEditorStage.behaviorEntries`)为了拼串会读 `wrappedValue`。
     ///
     /// 悬浮歌词那两项顺序必须是**先写 AppSettings、再调控制器**(真值在 AppSettings,控制器只是镜像)。灵动岛那两项只写设置:
     /// 每个灵动岛实例(含镜像副本)自己订阅 `$notchHide*`(`NotchLyricsWindowController` init),这里不碰它的 `.shared`。

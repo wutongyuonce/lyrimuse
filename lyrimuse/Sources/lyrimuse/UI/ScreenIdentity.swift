@@ -32,6 +32,14 @@ enum ScreenIdentity {
         return NSScreen.screens.first { self.id(of: $0) == id }
     }
 
+    /// Mac 自带的那块屏(笔记本内建屏 / iMac 屏)。
+    static func isBuiltIn(_ screen: NSScreen) -> Bool {
+        guard let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else {
+            return false
+        }
+        return CGDisplayIsBuiltin(CGDirectDisplayID(number.uint32Value)) != 0
+    }
+
     // 有真刘海的那块屏(safeAreaInsets.top > 0)。"灵动岛"这个形态本来就长在刘海上,
     // 没有明确指定时它就是最合理的默认目标。
     static var notched: NSScreen? {

@@ -19,7 +19,7 @@ enum LyrimuseActionRunner {
         case .toggleLockPosition:
             // 只对桌面悬浮歌词有意义(灵动岛贴着刘海,没有「位置」可锁);不适用时说一句,全局动作最忌讳「按了没动静」。
             guard AppSettings.shared.classicOverlayEnabled else {
-                GlobalHotkeys.flashHint(icon: "lock.slash", text: L10n.t("锁定位置仅对桌面悬浮歌词有效"))
+                GlobalHotkeys.flashHint(icon: "lock.slash", text: L10n.t("锁定位置仅对悬浮歌词有效"))
                 return
             }
             let overlay = LyricsOverlayWindowController.shared

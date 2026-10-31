@@ -889,18 +889,21 @@ struct SettingsToggleTile<Accessory: View>: View {
     var detail: String?
     let isOn: Binding<Bool>
     @ViewBuilder var accessory: () -> Accessory
+    /// 禁用时名字跟开关一起变淡(`Toggle` 自己会变淡,`Text` 不会)。
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         HStack(spacing: 6) {
             if let icon {
                 SymbolImage(name: icon, size: 12)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isEnabled ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tertiary))
                     .environment(\.locale, Locale(identifier: "en"))
                     .frame(width: 16)
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
                     .font(.system(size: 12.5))
+                    .foregroundStyle(isEnabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let detail {
@@ -1672,27 +1675,32 @@ private struct PopoverContentHeightKey: PreferenceKey {
     }
 }
 
-/// 一组布尔开关归约成编辑台工具栏按钮上那句摘要:全开一句话、全关一句话,部分开着就把
-/// **开着的**那几项标题列出来。
+/// 一组布尔开关归约成编辑台工具栏按钮上那句摘要:全开「全部开启」、全关「全部关闭」,部分开着只报**开了几项**
+/// (「3 项开启」/「3 On」)。
 ///
-/// 为什么是共享的而不是各编辑台一份:它产出的是**用户看得见的文案**,而两个
-/// 编辑台的「行为」按钮现在装的是同一类东西(各自的行为项 + 同一份 `AutoHideItem`)。同一句
-/// 摘要在两处漂开——一处写「全部开启」、另一处把五项标题拼全——是这个仓库反复付过代价的
-/// 那种 bug:漏改不报错,只表现成"两个入口说法不一样"。
-/// (先在 `NotchEditorStage` 里从 `behaviorLikeSummary` 下沉了一层,同一天悬浮
-///  歌词那边也要用,于是提到这里;两处的调用点仍然各自决定"要算哪些开关"。)
+/// 只报数量、不列标题:胶囊上留给摘要的宽度只有五六十 pt,列标题必然被截成半截,摘要必须读得完。开着的是哪几项放进
+/// 悬停说明(`detail`),点开浮层看全。
 ///
-/// 列表拼接必须走 `L10n.list`(按界面语言用 `ListFormatter`),别手写分隔符:中文按区域习惯给「、」、
-/// 英文给 ", " / "and",不用为这一个用途单独造一条要翻译的标点字符串。也别用
-/// `ListFormatter.localizedString(byJoining:)`:它按系统语言拼。
+/// 所有编辑台(悬浮歌词、灵动岛、菜单栏、歌词窗口、触控栏)的开关类摘要都走这一份:同一句摘要在两处漂开(一处报数量、
+/// 另一处列标题)漏改不报错,只表现成"两个入口说法不一样"。调用点各自决定"要算哪些开关"。
 ///
 /// 元组数组**不能**用 key path 简写(`filter(\.isOn)` 编译不过),只能写成闭包。
 enum SettingsToggleSummary {
     @MainActor
     static func text(_ entries: [(title: String, isOn: Bool)]) -> String {
+        let onCount = entries.filter { $0.isOn }.count
+        if onCount == entries.count { return L10n.t("全部开启") }
+        if onCount == 0 { return L10n.t("全部关闭") }
+        return String(format: L10n.t("%@ 项开启"), "\(onCount)")
+    }
+
+    /// 悬停说明:部分开着时列出开着的那几项,全开 / 全关时同 `text`。列表拼接走 `L10n.list`(按界面语言用
+    /// `ListFormatter`,中文「、」、英文 ", " / "and"),别手写分隔符,也别用 `ListFormatter.localizedString(byJoining:)`
+    /// (它按系统语言拼)。
+    @MainActor
+    static func detail(_ entries: [(title: String, isOn: Bool)]) -> String {
         let onTitles = entries.filter { $0.isOn }.map { $0.title }
-        if onTitles.count == entries.count { return L10n.t("全部开启") }
-        if onTitles.isEmpty { return L10n.t("全部关闭") }
+        guard !onTitles.isEmpty, onTitles.count < entries.count else { return text(entries) }
         return L10n.list(onTitles)
     }
 }

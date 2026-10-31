@@ -128,7 +128,7 @@ extension ColorTheme {
     //   墨字白边  黑字 + 白描边,透明底 —— 靠描边在任何壁纸上托字;跟「默认」只差文字色不跟随封面
     //   卡拉OK    黄色已唱 + 白色未唱 + 深色描边 —— 逐字进度一眼看得出唱到哪
     //   夜幕卡片  白字压在近黑的实心卡片上 —— 最稳的可读性
-    //   磨砂玻璃  深灰字 + 超薄白色毛玻璃,底下透出模糊的壁纸
+    //   毛玻璃    深灰字 + 超薄白色毛玻璃,底下透出模糊的壁纸
     //   纸白卡片  深灰字压在暖白卡片上 —— 浅色风格
     //   霓虹      白字 + 深洋红描边
     //   彩虹      流动彩虹字 + 深色描边,透明底 —— 彩虹各色同一个亮度,浅色壁纸上靠描边托字
@@ -158,7 +158,7 @@ extension ColorTheme {
         // 超薄毛玻璃 + 六成白色着色 + 深灰字。毛玻璃跟系统深浅色走,着色要厚到深色外观下也压得成浅底,
         // 字才能用深色;白字在浅色外观下几乎看不见(对比度约 1)。
         ColorTheme(
-            id: "builtin-frosted-glass", name: L10n.t("磨砂玻璃"),
+            id: "builtin-frosted-glass", name: L10n.t("毛玻璃"),
             foregroundColorHex: "#1C1C1EFF", karaokeUnsungColorHex: "#1C1C1EB3", backgroundColorHex: "#FFFFFF99",
             backgroundGlass: true, glassIntensity: .ultraThin,
             textStrokeEnabled: false, textStrokeColorHex: "#FFFFFFA6"

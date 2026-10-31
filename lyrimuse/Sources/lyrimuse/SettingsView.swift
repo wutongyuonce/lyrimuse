@@ -2881,7 +2881,7 @@ private struct AppearanceSettingsTab: View {
             VStack(spacing: 14) {
                 modeToggleCard(
                     icon: "captions.bubble",
-                    title: L10n.t("桌面悬浮歌词"),
+                    title: L10n.t("悬浮歌词"),
                     isOn: Binding(
                         get: { settings.classicOverlayEnabled },
                         set: { LyricsOverlayWindowController.shared.setVisible($0) }))
@@ -2911,7 +2911,6 @@ private struct AppearanceSettingsTab: View {
                 modeToggleCard(
                     icon: SurfaceGlyph.notch.rawValue,
                     title: L10n.t("灵动岛歌词"),
-                    subtitle: L10n.t("紧贴屏幕顶部的刘海显示"),
                     isOn: Binding(
                         get: { settings.notchOverlayEnabled },
                         set: { NotchLyricsWindowController.shared.setVisible($0) }))
@@ -3169,7 +3168,7 @@ private struct AppearanceSettingsTab: View {
             return EditorToolbarButtonLabel(
                 icon: "switch.2", title: L10n.t("行为"),
                 summary: SettingsToggleSummary.text([
-                    (title: L10n.t("悬浮淡化"), isOn: settings.lyricsWindowMiniFadeOnHover),
+                    (title: L10n.t("悬停时淡化"), isOn: settings.lyricsWindowMiniFadeOnHover),
                     (title: L10n.t("暂停时隐藏"), isOn: settings.lyricsWindowMiniHideWhenNotPlaying),
                     (title: L10n.t("全屏时隐藏"), isOn: settings.lyricsWindowMiniHideInFullScreen),
                 ]))
@@ -3292,7 +3291,7 @@ private struct AppearanceSettingsTab: View {
     @ViewBuilder
     private var lyricsWindowBehaviorRows: some View {
         SettingsTileGrid {
-            SettingsToggleTile(icon: "cursorarrow.motionlines", title: L10n.t("悬浮淡化"),
+            SettingsToggleTile(icon: "cursorarrow.motionlines", title: L10n.t("悬停时淡化"),
                                isOn: $settings.lyricsWindowMiniFadeOnHover)
             // 从属于「悬浮淡化」,只在它开着时出现(07 章决策 144)。
             if settings.lyricsWindowMiniFadeOnHover {
@@ -3606,7 +3605,7 @@ private struct AppearanceSettingsTab: View {
                     title: L10n.t("字体"),
                     // 完整尺寸的字号由窗口大小推出、不给滑杆;迷你有「字号」上限滑杆。
                     help: fontSize != nil
-                        ? L10n.t("仅作用于歌词；顶部信息和控制条仍用系统字体")
+                        ? L10n.t("仅作用于歌词；顶部信息和播放控制仍用系统字体")
                         : L10n.t("仅作用于歌词；字号随窗口大小自动调整")
                 ) {
                     FontFamilyPicker(selection: font)
@@ -3662,7 +3661,7 @@ private struct AppearanceSettingsTab: View {
                     // 迷你的顶部信息和控制条跟歌词紧挨成一块,文字色一起走(LyricsWindowView.miniPrimaryColor);
                     // 完整尺寸只管歌词。说明按尺寸分开写,别合成一句。
                     help: fontSize != nil
-                        ? L10n.t("作用于歌词、顶部信息和控制条；「自动」根据背景亮度在浅色与深色之间切换")
+                        ? L10n.t("作用于歌词、顶部信息和播放控制；「自动」根据背景亮度在浅色与深色之间切换")
                         : L10n.t("仅作用于歌词；「自动」根据背景亮度在浅色与深色之间切换")
                 ) {
                     HStack(spacing: 6) {
@@ -3903,12 +3902,12 @@ enum NotchBehaviorItem: String, CaseIterable, Identifiable {
         case .listenMilestones: return L10n.t("收听里程碑")
         case .trackDrop: return L10n.t("换歌时显示歌名")
         case .gestures: return L10n.t("触控板手势")
-        case .lyricRowFade: return L10n.t("悬浮淡化")
+        case .lyricRowFade: return L10n.t("悬停时淡化")
         case .lyricRowArtwork: return L10n.t("显示封面")
         // 标题里要把"只在展开时"说出来,否则跟上一行「副行 · 下一句」读起来像同一个开关的两种写法。
         case .expandedNextLine: return L10n.t("展开时预览下一句")
         case .expandedShowsControls: return L10n.t("显示播放控制")
-        case .expandedShowsLyricsOffset: return L10n.t("显示歌词校准")
+        case .expandedShowsLyricsOffset: return L10n.t("显示歌词偏移")
         case .expandedShowsQuickActions: return L10n.t("快捷操作")
         // 曲目信息头部的四项挂在「曲目信息」标题行下面(`NotchExpandedSettingsRows`),标题是
         // 光秃秃的名词 —— 复用耳朵模块那四个词条,不另造"显示封面 / 显示歌名…":那样会跟
@@ -4296,10 +4295,7 @@ struct NotchFontSettingsRows: View {
     }
 
     private var sizeHelp: String {
-        String(format: L10n.t("仅调整主行，%@～%@pt，空间不足时歌词行自动增高；副行和展开时的下一句预览固定为 %@pt，仅跟随字体与字重"),
-               "\(Int(NotchLyricRowMetrics.mainFontSizeRange.lowerBound))",
-               "\(Int(NotchLyricRowMetrics.mainFontSizeRange.upperBound))",
-               "\(Int(NotchLyricRowMetrics.secondaryFontSize))")
+        String(format: L10n.t("仅调整主行；副行和下一句预览固定为 %@pt"), "\(Int(NotchLyricRowMetrics.secondaryFontSize))")
     }
 
     var body: some View {
@@ -4363,7 +4359,7 @@ struct NotchExpandedSettingsRows: View {
                 NotchBehaviorToggleTile(item: .expandedShowsQuickActions)
             }
             SettingsTileGrid(title: L10n.t("曲目信息"),
-                               help: L10n.t("展开时在歌词行上方显示曲目信息，四项可分别开启或关闭；全部关闭时不占用空间"),
+                               help: L10n.t("展开时显示在歌词行上方；全部关闭时不占空间"),
                                columns: 4) {
                 NotchBehaviorToggleTile(item: .expandedShowsArtwork)
                 NotchBehaviorToggleTile(item: .expandedShowsTrackTitle)
@@ -4410,28 +4406,46 @@ private struct NotchExpandedLyricListRows: View {
 /// 少算不会编译报错,只会让按钮在漏掉的那项开着时照旧显示「全部关闭」。
 @MainActor
 struct NotchBehaviorSettingsRows: View {
-    // 一组小块(三列),不分组名:先收起、隐藏与显示(暂停时收起、自动隐藏几项、全屏时隐藏、锁屏时显示),再两项提示(换歌时显示歌名、收听里程碑),最后触控板手势。
-    // 分成两组带组名时,组名和组间距多出的二十来 pt 正好让第三行出界,浮层要滚。
+    @Environment(\.settingsInPopover) private var inPopover
+
+    // 浮层里一组小块(三列)、不带组名:组名和组间距多出的二十来 pt 正好让第三行出界,浮层要滚。
+    // 抽屉不限高,分「收起与隐藏 / 提示 / 手势」三组。两种排法的项和顺序一致。
     var body: some View {
-        SettingsTileGrid(columns: 3) {
-            NotchBehaviorToggleTile(item: .collapseWhenPaused)
-            AutoHideToggleTiles(surface: .notch)
-            NotchBehaviorToggleTile(item: .hideInFullScreen)
-            NotchBehaviorToggleTile(item: .showOnLockScreen)
-            NotchBehaviorToggleTile(item: .trackDrop)
-            NotchListenMilestonesTile()
-            NotchBehaviorToggleTile(item: .gestures)
+        if inPopover {
+            SettingsTileGrid(columns: 3) {
+                collapseAndHideTiles
+                notificationTiles
+                NotchBehaviorToggleTile(item: .gestures)
+            }
+        } else {
+            SettingsRowGroupStack {
+                SettingsTileGrid(title: L10n.t("收起与隐藏"), columns: 3) { collapseAndHideTiles }
+                SettingsTileGrid(title: L10n.t("提示"), columns: 3) { notificationTiles }
+                SettingsTileGrid(title: L10n.t("手势"), columns: 3) { NotchBehaviorToggleTile(item: .gestures) }
+            }
         }
+    }
+
+    @ViewBuilder private var collapseAndHideTiles: some View {
+        NotchBehaviorToggleTile(item: .collapseWhenPaused)
+        AutoHideToggleTiles(surface: .notch)
+        NotchBehaviorToggleTile(item: .hideInFullScreen)
+    }
+
+    @ViewBuilder private var notificationTiles: some View {
+        NotchBehaviorToggleTile(item: .showOnLockScreen)
+        NotchBehaviorToggleTile(item: .trackDrop)
+        NotchListenMilestonesTile()
     }
 }
 
 /// 工具栏第二行「歌词行」入口的浮层。内容就是 `NotchLyricRowSettingsRows`,没有第二份。
 ///
 /// `width` 470 是**离屏量的**(`NSHostingView.fittingSize`),不是估的。瓶颈是「对齐方式」
-/// 那一行尾部的 4 段分段控件:英文 278.3pt("Left-Aligned"/"Right-Aligned"/"Automatic" 都撑破
-/// 每段 56pt 的下限,只按中文估会差 40pt 以上),加 `SettingsRow` 固定开销 96pt(2×14 内边距 +
-/// 20 图标列 + 3×12 iconTextSpacing + 12 `Spacer(minLength:)`)+ 标题("Alignment" 61.1)+ ⓘ 19
-/// = 英文 **454.4**,470 留 15.6pt 余量;中文四段 234 + 96 + 51.6 + 19 = 400.6,同样在内。
+/// 那一行尾部的 4 段分段控件。470 按英文四段都撑破每段 56pt 下限的最坏情况量:分段 278.3pt,加 `SettingsRow`
+/// 固定开销 96pt(2×14 内边距 + 20 图标列 + 3×12 iconTextSpacing + 12 `Spacer(minLength:)`)+ 标题("Alignment" 61.1)
+/// + ⓘ 19 = 英文 **454.4**,留 15.6pt 余量;中文四段 234 + 96 + 51.6 + 19 = 400.6,同样在内。实际英文标签
+/// (Automatic / Center / Left / Right)只有 "Automatic" 撑过 56pt,比这个上界窄。
 /// 「展开时预览下一句」子行英文约 345pt,不是瓶颈。悬浮歌词那个装同一套四段控件的「排版」浮层
 /// 是 460,这里多 10 是因为这一行还带一个 ⓘ。
 /// 不能指望截断兜底:`SettingsRow` 的标题没有 `lineLimit`,超宽的表现是**折行**。
@@ -4459,7 +4473,7 @@ struct NotchFontPopover: View {
 /// 宽度 640:上面三格要把英文「Show Playback Controls」排成两行,「曲目信息」四格要放下英文「Artwork」。
 struct NotchExpandedPopover: View {
     var body: some View {
-        SettingsPopoverShell(title: L10n.t("展开态"), width: 640) {
+        SettingsPopoverShell(title: L10n.t("展开时"), width: 640) {
             NotchExpandedSettingsRows()
         }
     }
@@ -4741,7 +4755,7 @@ private struct NotchAllSettingsDrawer: View {
                 }
                 SettingsGroupCard(title: L10n.t("歌词行")) { NotchLyricRowSettingsRows() }
                 SettingsGroupCard(title: L10n.t("字体")) { NotchFontSettingsRows() }
-                SettingsGroupCard(title: L10n.t("展开态")) { NotchExpandedSettingsRows() }
+                SettingsGroupCard(title: L10n.t("展开时")) { NotchExpandedSettingsRows() }
                 SettingsGroupCard(title: L10n.t("行为")) { NotchBehaviorSettingsRows() }
                 resetRow
             }
@@ -4776,7 +4790,7 @@ private struct NotchAllSettingsDrawer: View {
             SettingsRow(
                 icon: "arrow.uturn.backward",
                 title: L10n.t("恢复默认"),
-                subtitle: L10n.t("不含宽度和总开关")
+                subtitle: L10n.t("不含宽度和「灵动岛歌词」开关")
             ) {
                 Button(L10n.t("恢复")) { NotchStyleDefaults.restoreDefaults() }
                     .buttonBorderShape(.capsule)
@@ -4879,7 +4893,7 @@ private struct NotchAllSettingsDrawer: View {
                 Spacer(minLength: 12)
                 if !isExpanded {
                     AllSettingsGroupNames([L10n.t("风格"), L10n.t("屏幕"), L10n.t("左耳"), L10n.t("右耳"), L10n.t("宽度"), L10n.t("歌词行"),
-                                            L10n.t("字体"), L10n.t("展开态"), L10n.t("行为")])
+                                            L10n.t("字体"), L10n.t("展开时"), L10n.t("行为")])
                 }
             }
             .padding(.horizontal, SettingsRowMetrics.horizontalPadding)
@@ -7833,7 +7847,7 @@ struct CopyLinkButton: View {
                 copied = false
             }
         } label: {
-            Image(systemName: copied ? "checkmark" : "link")
+            Image(systemName: copied ? "checkmark" : "doc.on.doc")
                 .font(.system(size: 11, weight: .semibold))
                 .frame(width: 16, height: 16)
                 .contentShape(Rectangle())

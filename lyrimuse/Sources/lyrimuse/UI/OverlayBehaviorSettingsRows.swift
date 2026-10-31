@@ -1,7 +1,7 @@
 import LyrimuseCore
 import SwiftUI
 
-// 「歌词显示 → 悬浮歌词」那几个**行为**项(锁定位置 / 长按拖动 / 悬浮淡化 / 悬停时显示控制条)的唯一一份实现。
+// 「歌词显示 → 悬浮歌词」那几个**行为**项(锁定位置 / 长按拖动 / 悬停时淡化 / 悬停时显示播放控制)的唯一一份实现。
 //
 // 两个宿主:① 编辑台工具栏第二行「行为」按钮点开的浮层(OverlayEditorStage.toolbarButton);
 // ② 「全部设置」抽屉里「行为」那一组(OverlayAllSettingsDrawer),键盘/VoiceOver/"我就想找个开关"的
@@ -56,7 +56,7 @@ enum OverlayBehaviorItem: String, CaseIterable, Identifiable {
         case .dragNeedsLongPress: return "hand.tap"
         case .fadeOnHover: return "cursorarrow.motionlines"
         // 这一项管的就是那排播放按钮本身,用播放/暂停符号最直白;不用 cursorarrow 一族,
-        // 免得跟上一行的「悬浮淡化」在图标上也撞成一对。
+        // 免得跟上一行的「悬停时淡化」在图标上也撞成一对。
         case .showHoverControls: return "playpause.circle"
         case .hideInFullScreen: return "arrow.up.left.and.arrow.down.right"
         }
@@ -66,17 +66,27 @@ enum OverlayBehaviorItem: String, CaseIterable, Identifiable {
         switch self {
         case .lockPosition: return L10n.t("锁定位置")
         case .dragNeedsLongPress: return L10n.t("长按拖动")
-        case .fadeOnHover: return L10n.t("悬浮淡化")
-        case .showHoverControls: return L10n.t("悬停时显示控制条")
+        case .fadeOnHover: return L10n.t("悬停时淡化")
+        case .showHoverControls: return L10n.t("悬停时显示播放控制")
         case .hideInFullScreen: return L10n.t("全屏时隐藏")
         }
     }
 
-    /// ⓘ 帮助。只有「全屏时隐藏」有。
+    /// ⓘ 帮助。
     var help: String? {
         switch self {
         case .hideInFullScreen: return L10n.t("所在屏幕有 App 全屏时隐藏")
-        case .lockPosition, .dragNeedsLongPress, .fadeOnHover, .showHoverControls: return nil
+        case .lockPosition: return L10n.t("锁定后无法拖动，悬停时也不显示播放控制")
+        case .dragNeedsLongPress, .fadeOnHover, .showHoverControls: return nil
+        }
+    }
+
+    /// 这一项此刻管不管用。「长按拖动」只在「位置」是「自由」时有意义:顶部居中 / 底部居中下窗口本来就拖不动。
+    @MainActor
+    var isApplicable: Bool {
+        switch self {
+        case .dragNeedsLongPress: return AppSettings.shared.overlayPlacementMode == .free
+        case .lockPosition, .fadeOnHover, .showHoverControls, .hideInFullScreen: return true
         }
     }
 
@@ -151,7 +161,7 @@ enum OverlayBehaviorItem: String, CaseIterable, Identifiable {
 
 // MARK: - 「行为」组的行(浮层与抽屉同一份)
 
-/// 「行为」那一组:锁定位置 / 长按拖动 / 悬浮淡化 / 悬停时显示控制条 + 自动隐藏几项(含 `OverlayBehaviorItem.hideInFullScreen`)。
+/// 「行为」那一组:锁定位置 / 长按拖动 / 悬停时淡化 / 悬停时显示播放控制 + 自动隐藏几项(含 `OverlayBehaviorItem.hideInFullScreen`)。
 /// 编辑台「行为」浮层(`OverlayEditorStage.toolbarButton`)和抽屉「行为」组(`OverlayAllSettingsDrawer`)调的
 /// 是这同一份。
 ///
@@ -188,5 +198,6 @@ private struct OverlayBehaviorToggleTile: View {
 
     var body: some View {
         SettingsToggleTile(icon: item.icon, title: item.title, help: item.help, isOn: item.binding)
+            .disabled(!item.isApplicable)
     }
 }

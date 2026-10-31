@@ -7,7 +7,7 @@ import SwiftUI
 // 就没有理由常年占着两屏,收成一个默认折叠的抽屉,展开是就地长出来(不跳页、不开新窗口:那两种都会
 // 让"改一项、回头看一眼编辑台"变成来回切换)。
 //
-// 「桌面悬浮歌词」总开关**不收进来**。它是这一段的主开关,收进折叠区等于"要先展开
+// 「悬浮歌词」总开关**不收进来**。它是这一段的主开关,收进折叠区等于"要先展开
 // 才能开这个形态";它留在编辑台正下方那张 modeToggleCard 里常驻可见。
 //
 // 抽屉里的每一组都是**别处那份组件**,这里只有外壳;**分组、顺序、标题跟工具栏各个入口一一
@@ -48,7 +48,7 @@ struct OverlayAllSettingsDrawer: View {
                 // 顺序跟编辑台工具栏那几颗按钮一致 —— 抽屉的职责是"工具栏浮层的全量兜底通路",
                 // 两个宿主分组不一样的话,用户按工具栏的记忆到抽屉里找会落空。
                 //
-                // 「我的配色主题」在「主题」组里(OverlayThemeSettingsRows 的第二段),不单独占一组。
+                // 「我的主题」在「主题」组里(OverlayThemeSettingsRows 的第二段),不单独占一组。
                 SettingsGroupCard(title: L10n.t("主题")) { OverlayThemeSettingsRows() }
                 SettingsGroupCard(title: L10n.t("字体")) { OverlayTypeSettingsRows() }
                 SettingsGroupCard(title: L10n.t("颜色")) { OverlayColorSettingsRows() }
@@ -192,7 +192,7 @@ struct OverlayAllSettingsDrawer: View {
             SettingsRow(
                 icon: "arrow.uturn.backward",
                 title: L10n.t("恢复默认"),
-                subtitle: L10n.t("不含内容、排版、行为、位置、OBS 和宽度")
+                subtitle: L10n.t("仅恢复主题、字体和颜色")
             ) {
                 Button(L10n.t("恢复")) { OverlayStyleDefaults.restoreTextAndColors() }
                     .buttonBorderShape(.capsule)

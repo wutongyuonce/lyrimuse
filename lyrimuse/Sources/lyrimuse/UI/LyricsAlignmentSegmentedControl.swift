@@ -17,15 +17,14 @@ import SwiftUI
 /// 不读 SwiftUI 子视图的 frame),给 Picker 整体加 `.frame(minWidth:)` 也不管用。完整排查
 /// 记录见 docs/features/04-desktop-overlay.md。
 ///
-/// 这三个标签正好是不等宽的(左对齐/居中/右对齐 = 3/2/3 字,英文 Left-Aligned/Center/
-/// Right-Aligned 差得更多),是那个 bug 的正射场景,所以直接用手搭的:每个选项固定
+/// 这三个标签正好是不等宽的(左对齐/居中/右对齐 = 3/2/3 字,英文 Left/Center/Right),是那个 bug 的正射场景,所以直接用手搭的:每个选项固定
 /// `minWidth`,尺寸只取决于这里写的数字。
 ///
 /// `.fixedSize` 是必需的、不是保险(同样抄自那边离屏渲染查出来的结论):
 /// 这个控件在 `SettingsRow` 尾部插槽里,那一行有三个可伸缩成员(标题列/Spacer/本控件),
 /// SwiftUI **均分**剩余宽度而不是"先按理想宽度发";均分份额小于理想宽度时控件被压到下限,
-/// 英文标签("Left-Aligned" 长于 56pt)就会在**行里还剩一大截空白**的情况下被截成
-/// "Left-Ali…"。
+/// 长于 56pt 的英文标签(如 "Automatic")就会在**行里还剩一大截空白**的情况下被截成
+/// "Autom…"。
 @MainActor
 struct LyricsAlignmentSegmentedControl: View {
     @Binding var selection: LyricsRestingAlignment

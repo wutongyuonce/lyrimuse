@@ -2,7 +2,7 @@ import AppKit
 import LyrimuseCore
 import QuartzCore
 
-/// 灵动岛「悬浮淡化」(`AppSettings.notchFadeLyricRowOnHover`):稳态顶行以下那一截(歌词行、掉歌名条、横幅条)只显示、不接指针。
+/// 灵动岛「悬停时淡化」(`AppSettings.notchFadeLyricRowOnHover`):稳态顶行以下那一截(歌词行、掉歌名条、横幅条)只显示、不接指针。
 /// 指针压上来时整扇窗切成 `ignoresMouseEvents`,点击、滚动落到下层窗口,这一截整条淡下去露出底下的内容;指针离开这一截就恢复接收。
 /// 见 05 章决策 121、124。
 ///

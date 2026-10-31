@@ -121,7 +121,7 @@ final class LyricsOverlayWindowController: NSWindowController, ObservableObject,
     /// 翻面,让卡片本身能贴到可见区顶边、控制排仍留在够得着的地方。见 `recomputeControlsBelowCard()` 头注。
     @Published private(set) var controlsBelowCard = false
     /// 悬停时露不露出那排播放控制按钮——真值在 `AppSettings.overlayShowHoverControls`
-    /// (设置页「行为」的「悬停时显示控制条」写它;⚙ 菜单不放这一项,见 04 章决策 60),这里是**滞后**
+    /// (设置页「行为」的「悬停时显示播放控制」写它;⚙ 菜单不放这一项,见 04 章决策 60),这里是**滞后**
     /// 生效的镜像:控制排此刻正显示着(指针悬停中)的时候关掉这个开关,不会把控制排从指针底下当场
     /// 抽走,等这次悬停结束(指针移开、控制排自然收起)才把新值应用进来,下一次悬停就不再露出;
     /// 新值到达时若已经不在悬停中,照常立即生效。悬停中来的新值先记进 `pendingShowHoverControls`,由
@@ -147,7 +147,7 @@ final class LyricsOverlayWindowController: NSWindowController, ObservableObject,
     /// **进入**判定只认歌词文字矩形,见 `OverlayControlHitTest.chromeHoverHit`。
     @Published private(set) var isHoveringForControls: Bool = false {
         didSet {
-            // 「悬停时显示控制条」关掉这一下要**滞后**生效,见 `showHoverControls` 声明处注释——
+            // 「悬停时显示播放控制」关掉这一下要**滞后**生效,见 `showHoverControls` 声明处注释——
             // 这里只认"从悬停变成没悬停"这一次跳变,把攒着的新值放进去。
             guard oldValue, !isHoveringForControls, let pending = pendingShowHoverControls else { return }
             pendingShowHoverControls = nil
@@ -176,7 +176,7 @@ final class LyricsOverlayWindowController: NSWindowController, ObservableObject,
     @Published private(set) var isDragArmed: Bool = false
     /// 「调整宽度」模式:控制排那颗键开 / 关。开着时拖窗口左右边缘改宽度(`OverlayWidthDrag`),
     /// 背景透明时视图用虚线框出窗口边界,控制排一直露着。不持久化;锁定、窗口藏起来、
-    /// 关掉「悬停时显示控制条」都会退出(见 `setAdjustingWidth`)。
+    /// 关掉「悬停时显示播放控制」都会退出(见 `setAdjustingWidth`)。
     @Published private(set) var isAdjustingWidth = false
     /// 正在拖的那一下:哪条边、按下时指针的 x、按下时的窗口 frame。
     private var widthDrag: (edge: OverlayWidthDrag.Edge, startX: CGFloat, startFrame: NSRect)?
@@ -558,7 +558,7 @@ final class LyricsOverlayWindowController: NSWindowController, ObservableObject,
                 self?.applyPlacementMode(mode)
             }
 
-        // 「悬停时显示控制条」——sink 里只用收到的参数值(同上一条理由)。滞后生效的判断
+        // 「悬停时显示播放控制」——sink 里只用收到的参数值(同上一条理由)。滞后生效的判断
         // (悬停中就先攒着,等 isHoveringForControls 的 didSet 在悬停结束时取用)见
         // `showHoverControls` 声明处注释。
         showHoverControlsObserver = AppSettings.shared.$overlayShowHoverControls
@@ -576,7 +576,7 @@ final class LyricsOverlayWindowController: NSWindowController, ObservableObject,
                 }
             }
 
-        // 「所在屏幕」。初值这里接上(当场跟一次焦点屏),之后的切换同样走这条。拖着窗口时不搬。
+        // 「显示在」。初值这里接上(当场跟一次焦点屏),之后的切换同样走这条。拖着窗口时不搬。
         activeScreen.canMove = { [weak self] in self.map { !$0.isDragArmed } ?? false }
         activeScreen.onFollow = { [weak self] screen, force in self?.moveToActiveScreen(screen, force: force) }
         followsActiveScreenObserver = AppSettings.shared.$overlayFollowsActiveScreen

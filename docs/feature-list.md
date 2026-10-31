@@ -260,11 +260,11 @@ Move all lyrics earlier or later, optionally for one player only. Single songs g
 Lyrics floating above every window, always on top, lit up word by word. Leave them wherever you drag them, or pin them to the top centre of the screen or just above the Dock. With several displays they can stay on one screen or follow the screen of the window you are using. Romanization, translation and the next line can show alongside.
 
 - On by default
-- Settings: Lyrics Display › Floating Lyrics › Desktop Floating Lyrics
+- Settings: Lyrics Display › Floating Lyrics › Floating Lyrics
 - Settings: Lyrics Display › Floating Lyrics › Position
 - Settings: Lyrics Display › Floating Lyrics › Content › Next Line
 - Settings: Keyboard Shortcuts › Show/Hide Floating Lyrics
-- Settings: Lyrics Display › Floating Lyrics › Screen
+- Settings: Lyrics Display › Floating Lyrics › Position › Show On
 
 <a id="feature-notch-lyrics"></a>
 
@@ -279,7 +279,7 @@ A Dynamic Island-style capsule beside the notch at the top of the screen; Macs w
 - Settings: Lyrics Display › Notch › Left Ear
 - Settings: Keyboard Shortcuts › Show/Hide Notch Lyrics
 - Settings: Keyboard Shortcuts › Peek at Notch Lyrics
-- Settings: Lyrics Display › Notch › Expanded State › Quick Actions
+- Settings: Lyrics Display › Notch › Expanded › Quick Actions
 
 <a id="feature-menu-bar-lyrics"></a>
 
@@ -377,7 +377,7 @@ When nothing is playing, the lyrics window shows the last song with a line from 
 
 Font (the system's, or your own .ttf / .otf), size, weight, text and background colours, outline and frosted glass. Floating lyrics come with colour themes and can save your own; text colour can follow the album artwork, and floating lyrics, the notch, the menu bar and the Touch Bar can also flow as a rainbow. Shortcuts, or scrolling over the lyrics with ⌘ held (mouse wheel or two-finger swipe), can also make floating lyrics bigger or smaller on the fly.
 
-- Settings: Lyrics Display › Floating Lyrics › Theme › Color Theme
+- Settings: Lyrics Display › Floating Lyrics › Theme
 - Settings: Lyrics Display › Floating Lyrics › Theme › My Themes
 - Settings: Lyrics Display › Notch › Lyric Row › Lyrics Color
 - Settings: Lyrics Display › Menu Bar › Color › Rainbow
@@ -427,7 +427,7 @@ Lock floating lyrics in place, or require a long press before dragging so they n
 
 - Off by default
 - Settings: Lyrics Display › Floating Lyrics › Behavior › Lock Position
-- Settings: Lyrics Display › Floating Lyrics › Behavior › Long-Press to Drag
+- Settings: Lyrics Display › Floating Lyrics › Behavior › Click and Hold to Drag
 - Settings: Keyboard Shortcuts › Lock/Unlock Position
 
 <a id="feature-hover-controls"></a>
@@ -459,7 +459,7 @@ Floating lyrics and the notch disappear while paused or idle; the notch can inst
 - Off by default
 - Settings: Lyrics Display › Floating Lyrics › Behavior › Hide When Paused
 - Settings: Lyrics Display › Notch › Behavior › Hide When Paused
-- Settings: Lyrics Display › Notch › Behavior › Shrink When Paused
+- Settings: Lyrics Display › Notch › Behavior › Collapse When Paused
 
 <a id="feature-hide-when-no-lyrics"></a>
 
@@ -480,7 +480,7 @@ While the player is playing an ad, floating lyrics can hide and the notch can sh
 
 - Off by default
 - Settings: Lyrics Display › Floating Lyrics › Behavior › Hide During Ads
-- Settings: Lyrics Display › Notch › Behavior › Shrink During Ads
+- Settings: Lyrics Display › Notch › Behavior › Collapse During Ads
 
 <a id="feature-hide-in-full-screen"></a>
 
@@ -552,8 +552,8 @@ With the pointer on the notch's lyric row, the row fades instead of expanding an
 When the notch expands under the pointer, the lyric area becomes a list of 3, 5 or 7 lines, with the current line lighting up word by word and the list scrolling up at each new line; click a line to jump to it. If the lyric row is turned off, the notch stays a slim status strip and only shows lyrics when expanded.
 
 - On by default
-- Settings: Lyrics Display › Notch › Expanded State › Multi-Line Lyrics
-- Settings: Lyrics Display › Notch › Expanded State › Lines
+- Settings: Lyrics Display › Notch › Expanded › Multi-Line Lyrics
+- Settings: Lyrics Display › Notch › Expanded › Lines
 
 <a id="feature-web-lyrics"></a>
 
@@ -625,7 +625,7 @@ Apple Music, Spotify, Kaset and VOX need Automation permission to read what is p
 
 Play, pause, skip and drag the progress bar from the lyrics window or the expanded notch. Shuffle, repeat, like and volume depend on the player: Apple Music, Spotify, Kaset, QQ Music, Amazon Music, reAMP, VOX, Pine Player, foobar2000 and YouTube Music in a browser each support some or all of them, and NetEase Cloud Music, Kugou Music, Soda Music and LX Music have like, with LX Music volume too once Open API is on in its settings. Play, pause, skipping and like can have global shortcuts. While something like a browser video holds Now Playing, play, pause and skipping for QQ Music, NetEase Cloud Music, Soda Music, Pine Player and foobar2000 go through their own menus or play bar, and seeking isn't available.
 
-- Settings: Lyrics Display › Notch › Expanded State › Show Playback Controls
+- Settings: Lyrics Display › Notch › Expanded › Show Playback Controls
 - Settings: Keyboard Shortcuts › Play/Pause
 - Settings: Keyboard Shortcuts › Next Track
 - Settings: Keyboard Shortcuts › Previous Track
@@ -932,12 +932,12 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Floating Lyrics
 
-- **Desktop Floating Lyrics**
+- **Floating Lyrics**
 - **OBS**
+- **Theme**
 - **Width**
 - **Position**
-- **Screen**
-- **Reset to Defaults**: Content, layout, behavior, position, OBS and width are left alone
+- **Reset to Defaults**: Resets theme, font and colors only
 
 ### Lyrics Display › Floating Lyrics › OBS
 
@@ -952,7 +952,6 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Floating Lyrics › Theme
 
-- **Color Theme**
 - **My Themes**
 
 ### Lyrics Display › Floating Lyrics › Font
@@ -990,7 +989,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### Lyrics Display › Floating Lyrics › Behavior
 
 - **Lock Position**
-- **Long-Press to Drag**
+- **Click and Hold to Drag**
 - **Fade on Hover**
 - **Show Controls on Hover**
 - **Hide in Screenshots**
@@ -999,16 +998,20 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Hide During Ads**
 - **Hide in Full Screen**
 
+### Lyrics Display › Floating Lyrics › Position
+
+- **Show On**
+
 ### Lyrics Display › Notch
 
-- **Notch Lyrics**: Tucked compactly beside the notch at the top of the screen
+- **Notch Lyrics**
 - **Style**
 - **Display**
 - **Left Ear**
 - **Right Ear**
 - **Width**
 - **Expanded Width**
-- **Reset to Defaults**: Width and the master toggle are left alone
+- **Reset to Defaults**: Width and the Notch Lyrics switch stay as they are
 
 ### Lyrics Display › Notch › Style
 
@@ -1019,11 +1022,11 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Notch › Left Ear
 
-- **Audio Wave**
+- **Audio Wave**: Shows on one side at a time
 
 ### Lyrics Display › Notch › Lyric Row
 
-- **Show Lyrics When Collapsed**: When off, the resting card keeps only the notch-height row and shows no lyrics; hovering to expand still shows playback controls, the scrubber, and the next-line preview as usual
+- **Show Lyrics When Collapsed**: When off, only the notch-height strip stays until you hover to expand
 - **Alignment**
 - **Lyrics Color**
 - **Second Line**
@@ -1040,22 +1043,22 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Weight**
 - **Font Size**
 
-### Lyrics Display › Notch › Expanded State
+### Lyrics Display › Notch › Expanded
 
 - **Multi-Line Lyrics**: Shows several lines of lyrics when expanded, with the current line lighting up word by word
 - **Lines**
 - **Show Playback Controls**
-- **Show Lyrics Calibration**
+- **Show Lyrics Offset**
 - **Quick Actions**
 - **Track Info**
 
 ### Lyrics Display › Notch › Behavior
 
-- **Shrink When Paused**
+- **Collapse When Paused**
 - **Hide in Screenshots**
 - **Hide When Paused**
 - **Collapse Lyric Row for Instrumentals & No Lyrics**
-- **Shrink During Ads**
+- **Collapse During Ads**
 - **Hide in Full Screen**
 - **Show on Lock Screen**
 - **Listening Milestones**
@@ -1096,7 +1099,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Menu Bar › Behavior
 
-- **Show Controls on Hover**: Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn’t take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel
+- **Show Controls on Hover**
 - **Show Title When No Lyrics**: While a song has no lyrics or is still being searched, keep the lyrics slot with the song title instead of collapsing to the icon; the line is swapped in as soon as lyrics arrive. Still collapses when paused, and never shows during ads
 
 ### Lyrics Display › Touch Bar

@@ -1117,7 +1117,7 @@ func runLyricsWindowTests() {
         expectEqual(["字体", "粗细", "字号", "卡拉OK效果", "文字颜色", "指定颜色", "已唱颜色"].map(group),
                     Array(repeating: Optional("文字"), count: 7), "设置分组: 搜索里文字那几样归「文字」")
         expectEqual(["歌词布局", "长句处理"].map(group), [Optional("布局"), Optional("布局")], "设置分组: 搜索里歌词布局、长句处理归「布局」")
-        expectEqual(group("悬浮淡化"), Optional("行为"), "设置分组: 搜索里悬浮淡化归「行为」")
+        expectEqual(group("悬停时淡化"), Optional("行为"), "设置分组: 搜索里悬浮淡化归「行为」")
         expectEqual(group("对齐方式"), Optional("布局"), "设置分组: 搜索里对齐方式归「布局」")
     }
 

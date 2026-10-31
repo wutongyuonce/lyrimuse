@@ -1558,7 +1558,7 @@ struct LyricsOverlayView<Chrome: OverlayChromeSource>: View {
     /// 锁定态 hover 时是否露出"解锁"提示。判据本体在 Core(`OverlayControlHitTest
     /// .unlockPillShown`,有 selftest),跟 `controlsVisible` 一样不要在这里就地展开——
     /// 控制器侧 `handleMouseEvent`/`hoveredControl` 要用**同一条**,长歪就是"看不见却挡手"
-    /// 或"看得见点不动"。「悬停时显示控制条」关掉时(`showHoverControls`),
+    /// 或"看得见点不动"。「悬停时显示播放控制」关掉时(`showHoverControls`),
     /// 锁定态也不露出这颗图标——解锁还有菜单栏面板/菜单/全局热键三条路,不会把用户
     /// 困住,理由见 `unlockPillShown` 声明处。
     private var unlockPillVisible: Bool {

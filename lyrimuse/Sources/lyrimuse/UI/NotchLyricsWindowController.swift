@@ -65,7 +65,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     @Published private(set) var transientBannerActive = false
     /// 要不要画底边那根进度线,真值在 `AppSettings.notchShowsProgressLine`,镜像理由同 `showsEqualizer`。
     @Published private(set) var showsProgressLine: Bool = AppSettings.shared.notchShowsProgressLine
-    /// 「悬浮淡化」,真值在 `AppSettings.notchFadeLyricRowOnHover`,镜像理由同 `showsEqualizer`。
+    /// 「悬停时淡化」,真值在 `AppSettings.notchFadeLyricRowOnHover`,镜像理由同 `showsEqualizer`。
     @Published private(set) var fadesLyricRowOnHover: Bool = AppSettings.shared.notchFadeLyricRowOnHover
     @Published private(set) var progressLineStyle: NotchProgressLineStyle = AppSettings.shared.notchProgressLineStyle
     /// `isExpanded` 的两个输入(拆开):hover 那一路的兑现结果,和「发现新播放器」主动提醒的
@@ -842,7 +842,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
     /// 控制器此刻认不认为指针在卡片上。`NotchWindowRoot.updateHover` 拿它跟自己的边沿记忆对账。
     var isCardHovered: Bool { cardHovered }
 
-    /// 只显示那一截的上沿(卡片局部 y,即顶行下沿);nil = 整张卡都接指针:「悬浮淡化」关着、展开态(从顶行展开后要往下够
+    /// 只显示那一截的上沿(卡片局部 y,即顶行下沿);nil = 整张卡都接指针:「悬停时淡化」关着、展开态(从顶行展开后要往下够
     /// 三键、进度条)、没有曲目、广告(那一格右端有「跳过广告」键)。见 05 章决策 121。
     var passThroughBandTop: CGFloat? {
         !fadesLyricRowOnHover || isExpanded || !hasTrack || isAdBreakNow ? nil : contentTopInset

@@ -5,13 +5,16 @@ import SwiftUI
 /// 三段共用同一份:这三条工具栏吃的是同一笔横向预算、同一套压缩规则(见 04 章「两行按钮逐列对齐」
 /// 与各 `toolbar` 头注的宽度账),各写一份的话任何一处微调都会让三段的胶囊内容悄悄错开。
 ///
-/// 摘要**必须**限宽 + 单行 + 尾部省略 + `layoutPriority(-1)`:它是派生值,内容里有显示器名、
-/// 用户装的字体族名这种长度完全不受控的串;负优先级让它在标题之前被压 —— 不加的话 SwiftUI 会把
-/// 亏空按比例摊给按钮里所有文字,标题先被截成「风…」「屏…」,入口的名字没了、摘要却还留着半截。
+/// 摘要的**内容**按"胶囊上读得完"来定:开关类只报数量(`SettingsToggleSummary`)、字体不报默认字体名、排版只报对齐、
+/// 屏幕报短名 —— 中文在默认窗口宽度(卡片列 600pt)下每截约 55pt 放得下。限宽 + 单行 + 尾部省略 + `layoutPriority(-1)`
+/// 只是兜底:用户自选的字体族名、外接显示器名、自存主题名长度不受控,英文和窄窗口下仍会压;负优先级让摘要在标题
+/// 之前被压 —— 不加的话 SwiftUI 会把亏空按比例摊给按钮里所有文字,标题先被截成「风…」「屏…」。
 struct EditorToolbarButtonLabel: View {
     let icon: String
     let title: String
     let summary: String
+    /// 悬停说明里代替 `summary` 的整句(开关类摘要只报数量,这里列出开着的是哪几项)。不给就用 `summary`。
+    var detail: String?
     /// 标题后面标「Beta」(`SettingsBetaBadge`);占的宽度从摘要那一截让出来。
     var beta = false
 
@@ -53,7 +56,7 @@ struct EditorToolbarButtonLabel: View {
                 .frame(idealWidth: Self.summaryWidth, maxWidth: Self.summaryWidth, alignment: .leading)
                 .layoutPriority(-1)
         }
-        // 摘要挤不下时被截成「系统字体 较粗 3…」:悬停给出整句,不用点开浮层才知道选的是什么。
-        .help(title + " · " + summary)
+        // 悬停给出整句:摘要被压短或只报了数量时,不用点开浮层也知道是什么。
+        .help(title + " · " + (detail ?? summary))
     }
 }

@@ -5310,11 +5310,11 @@ func runSourceContractIdentityTests() {
                     "编辑台浮层: 高度封顶在舞台上方的剩余空间里,放不下时不让系统翻下来盖住预览")
 
         let quick = code("UI/OverlayQuickSettingsMenu.swift")
-        // 快捷菜单「配色主题」子菜单跟设置页同一张清单:不放「跟随封面」,打勾只看配色字段。
+        // 快捷菜单「主题」子菜单跟设置页同一张清单:不放「跟随封面」,打勾只看配色字段。
         expectEqual(quick.contains("followsCoverArt"), false,
                     "配色主题: 快捷菜单子菜单里不再有「跟随封面」,打勾也不再被它短路")
-        expectEqual(quick.contains("L10n.t(\"配色主题\"), symbol: \"paintpalette\""), true,
-                    "配色主题: 快捷菜单子菜单标题跟设置页同名")
+        expectEqual(quick.contains("L10n.t(\"主题\"), symbol: \"paintpalette\""), true,
+                    "配色主题: 快捷菜单子菜单标题跟设置页同名(「主题」)")
         expectEqual(quick.contains("item.image = theme.swatchImage()"), true, "配色主题: 快捷菜单每项带四段色条")
         expectEqual(quick.contains("let current = ColorTheme.current(settings)"), true, "配色主题: 快捷菜单与设置页共用同一份当前配色打包")
 

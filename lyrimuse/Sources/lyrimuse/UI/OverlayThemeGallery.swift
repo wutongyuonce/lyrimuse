@@ -28,6 +28,9 @@ private struct ThemeTileBackdrop: View {
 /// 一行示例歌词:前半截用已唱色、后半截用未唱色(跟随封面的那一半画多色渐变,它没有固定颜色;彩虹主题整行是流动彩虹、
 /// 后半截打未唱的折),背景色画成歌词后面的圆角底(开了毛玻璃就先垫一层材质、背景色叠在上面当着色,跟悬浮窗同一个
 /// 叠法),描边走悬浮窗同一个 `lyricsTextStroke`。
+///
+/// 两半必须拼成**一个** `Text`(`Text + Text`,各自上色):`minimumScaleFactor` 只对单个 `Text` 起作用,拆成 HStack 里
+/// 两个 `Text` 时一格放不下先截前一半,显示成「…预览」。
 private struct ThemeSampleLyric: View {
     let theme: ColorTheme
 
@@ -47,7 +50,8 @@ private struct ThemeSampleLyric: View {
             ) {
                 sample(halves)
             }
-        .padding(.horizontal, 8)
+        // 描边往两侧各多画一圈,横向少留一点,窄格里少缩一档。
+        .padding(.horizontal, theme.textStrokeEnabled ? 6 : 8)
         .padding(.vertical, 3)
         .background {
             let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -59,13 +63,13 @@ private struct ThemeSampleLyric: View {
     }
 
     private func sample(_ halves: (sung: String, unsung: String)) -> some View {
-        HStack(spacing: 0) {
-            Text(halves.sung).foregroundStyle(theme.rainbow ? AnyShapeStyle(Color.white) :
-                Self.style(hex: theme.foregroundColorHex, followsCover: theme.followsCoverArt, fallback: .white))
-            Text(halves.unsung).foregroundStyle(theme.rainbow ? AnyShapeStyle(Color.white.opacity(RainbowLyrics.unsungOpacity)) :
-                Self.style(hex: theme.karaokeUnsungColorHex, followsCover: theme.karaokeUnsungFollowsCoverArt,
-                           fallback: .white.opacity(0.35)))
-        }
+        let sung = Text(halves.sung).foregroundStyle(theme.rainbow ? AnyShapeStyle(Color.white) :
+            Self.style(hex: theme.foregroundColorHex, followsCover: theme.followsCoverArt, fallback: .white))
+        let unsung = Text(halves.unsung).foregroundStyle(theme.rainbow
+            ? AnyShapeStyle(Color.white.opacity(RainbowLyrics.unsungOpacity))
+            : Self.style(hex: theme.karaokeUnsungColorHex, followsCover: theme.karaokeUnsungFollowsCoverArt,
+                         fallback: .white.opacity(0.35)))
+        return (sung + unsung)
         .font(.system(size: 15, weight: .semibold))
         .lineLimit(1)
         .minimumScaleFactor(0.75)

@@ -18,7 +18,7 @@ import SwiftUI
 // 舞台放得下就 1:1、放不下就整体缩小到刚好放下(`previewScale`)。缩放比 = min(1, 舞台宽 / 展开真实宽),按展开宽算、不按此刻的
 // 卡片宽,这样 hover 展开时比例不跳、稳态和展开态在同一把尺子下。别改成"居中裁切 + 两端渐隐":要的是看全,不是知道被裁了。
 // 缩放的是「屏幕顶端」整组(仿菜单栏条 + 卡片 + 刘海),三者描述的是同一块屏幕,只缩卡片会让刘海空当和菜单栏高度对不上;壁纸
-// 不缩(它只是背景)。缩了就在 caption 写一句「预览已缩小至 NN%」,免得用户把缩过的尺寸当真。卡片宽度上限就是
+// 不缩(它只是背景)。缩了就在舞台左下角亮一颗「预览 NN%」胶囊(`scaleHint`),免得用户把缩过的尺寸当真。卡片宽度上限就是
 // `NotchWidthBounds.storageRange.upperBound`(耳朵下限最高的一档 ≈ notchWidth + 150 ≈ 330–350,够不着,封顶的是区间本身)。
 //
 // 舞台放不下 800:舞台宽 = 卡片列宽 = min(600, 设置窗内容区 − 40)。侧边栏能拉到最宽(中文 240,英文固定 250)、窗口能拖到最窄
@@ -159,16 +159,15 @@ struct NotchEditorStage: View {
     /// 编辑台画布区的高度 = 卡片那一格 + 调整条通道。
     private var stageHeight: CGFloat { cardAreaHeight + Self.widthBarLaneHeight }
 
-    /// 整块(两行工具栏 + 画布 + 底部说明行)占的高度。caption 那一行的间距和行高沿用预览栏
-    /// 共用的那套度量,免得同一个窗口里两处 caption 的疏密不一样。
+    /// 整块(两行工具栏 + 画布)占的高度。舞台底下不留说明行:缩放提示在舞台里(`scaleHint`),舞台到下面总开关卡的
+    /// 间距因此跟悬浮歌词编辑台一样。别改成"有提示时才加一行":拖宽度时缩放会来回翻转,整页卡片会跟着跳。
     ///
     /// 工具栏从一行变两行(第二行「歌词行/行为/展开态」三个新入口,见
     /// `toolbarRow2`)——按钮样式跟第一行完全一样,复用同一个 `toolbarHeight`,只是多加
     /// 一份「高度 + 行间距」。忘了这里加,表现是编辑台整块比实际内容矮一行,第二行工具栏
     /// 要么被画布裁掉一截,要么把下面的画布/说明行顶得跟外层预留的空间对不上。
     private var totalHeight: CGFloat {
-        (Self.toolbarHeight + Self.toolbarSpacing) * 2
-            + stageHeight + SectionPreviewMetrics.captionSpacing + SectionPreviewMetrics.captionHeight
+        (Self.toolbarHeight + Self.toolbarSpacing) * 2 + stageHeight
     }
 
     /// 用户设定的稳态宽度(拖动中取临时值)。**不是**卡片的真实宽度,见 steadyCardWidth。
@@ -236,10 +235,7 @@ struct NotchEditorStage: View {
                 toolbarRow2
                     .frame(height: Self.toolbarHeight)
                     .editorToolbarGlassGroup()
-                VStack(spacing: SectionPreviewMetrics.captionSpacing) {
-                    stage(stageWidth: stageWidth)
-                    caption(stageWidth: stageWidth)
-                }
+                stage(stageWidth: stageWidth)
             }
             .frame(maxWidth: .infinity)
         }
@@ -269,15 +265,13 @@ struct NotchEditorStage: View {
     /// 「重置」范围是"风格 + 左右耳 + 屏幕 + 全部内容开关"(`NotchStyleDefaults.restoreDefaults()`),不是只重置「风格」这一项。
     ///
     /// 横向够不够:这一条的可用宽度就是卡片列宽(窗口按默认宽度打开时 600pt,窗口拖到最窄时约 535pt,侧栏再拉到最宽约 499pt,见
-    /// SettingsSidebarWidth.windowMinWidth)。四个入口都带摘要,最坏情况是「屏幕」那截报一个很长的显示器名(`screen.localizedName`,
-    /// 例如 "内建视网膜显示器" 或 "DELL U2723QE"),所以摘要那截跟悬浮歌词那边一样限宽 140 + 单行 + 尾部省略 + `.layoutPriority(-1)`
+    /// SettingsSidebarWidth.windowMinWidth)。「屏幕」那截报短名(`NotchScreenSummary`:内建屏报「内建屏幕」、跟随窗口报「跟随窗口」),
+    /// 外接显示器名长度不受控,摘要那截跟悬浮歌词那边一样限宽 140 + 单行 + 尾部省略 + `.layoutPriority(-1)`
     /// (见 `EditorToolbarButtonLabel`):挤不下时先压摘要、标题始终完整。「重置 ▾」本身是固定宽度的 `Menu`,不参与这套压缩逻辑。
     ///
-    /// 这一行的横向预算已经到底(离屏 `NSHostingView.fittingSize` 量的):「重置 ▾」本体 + 前后间距中文 88.0pt、英文 97.0pt,叠到四个
-    /// 入口上是中文 586.0(阈值 499,超 87pt)、英文 741.0(超 242pt)。499pt 下用最坏摘要(风格=磨砂玻璃/Frosted Glass、屏幕=内建
-    /// 视网膜显示器/Built-in Retina Display、左右耳=剩余时长/Remaining)离屏渲染:四个标题(含"重置")中英文都完整,亏空全被
-    /// `layoutPriority(-1)` 摊给了摘要,但英文摘要已经归零(压到单个字母 "R")。下一次改动(加第五个入口、把哪个标题改长、给摘要多加
-    /// 两个字)亏空会直接开始吃标题。改这一行之前必须先重新离屏量一遍,不要凭感觉现改。
+    /// 这一行的横向预算已经到底(离屏 `NSHostingView.fittingSize` 量的):「重置 ▾」本体 + 前后间距中文 88.0pt、英文 97.0pt,摘要压到
+    /// 零时四个标题(含"重置")在 499pt 下中英文都完整,英文摘要在 600pt 下仍会被压短。加第五个入口、把哪个标题改长之前,
+    /// 先重新离屏量一遍,不要凭感觉现改。
     private var toolbar: some View {
         HStack(spacing: 8) {
             toolbarButton(
@@ -314,8 +308,8 @@ struct NotchEditorStage: View {
                 target: .rightEar
             )
             Spacer(minLength: 8)
-            // "不含宽度和总开关"是安全边界,必须写在界面上(见 EditorToolbarResetMenu)。
-            EditorToolbarResetMenu(scope: L10n.t("不含宽度和总开关")) { NotchStyleDefaults.restoreDefaults() }
+            // 作用范围是安全边界,必须写在界面上(见 EditorToolbarResetMenu);跟抽屉 `resetRow` 一字不差。
+            EditorToolbarResetMenu(scope: L10n.t("不含宽度和「灵动岛歌词」开关")) { NotchStyleDefaults.restoreDefaults() }
         }
         .font(.system(size: 12))
         .padding(.horizontal, 2)
@@ -331,8 +325,8 @@ struct NotchEditorStage: View {
     ///
     /// 横向预算(离屏复刻这一行的版式、`NSHostingView.fittingSize` 量的):四颗入口、摘要压到零时的硬下限中文 374.0 / 英文 468.0,
     /// 都在最窄卡片列 499 之内,标题在任何窄档都不会截,亏空全由摘要吃(`toolbarButton` 摘要限宽 140 + `.layoutPriority(-1)`)。
-    /// 代价跟第一行一样:摘要全长(默认值中文 793 / 英文 921,最坏 934 / 1028)远超 600,四截摘要在 600 下每截只剩约 56pt(中文)/
-    /// 33pt(英文),499 下英文摘要基本只剩省略号。这一行也到底了:再加第五个入口或把哪个标题改长之前,先重新离屏量一遍,不要凭感觉
+    /// 600pt 下四截摘要每截约 56pt(中文)/ 33pt(英文):摘要内容按中文 56pt 读得完来定(「显示歌词」「较粗 13pt」「3 项开启」
+    /// 「全部关闭」都在 48–54pt),英文仍会被压短、悬停给整句。再加第五个入口或把哪个标题改长之前,先重新离屏量一遍,不要凭感觉
     /// 现改数字。
     private var toolbarRow2: some View {
         HStack(spacing: 8) {
@@ -352,14 +346,16 @@ struct NotchEditorStage: View {
             )
             toolbarButton(
                 icon: "rectangle.expand.vertical",
-                title: L10n.t("展开态"),
-                summary: expandedSummary,
+                title: L10n.t("展开时"),
+                summary: SettingsToggleSummary.text(expandedEntries),
+                detail: SettingsToggleSummary.detail(expandedEntries),
                 target: .expanded
             )
             toolbarButton(
                 icon: "switch.2",
                 title: L10n.t("行为"),
-                summary: behaviorSummary,
+                summary: SettingsToggleSummary.text(behaviorEntries),
+                detail: SettingsToggleSummary.detail(behaviorEntries),
                 target: .behavior
             )
             Spacer(minLength: 8)
@@ -370,9 +366,8 @@ struct NotchEditorStage: View {
         .padding(.horizontal, 2)
     }
 
-    /// 「字体」按钮摘要:「系统字体 较粗 13pt」,跟悬浮歌词「字体」按钮那截是**同一个函数**
-    /// (`OverlayStyleSummary.fontText`)—— 三项全报、字体名"空串 = 系统字体"的口径都在那边定,两个编辑台
-    /// 各拼一遍迟早漂开。
+    /// 「字体」按钮摘要:「较粗 13pt」(换了字体才带字体名),跟悬浮歌词「字体」按钮那截是**同一个函数**
+    /// (`OverlayStyleSummary.fontText`),口径都在那边定,两个编辑台各拼一遍迟早漂开。
     private var fontSummary: String {
         OverlayStyleSummary.fontText(family: settings.notchFontFamilyName, weight: settings.notchFontWeight,
                                      // 报实际画字用的字号:存的是原值、画的时候才夹(手改 / 旧版写下的越界值)。
@@ -380,10 +375,9 @@ struct NotchEditorStage: View {
     }
 
     /// 「歌词行」按钮摘要:「显示歌词」从「行为」浮层搬过来之后,这里要拼两项
-    /// (显示歌词 / 显示封面)。规则跟下面 `behaviorLikeSummary` 一样"只列开着的",但
+    /// (显示歌词 / 显示封面)。只列开着的和偏离默认值的,不走 `SettingsToggleSummary` 的报数量:
     /// 「显示封面」开着时额外带上位置(`NotchEarModule.artwork.displayName` 直接借用耳朵
-    /// 那边"封面"两个字,不新造一个词)——这一细节不能简单并进 `behaviorLikeSummary` 的
-    /// "只列标题"逻辑,否则"贴左还是贴右"这个用户在意的信息会丢,所以单独写。
+    /// 那边"封面"两个字,不新造一个词),报数量的话"贴左还是贴右"这个用户在意的信息会丢。
     private var lyricRowSummary: String {
         var parts: [String] = []
         if settings.notchShowLyrics { parts.append(NotchBehaviorItem.showLyrics.title) }
@@ -425,69 +419,35 @@ struct NotchEditorStage: View {
         return L10n.list(parts)
     }
 
-    /// 「行为」/「展开态」按钮摘要:全开/全关给一句概括,部分开着就把开着的那几项标题
-    /// 列出来(短则直接读全,长则交给 toolbarButton 摘要那 140pt 限宽 + 尾部省略处理,
-    /// 跟「屏幕」按钮遇到长显示器名同一个兜底,不专门为这里再写一套截断逻辑)。列表拼接
-    /// 走 `L10n.list`(按界面语言用 `ListFormatter`)而不是手写分隔符——中文按区域习惯给"、"、英文给
-    /// ", "/"and",不用为这一个用途单独造一条要翻译的标点字符串。
-    @MainActor
-    private func behaviorLikeSummary(_ items: [NotchBehaviorItem]) -> String {
-        toggleSummary(items.map { (title: $0.title, isOn: $0.binding.wrappedValue) })
-    }
-
-    /// 上面那套归约逻辑的本体。从 `behaviorLikeSummary` 里下沉了一层,吃的是
-    /// "标题 + 当前值"而不是某一个具体枚举 —— 因为「行为」浮层那一组的开关**来自两个枚举**
-    /// (`NotchBehaviorItem.collapseWhenPaused` + `AutoHideItem` 那两项),摘要必须把两个来源
-    /// 都算进去,见 `behaviorSummary`。
-    ///
-    /// 归约本体在 `SettingsToggleSummary`(悬浮歌词编辑台的「行为」摘要也用它,见 `OverlayEditorStage.behaviorSummary`):它产出的是
-    /// 用户看得见的文案,两个编辑台各留一份迟早会漂开。这里是个薄包装,本文件里三处调用点经它调。
-    @MainActor
-    private func toggleSummary(_ entries: [(title: String, isOn: Bool)]) -> String {
-        SettingsToggleSummary.text(entries)
-    }
-
     /// 「行为」浮层**跨两个枚举**:`NotchBehaviorItem.collapseWhenPaused`
     /// (`.showLyrics` 在「歌词行」浮层,见 `lyricRowSummary`)+ `AutoHideItem`
-    /// 各项 + `NotchBehaviorItem` 的全屏隐藏 / 换歌显示歌名 / 收听里程碑 / 触控板手势。
+    /// 各项 + `NotchBehaviorItem` 的全屏隐藏 / 锁屏时显示 / 换歌显示歌名 / 收听里程碑 / 触控板手势。
     ///
     /// **两个来源必须都算,而且要跟 `NotchBehaviorSettingsRows`(「行为」浮层和抽屉「行为」组都调它)
     /// 的内容一致**:少算自动隐藏那几项不会编译报错,
     /// 只会让这颗按钮在它们开着时照旧显示「全部关闭」—— 一个会撒谎的派生值。
-    ///
-    /// 三项都开时摘要会拼成一长串(「暂停时收起、截屏时隐藏、暂停时隐藏」),交给
-    /// `EditorToolbarButtonLabel` 里那 140pt 限宽 + 尾部省略处理,跟「屏幕」按钮遇到长显示器名是同一个
-    /// 兜底,不为这里另写一套截断。
-    private var behaviorSummary: String {
-        toggleSummary(
-            [(title: NotchBehaviorItem.collapseWhenPaused.title,
-              isOn: NotchBehaviorItem.collapseWhenPaused.binding.wrappedValue)]
-                + AutoHideItem.allCases.map {
-                    (title: $0.title(for: .notch), isOn: $0.binding(for: .notch).wrappedValue)
-                }
-                + [(title: NotchBehaviorItem.hideInFullScreen.title,
-                    isOn: NotchBehaviorItem.hideInFullScreen.binding.wrappedValue),
-                   (title: NotchBehaviorItem.showOnLockScreen.title,
-                    isOn: NotchBehaviorItem.showOnLockScreen.binding.wrappedValue),
-                   (title: NotchBehaviorItem.trackDrop.title,
-                    isOn: NotchBehaviorItem.trackDrop.binding.wrappedValue),
-                   (title: NotchBehaviorItem.listenMilestones.title,
-                    isOn: NotchBehaviorItem.listenMilestones.binding.wrappedValue),
-                   (title: NotchBehaviorItem.gestures.title,
-                    isOn: NotchBehaviorItem.gestures.binding.wrappedValue)])
+    /// 摘要报开了几项、悬停列出是哪几项(`SettingsToggleSummary`)。
+    private var behaviorEntries: [(title: String, isOn: Bool)] {
+        [(title: NotchBehaviorItem.collapseWhenPaused.title,
+          isOn: NotchBehaviorItem.collapseWhenPaused.binding.wrappedValue)]
+            + AutoHideItem.allCases.map {
+                (title: $0.title(for: .notch), isOn: $0.binding(for: .notch).wrappedValue)
+            }
+            + [NotchBehaviorItem.hideInFullScreen, .showOnLockScreen, .trackDrop, .listenMilestones, .gestures]
+                .map { (title: $0.title, isOn: $0.binding.wrappedValue) }
     }
 
-    /// 「展开态」浮层里的八项(「展开时预览下一句」归「歌词行」,不在这里算)。曲目信息
-    /// 那四项的标题是光秃秃的名词(封面 / 歌名 / 歌手 / 专辑),摘要里读作「显示播放控制、封面、歌名」。
+    /// 「展开时」浮层里的八项(「展开时预览下一句」归「歌词行」,不在这里算)。摘要报开了几项,悬停列出是哪几项,
+    /// 曲目信息那四项的标题是光秃秃的名词(封面 / 歌名 / 歌手 / 专辑),读作「显示播放控制、封面、歌名」;
     /// 「多行歌词」排在最前,开着时带上行数(「多行歌词 5 行」)。
-    private var expandedSummary: String {
+    private var expandedEntries: [(title: String, isOn: Bool)] {
         let list = "\(L10n.t("多行歌词")) \(String(format: L10n.t("%@ 行"), "\(settings.notchExpandedLyricListLines)"))"
         let items: [NotchBehaviorItem] = [
             .expandedShowsControls, .expandedShowsLyricsOffset, .expandedShowsQuickActions, .expandedShowsArtwork,
             .expandedShowsTrackTitle, .expandedShowsArtist, .expandedShowsAlbum,
         ]
-        return toggleSummary([(title: list, isOn: settings.notchExpandedLyricList)]
-            + items.map { (title: $0.title, isOn: $0.binding.wrappedValue) })
+        return [(title: list, isOn: settings.notchExpandedLyricList)]
+            + items.map { (title: $0.title, isOn: $0.binding.wrappedValue) }
     }
 
     /// 「左耳」/「右耳」按钮摘要:这只耳朵的模块名,音浪贴在这一侧时再带上「音浪」。
@@ -505,7 +465,7 @@ struct NotchEditorStage: View {
     /// 工具栏按钮。浮层挂在这颗按钮上往上弹(`arrowEdge: .top`),盖住的是上面的工具栏和页面标题,不碰预览;
     /// 高度封顶在按钮那一行上方的空间里,放不下就在浮层里滚,不让系统翻下来盖住预览(同悬浮歌词编辑台,04 章决策 34、61)。
     private func toolbarButton(
-        icon: String, title: String, summary: String, target: StagePopover
+        icon: String, title: String, summary: String, detail: String? = nil, target: StagePopover
     ) -> some View {
         Button {
             popoverMaxHeight = stageTopProbe.popoverHeightLimit(rowOffset: Self.rowOffsetAboveStage(target))
@@ -517,7 +477,7 @@ struct NotchEditorStage: View {
             popoverAnchor = .toolbar
             popover = target
         } label: {
-            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary)
+            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail)
         }
         .editorToolbarButtonStyle()
         .popover(isPresented: popoverBinding(target), arrowEdge: .top) {
@@ -644,6 +604,16 @@ struct NotchEditorStage: View {
         }
         // 宽度用**测出来的实际值**,高度是常量。
         .frame(width: stageWidth, height: stageHeight)
+        // 缩放提示跟调整条同一条通道、同一个底距,靠舞台左端摆。两者横向不重叠:调整条胶囊总宽 286pt(10×2 内边距 + 图标 10
+        // + 8 + 滑杆 168 + 8 + 读数 72)居中摆,舞台最窄约 499pt 时左沿 106.5;提示胶囊最宽是英文「Preview 85%」约 90pt,
+        // 加左距 12 右沿约 102。提示文案加长之前先按这笔账重算。
+        .overlay(alignment: .bottomLeading) {
+            if scale < 1 {
+                scaleHint(scale)
+                    .padding(.leading, Self.widthBarBottomInset)
+                    .padding(.bottom, Self.widthBarBottomInset)
+            }
+        }
         // 舞台的裁切形状是**顶直角、底圆角**(跟卡片同一个 NotchHangingShape),不是悬浮歌词
         // 编辑台那边的四角全圆。两个理由,第二个是硬的:
         //   ① 语义:这块舞台画的是**屏幕的上沿**,而屏幕上沿是直的。
@@ -929,7 +899,7 @@ struct NotchEditorStage: View {
         }
         if !expandedRects.isEmpty {
             spots.append(CardHotspot(kind: .expanded, rects: expandedRects,
-                                     target: .expanded, title: L10n.t("展开态"), arrowEdge: .trailing))
+                                     target: .expanded, title: L10n.t("展开时"), arrowEdge: .trailing))
         }
         return spots
     }
@@ -1163,28 +1133,23 @@ struct NotchEditorStage: View {
         return String(format: L10n.t("%@–%@pt"), "\(steady)", "\(expanded)")
     }
 
-    // MARK: - 底部说明
+    // MARK: - 缩放提示
 
-    /// 舞台底下那行小字。
+    /// 「预览 NN%」:展开宽放不进舞台、整组被 `previewScale` 缩过时,舞台左下角的一颗胶囊。这块画布的卖点是 1:1,缩过就必须
+    /// 说出来,否则用户会把缩过的尺寸当真。悬停给整句「预览已缩小至 NN%」。
     ///
-    /// **常态是空的**。唯一会出现的是「预览已缩小至 NN%」—— 展开宽超过舞台宽、整组被
-    /// `previewScale` 缩过时(理由见下面)。跟悬浮歌词编辑台的 caption 同一个口径:只在真的有话说时才写字。
-    private func caption(stageWidth: CGFloat) -> some View {
-        Text(captionText(stageWidth: stageWidth))
-            .font(.caption)
-            .foregroundStyle(.secondary)
+    /// 压在真实桌面壁纸上,外壳跟调整条那条胶囊同一套(白字 + 黑底 + 发丝描边 + 投影),同悬浮歌词编辑台的「预览两端未画全」。
+    private func scaleHint(_ scale: CGFloat) -> some View {
+        let percent = "\(Int((scale * 100).rounded()))%"
+        return Text(String(format: L10n.t("预览 %@"), percent))
+            .font(.system(size: 11, weight: .medium))
             .monospacedDigit()
-    }
-
-    private func captionText(stageWidth: CGFloat) -> String {
-        var parts: [String] = []
-        // 这一行常态是空的,只在真的有话说时才出现(跟悬浮歌词编辑台的 caption 同一个口径)。
-        // 「预览已缩小至 NN%」:展开宽放不进舞台、整组被缩过时出现。这块画布的卖点是 1:1,缩过就必须说出来,否则用户会把缩过的
-        // 尺寸当真。
-        let scale = Self.previewScale(stageWidth: stageWidth, widestCardWidth: expandedCardWidth)
-        if scale < 1 {
-            parts.append(String(format: L10n.t("预览已缩小至 %@"), "\(Int((scale * 100).rounded()))%"))
-        }
-        return parts.joined(separator: " · ")
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(Color.black.opacity(0.7)))
+            .overlay(Capsule().strokeBorder(Color.white.opacity(0.18), lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.35), radius: 5, y: 1)
+            .help(String(format: L10n.t("预览已缩小至 %@"), percent))
     }
 }

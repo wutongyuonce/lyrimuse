@@ -85,12 +85,12 @@ func checkLyricsWindowHoverFade() {
                 "迷你悬浮淡化: 窗口 attach 时接上、跟着进出迷你,关窗复位")
     expectEqual(sourceBytes(window, contain: "lyricsWindowMiniFadeOnHover"), false,
                 "迷你悬浮淡化: 开关不在窗口里(在设置页「行为」)")
-    expectEqual(sourceHas(settingsView, "SettingsToggleTile(icon: \"cursorarrow.motionlines\", title: L10n.t(\"悬浮淡化\"),\n"
+    expectEqual(sourceHas(settingsView, "SettingsToggleTile(icon: \"cursorarrow.motionlines\", title: L10n.t(\"悬停时淡化\"),\n"
                             + "                               isOn: $settings.lyricsWindowMiniFadeOnHover)"), true,
                 "迷你悬浮淡化: 设置页迷你「行为」摆这颗开关")
     let overlayBehavior = source("lyrimuse/UI/OverlayBehaviorSettingsRows.swift")
     expectEqual(sourceBytes(overlayBehavior, contain: "case .fadeOnHover: return \"cursorarrow.motionlines\"")
-                && sourceBytes(overlayBehavior, contain: "case .fadeOnHover: return L10n.t(\"悬浮淡化\")"), true,
+                && sourceBytes(overlayBehavior, contain: "case .fadeOnHover: return L10n.t(\"悬停时淡化\")"), true,
                 "迷你悬浮淡化: 标题、图标跟悬浮歌词「悬浮淡化」那颗一样")
     expectEqual(sourceBytes(settingsView, contain: "s.lyricsWindowMiniFadeOnHover = false"), true,
                 "迷你悬浮淡化: 迷你「重置」恢复成关")

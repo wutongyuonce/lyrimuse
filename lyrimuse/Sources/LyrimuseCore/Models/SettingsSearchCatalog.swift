@@ -112,7 +112,7 @@ public enum SettingsSearchCatalog {
     /// 「歌词窗口」那一段只在迷你预览下才有的行(按标题):完整尺寸那一套外观行不传字号、长句处理、歌词布局这些绑定,
     /// 「行为」「顶部信息」两组也只在迷你装配。设置页加了这类行要来这里登记。
     public static let lyricsWindowMiniOnlyTitles: Set<String> = [
-        "字号", "歌词布局", "长句处理", "悬浮淡化", "淡化时点按穿透", "暂停时隐藏",
+        "字号", "歌词布局", "长句处理", "悬停时淡化", "淡化时点按穿透", "暂停时隐藏",
         "全屏时隐藏", "歌名", "歌手", "专辑", "封面", "时间", "宽度", "高度", "进度条",
     ]
     /// 只在完整预览下才有的行:「封面」那一组、「布局」里的对齐方式、「文字」里的 HDR 高亮、「背景」里的 Spotify Canvas。
@@ -160,7 +160,7 @@ public enum SettingsSearchCatalog {
             RowGate(menuBar, "已唱颜色", "menuBar.colorRowsShown", "彩虹"),
         ]
         // 灵动岛「歌词行」组:收起时不显示歌词时整组藏起(`NotchLyricRowSettingsRows`)。
-        for title in ["对齐方式", "歌词颜色", "副行", "高度", "卡拉OK效果", "显示封面", "封面位置", "悬浮淡化"] {
+        for title in ["对齐方式", "歌词颜色", "副行", "高度", "卡拉OK效果", "显示封面", "封面位置", "悬停时淡化"] {
             gates.append(RowGate(notch, title, "notch.showLyrics", "收起时显示歌词"))
         }
         // Last.fm「Scrobble 规则」:上面的「Scrobble 到 Last.fm」关着时整组换成一句提示,落到组标题上。
@@ -182,7 +182,7 @@ public enum SettingsSearchCatalog {
             RowGate(window, "底部颜色", "lyricsWindow.gradient", "背景"),
             RowGate(window, "玻璃浓淡", "lyricsWindow.glass", "背景"),
             RowGate(window, "指定颜色", "lyricsWindow.customText", "文字颜色"),
-            RowGate(window, "淡化时点按穿透", "lyricsWindow.miniFade", "悬浮淡化"),
+            RowGate(window, "淡化时点按穿透", "lyricsWindow.miniFade", "悬停时淡化"),
             RowGate(window, "长句处理", "lyricsWindow.miniLayoutNotList", "歌词布局"),
             RowGate(window, "允许远程控制", "web.lan", "允许局域网访问"),
             RowGate(window, "访问链接", "web.lan", "允许局域网访问"),
@@ -402,7 +402,7 @@ public enum SettingsSearchCatalog {
         player("linkage", "跟随播放器退出", kw: ["联动", "自动退出"]),
 
         // ---- 歌词显示 › 悬浮歌词 ----
-        surface(.overlay, "桌面悬浮歌词", kw: ["开关", "悬浮窗", "总开关"], inDrawer: false),
+        surface(.overlay, "悬浮歌词", kw: ["开关", "桌面悬浮歌词", "悬浮窗", "总开关"], inDrawer: false),
         // 「OBS」那一组:编辑台工具栏「OBS」浮层和「全部设置」抽屉「OBS」组(19 章)。
         surface(.overlay, "OBS", kw: ["直播", "推流", "浏览器源", "录屏"]),
         surface(.overlay, "OBS 输出", sub: "作为浏览器源叠加到直播画面，宽高设为 OBS 画布尺寸",
@@ -416,8 +416,8 @@ public enum SettingsSearchCatalog {
         surface(.overlay, "备用链接（IP 地址）", kw: ["IP", "OBS"], group: "OBS"),
         surface(.overlay, "重置访问密钥", sub: "已分享的链接将失效", kw: ["密钥", "重新生成", "OBS"], group: "OBS"),
         surface(.overlay, "端口", sub: "更改后需同步修改 OBS 中的地址", kw: ["port", "3940", "占用", "OBS"], group: "OBS"),
-        surface(.overlay, "配色主题", kw: ["预设", "默认", "墨字白边", "卡拉OK", "夜幕卡片", "磨砂玻璃", "纸白卡片", "霓虹"], group: "主题"),
-        surface(.overlay, "我的配色主题", kw: ["自存", "保存主题", "改名", "覆盖"], group: "主题"),
+        surface(.overlay, "主题", kw: ["配色主题", "配色", "预设", "默认", "墨字白边", "卡拉OK", "夜幕卡片", "毛玻璃", "磨砂玻璃", "纸白卡片", "霓虹", "彩虹"]),
+        surface(.overlay, "我的主题", kw: ["自存", "保存主题", "改名", "覆盖"], group: "主题"),
         surface(.overlay, "字体", kw: ["字体族", "font"], group: "字体"),
         surface(.overlay, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.overlay, "字号", kw: ["大小", "font size"], group: "字体"),
@@ -441,8 +441,8 @@ public enum SettingsSearchCatalog {
         surface(.overlay, "宽度", kw: ["窗口宽度", "pt"]),
         surface(.overlay, "锁定位置", kw: ["锁定", "拖动"], group: "行为"),
         surface(.overlay, "长按拖动", kw: ["拖动", "长按"], group: "行为"),
-        surface(.overlay, "悬浮淡化", kw: ["鼠标", "指针", "淡出", "让开"], group: "行为"),
-        surface(.overlay, "悬停时显示控制条", kw: ["鼠标", "指针", "悬停", "控制", "按钮", "菜单", "工具栏"], group: "行为"),
+        surface(.overlay, "悬停时淡化", kw: ["鼠标", "指针", "淡出", "让开"], group: "行为"),
+        surface(.overlay, "悬停时显示播放控制", kw: ["鼠标", "指针", "悬停", "控制", "控制条", "按钮", "菜单", "工具栏"], group: "行为"),
         surface(.overlay, "截屏时隐藏", kw: ["截图", "录屏", "会议", "共享屏幕", "防截屏"], group: "行为"),
         surface(.overlay, "暂停时隐藏", kw: ["自动隐藏", "暂停", "没在播放"], group: "行为"),
         surface(.overlay, "纯音乐/无歌词时隐藏", kw: ["自动隐藏", "纯音乐", "无歌词", "没有歌词", "伴奏", "instrumental"], group: "行为"),
@@ -450,11 +450,11 @@ public enum SettingsSearchCatalog {
         surface(.overlay, "全屏时隐藏", kw: ["全屏", "隐藏", "自动隐藏", "遮挡", "看视频", "玩游戏", "fullscreen"], group: "行为"),
         // 「位置」自成一组(工具栏第二行第三颗 / 抽屉「位置」组),标题就是组名,不带 group。
         surface(.overlay, "位置", kw: ["自由", "顶部居中", "底部居中", "Dock", "预设", "对齐"]),
-        surface(.overlay, "所在屏幕", kw: ["屏幕", "多屏", "外接屏", "显示器", "跟随", "跟随当前窗口", "固定"]),
-        surface(.overlay, "恢复默认", sub: "不含内容、排版、行为、位置、OBS 和宽度", kw: ["重置"]),
+        surface(.overlay, "显示在", kw: ["屏幕", "所在屏幕", "多屏", "外接屏", "显示器", "跟随", "跟随当前窗口", "固定"], group: "位置"),
+        surface(.overlay, "恢复默认", sub: "仅恢复主题、字体和颜色", kw: ["重置"]),
 
         // ---- 歌词显示 › 灵动岛 ----
-        surface(.notch, "灵动岛歌词", sub: "紧贴屏幕顶部的刘海显示", kw: ["开关", "刘海", "总开关"], inDrawer: false),
+        surface(.notch, "灵动岛歌词", kw: ["开关", "刘海", "总开关"], inDrawer: false),
         surface(.notch, "风格", kw: ["纯黑", "毛玻璃", "磨砂玻璃", "深色渐变", "跟随封面", "背景", "强调色"]),
         surface(.notch, "展开背景", kw: ["展开态", "背景", "纯黑", "毛玻璃", "深色渐变", "跟随封面", "渐变"], group: "风格"),
         surface(.notch, "圆角", kw: ["弧度", "圆弧", "收起", "跟随刘海", "pt"], group: "风格"),
@@ -475,17 +475,17 @@ public enum SettingsSearchCatalog {
         surface(.notch, "卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "歌词行"),
         surface(.notch, "显示封面", kw: ["封面缩略图", "专辑图"], group: "歌词行"),
         surface(.notch, "封面位置", kw: ["左侧", "右侧", "封面"], group: "歌词行"),
-        surface(.notch, "悬浮淡化", kw: ["透明", "淡出", "让开", "穿透", "点击穿透", "挡住", "遮挡", "鼠标", "指针", "不展开"],
+        surface(.notch, "悬停时淡化", kw: ["透明", "淡出", "让开", "穿透", "点击穿透", "挡住", "遮挡", "鼠标", "指针", "不展开"],
                 group: "歌词行"),
         surface(.notch, "字体", kw: ["字体族", "font"], group: "字体"),
         surface(.notch, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.notch, "字号", kw: ["大小", "font size"], group: "字体"),
-        surface(.notch, "多行歌词", kw: ["多行", "歌词列表", "几行", "展开", "逐字"], group: "展开态"),
-        surface(.notch, "行数", kw: ["多行歌词", "几行", "3 行", "5 行", "7 行"], group: "展开态"),
-        surface(.notch, "显示播放控制", kw: ["播放", "暂停", "上一首", "下一首", "三键"], group: "展开态"),
-        surface(.notch, "显示歌词校准", kw: ["偏移", "校准", "时间轴"], group: "展开态"),
-        surface(.notch, "快捷操作", kw: ["搜索歌词", "设置", "关闭", "图标键"], group: "展开态"),
-        surface(.notch, "曲目信息", kw: ["封面", "歌名", "歌手", "专辑", "头部"], group: "展开态"),
+        surface(.notch, "多行歌词", kw: ["多行", "歌词列表", "几行", "展开", "逐字"], group: "展开时"),
+        surface(.notch, "行数", kw: ["多行歌词", "几行", "3 行", "5 行", "7 行"], group: "展开时"),
+        surface(.notch, "显示播放控制", kw: ["播放", "暂停", "上一首", "下一首", "三键"], group: "展开时"),
+        surface(.notch, "显示歌词偏移", kw: ["偏移", "校准", "时间轴"], group: "展开时"),
+        surface(.notch, "快捷操作", kw: ["搜索歌词", "设置", "关闭", "图标键"], group: "展开时"),
+        surface(.notch, "曲目信息", kw: ["封面", "歌名", "歌手", "专辑", "头部"], group: "展开时"),
         surface(.notch, "暂停时收起", kw: ["暂停", "收起", "缩回", "暂停缩回"], group: "行为"),
         surface(.notch, "截屏时隐藏", kw: ["截图", "录屏", "会议", "共享屏幕", "防截屏"], group: "行为"),
         surface(.notch, "暂停时隐藏", kw: ["自动隐藏", "暂停", "没在播放"], group: "行为"),
@@ -496,7 +496,7 @@ public enum SettingsSearchCatalog {
         surface(.notch, "收听里程碑", kw: ["里程碑", "第 100 次", "累计", "报喜", "纪念", "Last.fm"], group: "行为"),
         surface(.notch, "换歌时显示歌名", kw: ["换歌", "切歌", "歌名", "歌手", "刘海", "滑出", "掉下来", "换歌翻牌"], group: "行为"),
         surface(.notch, "触控板手势", kw: ["手势", "滑动", "切歌", "音量", "双指", "trackpad", "swipe"], group: "行为"),
-        surface(.notch, "恢复默认", sub: "不含宽度和总开关", kw: ["重置"]),
+        surface(.notch, "恢复默认", sub: "不含宽度和「灵动岛歌词」开关", kw: ["重置"]),
 
         // ---- 歌词显示 › 菜单栏 ----
         surface(.menuBar, "菜单栏歌词", kw: ["开关", "跑马灯", "总开关"], inDrawer: false),
@@ -515,7 +515,7 @@ public enum SettingsSearchCatalog {
         surface(.menuBar, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.menuBar, "字号", kw: ["大小", "font size"], group: "字体"),
         surface(.menuBar, "最大宽度", kw: ["宽度", "pt"]),
-        surface(.menuBar, "悬停显示播放控制", kw: ["悬停", "播放控制", "鼠标"], group: "行为"),
+        surface(.menuBar, "悬停时显示播放控制", kw: ["悬停", "播放控制", "鼠标"], group: "行为"),
         surface(.menuBar, "无歌词时显示歌名", kw: ["歌名", "兜底", "没有歌词"], group: "行为"),
         surface(.menuBar, "恢复默认", sub: "不含宽度和总开关", kw: ["重置"]),
 
@@ -578,7 +578,7 @@ public enum SettingsSearchCatalog {
                      kw: ["单行", "双行", "多行", "一行", "两行", "当前句", "下一句", "列表", "行数", "简洁", "迷你", "布局"],
                      group: "布局"),
         // 跟悬浮歌词那条「悬浮淡化」同名、不同段,各自跳到自己那一段。
-        lyricsWindow("悬浮淡化", kw: ["透明", "半透明", "淡出", "让开", "悬停", "鼠标", "指针", "迷你"], group: "行为"),
+        lyricsWindow("悬停时淡化", kw: ["透明", "半透明", "淡出", "让开", "悬停", "鼠标", "指针", "迷你"], group: "行为"),
         lyricsWindow("淡化时点按穿透", sub: "淡化时点按将穿透到下层窗口；按住 ⌥ 可恢复不透明并进行操作",
                      kw: ["穿透", "点击穿透", "透明", "点不到", "下面的窗口", "option", "迷你"], group: "行为"),
         // 跟悬浮歌词、灵动岛那两条同名、不同段,各自跳到自己那一段。

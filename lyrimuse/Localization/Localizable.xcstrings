@@ -824,36 +824,36 @@
         }
       }
     },
-    "作用于歌词、顶部信息和控制条；「自动」根据背景亮度在浅色与深色之间切换" : {
+    "作用于歌词、顶部信息和播放控制；「自动」根据背景亮度在浅色与深色之间切换" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies to the lyrics, header, and controls. Automatic switches between light and dark based on the background’s brightness"
+            "value" : "Applies to the lyrics, header, and playback controls. Automatic switches between light and dark based on the background’s brightness"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "作用於歌詞、頂部資訊和控制列；「自動」根據背景亮度在淺色與深色之間切換"
+            "value" : "作用於歌詞、頂部資訊和播放控制；「自動」根據背景亮度在淺色與深色之間切換"
           }
         }
       }
     },
-    "仅作用于歌词；顶部信息和控制条仍用系统字体" : {
+    "仅作用于歌词；顶部信息和播放控制仍用系统字体" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics only; the header and controls keep the system font"
+            "value" : "Lyrics only; the header and playback controls keep the system font"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "僅作用於歌詞；頂部資訊和控制列仍用系統字體"
+            "value" : "僅作用於歌詞；頂部資訊和播放控制仍用系統字體"
           }
         }
       }
@@ -1266,23 +1266,6 @@
         }
       }
     },
-    "仅调整主行，%@～%@pt，空间不足时歌词行自动增高；副行和展开时的下一句预览固定为 %@pt，仅跟随字体与字重" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Main line only, %@–%@pt; the lyric row grows if the text no longer fits. The second line and the expanded next-line preview stay at %@pt and only follow the font and weight"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "僅調整主行，%@～%@pt，空間不足時歌詞行自動增高；副行和展開時的下一句預覽固定為 %@pt，僅跟隨字體與字重"
-          }
-        }
-      }
-    },
     "下一句" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1386,25 +1369,25 @@
         }
       }
     },
-    "展开时在歌词行上方显示曲目信息，四项可分别开启或关闭；全部关闭时不占用空间" : {
+    "展开时显示在歌词行上方；全部关闭时不占空间" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When expanded, shows a track-info block above the lyric row. Each of the four items can be turned on or off; with all of them off, the block takes no space"
+            "value" : "Shown above the lyric row when expanded; takes no space with everything off"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "展开时在歌词行上方显示曲目信息，四项可分别开启或关闭；全部关闭时不占用空间"
+            "value" : "展开时显示在歌词行上方；全部关闭时不占空间"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "展開時在歌詞行上方顯示曲目資訊，四項可分別開啟或關閉；全部關閉時不佔用空間"
+            "value" : "展開時顯示在歌詞行上方；全部關閉時不佔空間"
           }
         }
       }
@@ -4403,25 +4386,25 @@
         }
       }
     },
-    "两端已裁切" : {
+    "预览两端未画全" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edges clipped"
+            "value" : "Preview clipped"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "两端已裁切"
+            "value" : "预览两端未画全"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "兩端已裁切"
+            "value" : "預覽兩端未畫全"
           }
         }
       }
@@ -5582,25 +5565,25 @@
         }
       }
     },
-    "关闭后，常态下仅保留刘海高度，不显示歌词；指针悬停展开时，播放控制、进度条和下一句预览仍照常显示" : {
+    "关闭后平时只保留刘海高度，悬停展开时照常显示" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When off, the resting card keeps only the notch-height row and shows no lyrics; hovering to expand still shows playback controls, the scrubber, and the next-line preview as usual"
+            "value" : "When off, only the notch-height strip stays until you hover to expand"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭后，常态下仅保留刘海高度，不显示歌词；指针悬停展开时，播放控制、进度条和下一句预览仍照常显示"
+            "value" : "关闭后平时只保留刘海高度，悬停展开时照常显示"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉後，平時僅保留瀏海高度，不顯示歌詞；將指標移到上方展開時，播放控制、進度列和下一句預覽仍照常顯示"
+            "value" : "關閉後平時只保留瀏海高度，指向展開時照常顯示"
           }
         }
       }
@@ -7415,7 +7398,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Right-Aligned"
+            "value" : "Right"
           }
         },
         "zh-Hant" : {
@@ -9112,25 +9095,25 @@
         }
       }
     },
-    "展开态" : {
+    "展开时" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Expanded State"
+            "value" : "Expanded"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "展开态"
+            "value" : "展开时"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "展開狀態"
+            "value" : "展開時"
           }
         }
       }
@@ -9187,7 +9170,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Left-Aligned"
+            "value" : "Left"
           }
         },
         "zh-Hant" : {
@@ -11047,7 +11030,7 @@
         }
       }
     },
-    "悬浮淡化" : {
+    "悬停时淡化" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -11059,7 +11042,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "悬浮淡化"
+            "value" : "悬停时淡化"
           }
         },
         "zh-Hant" : {
@@ -11093,7 +11076,7 @@
         }
       }
     },
-    "我的配色主题" : {
+    "我的主题" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -11105,13 +11088,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "我的配色主题"
+            "value" : "我的主题"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "我的配色主題"
+            "value" : "我的主題"
           }
         }
       }
@@ -13388,7 +13371,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shrink When Paused"
+            "value" : "Collapse When Paused"
           }
         },
         "zh-Hans" : {
@@ -16123,29 +16106,6 @@
         }
       }
     },
-    "磨砂玻璃" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frosted"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "磨砂玻璃"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "磨砂玻璃"
-          }
-        }
-      }
-    },
     "纸白卡片" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17596,29 +17556,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "系統自動化授權：此瀏覽器未執行，無法取得目前狀態"
-          }
-        }
-      }
-    },
-    "紧贴屏幕顶部的刘海显示" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tucked compactly beside the notch at the top of the screen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "紧贴屏幕顶部的刘海显示"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊貼螢幕頂部的瀏海顯示"
           }
         }
       }
@@ -19246,7 +19183,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlocked: clicks pass through to the desktop. How dragging works is set by “Long-Press to Drag” in Settings"
+            "value" : "Unlocked: clicks pass through to the desktop. How dragging works is set by “Click and Hold to Drag” in Settings"
           }
         },
         "zh-Hans" : {
@@ -22405,29 +22342,6 @@
         }
       }
     },
-    "配色主题" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color Theme"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "配色主题"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "配色主題"
-          }
-        }
-      }
-    },
     "酷我音乐" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -22835,7 +22749,7 @@
         }
       }
     },
-    "锁定位置仅对桌面悬浮歌词有效" : {
+    "锁定位置仅对悬浮歌词有效" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -22847,13 +22761,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "锁定位置仅对桌面悬浮歌词有效"
+            "value" : "锁定位置仅对悬浮歌词有效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鎖定位置僅對桌面浮動歌詞有效"
+            "value" : "鎖定位置僅對浮動歌詞有效"
           }
         }
       }
@@ -22910,7 +22824,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Long-Press to Drag"
+            "value" : "Click and Hold to Drag"
           }
         },
         "zh-Hans" : {
@@ -23847,25 +23761,25 @@
         }
       }
     },
-    "显示歌词校准" : {
+    "显示歌词偏移" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show Lyrics Calibration"
+            "value" : "Show Lyrics Offset"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示歌词校准"
+            "value" : "显示歌词偏移"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顯示歌詞校正"
+            "value" : "顯示歌詞偏移"
           }
         }
       }
@@ -30082,7 +29996,7 @@
         }
       }
     },
-    "悬停时显示控制条" : {
+    "悬停时显示播放控制" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -30094,13 +30008,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "悬停时显示控制条"
+            "value" : "悬停时显示播放控制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指向時顯示控制列"
+            "value" : "指向時顯示播放控制"
           }
         }
       }
@@ -39774,25 +39688,25 @@
         }
       }
     },
-    "不含内容、排版、行为、位置、OBS 和宽度" : {
+    "仅恢复主题、字体和颜色" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Content, layout, behavior, position, OBS and width are left alone"
+            "value" : "Resets theme, font and colors only"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含内容、排版、行为、位置、OBS 和宽度"
+            "value" : "仅恢复主题、字体和颜色"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含內容、排版、行為、位置、OBS 和寬度"
+            "value" : "僅回復主題、字體和顏色"
           }
         }
       }
@@ -41946,7 +41860,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shrink During Ads"
+            "value" : "Collapse During Ads"
           }
         },
         "zh-Hant" : {
@@ -47041,29 +46955,6 @@
         }
       }
     },
-    "所在屏幕" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所在屏幕"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所在螢幕"
-          }
-        }
-      }
-    },
     "跟随当前窗口" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -47271,25 +47162,25 @@
         }
       }
     },
-    "跟随当前使用的屏幕，位置保持不变" : {
+    "随当前窗口切换屏幕，相对位置不变" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Follows the screen you’re using, keeping the same position"
+            "value" : "Moves to the display of the window you’re using, keeping its relative position"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "跟随当前使用的屏幕，位置保持不变"
+            "value" : "随当前窗口切换屏幕，相对位置不变"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "跟隨目前使用的螢幕，位置保持不變"
+            "value" : "隨目前視窗切換螢幕，相對位置不變"
           }
         }
       }
@@ -47300,7 +47191,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stays on the screen you placed it on"
+            "value" : "Stays on the display you placed it on"
           }
         },
         "zh-Hans" : {
@@ -52382,25 +52273,25 @@
         }
       }
     },
-    "「自动」选择带刘海的屏幕；「跟随当前窗口」显示在正在使用的窗口所在的屏幕；「全部屏幕」在每块屏幕上各显示一个；指定的屏幕断开时按「自动」显示，插回后回到那块屏幕" : {
+    "「自动」优先带刘海的屏幕；指定的屏幕断开时暂按「自动」显示" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic picks the display with the notch; Follow Active Window shows it on the display of the window you’re using; All Displays shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
+            "value" : "Automatic prefers the display with the notch. If the chosen display is disconnected, Automatic is used until it’s back"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「自动」选择带刘海的屏幕；「跟随当前窗口」显示在正在使用的窗口所在的屏幕；「全部屏幕」在每块屏幕上各显示一个；指定的屏幕断开时按「自动」显示，插回后回到那块屏幕"
+            "value" : "「自动」优先带刘海的屏幕；指定的屏幕断开时暂按「自动」显示"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「自動」選擇帶瀏海的螢幕；「跟隨目前視窗」顯示在正在使用的視窗所在的螢幕；「全部螢幕」在每個螢幕上各顯示一個；指定的螢幕拔除時按「自動」顯示，接回後回到那個螢幕"
+            "value" : "「自動」優先選擇帶瀏海的螢幕；指定的螢幕中斷連接時暫按「自動」顯示"
           }
         }
       }
@@ -57714,6 +57605,282 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@內容"
+          }
+        }
+      }
+    },
+    "%@ 项开启" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ On"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 项开启"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 項開啟"
+          }
+        }
+      }
+    },
+    "跟随窗口" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow Window"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟隨視窗"
+          }
+        }
+      }
+    },
+    "内建屏幕" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built-in"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内建屏幕"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內建螢幕"
+          }
+        }
+      }
+    },
+    "已断开" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnected"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已断开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已中斷連接"
+          }
+        }
+      }
+    },
+    "不含宽度和「灵动岛歌词」开关" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Width and the Notch Lyrics switch stay as they are"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不含宽度和「灵动岛歌词」开关"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不含寬度和「動態島歌詞」開關"
+          }
+        }
+      }
+    },
+    "收起与隐藏" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collapse & Hide"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收起与隐藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收起與隱藏"
+          }
+        }
+      }
+    },
+    "提示" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示"
+          }
+        }
+      }
+    },
+    "手势" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestures"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手势"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手勢"
+          }
+        }
+      }
+    },
+    "同一时间只能显示在一侧" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows on one side at a time"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同一时间只能显示在一侧"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同一時間只能顯示在一側"
+          }
+        }
+      }
+    },
+    "锁定后无法拖动，悬停时也不显示播放控制" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When locked, the lyrics can’t be dragged and the hover controls stay hidden"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁定后无法拖动，悬停时也不显示播放控制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鎖定後無法拖移，指向時也不顯示播放控制"
+          }
+        }
+      }
+    },
+    "仅调整主行；副行和下一句预览固定为 %@pt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Main line only; the second line and next-line preview stay at %@pt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅调整主行；副行和下一句预览固定为 %@pt"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "僅調整主行；副行和下一句預覽固定為 %@pt"
+          }
+        }
+      }
+    },
+    "预览 %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览 %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預覽 %@"
           }
         }
       }
