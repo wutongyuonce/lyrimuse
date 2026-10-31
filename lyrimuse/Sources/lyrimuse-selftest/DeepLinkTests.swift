@@ -224,6 +224,9 @@ func runDeepLinkTests() {
                     "debug: 只开灵动岛悬浮淡化")
         expectEqual(link("lyrimuse://debug/notch-pass-through?off=1"), .debug(.notchPassThroughOff), "debug: 灵动岛结束模拟指针")
         expectEqual(link("lyrimuse://debug/notch-pass-through?x=200"), nil, "debug: 灵动岛模拟指针缺 y 不认")
+        expectEqual(link("lyrimuse://debug/notch-pointer?x=200&y=20"), .debug(.notchPointer(x: 200, y: 20)),
+                    "debug: 灵动岛一直当作指针停在卡片一点上")
+        expectEqual(link("lyrimuse://debug/notch-pointer?y=20"), nil, "debug: 灵动岛常驻模拟指针缺 x 不认")
         expectEqual(link("lyrimuse://debug/notch-behavior?progress-line=Ears"),
                     .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, progressLine: .ears)),
                     "debug: 灵动岛进度线只带样式")
@@ -399,7 +402,7 @@ func runDeepLinkTests() {
             .debug(.overlayLayout(width: 640, lineChange: true)),
             .debug(.moveWindow(title: "搜索歌词…", x: 7, y: 33)),
             .debug(.overlayLayout(width: nil, lineChange: false)),
-            .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff),
+            .debug(.notchPassThrough(x: 120.5, y: 48)), .debug(.notchPassThroughOff), .debug(.notchPointer(x: 30, y: 12.5)),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, showLyrics: true)),
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, lyricRowFade: false)),
             .debug(.knockout(leg: .voxScript, on: false)), .debug(.knockout(leg: .systemArtwork, on: true)),

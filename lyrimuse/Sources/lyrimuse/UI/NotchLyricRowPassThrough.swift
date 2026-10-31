@@ -6,8 +6,13 @@ import QuartzCore
 /// 指针压上来时整扇窗切成 `ignoresMouseEvents`,点击、滚动落到下层窗口,这一截整条淡下去露出底下的内容;指针离开这一截就恢复接收。
 /// 见 05 章决策 121、124。
 ///
-/// 穿透期间这扇窗收不到任何指针事件,SwiftUI 的悬停也就不来了:指针去哪由全局 / 本地监听器跟踪(只在穿透期间装着,
-/// 平时不让全系统的指针移动经 IPC 送进本进程),再加一个低频兜底,监听器漏了事件也能及时退出。
+/// 穿透期间这扇窗收不到任何指针事件,SwiftUI 的悬停也就不来了:指针去哪由全局 / 本地监听器跟踪,再加一个低频兜底,
+/// 监听器漏了事件也能及时退出。
+///
+/// `ignoresMouseEvents` 设过 true 之后再设回 false,AppKit 让整扇窗连透明处都接点击(没设过时透明像素的点击落到下层),
+/// 没有公开接口回到没设过的样子,换前台、重新上屏也不行。所以第一次穿透结束后不再把整扇窗设回接点击,改成按指针位置
+/// 显式管(`managesHitTesting`):在卡片上收点击、卡片外放过去,监听器从那以后一直装着(同经典悬浮窗);没穿透过的窗不装。
+/// 见 05 章决策 126。
 ///
 /// 淡化挂在 hosting view 的 layer 上(`CALayer.mask`),只在穿透期间存在。别改成 SwiftUI 里常驻的 `.mask`:灵动岛的逐字填色
 /// 一直在动,常驻遮罩让整卡每帧多一次离屏合成;按条件挂又会换掉卡片的视图身份、重置里面的状态。
@@ -46,14 +51,62 @@ final class NotchLyricRowPassThrough {
         self.onExit = onExit
     }
 
-    var isActive: Bool { !monitors.isEmpty }
+    /// 正在穿透。
+    private(set) var isActive = false
+    /// 穿透过一次之后按指针位置显式管点击(见头注)。
+    private(set) var managesHitTesting = false
 
-    /// 设了就拿它代替真指针(屏幕坐标,`debug/notch-pass-through`)。
+    /// 设了就拿它代替真指针(屏幕坐标,`debug/notch-pass-through`),只管这一次穿透。
     var debugPointer: NSPoint?
+    /// 设了就一直拿它代替真指针(屏幕坐标,`debug/notch-pointer`),直到 `debug/notch-pass-through?off=1` 清掉。
+    var stickyPointer: NSPoint?
+
+    private var pointer: NSPoint { debugPointer ?? stickyPointer ?? NSEvent.mouseLocation }
 
     func begin() {
         guard !isActive, let window else { return }
+        isActive = true
         window.ignoresMouseEvents = true
+        installMonitors()
+        let timer = Timer(timeInterval: Self.fallbackInterval, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.track() }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        fallbackTimer = timer
+        NotchLyricsWindowController.hoverLog.notice("pass-through begin")
+        track()
+    }
+
+    /// 卡片尺寸或形态变了(展开、广告开始、换行高)时复查一次:指针没动也可能已经不在只显示那一截上了,
+    /// 显式管点击时卡片的范围也跟着变。
+    func refresh() {
+        track()
+    }
+
+    func end() {
+        guard isActive else { return }
+        isActive = false
+        // 模拟的那一点只管这一次穿透:留着的话下次真指针进来还按它判,退不出去。
+        debugPointer = nil
+        fallbackTimer?.invalidate()
+        fallbackTimer = nil
+        // 别设回 false:那样整扇窗连透明处都接点击(见头注)。从这里起按指针位置管。
+        managesHitTesting = true
+        syncHitTesting()
+        unfade()
+        NotchLyricsWindowController.hoverLog.notice("pass-through end")
+    }
+
+    /// 窗口收掉时调:退出穿透、卸监听。
+    func stop() {
+        end()
+        monitors.forEach(NSEvent.removeMonitor)
+        monitors.removeAll()
+        managesHitTesting = false
+    }
+
+    private func installMonitors() {
+        guard monitors.isEmpty else { return }
         let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]
         if let global = NSEvent.addGlobalMonitorForEvents(matching: mask, handler: { [weak self] _ in
             MainActor.assumeIsolated { self?.track() }
@@ -66,37 +119,30 @@ final class NotchLyricRowPassThrough {
         }) {
             monitors.append(local)
         }
-        let timer = Timer(timeInterval: Self.fallbackInterval, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.track() }
+    }
+
+    /// 不在穿透时:指针在卡片接指针的那块上收点击,在卡片外(透明区)放过去;落到只显示那一截就转去穿透
+    /// (窗口放过点击时 SwiftUI 收不到悬停,只能在这里认)。
+    private func syncHitTesting() {
+        guard managesHitTesting, !isActive, let window else { return }
+        guard window.isVisible, let hit = locate(pointer) else {
+            window.ignoresMouseEvents = true
+            return
         }
-        RunLoop.main.add(timer, forMode: .common)
-        fallbackTimer = timer
-        NotchLyricsWindowController.hoverLog.notice("pass-through begin")
-        track()
-    }
-
-    /// 卡片尺寸或形态变了(展开、广告开始、换行高)时复查一次:指针没动也可能已经不在只显示那一截上了。
-    func refresh() {
-        guard isActive else { return }
-        track()
-    }
-
-    func end() {
-        guard isActive else { return }
-        // 模拟的那一点只管这一次穿透:留着的话下次真指针进来还按它判,退不出去。
-        debugPointer = nil
-        monitors.forEach(NSEvent.removeMonitor)
-        monitors.removeAll()
-        fallbackTimer?.invalidate()
-        fallbackTimer = nil
-        window?.ignoresMouseEvents = false
-        unfade()
-        NotchLyricsWindowController.hoverLog.notice("pass-through end")
+        if hit.region == .passThrough, hit.bandTop != nil {
+            begin()
+            return
+        }
+        let ignores = hit.region == .outside
+        if window.ignoresMouseEvents != ignores { window.ignoresMouseEvents = ignores }
     }
 
     private func track() {
-        guard isActive else { return }
-        guard window?.isVisible ?? false, let hit = locate(debugPointer ?? NSEvent.mouseLocation) else {
+        guard isActive else {
+            syncHitTesting()
+            return
+        }
+        guard window?.isVisible ?? false, let hit = locate(pointer) else {
             end()
             onExit(.outside)
             return

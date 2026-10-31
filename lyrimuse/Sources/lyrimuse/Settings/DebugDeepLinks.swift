@@ -111,6 +111,9 @@ enum DebugDeepLinks {
         case let .notchPassThrough(x, y):
             NotchLyricsWindowController.shared.simulatePassThrough(at: CGPoint(x: x, y: y))
             logger.notice("debug notch pass-through x=\(x, privacy: .public) y=\(y, privacy: .public)")
+        case let .notchPointer(x, y):
+            NotchLyricsWindowController.shared.simulatePointer(at: CGPoint(x: x, y: y))
+            logger.notice("debug notch pointer x=\(x, privacy: .public) y=\(y, privacy: .public)")
         case .notchPassThroughOff:
             NotchLyricsWindowController.shared.simulatePassThrough(at: nil)
             logger.notice("debug notch pass-through off")

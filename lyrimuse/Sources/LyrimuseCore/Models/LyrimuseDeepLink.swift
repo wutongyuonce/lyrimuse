@@ -144,7 +144,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 当作指针停在灵动岛卡片的这一点上(卡片局部坐标,原点左上角),走真指针那一条判区域:落在只显示的那一截就穿透、挖洞
         /// (`debug/notch-pass-through?x=200&y=50`)。不动真鼠标验穿透和洞的位置。
         case notchPassThrough(x: Double, y: Double)
-        /// 结束上面那条模拟,交还真指针(`debug/notch-pass-through?off=1`)。
+        /// 一直当作指针停在灵动岛卡片的这一点上(卡片局部坐标),不只这一次穿透,直到下面那条交还(`debug/notch-pointer?x=200&y=20`)。
+        /// 不动真鼠标验穿透过之后的点击收放(05 章决策 126)。
+        case notchPointer(x: Double, y: Double)
+        /// 结束上面两条模拟,交还真指针(`debug/notch-pass-through?off=1`)。
         case notchPassThroughOff
     }
 
@@ -321,6 +324,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             guard let x = value("x").flatMap(Double.init), let y = value("y").flatMap(Double.init),
                   x.isFinite, y.isFinite else { return nil }
             self = .debug(.notchPassThrough(x: x, y: y))
+        case ("debug", "/notch-pointer"):
+            guard let x = value("x").flatMap(Double.init), let y = value("y").flatMap(Double.init),
+                  x.isFinite, y.isFinite else { return nil }
+            self = .debug(.notchPointer(x: x, y: y))
         case ("debug", "/japanese-reading"):
             guard let style = value("style").flatMap({ JapaneseReadingStyle(rawValue: $0.lowercased()) }) else { return nil }
             self = .debug(.japaneseReading(style))
@@ -492,6 +499,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                     + (expanded.map { [URLQueryItem(name: "expanded", value: $0)] } ?? [])
             case let .notchPassThrough(x, y):
                 components.path = "/notch-pass-through"
+                components.queryItems = [URLQueryItem(name: "x", value: String(x)), URLQueryItem(name: "y", value: String(y))]
+            case let .notchPointer(x, y):
+                components.path = "/notch-pointer"
                 components.queryItems = [URLQueryItem(name: "x", value: String(x)), URLQueryItem(name: "y", value: String(y))]
             case .notchPassThroughOff:
                 components.path = "/notch-pass-through"

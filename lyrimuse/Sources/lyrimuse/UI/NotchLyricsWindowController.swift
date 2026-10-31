@@ -869,16 +869,26 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         guard let passThrough else { return }
         guard let cardPoint, let frame = cardScreenFrame else {
             passThrough.debugPointer = nil
+            passThrough.stickyPointer = nil
             passThrough.end()
+            passThrough.refresh()
             return
         }
         passThrough.debugPointer = NSPoint(x: frame.minX + cardPoint.x, y: frame.maxY - cardPoint.y)
         if passThrough.isActive { passThrough.refresh() } else { passThrough.begin() }
     }
 
+    /// `debug/notch-pointer`:一直当作指针停在卡片这一点上(卡片局部坐标),直到 `debug/notch-pass-through?off=1`。
+    func simulatePointer(at cardPoint: CGPoint) {
+        guard let passThrough, let frame = cardScreenFrame else { return }
+        passThrough.stickyPointer = NSPoint(x: frame.minX + cardPoint.x, y: frame.maxY - cardPoint.y)
+        passThrough.refresh()
+    }
+
     /// `debug/state` 里灵动岛那一节。
     var debugState: [String: Any] {
         ["passThrough": passThrough?.isActive ?? false, "ignoresMouseEvents": window?.ignoresMouseEvents ?? false,
+         "managesHitTesting": passThrough?.managesHitTesting ?? false,
          "expanded": isExpanded, "passThroughBandTop": passThroughBandTop.map { $0 as Any } ?? NSNull()]
     }
 
@@ -1292,6 +1302,8 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
                 // orderFrontRegardless(),不是 orderFront(nil)——这个 App 是 .accessory 策略、
                 // 从不激活成前台 App,只有它能不看"当前是否是活跃 App"这个前提就把窗口调到最前。
                 window?.orderFrontRegardless()
+                // 显式管点击时收起期间设成了放过,指针停着不动也要按此刻的位置对一次。
+                passThrough?.refresh()
             }
             // 先 orderFront 再翻回 false:卡片在已经可见的窗口里从刘海撑开。顺序反了动画会在看不见的窗口里播完。
             if isVanished { isVanished = false }
@@ -1591,7 +1603,7 @@ final class NotchLyricsWindowController: NSWindowController, ObservableObject, N
         }
         pendingHoverWork?.cancel()
         pendingHoverWork = nil
-        passThrough?.end()
+        passThrough?.stop()
         passThrough = nil
         window?.contentView = nil
         hostingView = nil
