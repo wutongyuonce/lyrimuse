@@ -56,6 +56,14 @@ func runTelemetryTests() {
         expectEqual(Telemetry.redactPaths("Namespace SIGNAL, Code 11 Segmentation fault: 11"),
                     "Namespace SIGNAL, Code 11 Segmentation fault: 11", "脱敏: 没路径原样")
         expectEqual(Telemetry.redactPaths("swift/Array.swift"), "swift/Array.swift", "脱敏: 相对路径不当成绝对路径")
+        expectEqual(Telemetry.redactPaths("Library not loaded: /Applications/Lyrimuse 2.app/Contents/MacOS/lyrimuse"),
+                    "Library not loaded: <path>", "脱敏: 路径里带空格也整段换掉")
+        expectEqual(Telemetry.redactPaths("Referenced from: '/Users/alice/My Apps/Lyrimuse.app/Contents/MacOS/lyrimuse'"),
+                    "Referenced from: '<path>'", "脱敏: 引号里的路径整段换掉")
+        expectEqual(Telemetry.redactPaths("tried: '/Users/a b/x.dylib' (no such file), \"/usr/lib/y.dylib\" (not found)"),
+                    "tried: '<path>' (no such file), \"<path>\" (not found)", "脱敏: 一行几个带引号的路径各换各的")
+        expectEqual([Telemetry.crashDay("2026-10-31 12:00:00.00 +0800"), Telemetry.crashDay(nil), Telemetry.crashDay("garbage")],
+                    ["2026-10-31", nil, nil], "崩溃时间: 只留日期")
     }
 
     do {
@@ -81,6 +89,7 @@ func runTelemetryTests() {
         expectEqual(id == Telemetry.reportID(fileName: summary.fileName), true, "去重键: 同一文件名同一个键")
         let crash = TelemetryCrash(summary: summary, reportID: id, executableName: "lyrimuse", installID: "i", env: env)
         expectEqual(crash.process, "app", "进程: App 本体")
+        expectEqual(crash.occurredAt, "2026-10-31", "崩溃负载: 时间只发到哪一天,不带时分秒和时区")
         expectEqual(crash.terminationReasons, ["Library not loaded: <path>", "a", "b"], "终止原因: 脱敏、最多三条")
         expectEqual(crash.frames.count, Telemetry.maxCrashFrames, "帧: 截到上限")
         expectEqual(crash.frames.first, TelemetryCrash.Frame(image: "lyrimuse", symbol: "f0", offset: 0), "帧: 只带镜像、符号、偏移")
@@ -207,8 +216,8 @@ func runTelemetryTests() {
         expectEqual(sourceHas(sourceBody("private func post<T: Encodable>", in: service),
                               "guard AppSettings.shared.telemetryEnabled else { return nil }"), true, "接线: 关着不发")
         let crashes = sourceBody("private func sendNewCrashes(", in: service)
-        expectEqual(sourceHas(crashes, "if let status, (400..<500).contains(status) {"), true,
-                    "接线: 崩溃负载被拒(4xx)记为发过,不卡住后面的")
+        expectEqual(sourceHas(crashes, "if let status, (400..<500).contains(status), status != 429 {"), true,
+                    "接线: 崩溃负载被拒(4xx)记为发过,不卡住后面的;限流(429)不算,下次再发")
         expectEqual(sourceHas(crashes, "DiagnosticsExporter.scanCrashReports(since: cutoff) { alreadySent.contains(Telemetry.reportID(fileName: $0)) }"),
                     true, "接线: 发过的崩溃报告按文件名先跳过,不再读")
         expectEqual(sourceHas(service, "TelemetryActivity.shared.trustedBundleIDs = Set(trusted.keys)"), true,

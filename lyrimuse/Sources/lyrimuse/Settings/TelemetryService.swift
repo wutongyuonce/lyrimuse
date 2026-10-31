@@ -138,8 +138,8 @@ final class TelemetryService {
                                        executableName: DiagnosticsExporter.crashExecutableName,
                                        installID: installID, env: env)
             let status = await post(crash, to: Telemetry.crashURL, operation: "crash")
-            // 4xx 是这一份本身不合格(过大、字段不对),重发也一样,记为发过、接着发下一份;连不上、5xx 才停下等下次。
-            if let status, (400..<500).contains(status) {
+            // 4xx 是这一份本身不合格(过大、字段不对),重发也一样,记为发过、接着发下一份;连不上、5xx、429(限流)才停下等下次。
+            if let status, (400..<500).contains(status), status != 429 {
                 logger.notice("telemetry: crash report rejected with \(status, privacy: .public), skipped")
             } else if !(status.map { (200..<300).contains($0) } ?? false) {
                 break

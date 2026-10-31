@@ -24,6 +24,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     try {
+      if (request.method === "POST" && (url.pathname === "/v1/heartbeat" || url.pathname === "/v1/crash")) {
+        // 按来源 IP 限流,防有人刷请求灌假数据、耗光 D1 写额度。超了回 503 而不是 4xx:App 把 4xx 当成这一份本身不合格、
+        // 不再重发,503 才会过一阵再试。正常一台机器一天只发一条心跳、最多 5 份崩溃。
+        if (env.INGEST_LIMITER) {
+          const ip = request.headers.get("cf-connecting-ip") || "unknown";
+          const { success } = await env.INGEST_LIMITER.limit({ key: ip });
+          if (!success) return new Response(JSON.stringify({ error: "rate limited" }), {
+            status: 503, headers: { "content-type": "application/json; charset=utf-8", "retry-after": "60", "cache-control": "no-store" },
+          });
+        }
+      }
       if (request.method === "POST" && url.pathname === "/v1/heartbeat") return await heartbeat(request, env);
       if (request.method === "POST" && url.pathname === "/v1/crash") return await crash(request, env);
       if (request.method === "GET" && url.pathname === "/v1/stats") return await stats(request, env, url);

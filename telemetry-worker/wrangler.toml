@@ -14,3 +14,9 @@ database_name = "lyrimuse-telemetry"
 database_id = "91b9af83-1f3c-4ad9-abd2-9725e0d4b0dd"
 
 # 统计页 / GET /v1/stats 的令牌:wrangler secret put ADMIN_TOKEN,不写进这里。
+
+# 心跳和崩溃上报按来源 IP 限流:每个 IP 每分钟最多 30 次,超了回 503(src/index.js)。
+[[ratelimits]]
+name = "INGEST_LIMITER"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }

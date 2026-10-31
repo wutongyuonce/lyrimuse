@@ -56,9 +56,17 @@ public enum Telemetry {
 
     /// 把文本里的绝对路径(含 `~/` 开头的)换成 `<path>`。崩溃报告的终止原因、异常说明里常带库和 App 的完整路径,
     /// 路径里有用户名。
+    /// 引号里的整段都算路径(路径里可以有空格);没引号的,空格后面那个词里还有 `/` 就接着算(`/Applications/Lyrimuse 2.app/…`)。
     public static func redactPaths(_ text: String) -> String {
-        text.replacingOccurrences(of: #"(~/|(?<![A-Za-z0-9_.~])/)[^\s'"()\[\],;]+"#,
+        text.replacingOccurrences(of: #"(['"])(~/|/)[^'"\n]*\1"#, with: "$1<path>$1", options: .regularExpression)
+            .replacingOccurrences(of: #"(~/|(?<![A-Za-z0-9_.~<])/)[^\s'"()\[\],;]+(?: +[^\s'"()\[\],;/]*/[^\s'"()\[\],;]*)*"#,
                                   with: "<path>", options: .regularExpression)
+    }
+
+    /// 崩溃时间只发到哪一天(`yyyy-MM-dd`),不带时分秒和时区。
+    public static func crashDay(_ timestamp: String?) -> String? {
+        guard let timestamp, timestamp.range(of: #"^\d{4}-\d{2}-\d{2}"#, options: .regularExpression) != nil else { return nil }
+        return String(timestamp.prefix(10))
     }
 
     /// 播放器在负载里的写法:内置播放器用目录里的 id,用户信任的第三方播放器 / 浏览器用 bundle id,其余一律 `other`
@@ -265,7 +273,7 @@ public struct TelemetryCrash: Codable, Equatable, Sendable {
         process = summary.processName?.lowercased() == executableName.lowercased() ? "app" : "engine"
         appVersion = summary.version
         osVersion = redact(summary.osVersion)
-        occurredAt = summary.timestamp
+        occurredAt = Telemetry.crashDay(summary.timestamp)
         exceptionType = redact(summary.exceptionType)
         exceptionSignal = redact(summary.exceptionSignal)
         terminationNamespace = redact(summary.terminationNamespace)
