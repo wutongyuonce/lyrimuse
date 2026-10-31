@@ -81,9 +81,13 @@ func switchLyricsWordFormats(next []lyricsWordFormat) {
 	cur := lyricsWordFormatsInUse()
 	if slices.Equal(cur, next) {
 		lyricsWordFormatsApplied.Store(&next)
+		// 文件夹本来就按这几种写着:也报一声做完了,设置页那一行不用等。
+		trackLyricsWordFormatSwitch(next)()
 		return
 	}
 	start := time.Now()
+	finish := trackLyricsWordFormatSwitch(next)
+	defer finish()
 	adopted := len(importLyricsFromDir(lyricsDir()))
 	lyricsWordFormatsApplied.Store(&next)
 	exportLyricsFiles()

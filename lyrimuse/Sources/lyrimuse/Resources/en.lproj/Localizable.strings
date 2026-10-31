@@ -1088,6 +1088,8 @@
 "已收录、无歌词" = "Indexed, No Lyrics";
 "已收录、无歌词 %@ 首" = "%@ indexed, no lyrics";
 "已收起触控栏歌词" = "Touch Bar lyrics collapsed";
+"已改存为 %1$@，共 %2$@ 首" = "Saved %2$@ songs as %1$@";
+"已改存为 %@" = "Saved as %@";
 "已改用自定义位置" = "Using a custom location";
 "已断开" = "Disconnected";
 "已断开的屏幕" = "Disconnected Display";
@@ -1851,6 +1853,7 @@
 "歌词库正在刷新，请稍后重试" = "The lyrics library is refreshing. Try again in a moment";
 "歌词延后" = "Delay Lyrics";
 "歌词引擎" = "Lyrics Engine";
+"歌词引擎下次启动时改存" = "Will be saved when the lyrics engine next starts";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "The lyrics engine isn’t enabled yet, so this doesn’t count as finishing setup — you’ll be asked again next launch";
 "歌词引擎已停用，更改将在下次启用时生效" = "The lyrics engine is turned off. The change takes effect when it is turned on again";
 "歌词引擎无响应" = "The lyrics engine didn’t respond";
@@ -1914,6 +1917,7 @@
 "正在同步历史" = "Syncing history";
 "正在同步历史（%1$@/%2$@ 页）" = "Syncing history (page %1$@ of %2$@)";
 "正在启用…" = "Starting…";
+"正在备份歌词…" = "Backing up lyrics…";
 "正在安装…" = "Installing…";
 "正在应用到歌词引擎…" = "Applying to the lyrics engine…";
 "正在搜索歌词…" = "Searching for lyrics…";
@@ -1923,6 +1927,8 @@
 "正在播放广告" = "An ad is playing";
 "正在播放：%@" = "Now playing: %@";
 "正在收听 %@" = "Listening to %@";
+"正在改存为 %1$@… %2$@ / %3$@ 首" = "Saving as %1$@… %2$@ of %3$@ songs";
+"正在改存为 %@…" = "Saving as %@…";
 "正在更新" = "Updating";
 "正在查找歌词…" = "Finding lyrics…";
 "正在查询各个歌词源…" = "Searching lyrics sources…";

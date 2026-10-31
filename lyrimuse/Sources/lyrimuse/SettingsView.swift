@@ -785,6 +785,90 @@ struct SettingsView: View {
 
 // 歌词相关设置的统一入口,也扛下原"播放"tab 的"数据源"设置(远程/本地+Relay 地址,
 // 现在叫"播放状态来源")。
+/// 设置 › 歌词 › 管理 › 存储的「逐字歌词格式」:歌词文件夹里逐字歌词写成哪种格式。副标题只说当前选中的那种;换格式时换成备份 /
+/// 改存的进度,做完说一声「已改存」(`LyricsWordFormatSwitchMonitor`),这期间下拉框锁住。
+private struct LyricsWordFormatRow: View {
+    let primary: LyricsWordFormat
+    let onPick: (LyricsWordFormat) -> Void
+    @ObservedObject private var monitor = LyricsWordFormatSwitchMonitor.shared
+
+    var body: some View {
+        let display = monitor.display
+        SettingsRow(
+            icon: "doc.text",
+            title: L10n.t("逐字歌词格式"),
+            subtitle: display == .idle ? LyricsSettingsTab.lyricsWordFormatDetail(primary) : nil,
+            footer: display == .idle ? nil : AnyView(status(display))
+        ) {
+            HStack(spacing: 8) {
+                if monitor.isBusy {
+                    ProgressView().controlSize(.small)
+                }
+                SettingsGlassPopoverMenu(
+                    title: LyricsSettingsTab.lyricsWordFormatName(primary),
+                    items: LyricsWordFormat.allCases,
+                    itemLabel: LyricsSettingsTab.lyricsWordFormatName,
+                    isChecked: { $0 == primary },
+                    height: 28
+                ) { onPick($0) }
+                .fixedSize()
+                .disabled(monitor.isBusy)
+                // 玻璃下拉框的按钮样式不看禁用状态,锁住时自己调淡。
+                .opacity(monitor.isBusy ? 0.5 : 1)
+            }
+        }
+    }
+
+    /// 一句状态 + 进度条(总数还没数出来时是不定进度)。
+    @ViewBuilder
+    private func status(_ display: LyricsWordFormatSwitchMonitor.Display) -> some View {
+        let name = LyricsSettingsTab.lyricsWordFormatName(monitor.formats.first ?? primary)
+        VStack(alignment: .leading, spacing: 5) {
+            switch display {
+            case .idle:
+                EmptyView()
+            case .backingUp:
+                statusText(L10n.t("正在备份歌词…"))
+                bar(ProgressView())
+            case .phase(.waiting):
+                statusText(String(format: L10n.t("正在改存为 %@…"), name))
+                bar(ProgressView())
+            case let .phase(.converting(done, total)):
+                statusText(String(format: L10n.t("正在改存为 %1$@… %2$@ / %3$@ 首"), name,
+                                  done.formatted(.number), total.formatted(.number)))
+                bar(ProgressView(value: Double(done), total: Double(total)))
+            case let .phase(.finished(total)):
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.green)
+                    statusText(total > 0 ? String(format: L10n.t("已改存为 %1$@，共 %2$@ 首"), name, total.formatted(.number))
+                                         : String(format: L10n.t("已改存为 %@"), name))
+                }
+            case .phase(.queued):
+                statusText(L10n.t("歌词引擎下次启动时改存"))
+            }
+        }
+    }
+
+    private func statusText(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 11))
+            .monospacedDigit()
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .truncationMode(.tail)
+    }
+
+    /// 进度条跟副标题同一列,宽度封顶:行很宽时一条拉满的细线看着像分隔线。
+    private func bar(_ view: ProgressView<EmptyView, EmptyView>) -> some View {
+        view
+            .progressViewStyle(.linear)
+            .controlSize(.small)
+            .frame(maxWidth: 260)
+    }
+}
+
 private struct LyricsSettingsTab: View {
     @ObservedObject private var settings = AppSettings.shared
     // local 在这个页面里只当"写目标"用(切换开关时顺手同步给它),这个 View 的 body
@@ -2457,23 +2541,9 @@ private struct LyricsSettingsTab: View {
         return out
     }
 
-    /// 「逐字歌词格式」行:歌词文件夹里逐字歌词写成哪种格式。副标题只说当前选中的那种。
+    /// 「逐字歌词格式」行。进度那一块单独一个视图订阅 `LyricsWordFormatSwitchMonitor`,换格式期间每 0.25 秒刷新只重画这一行。
     private var lyricsWordFormatRow: some View {
-        let primary = features.lyricsWordFormats.first ?? .yrc
-        return SettingsRow(
-            icon: "doc.text",
-            title: L10n.t("逐字歌词格式"),
-            subtitle: Self.lyricsWordFormatDetail(primary)
-        ) {
-            SettingsGlassPopoverMenu(
-                title: Self.lyricsWordFormatName(primary),
-                items: LyricsWordFormat.allCases,
-                itemLabel: Self.lyricsWordFormatName,
-                isChecked: { $0 == primary },
-                height: 28
-            ) { pickLyricsWordFormat($0) }
-            .fixedSize()
-        }
+        LyricsWordFormatRow(primary: features.lyricsWordFormats.first ?? .yrc) { pickLyricsWordFormat($0) }
     }
 
     static func lyricsWordFormatName(_ f: LyricsWordFormat) -> String {
@@ -2533,17 +2603,23 @@ private struct LyricsSettingsTab: View {
     /// 写进 features.json,引擎热重读后先按旧格式导入、再整份按新格式导出(lyricsdirswitch.go 的 switchLyricsWordFormats)。
     /// backup:会删掉文件时先打一份自动快照;有歌词文件却没备份成就不改,同歌词管理的 takeAutoSnapshot。
     private func applyLyricsWordFormats(_ formats: [LyricsWordFormat], backup: Bool) {
+        let monitor = LyricsWordFormatSwitchMonitor.shared
         Task {
-            if backup, await LyricsBackupStore.writeAutoSnapshot(reason: "word-format") == nil,
-               !LyricsBackupStore.hasNoLyricsFiles() {
-                let alert = NSAlert()
-                alert.alertStyle = .warning
-                alert.messageText = L10n.t("自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试")
-                alert.runModal()
-                return
+            if backup {
+                monitor.beginBackup(to: formats)
+                if await LyricsBackupStore.writeAutoSnapshot(reason: "word-format") == nil,
+                   !LyricsBackupStore.hasNoLyricsFiles() {
+                    monitor.cancel()
+                    let alert = NSAlert()
+                    alert.alertStyle = .warning
+                    alert.messageText = L10n.t("自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试")
+                    alert.runModal()
+                    return
+                }
             }
             features.lyricsWordFormats = formats
             await features.save()
+            monitor.requested(formats)
         }
     }
 

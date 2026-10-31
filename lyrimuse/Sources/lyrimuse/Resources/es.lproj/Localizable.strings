@@ -1088,6 +1088,8 @@
 "已收录、无歌词" = "Indexadas, sin letra";
 "已收录、无歌词 %@ 首" = "%@ indexadas, sin letra";
 "已收起触控栏歌词" = "Letra de la Touch Bar contraída";
+"已改存为 %1$@，共 %2$@ 首" = "%2$@ canciones guardadas como %1$@";
+"已改存为 %@" = "Guardado como %@";
 "已改用自定义位置" = "Usando una ubicación personalizada";
 "已断开" = "Desconectada";
 "已断开的屏幕" = "Pantalla desconectada";
@@ -1851,6 +1853,7 @@
 "歌词库正在刷新，请稍后重试" = "La biblioteca de letras se está actualizando. Vuelve a intentarlo en un momento";
 "歌词延后" = "Retrasar letra";
 "歌词引擎" = "Motor de letras";
+"歌词引擎下次启动时改存" = "Se guardará la próxima vez que se inicie el motor de letras";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "El motor de letras aún no está activado, así que la configuración no se ha completado. Se te volverá a preguntar en el próximo inicio";
 "歌词引擎已停用，更改将在下次启用时生效" = "El motor de letras está desactivado. El cambio se aplicará cuando se vuelva a activar";
 "歌词引擎无响应" = "El motor de letras no respondió";
@@ -1914,6 +1917,7 @@
 "正在同步历史" = "Sincronizando historial";
 "正在同步历史（%1$@/%2$@ 页）" = "Sincronizando historial (página %1$@ de %2$@)";
 "正在启用…" = "Iniciando…";
+"正在备份歌词…" = "Haciendo copia de seguridad de la letra…";
 "正在安装…" = "Instalando…";
 "正在应用到歌词引擎…" = "Aplicando al motor de letras…";
 "正在搜索歌词…" = "Buscando letra…";
@@ -1923,6 +1927,8 @@
 "正在播放广告" = "Se está reproduciendo un anuncio";
 "正在播放：%@" = "Reproduciendo: %@";
 "正在收听 %@" = "Escuchando %@";
+"正在改存为 %1$@… %2$@ / %3$@ 首" = "Guardando como %1$@… %2$@ de %3$@ canciones";
+"正在改存为 %@…" = "Guardando como %@…";
 "正在更新" = "Actualizando";
 "正在查找歌词…" = "Buscando la letra…";
 "正在查询各个歌词源…" = "Consultando las fuentes de letras…";

@@ -1381,8 +1381,17 @@ func runSourceContractTests() {
             let guardAt = apply.range(of: "hasNoLyricsFiles()")?.lowerBound
             let writeAt = apply.range(of: "features.lyricsWordFormats = formats")?.lowerBound
             expectEqual(apply.contains("writeAutoSnapshot(reason: \"word-format\") == nil") && guardAt != nil && writeAt != nil
-                        && guardAt! < writeAt! && sourceHas(apply, "return\n            }\n            features.lyricsWordFormats"), true,
+                        && guardAt! < writeAt! && sourceHas(apply, "return } } features.lyricsWordFormats"), true,
                         "逐字歌词格式: 备份没写成、又有歌词文件时要在改设置之前返回")
+            // 换格式的反馈:备份没写成时撤掉「正在备份」;设置写下之后才开始等引擎(状态文件按这一刻判新旧);进度只重画这一行。
+            expectEqual(sourceHas(apply, "monitor.beginBackup(to: formats)")
+                        && sourceHas(apply, "monitor.cancel() let alert = NSAlert()")
+                        && sourceHas(apply, "await features.save() monitor.requested(formats)"), true,
+                        "逐字歌词格式: 备份 / 撤回 / 写下设置后开始等引擎,三处都接上进度")
+            expectEqual(sourceHas(view, "@ObservedObject private var monitor = LyricsWordFormatSwitchMonitor.shared")
+                        && sourceHas(view, ".disabled(monitor.isBusy)")
+                        && !sourceHas(sourceBody("private struct LyricsSettingsTab: View {", in: view), "@ObservedObject private var monitor"), true,
+                        "逐字歌词格式: 进度只在那一行的小视图里订阅(整页不跟着每 0.25 秒重画),切换中锁住下拉框")
             // 新装机默认 TTML 只能落在「文件不存在 + isFreshInstall + 文件夹还空」这一支:老配置缺这个键要照旧是 YRC。
             let store = code(sourcesRoot.appendingPathComponent("lyrimuse/Settings/FeatureSettingsStore.swift")) ?? ""
             let load = sourceBody("public func load()", in: store)

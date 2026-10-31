@@ -153,6 +153,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case notchPointer(x: Double, y: Double)
         /// 结束上面两条模拟,交还真指针(`debug/notch-pass-through?off=1`)。
         case notchPassThroughOff
+        /// 把设置页「逐字歌词格式」那一行摆到换格式的某一步,不真换、不碰歌词文件:
+        /// `debug/word-format-switch?state=backup|waiting|converting|finished|queued|idle&format=qrc&done=3214&total=17564`
+        /// (`format` 是 `LyricsWordFormat` 的 rawValue,缺省 = 当前主格式;`done` / `total` 只在 converting / finished 时用)。
+        case wordFormatSwitch(state: String, format: String?, done: Int?, total: Int?)
     }
 
     /// `debug/stall` 的上限(毫秒)。再长就是把 App 卡死了。
@@ -320,6 +324,11 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             let expanded = value("expanded").flatMap { $0.isEmpty ? nil : $0 }
             guard style != nil || expanded != nil else { return nil }
             self = .debug(.notchStyle(style: style, expanded: expanded))
+        case ("debug", "/word-format-switch"):
+            guard let state = value("state"), !state.isEmpty else { return nil }
+            let nonNegative = { (s: String?) in s.flatMap(Int.init).flatMap { $0 >= 0 ? $0 : nil } }
+            self = .debug(.wordFormatSwitch(state: state, format: value("format").flatMap { $0.isEmpty ? nil : $0 },
+                                            done: nonNegative(value("done")), total: nonNegative(value("total"))))
         case ("debug", "/notch-pass-through"):
             if value("off").flatMap(Self.parseBool) == true {
                 self = .debug(.notchPassThroughOff)
@@ -510,6 +519,12 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case .notchPassThroughOff:
                 components.path = "/notch-pass-through"
                 components.queryItems = [URLQueryItem(name: "off", value: "1")]
+            case let .wordFormatSwitch(state, format, done, total):
+                components.path = "/word-format-switch"
+                components.queryItems = [URLQueryItem(name: "state", value: state)]
+                    + (format.map { [URLQueryItem(name: "format", value: $0)] } ?? [])
+                    + (done.map { [URLQueryItem(name: "done", value: String($0))] } ?? [])
+                    + (total.map { [URLQueryItem(name: "total", value: String($0))] } ?? [])
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]

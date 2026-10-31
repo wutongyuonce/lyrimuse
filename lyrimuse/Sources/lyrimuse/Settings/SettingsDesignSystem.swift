@@ -1236,6 +1236,8 @@ struct SettingsRow<Trailing: View>: View {
     var help: String?
     /// 副标题的颜色,默认次要灰。只在副标题本身是一条需要留意的状态时传(如备份已经很久没更新)。
     var subtitleTint: Color?
+    /// 副标题下面再放的一块(进度条这类),跟副标题同一列、左对齐。
+    var footer: AnyView?
     /// 标题后面标「Beta」(`SettingsBetaBadge`)。
     var beta = false
     @ViewBuilder let trailing: () -> Trailing
@@ -1284,6 +1286,7 @@ struct SettingsRow<Trailing: View>: View {
                         .foregroundStyle(subtitleTint.map(AnyShapeStyle.init) ?? AnyShapeStyle(.secondary))
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                if let footer { footer }
             }
 
             Spacer(minLength: 12)

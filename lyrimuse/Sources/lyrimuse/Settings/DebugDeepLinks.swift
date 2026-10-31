@@ -108,6 +108,20 @@ enum DebugDeepLinks {
                 }
             }
             logger.notice("debug notch style style=\(style ?? "nil", privacy: .public) expanded=\(expanded ?? "nil", privacy: .public)")
+        case let .wordFormatSwitch(state, format, done, total):
+            let formats = format.flatMap(LyricsWordFormat.init(rawValue:)).map { [$0] }
+                ?? Array(FeatureSettingsStore.shared.lyricsWordFormats.prefix(1))
+            let display: LyricsWordFormatSwitchMonitor.Display? = switch state {
+            case "idle": .idle
+            case "backup": .backingUp
+            case "waiting": .phase(.waiting)
+            case "converting": .phase(.converting(done: min(done ?? 0, total ?? 0), total: total ?? 0))
+            case "finished": .phase(.finished(total: total ?? 0))
+            case "queued": .phase(.queued)
+            default: nil
+            }
+            if let display { LyricsWordFormatSwitchMonitor.shared.simulate(display, formats: formats) }
+            logger.notice("debug word format switch state=\(state, privacy: .public)")
         case let .notchPassThrough(x, y):
             NotchLyricsWindowController.shared.simulatePassThrough(at: CGPoint(x: x, y: y))
             logger.notice("debug notch pass-through x=\(x, privacy: .public) y=\(y, privacy: .public)")

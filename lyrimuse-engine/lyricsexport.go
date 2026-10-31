@@ -297,11 +297,28 @@ func exportLyricsFilesMatching(onlyFolds map[string]bool) {
 	formsBefore, encodesBefore := parenBGFileForms.Load(), lyricsWordFileEncodes.Load()
 	// 要重写的逐字文件先并行编好(换格式时整库都要重编,QRC 那层 3DES 一首几毫秒),下面的循环按顺序写。
 	var preEncoded []lyricsWordPreEncoded
+	// 换逐字格式那一趟在数进度(trackLyricsWordFormatSwitch):总数是有逐字的歌,编好、写出各记半首。
+	progress := lyricsWordSwitchProgress.Load()
+	if onlyFolds != nil {
+		progress = nil
+	}
+	if progress != nil {
+		withWords := 0
+		for _, j := range jobs {
+			if j.cached[3] != "" {
+				withWords++
+			}
+		}
+		progress.total.Store(int64(withWords))
+	}
 	if onlyFolds == nil {
 		preEncoded = preEncodeLyricsWordFiles(len(jobs), wordFormats, func(i int) (lyricsWordJob, bool) {
 			j := jobs[i]
 			if j.cached[3] == "" {
 				return lyricsWordJob{}, false
+			}
+			if progress != nil {
+				progress.encoded.Add(1)
 			}
 			base, ok := disambiguated[i]
 			if !ok {
@@ -319,6 +336,9 @@ func exportLyricsFilesMatching(onlyFolds map[string]bool) {
 	for i, j := range jobs {
 		if onlyFolds != nil && !onlyFolds[folds[i]] {
 			continue
+		}
+		if progress != nil && j.cached[3] != "" {
+			progress.written.Add(1)
 		}
 		base, ok := disambiguated[i]
 		if !ok {

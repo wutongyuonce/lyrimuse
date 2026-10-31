@@ -241,6 +241,11 @@ func runDeepLinkTests() {
         expectEqual(link("lyrimuse://debug/notch-style?style=coverArt&expanded=same"),
                     .debug(.notchStyle(style: "coverArt", expanded: "same")), "debug: 背景、展开背景一起设")
         expectEqual(link("lyrimuse://debug/notch-style"), nil, "debug: 灵动岛风格什么都没带不认")
+        expectEqual(link("lyrimuse://debug/word-format-switch?state=converting&format=qrc&done=30&total=100"),
+                    .debug(.wordFormatSwitch(state: "converting", format: "qrc", done: 30, total: 100)), "debug: 逐字格式切换摆到改存中")
+        expectEqual(link("lyrimuse://debug/word-format-switch?state=backup&done=-3"),
+                    .debug(.wordFormatSwitch(state: "backup", format: nil, done: nil, total: nil)), "debug: 负数、缺的参数按没带")
+        expectEqual(link("lyrimuse://debug/word-format-switch"), nil, "debug: 逐字格式切换不带 state 不认")
         expectEqual(link("lyrimuse://debug/move-window?title=%E6%90%9C%E7%B4%A2&x=-200&y=-1200.5"),
                     .debug(.moveWindow(title: "搜索", x: -200, y: -1200.5)), "debug: 按标题挪窗口")
         expectEqual(link("lyrimuse://debug/move-window?title=a&x=1") == nil
@@ -399,6 +404,8 @@ func runDeepLinkTests() {
             .debug(.notchBehavior(collapseWhenPaused: nil, hideWhenNotPlaying: nil, allScreens: false)),
             .debug(.notchStyle(style: "solidBlack", expanded: "coverArt")),
             .debug(.notchStyle(style: nil, expanded: "same")),
+            .debug(.wordFormatSwitch(state: "finished", format: "ttml", done: nil, total: 17564)),
+            .debug(.wordFormatSwitch(state: "queued", format: nil, done: nil, total: nil)),
             .debug(.overlayLayout(width: 640, lineChange: true)),
             .debug(.moveWindow(title: "搜索歌词…", x: 7, y: 33)),
             .debug(.overlayLayout(width: nil, lineChange: false)),

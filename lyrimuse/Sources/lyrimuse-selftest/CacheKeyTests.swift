@@ -18,6 +18,32 @@ func runCacheKeyTests() {
         expectEqual(LyricsWordFormat.resolve(nil), [.yrc], "逐字格式: 没设置只写 YRC")
         expectEqual(LyricsWordFormat.resolve(["future", "ttml", "ttml", "qrc"]), [.ttml, .qrc], "逐字格式: 认不得的、重复的去掉")
         expectEqual(LyricsWordFormat.resolve(["future"]), [.yrc], "逐字格式: 一个都认不得时只写 YRC")
+        // 换格式的进度(引擎 lyricswordformatstatus.go 写,设置页那一行读):别的一趟、更早的一趟不认,没接手 / 跑到一半没了算等下次启动。
+        typealias W = LyricsWordFormatSwitch
+        let at = Date(timeIntervalSince1970: 1_000_000)
+        func st(_ formats: [String] = ["ttml"], running: Bool = true, done: Int = 0, total: Int = 0,
+                started: Int64 = 1_000_000, updated: Int64 = 1_000_001) -> W.Status {
+            W.Status(running: running, formats: formats, done: done, total: total, startedAt: started, updatedAt: updated)
+        }
+        let soon = at.addingTimeInterval(2)
+        expectEqual(W.phase(formats: ["ttml"], status: nil, requestedAt: at, now: soon), .waiting, "换格式进度: 引擎还没接手")
+        expectEqual(W.phase(formats: ["ttml"], status: nil, requestedAt: at, now: at.addingTimeInterval(W.pickupTimeout + 1)),
+                    .queued, "换格式进度: 等太久没接手 = 引擎没在跑")
+        expectEqual(W.phase(formats: ["ttml"], status: st(["qrc"]), requestedAt: at, now: soon), .waiting, "换格式进度: 别的格式那一趟不认")
+        expectEqual(W.phase(formats: ["ttml"], status: st(running: false, total: 9, started: 999_990), requestedAt: at, now: soon),
+                    .waiting, "换格式进度: 这次请求之前的那一趟不认")
+        expectEqual(W.phase(formats: ["ttml"], status: st(), requestedAt: at, now: soon), .waiting, "换格式进度: 总数还没数出来")
+        expectEqual(W.phase(formats: ["ttml"], status: st(done: 30, total: 100), requestedAt: at, now: soon),
+                    .converting(done: 30, total: 100), "换格式进度: 跑着")
+        expectEqual(W.phase(formats: ["ttml"], status: st(done: 130, total: 100), requestedAt: at, now: soon),
+                    .converting(done: 100, total: 100), "换格式进度: 完成数不超过总数")
+        expectEqual(W.phase(formats: ["ttml"], status: st(done: 30, total: 100), requestedAt: at,
+                            now: Date(timeIntervalSince1970: 1_000_001 + W.stallTimeout + 1)),
+                    .queued, "换格式进度: 跑到一半太久没更新 = 引擎没了")
+        expectEqual(W.phase(formats: ["ttml"], status: st(running: false, done: 100, total: 100), requestedAt: at, now: soon),
+                    .finished(total: 100), "换格式进度: 做完了")
+        expectEqual(W.phase(formats: ["ttml", "qrc"], status: st(["ttml", "qrc"], running: false), requestedAt: at, now: soon),
+                    .finished(total: 0), "换格式进度: 文件夹本来就是这几种,直接做完")
     }
 
     // ---- 正文小文件(引擎 enrichindex.go 的 enrichBody)解码:两边字段名逐字一致 ----
