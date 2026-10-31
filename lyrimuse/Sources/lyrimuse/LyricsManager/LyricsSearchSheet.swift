@@ -1930,20 +1930,27 @@ struct LyricsSearchSheet: View {
         .foregroundStyle(.secondary)
     }
 
-    /// 分数那一行,后面接源自报的曲长(`durationLabel`)。
+    /// 分数那一行,后面接源自报的曲长(`durationLabel`)。一行放不下时曲长换到下一行,分数那段(连同问号)整段留在第一行:
+    /// 并排时 SwiftUI 只把分数那段折成两行,问号按两行的高度居中,跟文字错开。
     private func metaLine(_ c: LyricsSearchService.Candidate, font: Font) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 0) {
-            scoreLine(c, font: font)
-            durationLabel(c, font: font)
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                scoreLine(c, font: font).fixedSize()
+                durationLabel(c, font: font).fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                scoreLine(c, font: font)
+                durationLabel(c, font: font, separated: false)
+            }
         }
     }
 
     /// 「 · 4:31（+12 秒）」:这个源标注的曲长,跟这首差 2 秒以上时写差多少,差到算另一个版本(LyricsCandidateDuration)
     /// 时标橙。源没给时长时不出;借的是同一条录音别家报的(`durationBorrowedFrom`)时悬停说明写是哪家。
     @ViewBuilder
-    private func durationLabel(_ c: LyricsSearchService.Candidate, font: Font) -> some View {
+    private func durationLabel(_ c: LyricsSearchService.Candidate, font: Font, separated: Bool = true) -> some View {
         if c.sourceDurationSecs > 0 {
-            Text(" · " + durationText(c))
+            Text((separated ? " · " : "") + durationText(c))
                 .font(font)
                 .foregroundStyle(LyricsCandidateDuration.isOff(candidate: c.sourceDurationSecs, song: durationSecs)
                                  ? Color.orange : Color.secondary)
