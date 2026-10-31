@@ -2190,10 +2190,10 @@
 "繁简" = "Escritura china";
 "繁简写法不同" = "escrito en la otra grafía china";
 "繁简转换" = "Escritura china";
-"约 %@ 分钟" = "aprox. %@ minutos";
-"约 %@ 分钟#one" = "aprox. %@ minuto";
-"约 %@ 小时" = "aprox. %@ horas";
-"约 %@ 小时#one" = "aprox. %@ hora";
+"约 %@ 分钟" = "~%@ min";
+"约 %@ 分钟#one" = "~%@ min";
+"约 %@ 小时" = "~%@ h";
+"约 %@ 小时#one" = "~%@ h";
 "纯文本" = "Texto sin formato";
 "纯文本格式，不含账号凭证、外观与快捷键；完整迁移请使用「备份与迁移」" = "Texto sin formato. No incluye credenciales de cuentas, aspecto ni atajos; para migrarlo todo, usa «Copia de seguridad y migración»";
 "纯文本（无时间戳）" = "Texto sin formato (sin sincronización)";
@@ -2766,7 +2766,7 @@
 "预览已缩小至 %@" = "Vista previa reducida a %@";
 "预览：有新版本时将在此显示更新日志" = "Vista previa: las notas de la versión aparecen aquí cuando hay una actualización";
 "预解析待播曲目" = "Preparar próximas canciones";
-"预计还需%@" = "faltan aprox. %@";
+"预计还需%@" = "faltan %@";
 "颜色" = "Color";
 "风格" = "Estilo";
 "飞书" = "Feishu";

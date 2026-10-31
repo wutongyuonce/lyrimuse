@@ -54762,13 +54762,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "aprox. %@ hora"
+                  "value" : "~%@ h"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "aprox. %@ horas"
+                  "value" : "~%@ h"
                 }
               }
             }
@@ -54821,13 +54821,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "aprox. %@ minuto"
+                  "value" : "~%@ min"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "aprox. %@ minutos"
+                  "value" : "~%@ min"
                 }
               }
             }
@@ -54859,13 +54859,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "about %@ to go"
+            "value" : "%@ to go"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "faltan aprox. %@"
+            "value" : "faltan %@"
           }
         },
         "ja" : {
@@ -54877,7 +54877,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "약 %@ 남음"
+            "value" : "%@ 남음"
           }
         },
         "zh-Hant" : {
