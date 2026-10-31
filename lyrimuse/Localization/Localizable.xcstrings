@@ -30628,7 +30628,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アートワークに合わせる"
+            "value" : "アートワーク連動"
           }
         },
         "ko" : {
@@ -36928,7 +36928,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "セミボールド"
+            "value" : "やや太字"
           }
         },
         "ko" : {
@@ -89917,7 +89917,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@項目がオン"
+            "value" : "%@件オン"
           }
         },
         "ko" : {
