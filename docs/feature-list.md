@@ -2,7 +2,7 @@
 
 # Lyrimuse feature list
 
-English · [简体中文](feature-list.zh-CN.md) · [繁體中文](feature-list.zh-Hant.md)
+English · [简体中文](feature-list.zh-CN.md) · [繁體中文](feature-list.zh-Hant.md) · [日本語](feature-list.ja.md) · [한국어](feature-list.ko.md)
 
 Lyrimuse is an open-source (GPL-3.0) Mac app for word-by-word synced lyrics, for macOS 14 or later on Apple Silicon and Intel. It shows lyrics for Apple Music, Spotify, QQ Music, NetEase Cloud Music, Kugou, Soda Music, KKBOX, Amazon Music, LX Music, Kaset, reAMP, VOX, Pine Player, foobar2000, and YouTube Music or Spotify Web playing in a browser: floating on the desktop, beside the notch, in the menu bar, on the Touch Bar or in a full lyrics window, with translations and romanization (pinyin, Cantonese Jyutping, Japanese romaji, Korean romanization). It scrobbles to Last.fm and ListenBrainz and can show what you play on Discord. The interface is in English, Simplified Chinese, Traditional Chinese, Japanese and Korean.
 

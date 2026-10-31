@@ -29,8 +29,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LANGS = ("en", "zh-Hans", "zh-Hant")
-DOC_FILES = {"en": "feature-list.md", "zh-Hans": "feature-list.zh-CN.md", "zh-Hant": "feature-list.zh-Hant.md"}
+LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko")
+LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어"}
+DOC_FILES = {"en": "feature-list.md", "zh-Hans": "feature-list.zh-CN.md", "zh-Hant": "feature-list.zh-Hant.md",
+             "ja": "feature-list.ja.md", "ko": "feature-list.ko.md"}
 BRANDS = {"ListenBrainz", "Last.fm", "Discord"}
 
 CHROME = {
@@ -93,6 +95,46 @@ CHROME = {
         "full_only": "（僅完整尺寸）",
         "sep": "：",
         "generated": "由 scripts/gen-feature-list.py 從 shared/feature-list.json 和 shared/settings-catalog.json 產生，要改清單請改那兩份檔案。",
+    },
+    "ja": {
+        "title": "Lyrimuse 機能一覧",
+        "intro": "Lyrimuse のすべての機能について、何ができるか、設定のどこにあるか、インストール直後にオンかオフかをまとめています。最後に設定ウインドウの全項目を載せています。この一覧はコードと一緒に管理し、機能が増減するたびに更新します。",
+        "toc": "目次",
+        "off_title": "最初はオフの機能",
+        "off_intro": "次の機能はインストール後も自動ではオンになりません。先に設定でオンにしてください（アカウントの連携や権限が必要なものもあります）：",
+        "col_feature": "機能",
+        "col_where": "オンにする場所",
+        "default_on": "初期設定でオン",
+        "default_off": "初期設定でオフ",
+        "where": "設定の場所",
+        "index_title": "すべての設定項目",
+        "index_intro": "設定ウインドウの全項目を場所ごとに並べています。全部で {n} 項目です。設定ウインドウのサイドバー上部の検索欄に名前を入力すると、その項目へ直接移動できます。",
+        "settings": "設定",
+        "labs": "ラボ",
+        "mini_only": "（ミニサイズのみ）",
+        "full_only": "（フルサイズのみ）",
+        "sep": "：",
+        "generated": "scripts/gen-feature-list.py が shared/feature-list.json と shared/settings-catalog.json から生成しています。一覧を変えるときはこの2つのファイルを編集してください。",
+    },
+    "ko": {
+        "title": "Lyrimuse 기능 목록",
+        "intro": "Lyrimuse의 모든 기능을 무엇을 하는지, 설정의 어디에 있는지, 설치 직후 켜져 있는지 꺼져 있는지와 함께 정리했습니다. 마지막에는 설정 윈도우의 모든 항목을 실었습니다. 이 목록은 코드와 함께 관리되며 기능이 바뀔 때마다 갱신됩니다.",
+        "toc": "목차",
+        "off_title": "처음에는 꺼져 있는 기능",
+        "off_intro": "다음 기능은 설치 후 저절로 켜지지 않습니다. 먼저 설정에서 켜 주세요(계정 연결이나 권한이 필요한 기능도 있습니다):",
+        "col_feature": "기능",
+        "col_where": "켜는 위치",
+        "default_on": "기본으로 켜짐",
+        "default_off": "기본으로 꺼짐",
+        "where": "설정 위치",
+        "index_title": "모든 설정 항목",
+        "index_intro": "설정 윈도우의 모든 항목을 위치별로 나열했습니다. 모두 {n}개입니다. 설정 윈도우 사이드바 위쪽의 검색 필드에 이름을 입력하면 해당 항목으로 바로 이동합니다.",
+        "settings": "설정",
+        "labs": "실험실",
+        "mini_only": " (미니 크기만)",
+        "full_only": " (전체 크기만)",
+        "sep": ": ",
+        "generated": "scripts/gen-feature-list.py가 shared/feature-list.json과 shared/settings-catalog.json으로 생성합니다. 목록을 바꾸려면 이 두 파일을 수정하세요.",
     },
 }
 
@@ -196,7 +238,7 @@ def load_model(root: Path = ROOT) -> dict:
 
     def has_all(key: str) -> bool:
         loc = strings.get(key, {}).get("localizations", {})
-        return all(loc.get(lang, {}).get("stringUnit", {}).get("value") for lang in ("en", "zh-Hant"))
+        return all(loc.get(lang, {}).get("stringUnit", {}).get("value") for lang in LANGS if lang != "zh-Hans")
 
     def location(entry: dict, with_title: bool, prefix: bool) -> dict:
         keys = (["设置"] if prefix else []) + (["实验室"] if entry["dest"] in labs else []) \
@@ -223,7 +265,12 @@ def load_model(root: Path = ROOT) -> dict:
             joined = ""
             for line in lines:
                 if joined:
-                    joined += " " if lang == "en" else ("" if joined[-1] in "。；：！？" else "；")
+                    if lang in ("en", "ko"):
+                        joined += " "
+                    elif lang == "ja":
+                        joined += "" if joined[-1] in "。：！？" else "。"
+                    else:
+                        joined += "" if joined[-1] in "。；：！？" else "；"
                 joined += line
             out[lang] = joined
         return out
@@ -323,7 +370,7 @@ def render_markdown(model: dict, lang: str) -> str:
     t = CHROME[lang]
     out = [f"<!-- {t['generated']} -->", "", f"# {t['title']}", ""]
     switch = []
-    for other, label in (("en", "English"), ("zh-Hans", "简体中文"), ("zh-Hant", "繁體中文")):
+    for other, label in LANG_LABELS.items():
         switch.append(label if other == lang else f"[{label}]({DOC_FILES[other]})")
     out += [" · ".join(switch), "", model["about"][lang], "", t["intro"], "", f"## {t['toc']}", ""]
     out.append(f"- [{t['off_title']}](#{_anchor('section', 'off-by-default')})")

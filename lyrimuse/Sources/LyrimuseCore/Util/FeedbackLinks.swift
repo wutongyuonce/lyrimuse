@@ -56,6 +56,8 @@ public enum FeedbackLinks {
         switch language.lowercased() {
         case "zh-hans": dir = "zh/"
         case "zh-hant": dir = "zh-Hant/"
+        case "ja": dir = "ja/"
+        case "ko": dir = "ko/"
         default: dir = ""
         }
         return URL(string: "https://yudaotor.github.io/lyrimuse/" + dir + "features/")!
