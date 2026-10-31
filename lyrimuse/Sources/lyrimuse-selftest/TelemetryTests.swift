@@ -179,10 +179,18 @@ func runTelemetryTests() {
                               "guard AppSettings.shared.telemetryEnabled else { return false }"), true, "接线: 关着不发")
         expectEqual(sourceHas(service, "TelemetryActivity.shared.trustedBundleIDs = Set(trusted.keys)"), true,
                     "接线: 信任列表变了同步给活动记账")
-        expectEqual(sourceHas(sourceText("lyrimuse/Settings/ConfigPortability.swift"), "TelemetryService.Keys.installID,"), true,
-                    "接线: 安装 ID 不随配置搬家")
-        expectEqual(sourceHas(sourceText("lyrimuse/Settings/ConfigPortability.swift"), "TelemetryNotice.seenKey,"), true,
-                    "告知接线: 已告知标记不随配置搬家")
+        let portability = sourceText("lyrimuse/Settings/ConfigPortability.swift")
+        func section(_ start: String, _ end: String) -> Substring {
+            guard let a = portability.range(of: start), let b = portability.range(of: end, range: a.upperBound..<portability.endIndex)
+            else { return "" }
+            return portability[a.upperBound..<b.lowerBound]
+        }
+        let machineLocal = section("private static let machineLocalDefaultsKeys", "\n    ]")
+        let obsolete = section("static let obsoleteDefaultsKeys", "\n    ]")
+        expectEqual(sourceHas(machineLocal, "TelemetryService.Keys.installID,") && sourceHas(machineLocal, "TelemetryNotice.seenKey,")
+                    && sourceHas(machineLocal, "TelemetryService.Keys.lastHeartbeatDay,"), true,
+                    "接线: 安装 ID 等记账键是机器专属的,不随配置搬家")
+        expectEqual(obsolete.contains("Telemetry"), false, "接线: 遥测的键不在过时键表里(那张表启动时就删)")
         let settingsView = sourceText("lyrimuse/SettingsView.swift")
         expectEqual(sourceHas(settingsView, "if tab == .about, telemetryNotice.pending { SettingsUnseenDot() }"), true,
                     "告知接线: 侧栏「关于」挂蓝点")
