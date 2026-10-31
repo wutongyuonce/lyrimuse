@@ -12,6 +12,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TAG_RE = /^[a-z0-9][a-z0-9.-]{0,31}$/;
 const HEX16_RE = /^[0-9a-f]{16}$/;
+// bundle id:内置播放器的 id 也符合这个写法。
+const ID_RE = /^[A-Za-z0-9][A-Za-z0-9.-]{0,99}$/;
 const MAX_BODY = 32 * 1024;
 const MAX_CRASHES_PER_INSTALL_DAY = 20;
 const DAY_MS = 86_400_000;
@@ -67,6 +69,11 @@ function tags(v, maxItems = 24) {
   return [...new Set(v.map(tag).filter(Boolean))].slice(0, maxItems).sort();
 }
 
+function ids(v, maxItems = 40) {
+  if (!Array.isArray(v)) return [];
+  return [...new Set(v.filter((x) => typeof x === "string" && ID_RE.test(x)))].slice(0, maxItems).sort();
+}
+
 function int(v, min, max) {
   return Number.isInteger(v) && v >= min && v <= max ? v : null;
 }
@@ -97,7 +104,8 @@ function cleanFeatures(f) {
     surfaces: tags(f.surfaces), players_selected: tags(f.players_selected, 40),
     lyrics_source_mode: tag(f.lyrics_source_mode), lyrics_sources_enabled: int(f.lyrics_sources_enabled, 0, 100),
     translation: bool(f.translation), romanization: bool(f.romanization), machine_translation: bool(f.machine_translation),
-    accounts: tags(f.accounts), show_in_dock: bool(f.show_in_dock), launch_at_login: bool(f.launch_at_login),
+    accounts: tags(f.accounts), trusted_players: ids(f.trusted_players), web_platforms: tags(f.web_platforms),
+    show_in_dock: bool(f.show_in_dock), launch_at_login: bool(f.launch_at_login),
     beta_updates: bool(f.beta_updates),
   };
 }
@@ -140,7 +148,7 @@ async function heartbeat(request, env) {
     statements.push(env.DB.prepare(
       `INSERT INTO activity (day, install_id, players_played, hangs) VALUES (?1, ?2, ?3, ?4)
        ON CONFLICT (day, install_id) DO UPDATE SET players_played = excluded.players_played, hangs = excluded.hangs`
-    ).bind(a.day, installID, JSON.stringify(tags(a.players_played, 40)), int(a.hangs, 0, 10_000) ?? 0));
+    ).bind(a.day, installID, JSON.stringify(ids(a.players_played)), int(a.hangs, 0, 10_000) ?? 0));
   }
   await env.DB.batch(statements);
   return json({ ok: true });
@@ -267,6 +275,8 @@ async function stats(request, env, url) {
       surfaces: countBy(rows, (r) => r.features.surfaces || []),
       players_selected: countBy(rows, (r) => r.features.players_selected || []),
       accounts: countBy(rows, (r) => r.features.accounts || []),
+      trusted_players: countBy(rows, (r) => r.features.trusted_players || []),
+      web_platforms: countBy(rows, (r) => r.features.web_platforms || []),
       lyrics_source_mode: countBy(rows, (r) => r.features.lyrics_source_mode),
       flags: featureFlags.map((k) => [k, rows.filter((r) => r.features[k] === true).length]),
     },
@@ -335,7 +345,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 try { $("token").value = localStorage.getItem("lyrimuse-telemetry-token") || ""; } catch {}
 const LABELS = { app_version: "版本", os_version: "macOS 大版本", arch: "芯片", ui_language: "界面语言", system_language: "系统语言",
-  country: "国家/地区", surfaces: "开着的展示面", players_selected: "勾选的播放器", accounts: "连接的账号", lyrics_source_mode: "匹配算法",
+  country: "国家/地区", surfaces: "开着的展示面", players_selected: "勾选的播放器", accounts: "连接的账号", trusted_players: "信任的第三方播放器", web_platforms: "网页版平台", lyrics_source_mode: "匹配算法",
   flags: "其他开关" };
 function table(rows, total) {
   if (!rows.length) return '<p class="muted">没有数据</p>';

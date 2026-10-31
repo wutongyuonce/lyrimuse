@@ -56,10 +56,18 @@ public enum Telemetry {
                                   with: "<path>", options: .regularExpression)
     }
 
-    /// 播放器在负载里的写法:内置播放器用目录里的 id,其余一律 `other`(不把用户装了什么别的 App 发出去)。
-    public static func playerTag(forBundleID bundleID: String?) -> String? {
+    /// 播放器在负载里的写法:内置播放器用目录里的 id,用户信任的第三方播放器 / 浏览器用 bundle id,其余一律 `other`
+    /// (没信任过的 App 不发出去)。
+    public static func playerTag(forBundleID bundleID: String?, trusted: Set<String> = []) -> String? {
         guard let bundleID, !bundleID.isEmpty else { return nil }
-        return PlaybackPlayer.builtin(forBundleID: bundleID)?.rawValue ?? "other"
+        if let builtin = PlaybackPlayer.builtin(forBundleID: bundleID) { return builtin.rawValue }
+        if trusted.contains(bundleID), let id = bundleIDTag(bundleID) { return id }
+        return "other"
+    }
+
+    /// 能当 bundle id 发出去的写法:字母数字开头,只含字母数字、点和连字符,最长 100。别的(带空格、路径)不发。
+    public static func bundleIDTag(_ id: String) -> String? {
+        id.range(of: #"^[A-Za-z0-9][A-Za-z0-9.-]{0,99}$"#, options: .regularExpression) == nil ? nil : id
     }
 }
 
@@ -123,12 +131,17 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
     public var machineTranslation: Bool
     /// 连上了的账号与服务:lastfm / listenbrainz / apple-music / relay / push。只说连没连,不带账号名。
     public var accounts: [String]
+    /// 用户信任的第三方播放器与浏览器(bundle id,`Telemetry.bundleIDTag` 过滤),不带名字。
+    public var trustedPlayers: [String]
+    /// 网页版配了浏览器的平台(`BrowserPositionProbe.supportedPlatforms` 的 id)。
+    public var webPlatforms: [String]
     public var showInDock: Bool
     public var launchAtLogin: Bool
     public var betaUpdates: Bool
 
     public init(surfaces: [String], playersSelected: [String], lyricsSourceMode: String, lyricsSourcesEnabled: Int,
                 translation: Bool, romanization: Bool, machineTranslation: Bool, accounts: [String],
+                trustedPlayers: [String], webPlatforms: [String],
                 showInDock: Bool, launchAtLogin: Bool, betaUpdates: Bool) {
         self.surfaces = surfaces.sorted()
         self.playersSelected = playersSelected.sorted()
@@ -138,6 +151,8 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
         self.romanization = romanization
         self.machineTranslation = machineTranslation
         self.accounts = accounts.sorted()
+        self.trustedPlayers = trustedPlayers.compactMap(Telemetry.bundleIDTag).sorted()
+        self.webPlatforms = webPlatforms.sorted()
         self.showInDock = showInDock
         self.launchAtLogin = launchAtLogin
         self.betaUpdates = betaUpdates
@@ -146,7 +161,8 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
     enum CodingKeys: String, CodingKey {
         case surfaces, playersSelected = "players_selected", lyricsSourceMode = "lyrics_source_mode"
         case lyricsSourcesEnabled = "lyrics_sources_enabled", translation, romanization
-        case machineTranslation = "machine_translation", accounts, showInDock = "show_in_dock"
+        case machineTranslation = "machine_translation", accounts, trustedPlayers = "trusted_players"
+        case webPlatforms = "web_platforms", showInDock = "show_in_dock"
         case launchAtLogin = "launch_at_login", betaUpdates = "beta_updates"
     }
 }
@@ -154,7 +170,7 @@ public struct TelemetryFeatures: Codable, Equatable, Sendable {
 /// 某一天记下的活动。
 public struct TelemetryActivityDay: Codable, Equatable, Sendable {
     public var day: String
-    /// 这一天放过歌的播放器(`Telemetry.playerTag`)。
+    /// 这一天放过歌的播放器(`Telemetry.playerTag`:内置的 id、信任的 bundle id,其余 `other`)。
     public var playersPlayed: [String]
     /// 主线程卡住到报「unresponsive」的次数(`MainThreadWatchdog`)。
     public var hangs: Int

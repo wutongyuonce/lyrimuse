@@ -20,6 +20,19 @@ func runTelemetryTests() {
                     PlaybackPlayer.appleMusic.rawValue, "播放器: 内置的用目录 id")
         expectEqual(Telemetry.playerTag(forBundleID: "com.example.SomethingElse"), "other", "播放器: 别的 App 一律 other")
         expectEqual(Telemetry.playerTag(forBundleID: nil), nil, "播放器: 没有 bundle id 不记")
+        expectEqual(Telemetry.playerTag(forBundleID: "com.colliderli.iina", trusted: ["com.colliderli.iina"]), "com.colliderli.iina",
+                    "播放器: 信任的第三方 App 记 bundle id")
+        expectEqual(Telemetry.playerTag(forBundleID: "com.colliderli.iina", trusted: []), "other", "播放器: 没信任的记 other")
+        expectEqual(Telemetry.playerTag(forBundleID: PlaybackPlayer.appleMusic.bundleIdentifier,
+                                        trusted: [PlaybackPlayer.appleMusic.bundleIdentifier]),
+                    PlaybackPlayer.appleMusic.rawValue, "播放器: 内置的照旧用目录 id")
+        expectEqual(Telemetry.playerTag(forBundleID: "weird id/with space", trusted: ["weird id/with space"]), "other",
+                    "播放器: 不像 bundle id 的写法不发")
+        expectEqual(TelemetryFeatures(surfaces: [], playersSelected: [], lyricsSourceMode: "smart", lyricsSourcesEnabled: 1,
+                                      translation: false, romanization: false, machineTranslation: false, accounts: [],
+                                      trustedPlayers: ["com.b", "/Users/x/a.app", "com.a"], webPlatforms: [],
+                                      showInDock: false, launchAtLogin: false, betaUpdates: false).trustedPlayers,
+                    ["com.a", "com.b"], "信任列表: 只发 bundle id、排好序")
 
         expectEqual(TelemetryEnvironment.languageOnly("zh-Hans-CN"), "zh-Hans", "语言: 去掉地区、留文字")
         expectEqual(TelemetryEnvironment.languageOnly("en-US"), "en", "语言: 去掉地区")
@@ -91,13 +104,15 @@ func runTelemetryTests() {
         activity.isRecording = true
         activity.notePlayer(bundleID: music, now: day1)
         activity.notePlayer(bundleID: "com.example.Other", now: day1)
+        activity.trustedBundleIDs = ["com.colliderli.iina"]
+        activity.notePlayer(bundleID: "com.colliderli.iina", now: day1)
         activity.notePlayer(bundleID: music, now: day1)
         activity.noteHang(now: day1)
         activity.noteHang(now: day1)
         activity.notePlayer(bundleID: music, now: day2)
         let d1 = Telemetry.day(day1), d2 = Telemetry.day(day2)
         expectEqual(activity.completedDays(before: d2),
-                    [TelemetryActivityDay(day: d1, playersPlayed: [PlaybackPlayer.appleMusic.rawValue, "other"].sorted(), hangs: 2)],
+                    [TelemetryActivityDay(day: d1, playersPlayed: [PlaybackPlayer.appleMusic.rawValue, "other", "com.colliderli.iina"].sorted(), hangs: 2)],
                     "记账: 当天放过的播放器去重、卡顿计数")
         expectEqual(activity.completedDays(before: d1), [], "记账: 今天的不算完成")
         activity.remove(days: [d1])
@@ -114,7 +129,8 @@ func runTelemetryTests() {
                                        uiLanguage: "en", systemLanguage: "en")
         let features = TelemetryFeatures(surfaces: ["notch", "overlay"], playersSelected: ["auto"], lyricsSourceMode: "smart",
                                          lyricsSourcesEnabled: 15, translation: true, romanization: false,
-                                         machineTranslation: false, accounts: [], showInDock: true, launchAtLogin: true,
+                                         machineTranslation: false, accounts: [], trustedPlayers: ["com.colliderli.iina"],
+                                         webPlatforms: ["youtube-music"], showInDock: true, launchAtLogin: true,
                                          betaUpdates: false)
         let beat = TelemetryHeartbeat(installID: "i", day: "2026-10-31", env: env, features: features,
                                       activity: [TelemetryActivityDay(day: "2026-10-30")])
@@ -161,6 +177,8 @@ func runTelemetryTests() {
                     true, "接线: 关掉时清空活动")
         expectEqual(sourceHas(sourceBody("private func post<T: Encodable>", in: service),
                               "guard AppSettings.shared.telemetryEnabled else { return false }"), true, "接线: 关着不发")
+        expectEqual(sourceHas(service, "TelemetryActivity.shared.trustedBundleIDs = Set(trusted.keys)"), true,
+                    "接线: 信任列表变了同步给活动记账")
         expectEqual(sourceHas(sourceText("lyrimuse/Settings/ConfigPortability.swift"), "TelemetryService.Keys.installID,"), true,
                     "接线: 安装 ID 不随配置搬家")
         expectEqual(sourceHas(sourceText("lyrimuse/Settings/ConfigPortability.swift"), "TelemetryNotice.seenKey,"), true,

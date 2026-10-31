@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import LyrimuseCore
 import OSLog
@@ -62,6 +63,7 @@ final class TelemetryService {
 
     private let defaults = UserDefaults.standard
     private var timer: Timer?
+    private var trustedSubscription: AnyCancellable?
     private var started = false
     private var checking = false
 
@@ -71,6 +73,9 @@ final class TelemetryService {
         guard !started, Bundle.main.bundleIdentifier == LyrimuseIdentity.bundleIdentifier else { return }
         started = true
         apply(enabled: AppSettings.shared.telemetryEnabled)
+        trustedSubscription = FeatureSettingsStore.shared.$trustedPlayers.sink { trusted in
+            TelemetryActivity.shared.trustedBundleIDs = Set(trusted.keys)
+        }
         let timer = Timer(timeInterval: Self.checkInterval, repeats: true) { _ in
             Task { @MainActor in await TelemetryService.shared.checkNow() }
         }
@@ -191,6 +196,8 @@ final class TelemetryService {
             romanization: settings.showRomanization || settings.overlayShowRomanization,
             machineTranslation: store.lyricsMachineTranslation,
             accounts: accounts.filter(\.0).map(\.1),
+            trustedPlayers: Array(store.trustedPlayers.keys.prefix(40)),
+            webPlatforms: settings.browserPlatformPairs.filter { !$0.value.isEmpty }.map(\.key),
             showInDock: settings.showInDock,
             launchAtLogin: settings.launchAtLoginEnabled,
             betaUpdates: settings.receiveBetaUpdates)

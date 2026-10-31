@@ -13,6 +13,7 @@ public final class TelemetryActivity: @unchecked Sendable {
     private let key: String
     private let lock = NSLock()
     private var recording = false
+    private var trusted: Set<String> = []
     /// 上一次记下的播放器,同一个播放器连着报不重复写盘。
     private var lastPlayer: (day: String, tag: String)?
 
@@ -26,8 +27,14 @@ public final class TelemetryActivity: @unchecked Sendable {
         set { lock.withLock { recording = newValue } }
     }
 
+    /// 用户信任的第三方播放器与浏览器(bundle id):放过歌时记 bundle id,不记 `other`。
+    public var trustedBundleIDs: Set<String> {
+        get { lock.withLock { trusted } }
+        set { lock.withLock { trusted = newValue } }
+    }
+
     public func notePlayer(bundleID: String?, now: Date = Date()) {
-        guard let tag = Telemetry.playerTag(forBundleID: bundleID) else { return }
+        guard let tag = Telemetry.playerTag(forBundleID: bundleID, trusted: trustedBundleIDs) else { return }
         let day = Telemetry.day(now)
         lock.withLock {
             guard recording, lastPlayer?.day != day || lastPlayer?.tag != tag else { return }
