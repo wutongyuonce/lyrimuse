@@ -402,12 +402,13 @@ func dingtalkRich(title, body string, d *richDigest) string {
 const wecomMarkdownMaxBytes = 4096
 
 // wecomRich:企业微信 markdown_v2(标题、图片、列表、链接都认;旧版企业微信 4.1.36 以下会显示成带符号的纯文本)。
+// 页脚别写成 `>` 引用:企业微信把引用左边的竖线往上画过前面好几段。见 15 章决策 101。
 func wecomRich(title, body string, d *richDigest) string {
 	if d == nil {
 		return "# " + title + "\n\n" + markdownEscaper.Replace(body)
 	}
 	bold := func(s string) string { return "**" + s + "**" }
-	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n", true) + "\n\n> " + richFooter(d.digestStats)
+	return "# " + title + "\n\n" + markdownCover(d) + markdownDigest(d, markdownEscaper.Replace, bold, "\n", true) + "\n\n" + richFooter(d.digestStats)
 }
 
 // Server酱 Turbo 的上限:标题 32 字、微信提醒卡片(short)64 字。英文标题、记录被截断时的第一行会超,截掉。

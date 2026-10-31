@@ -195,7 +195,8 @@ func TestRichMarkdownPlatforms(t *testing.T) {
 	}
 	wc := decodeJSON(t, buildFor(t, notifyChannel{Platform: platformWecom, URL: "https://qyapi.weixin.qq.com/x"}, richMessage()).body)
 	content := wc["markdown_v2"].(map[string]any)["content"].(string)
-	if wc["msgtype"] != "markdown_v2" || !strings.HasPrefix(content, "# 🎵 上周听歌小结") || !strings.Contains(content, `a\_b\|c — D\~E`) {
+	if wc["msgtype"] != "markdown_v2" || !strings.HasPrefix(content, "# 🎵 上周听歌小结") || !strings.Contains(content, `a\_b\|c — D\~E`) ||
+		!strings.HasSuffix(content, "\n\nLyrimuse · 数据来自 Last.fm") || strings.Contains(content, "\n> ") {
 		t.Errorf("企业微信:\n%s", content)
 	}
 	// 企业微信超过 4096 字节:退回纯文本。
