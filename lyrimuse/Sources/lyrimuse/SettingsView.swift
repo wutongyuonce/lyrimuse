@@ -7793,13 +7793,14 @@ private struct HotkeyCell<Recorder: View>: View {
                 }
             }
             .frame(width: 18)
-            // 名字列有最小宽度:录制框里键帽多时会变宽,别把名字挤成一列竖字。
+            // 名字先拿宽度(layoutPriority),放得下就不折行;最小宽度防录制框键帽多时把名字挤成一列竖字。
             Text(title)
                 .font(.system(size: 13))
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(minWidth: 104, alignment: .leading)
+                .layoutPriority(1)
                 .help(title)
             if let help { HelpButton(text: help) }
             Spacer(minLength: 6)
