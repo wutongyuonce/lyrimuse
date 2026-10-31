@@ -69,7 +69,7 @@ func TestLBSubmitFallsBackToSystemProxy(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(src), "lb := &lbClient{root: cfg.APIRoot, token: cfg.Token, hc: lbHTTPClient(),") {
+	if !strings.Contains(string(src), "lb := &lbClient{root: cfg.APIRoot, token: cfg.Token, user: cfg.User, hc: lbHTTPClient(),") {
 		t.Error("main.go 里的 lbClient 没用 lbHTTPClient()")
 	}
 }

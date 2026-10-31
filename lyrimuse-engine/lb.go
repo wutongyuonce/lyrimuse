@@ -19,6 +19,7 @@ import (
 type lbClient struct {
 	root    string
 	token   string
+	user    string
 	hc      *http.Client
 	dryRun  bool
 	alerter *alerter
@@ -232,6 +233,18 @@ func (c *lbClient) apiToken() string {
 	return c.token
 }
 
+// apiUser:连着 ListenBrainz 时 config.json 里的用户名。它不算凭据、不进钥匙串,令牌读不出时靠它分辨「连着但读不到」和「没连」。
+func (c *lbClient) apiUser() string {
+	if lc := liveConfig(); lc != nil {
+		return lc.User
+	}
+	return c.user
+}
+
+// errListenCredentialsUnavailable:连着 ListenBrainz,但令牌在钥匙串里这会儿读不出(锁着、超时)。是瞬时错误,完成的收听
+// 照常走每拍重试和待重发队列,不能当成「没连」直接丢掉。见 15 章决策 102。
+var errListenCredentialsUnavailable = errors.New("listenbrainz token unavailable: keychain unreadable")
+
 // submit posts one listen. listenType is "playing_now" or "single"; listenedAt
 // is only used for "single". LB(德国) is intermittently slow/down: playing_now
 // fails fast (the next refresh re-sends within playingNowRefresh), while a
@@ -247,6 +260,9 @@ func (c *lbClient) submit(ctx context.Context, listenType string, listenedAt int
 	//
 	// dry-run 是例外:`-dry-run` 的全部用途就是"让我看看会发出去什么",没 token 也得照印。
 	if c.apiToken() == "" && !c.dryRun {
+		if listenType == "single" && c.apiUser() != "" && credentialVaultUnreadable() {
+			return errListenCredentialsUnavailable
+		}
 		// main.go 启动时已经打过一次提示,这里静默跳过,不逐条打日志刷屏。
 		return nil
 	}

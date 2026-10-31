@@ -309,6 +309,15 @@ func saveArtistTotals(source string, snap artistTotalsSnapshot) {
 // lastfmArtistTotalsMaxPages:user.getTopArtists 一页 1000 位,翻这么多页还没翻完就不判了(判不全会把老歌手当成新的)。
 const lastfmArtistTotalsMaxPages = 20
 
+// lastfmArtistTotalsTooMany:第一页报的总页数超过上限的账号,这段时间内不再取(每次推送、预览都翻一遍只会白费请求)。
+// 只记在内存里,由 artistTotalsMu 保护。
+var lastfmArtistTotalsTooMany struct {
+	user  string
+	until time.Time
+}
+
+const lastfmArtistTotalsTooManyTTL = 7 * 24 * time.Hour
+
 // lastfmArtistTotals:Last.fm 账号全部歌手的累计次数。快照截止时刻必须不早于这一期的开头(from),否则这一期开头之前、
 // 快照之后才第一次听的歌手分不清,所以每天的日报基本都会重取一次(1,500 位左右是 2 页、10 秒上下),周报、月报跟着用。
 func lastfmArtistTotals(ctx context.Context, user, apiKey string, from, now time.Time) (artistTotalsSnapshot, error) {
@@ -317,11 +326,12 @@ func lastfmArtistTotals(ctx context.Context, user, apiKey string, from, now time
 	if s, ok := loadArtistTotals(digestSourceLastfm); ok && s.User == user && s.At >= from.Unix() && s.At <= now.Unix() {
 		return s, nil
 	}
+	tooMany := fmt.Errorf("more than %d pages of artists", lastfmArtistTotalsMaxPages)
+	if lastfmArtistTotalsTooMany.user == user && now.Before(lastfmArtistTotalsTooMany.until) {
+		return artistTotalsSnapshot{}, tooMany
+	}
 	snap := artistTotalsSnapshot{User: user, At: now.Unix(), Fetched: now.Unix(), Counts: map[string]int{}}
 	for page := 1; ; page++ {
-		if page > lastfmArtistTotalsMaxPages {
-			return artistTotalsSnapshot{}, fmt.Errorf("more than %d pages of artists", lastfmArtistTotalsMaxPages)
-		}
 		var out struct {
 			TopArtists struct {
 				Artist []struct {
@@ -343,6 +353,10 @@ func lastfmArtistTotals(ctx context.Context, user, apiKey string, from, now time
 			snap.Counts[a.Name] += pc
 		}
 		total, _ := strconv.Atoi(out.TopArtists.Attr.TotalPages)
+		if total > lastfmArtistTotalsMaxPages {
+			lastfmArtistTotalsTooMany.user, lastfmArtistTotalsTooMany.until = user, now.Add(lastfmArtistTotalsTooManyTTL)
+			return artistTotalsSnapshot{}, tooMany
+		}
 		if page >= total || len(out.TopArtists.Artist) == 0 {
 			break
 		}

@@ -230,6 +230,15 @@ func currentCredentialVault() credentialVault {
 	return v
 }
 
+// credentialVaultUnreadable:最近一次读保险箱失败了(钥匙串锁着、超时、读出来不是合法内容)。读成功过的话沿用的是上一次
+// 的内容、令牌不会是空的;只有进程里第一次就读失败,叠出来的配置才缺令牌。
+func credentialVaultUnreadable() bool {
+	c := &credentialVaultCache
+	c.Lock()
+	defer c.Unlock()
+	return c.failed
+}
+
 // credentialVaultRetryDelay:接连第 n 次读失败之后等多久再读。从 credentialVaultRetry 起逐次翻倍,封顶 credentialVaultMaxRetry。
 func credentialVaultRetryDelay(n int) time.Duration {
 	delay := credentialVaultRetry

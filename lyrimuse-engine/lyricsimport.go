@@ -389,6 +389,9 @@ func importLyricsFromOpts(dir string, persist, cleanTemps bool) []string {
 		prevLyrics, prevTr, prevRoma, prevYRC, prevSource := e.Lyrics, e.LyricsTr, e.LyricsRoma, e.LyricsYRC, e.LyricsSource
 		// 括号里拆出来的背景人声,导出时接回了正文 / 逐字(parenBGFileForm):文件还是导出的那一份就是没改。
 		var fileLRC, fileYRC string
+		// lrcReplacedParenBG:拆过括号背景人声的这一首,正文被 .lrc 换掉了。逐字那份也得换成带括号的写法(文件里那份,没有
+		// 逐字文件就用接回去的写法),不然正文有括号、逐字没有,逐字模式下这句和声看不到,启动迁移也因两边对不上拆不回来。
+		lrcReplacedParenBG := false
 		hasFileForm := !e.LyricsBG.IsZero() && parenBGSources[e.LyricsSource]
 		if hasFileForm {
 			fileLRC, fileYRC = parenBGFileForm(e.LyricsSource, e.Lyrics.String(), e.LyricsYRC.String(), e.LyricsBG.String())
@@ -405,6 +408,7 @@ func importLyricsFromOpts(dir string, persist, cleanTemps bool) []string {
 				// 歌词文件里没有背景人声这一项,正文换了就清掉,别挂在新正文下面。括号里拆出来的那种跟着正文写在文件里,
 				// 启动迁移会再拆。
 				e.LyricsBG = bodyText{}
+				lrcReplacedParenBG = hasFileForm
 			}
 			if splitYRC != "" && !hasWordFile && !e.LyricsYRC.EqualString(splitYRC) {
 				e.LyricsYRC, changed = bt(splitYRC), true
@@ -423,7 +427,10 @@ func importLyricsFromOpts(dir string, persist, cleanTemps bool) []string {
 				e.LyricsRoma, changed = bt(v), true
 			}
 		}
-		if v, ok := variantBody(".yrc"); ok && !importedWordFileUnchanged(words[wordFormat], wordFormat, key, e, fileYRC, hasFileForm) {
+		if lrcReplacedParenBG && !hasWordFile && fileYRC != "" && !e.LyricsYRC.EqualString(fileYRC) {
+			e.LyricsYRC, changed = bt(fileYRC), true
+		}
+		if v, ok := variantBody(".yrc"); ok && (lrcReplacedParenBG || !importedWordFileUnchanged(words[wordFormat], wordFormat, key, e, fileYRC, hasFileForm)) {
 			w := words[wordFormat].parsed
 			if !e.LyricsYRC.EqualString(v) {
 				e.LyricsYRC, changed = bt(v), true

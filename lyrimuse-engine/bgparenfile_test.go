@@ -132,6 +132,9 @@ func TestLyricsFilesKeepParenBackground(t *testing.T) {
 	if !strings.Contains(e.Lyrics.String(), "Changed by hand") || !strings.Contains(e.Lyrics.String(), "(slowly)") || !e.LyricsBG.IsZero() {
 		t.Errorf("文件真被改了照常采纳,背景人声跟着正文回到括号里: %q / %q", e.Lyrics, e.LyricsBG)
 	}
+	if !strings.Contains(e.LyricsYRC.String(), "(slowly)") {
+		t.Errorf("只改了 .lrc 时逐字也换成带括号的写法,不然逐字模式下和声没了: %q", e.LyricsYRC)
+	}
 }
 
 // 记录作废时,同步之前导出的旧文件不导入(18 章决策 53):留底那份拆过括号背景人声的,文件里是接回去的写法,同样认得出。

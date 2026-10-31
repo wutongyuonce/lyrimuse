@@ -209,7 +209,8 @@ func clashTunEnabled(ctx context.Context) bool {
 	return clashGet(ctx, c, "/configs", &cfg) == nil && cfg.Tun.Enable
 }
 
-// clashClient:连得上的第一个控制口的 HTTP 客户端;都连不上返回 nil。
+// clashClient:连得上的第一个控制口的 HTTP 客户端;都连不上返回 nil。每次调用都新建,所以不留空闲连接:
+// 请求完就断开,不然每个客户端的空闲连接和后台协程都留着、越积越多。
 func clashClient() *http.Client {
 	for _, sock := range clashControllerSockets {
 		if _, err := os.Stat(sock); err != nil {
@@ -218,7 +219,7 @@ func clashClient() *http.Client {
 		path := sock
 		return &http.Client{
 			Timeout: clashRequestTimeout,
-			Transport: &http.Transport{DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
+			Transport: &http.Transport{DisableKeepAlives: true, DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 				var d net.Dialer
 				return d.DialContext(ctx, "unix", path)
 			}},
