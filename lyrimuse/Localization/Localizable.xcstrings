@@ -6750,13 +6750,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プレビューの両端が欠けています"
+            "value" : "プレビューは一部のみ"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "미리보기 양 끝이 잘림"
+            "value" : "미리보기 일부 잘림"
           }
         },
         "zh-Hans" : {
