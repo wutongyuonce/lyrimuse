@@ -50,8 +50,8 @@ New / 新功能
 - You can now use the current album art as the menu bar icon and choose
   the icon size
   菜单栏图标可换成当前专辑封面，并可调整图标大小
-- You can now show only the translation in the menu bar, or put it on
-  the same line as the lyrics
+- You can now show only the translation in the menu bar, or beside the
+  lyrics on one line
   菜单栏可以只显示译文，或把译文接在原文后排成一行
 - Added a flowing rainbow lyric color for floating lyrics, the notch, menu
   bar, Touch Bar and OBS
@@ -67,6 +67,9 @@ New / 新功能
 - Added play count and player modules for the notch ears, and a shortcut
   to peek at the notch
   灵动岛两侧新增「收听次数」「播放器」模块，以及临时展开灵动岛的快捷键
+- Added a notch banner showing the new output device when you switch
+  audio devices
+  切换音频输出设备时，灵动岛会显示新设备的横幅
 - Added an option for the notch to follow the display of the active window
   灵动岛可以显示在当前窗口所在的屏幕上
 - You can now show the notch on the Lock Screen, off by default
@@ -84,6 +87,9 @@ New / 新功能
 - Added lyric sharing: pick up to four lines and save or share them as
   an image card
   新增分享歌词：选 1～4 句生成图片卡片，可拷贝、保存或分享
+- You can now hide the progress bar at the bottom of the mini lyrics
+  window
+  迷你歌词窗口可以隐藏底部的进度条
 - Added Spotify Canvas as a lyrics window background, for songs played
   in Spotify
   歌词窗口可用 Spotify Canvas 循环短片当背景，限在 Spotify 中放过的歌
@@ -112,9 +118,8 @@ New / 新功能
   听歌报告可按渠道选完整、精简、概况三套内容，或用占位符自己写
 - Added a Clean Up button in Settings to clear re-downloadable caches
   设置中新增清理缓存，删除可重新获取的封面与查询结果
-- Added anonymous usage data, on by default, to help improve Lyrimuse.
-  It never includes song titles or accounts; turn it off in Settings ›
-  About › Diagnostics & Data
+- Added anonymous usage data, on by default, with no song titles or
+  accounts; turn it off in Settings › About
   新增「发送匿名使用数据」（默认开启），用于改进 Lyrimuse，不含歌名和账号；可在 设置 › 关于 › 诊断与数据 中关闭
 - Added a QQ group link next to Discord and Telegram in About
   「关于」页新增 QQ 群入口，与 Discord、Telegram 并列
@@ -134,12 +139,15 @@ Improved / 改进
   推送提醒可设推送时间、按档选渠道，并用这一期的真实数据预览
 - Moved Push Alerts out of Labs and into the main Settings sections
   推送提醒移出「实验室」，成为设置里的独立分类
-- Improved push alerts with real reports as tests, platform-native
-  buttons, and your interface language
+- Improved push alerts: tests send a real report, and reports follow
+  each platform's style and your language
   推送测试改发这一期的真实报告，各平台用自带的按钮与副标题排版，报告随界面语言书写
 - Improved Japanese readings by borrowing kana annotations from other
   lyric sources
   日语读音会借用其他歌词源的假名标注，读音更准
+- Improved translations by borrowing a matching one from another source
+  when the chosen lyrics have none
+  选中的歌词没有译文时，借用其他源中对得上的译文
 - Improved Korean readings: one syllable per word cell, with more
   standard pronunciation rules
   韩语逐词读音改为一个音节一格，并补齐标准发音规则
@@ -236,11 +244,9 @@ Fixed / 修复
 - Fixed music videos in Spotify and NetEase Cloud Music being treated as
   songs
   修复 Spotify 与网易云音乐播放 MV 时被当成歌曲匹配歌词的问题
-- Fixed QQ Music previews for non-members cutting the song length short
-  修复 QQ 音乐非会员试听时歌曲时长被截短的问题
-- Fixed right-aligned menu bar lyrics leaving a gap when lines get
-  shorter
-  修复菜单栏歌词靠右对齐时，句子变短后右侧空出一截的问题
+- Fixed listen numbers disappearing on later pages of recent Last.fm
+  scrobbles
+  修复 Last.fm 最近记录翻到后面几页时「第 N 次听」不显示的问题
 - Fixed title and artist header lines showing as the first lyric line
   修复「歌曲名」「歌手名」抬头行被显示成第一句歌词的问题
 - Fixed right-to-left lyrics running left to right in word-by-word mode
@@ -277,7 +283,7 @@ Fixed / 修复
 Not sure which one? Check your chip under **About This Mac**.
 不确定该下哪个？打开「关于本机」看芯片是 Apple M… 还是 Intel Core…
 
-442 commits since v1.11.0.
+443 commits since v1.11.0.
 
 **Full Changelog**: https://github.com/Yudaotor/lyrimuse/compare/v1.11.0...v1.12.0
 
