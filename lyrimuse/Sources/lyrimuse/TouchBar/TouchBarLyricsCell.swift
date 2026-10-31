@@ -19,7 +19,7 @@ enum TouchBarLyricsCell {
     /// 副行的字体:11pt,比主行细一档(同灵动岛副行)。
     static let secondaryFont = NSFont.systemFont(ofSize: CGFloat(TouchBarLyricsStyle.twoRowSecondaryFontSize),
                                                  weight: .regular)
-    /// 歌词句默认的颜色;「歌词颜色」另有封面主色、自选色两档(`lyricColor(mode:coverAccent:customHex:)`)。还没唱到的部分打
+    /// 歌词句默认的颜色;「文字颜色」另有封面主色、自选色两档(`lyricColor(mode:coverAccent:customHex:)`)。还没唱到的部分打
     /// 「暗部亮度」那个折(`Inputs.dimLevel`),打折走 `dimmedOnBlack`(不暗于白字打同一个折)。触控栏底色恒黑,不跟系统浅深色。
     static let lyricColor = NSColor.white
     /// 不是歌词的那几档(间奏、歌名、广告)。
@@ -65,7 +65,7 @@ enum TouchBarLyricsCell {
         var alignment: LyricsRestingAlignment
         /// 系统开了「减弱动态效果」:不滚动、不逐字填色(图层行的 `still`,见 17 章决策 43)。
         var still: Bool
-        /// 「歌词颜色」选了彩虹:歌词句和副行按白字画、透明度照旧打折,颜色交给图层行的彩虹(`Spec.rainbow`)。
+        /// 「文字颜色」选了彩虹:歌词句和副行按白字画、透明度照旧打折,颜色交给图层行的彩虹(`Spec.rainbow`)。
         /// 歌名、广告、间奏、快捷键回声不跟。见 17 章决策 54。
         var rainbow: Bool = false
     }
@@ -197,7 +197,7 @@ enum TouchBarLyricsCell {
         return NSColor(srgbRed: lifted.r, green: lifted.g, blue: lifted.b, alpha: 1)
     }
 
-    /// 「歌词颜色」那一档落成的颜色:跟随封面取不到主色、自选色存坏了时都是白色。自选色照原色用。
+    /// 「文字颜色」那一档落成的颜色:跟随封面取不到主色、自选色存坏了时都是白色。自选色照原色用。
     static func lyricColor(mode: TouchBarLyricsColorMode, coverAccent: NSColor?, customHex: String) -> NSColor {
         switch mode {
         case .white: return lyricColor
@@ -316,7 +316,7 @@ enum TouchBarLyricsCell {
 }
 
 extension TouchBarLyricsColorMode {
-    /// 「歌词颜色」那一排的档名。
+    /// 「文字颜色」那一排的档名。
     var displayName: String {
         switch self {
         case .white: return L10n.t("白色")

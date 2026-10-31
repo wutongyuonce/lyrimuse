@@ -14,8 +14,9 @@ struct LyricsWindowWebSettingsRows: View {
     var body: some View {
         SettingsRowGroupStack {
             SettingsRowGroup {
+                // 行上不挂 Beta:两个宿主(工具栏浮层、抽屉组卡)的标题上已经标了。
                 SettingsRow(icon: "globe", title: L10n.t("网页歌词"),
-                            subtitle: L10n.t("在浏览器中显示歌词窗口"), beta: true) {
+                            subtitle: L10n.t("在浏览器中显示歌词窗口")) {
                     Toggle("", isOn: $settings.webLyricsEnabled)
                 }
                 CardDivider()
@@ -43,7 +44,8 @@ struct LyricsWindowWebSettingsRows: View {
             }
             SettingsRowGroup(title: L10n.t("高级")) {
                 WebLyricsPortRow(value: $settings.webLyricsPort, otherPort: settings.obsLyricsPort,
-                                 duplicateMessage: L10n.t("该端口已被 OBS 输出使用"), note: L10n.t("更改后需重新扫码连接"))
+                                 duplicateMessage: L10n.t("该端口已被 OBS 输出使用"),
+                                 note: settings.webLyricsAllowLAN ? L10n.t("更改后需重新扫码连接") : L10n.t("更改后需重新打开本机地址"))
             }
         }
         .onAppear {
@@ -215,7 +217,7 @@ private struct WebLyricsLANLinkRows: View {
             VStack(spacing: 6) {
                 HStack(alignment: .top, spacing: 24) {
                     qrTile(host, label: links.ip == nil ? nil : L10n.t("iPhone、iPad"))
-                    if let ip = links.ip { qrTile(ip, label: L10n.t("安卓")) }
+                    if let ip = links.ip { qrTile(ip, label: L10n.t("Android")) }
                 }
                 Text(qrCaption)
                     .font(.caption)

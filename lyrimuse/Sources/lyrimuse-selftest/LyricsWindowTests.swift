@@ -920,13 +920,13 @@ func runLyricsWindowTests() {
         expectEqual(sourceBytes(appSettings, contain: "lyricsWindowMiniLyricsKaraoke = (defaults.object(forKey: Keys.lyricsWindowMiniLyricsKaraoke) as? Bool) ?? true"),
                     true, "迷你卡拉OK: 没存过时默认开")
         expectEqual(sourceBytes(settingsView, contain: "karaoke: $settings.lyricsWindowMiniLyricsKaraoke")
-                    && sourceBytes(settingsView, contain: "SettingsToggleTile(icon: \"sparkles\", title: L10n.t(\"卡拉OK效果\"), isOn: karaoke)"), true,
-                    "迷你卡拉OK: 「文字」浮层摆这颗开关")
+                    && sourceHas(settingsView, "SettingsToggleTile(icon: \"sparkles\", title: L10n.t(\"卡拉OK效果\"),\nhelp: L10n.t(\"逐字歌词随演唱逐字高亮；无逐字数据的歌曲整行高亮\"),\nisOn: karaoke)"), true,
+                    "迷你卡拉OK: 「颜色」浮层摆这颗开关,带说明")
         expectEqual(sourceBytes(settingsView, contain: "s.lyricsWindowMiniLyricsKaraoke = true"), true, "迷你卡拉OK: 「重置」恢复成开")
         let hits = SettingsSearchMatcher.ranked(SettingsSearchCatalog.entries, query: "卡拉OK效果", title: { $0.titleKey },
                                                 secondary: { $0.keywords + $0.pathKeys })
-        expectEqual(hits.contains { $0.sectionValue == SettingsSearchCatalog.lyricsWindowSectionValue && $0.pathKeys.last == "文字" },
-                    true, "迷你卡拉OK: 设置搜索搜得到,落在歌词窗口的「文字」")
+        expectEqual(hits.contains { $0.sectionValue == SettingsSearchCatalog.lyricsWindowSectionValue && $0.pathKeys.last == "颜色" },
+                    true, "迷你卡拉OK: 设置搜索搜得到,落在歌词窗口的「颜色」")
     }
 
     // MARK: - 迷你的粗细、已唱颜色,切换迷你/完整尺寸的快捷键(07 章决策 117)
@@ -937,7 +937,7 @@ func runLyricsWindowTests() {
         expectEqual(W.regular.lighter(by: W.lyricsWindowRomanizationSteps), .light, "迷你粗细: 细档推出的读音夹在最细")
 
         typealias F = LyricsWindowKaraokeFill
-        expectEqual(F.allCases, [.text, .artwork, .custom], "已唱颜色: 三档顺序 跟随文字颜色 → 跟随封面 → 自定义颜色")
+        expectEqual(F.allCases, [.text, .artwork, .custom], "已唱颜色: 三档顺序 跟随未唱颜色 → 跟随封面 → 自定义")
         expectEqual(F(rawValue: "artwork"), .artwork, "已唱颜色: 存盘值")
         func luma(_ c: (r: Double, g: Double, b: Double)) -> Double { 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b }
         let navy = F.accent(r: 0.05, g: 0.08, b: 0.45, darkBackdrop: true)
@@ -1029,7 +1029,7 @@ func runLyricsWindowTests() {
                     "已唱颜色接线: 文字色跟随系统时按此刻的深浅外观判断底色")
         expectEqual(sourceBytes(settingsView, contain: "selection: fontWeight,")
                     && sourceBytes(settingsView, contain: "selection: karaokeFill,"),
-                    true, "迷你粗细 / 已唱颜色: 「字体」「文字颜色」浮层里摆这两行")
+                    true, "迷你粗细 / 已唱颜色: 「字体」「颜色」浮层里摆这两行")
         expectEqual(sourceHas(appSettings, ".flatMap(OverlayFontWeight.init(rawValue:)) ?? .bold\n        lyricsWindowMiniKaraokeFill"),
                     true, "迷你粗细: 没存过时默认加粗")
         expectEqual(sourceBytes(appSettings, contain: ".flatMap(LyricsWindowKaraokeFill.init(rawValue:)) ?? .text"), true,
@@ -1055,21 +1055,17 @@ func runLyricsWindowTests() {
         expectEqual(hits("切换迷你").contains { $0.titleKey == "切换迷你/完整尺寸" }, true, "切换迷你快捷键: 设置搜索搜得到")
     }
 
-    // MARK: - 「歌词窗口」设置的分组:工具栏、抽屉、设置搜索同名(07 章决策 119)
+    // MARK: - 「歌词窗口」设置的分组:工具栏、抽屉、设置搜索同名,字体 / 颜色两组同另外三个形态
     do {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         let settingsView = (try? String(contentsOf: root.appendingPathComponent("lyrimuse/SettingsView.swift"), encoding: .utf8)) ?? ""
-        expectEqual(sourceHas(settingsView, "lyricsWindowToolbarButton(.background)\n                lyricsWindowToolbarButton(.text)\n"),
-                    true, "设置分组: 工具栏第一行是背景、文字")
-        expectEqual(sourceHas(settingsView, "lyricsWindowToolbarButton(.text)\n                if lyricsWindowPreviewShowsMini {\n"
-                                + "                    lyricsWindowToolbarButton(.behavior)\n                } else {\n"
-                                + "                    lyricsWindowToolbarButton(.content)\n"),
-                    true, "设置分组: 第一行第三格迷你是行为、完整是内容")
-        expectEqual(sourceHas(settingsView, "                if lyricsWindowPreviewShowsMini {\n"
-                                + "                    lyricsWindowToolbarButton(.content)\n                }\n"
-                                + "                lyricsWindowToolbarButton(.layout)\n                lyricsWindowToolbarButton(.info)\n"
-                                + "                lyricsWindowToolbarButton(.web)\n"),
-                    true, "设置分组: 第二行迷你是内容、布局、顶部信息、网页歌词,完整是布局、封面、网页歌词")
+        expectEqual(sourceHas(settingsView, "lyricsWindowToolbarButton(.background)\nlyricsWindowToolbarButton(.font)\n"
+                                + "lyricsWindowToolbarButton(.color)\nSpacer(minLength: 8)\nEditorToolbarResetMenu("),
+                    true, "设置分组: 工具栏第一行两种尺寸都是背景、字体、颜色")
+        expectEqual(sourceHas(settingsView, "if lyricsWindowPreviewShowsMini {\nlyricsWindowToolbarButton(.behavior)\n}\n"
+                                + "lyricsWindowToolbarButton(.content)\nlyricsWindowToolbarButton(.layout)\n"
+                                + "lyricsWindowToolbarButton(.info)\nlyricsWindowToolbarButton(.web)\n"),
+                    true, "设置分组: 第二行迷你是行为、内容、布局、顶部信息、网页歌词,完整是内容、布局、封面、网页歌词")
         // 网页歌词那一组(19 章):工具栏浮层和抽屉同一份行,抽屉里排在最后,原来那张单独的卡不要了。
         let webCard = (try? String(contentsOf: root.appendingPathComponent("lyrimuse/Settings/WebLyricsSettingsCard.swift"), encoding: .utf8)) ?? ""
         expectEqual(sourceHas(settingsView, "SettingsGroupCard(title: L10n.t(\"网页歌词\"), beta: true) { LyricsWindowWebSettingsRows() }\n"
@@ -1086,23 +1082,32 @@ func runLyricsWindowTests() {
         }
         expectEqual(webHits.count == 3 && webHits.allSatisfy { $0.pathKeys.last == "网页歌词" && $0.lyricsWindowMini == nil }, true,
                     "网页歌词: 搜索里那几行归「网页歌词」组,两种尺寸都有")
-        expectEqual(sourceBytes(settingsView, contain: "? [.background, .text, .behavior] : [.background, .text, .content]"),
-                    true, "设置分组: 完整尺寸的内容在第一行,浮层按第一行量高度")
+        expectEqual(sourceBytes(settingsView, contain: "let firstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]"),
+                    true, "设置分组: 浮层按第一行(背景、字体、颜色)量高度")
         expectEqual(sourceHas(settingsView, "SettingsGroupCard(title: L10n.t(\"背景\")) { lyricsWindowAppearanceRows(.background) }\n"
-                                + "                    SettingsGroupCard(title: L10n.t(\"文字\")) { lyricsWindowAppearanceRows(.text) }\n"),
-                    true, "设置分组: 抽屉按背景、文字分组,跟工具栏同名")
-        expectEqual(sourceHas(settingsView, "{ lyricsWindowAppearanceRows(.text) }\n"
-                                + "                    if lyricsWindowPreviewShowsMini {\n"
-                                + "                        SettingsGroupCard(title: L10n.t(\"行为\")) { lyricsWindowBehaviorRows }\n"),
-                    true, "设置分组: 抽屉里迷你在文字后面是行为,跟工具栏同序")
-        let textPart = settingsView.components(separatedBy: "        case .text:\n            // 排法同悬浮歌词「文字」浮层").dropFirst().first?
-            .components(separatedBy: "        case .layout:\n            if let miniLyricsLayout {").first ?? ""
-        let positions = ["字体", "粗细", "字号", "卡拉OK效果", "文字颜色", "已唱颜色"].map { title in
-            textPart.range(of: "title: L10n.t(\"\(title)\")")?.lowerBound
+                                + "SettingsGroupCard(title: L10n.t(\"字体\")) { lyricsWindowAppearanceRows(.font) }\n"
+                                + "SettingsGroupCard(title: L10n.t(\"颜色\")) { lyricsWindowAppearanceRows(.color) }\n"),
+                    true, "设置分组: 抽屉按背景、字体、颜色分组,跟工具栏同名")
+        expectEqual(sourceHas(settingsView, "{ lyricsWindowAppearanceRows(.color) }\n"
+                                + "if lyricsWindowPreviewShowsMini {\n"
+                                + "SettingsGroupCard(title: L10n.t(\"行为\")) { lyricsWindowBehaviorRows }\n"),
+                    true, "设置分组: 抽屉里迷你在颜色后面是行为,跟工具栏同序")
+        func part(_ head: String, until tail: String) -> String {
+            settingsView.components(separatedBy: head).dropFirst().first?.components(separatedBy: tail).first ?? ""
         }
-        expectEqual(!textPart.isEmpty && positions.allSatisfy { $0 != nil }
-                    && zip(positions, positions.dropFirst()).allSatisfy { $0! < $1! }, true,
-                    "设置分组: 「文字」里按字体、粗细、字号、卡拉OK效果、文字颜色、已唱颜色排")
+        func ordered(_ text: String, _ titles: [String]) -> Bool {
+            let positions = titles.map { text.range(of: "L10n.t(\"\($0)\")")?.lowerBound }
+            return !text.isEmpty && positions.allSatisfy { $0 != nil } && zip(positions, positions.dropFirst()).allSatisfy { $0! < $1! }
+        }
+        let fontPart = part("        case .font:\n            // 字体 → 粗细 → 字号", until: "        case .color:\n")
+        let colorPart = part("        case .color:\n            // 卡拉OK效果 → 文字颜色", until: "        case .layout:\n            if let miniLyricsLayout {")
+        expectEqual(ordered(fontPart, ["字体", "粗细", "字号"]) && !fontPart.contains("卡拉OK效果"), true,
+                    "设置分组: 「字体」里按字体、粗细、字号排")
+        expectEqual(ordered(colorPart, ["卡拉OK效果", "未唱颜色", "已唱颜色", "HDR 高亮"]), true,
+                    "设置分组: 「颜色」里按卡拉OK效果、文字颜色(未唱颜色)、已唱颜色、HDR 高亮排")
+        expectEqual(sourceHas(colorPart, "title: karaoke?.wrappedValue == true ? L10n.t(\"未唱颜色\") : L10n.t(\"文字颜色\"),")
+                    && sourceHas(colorPart, "if karaoke?.wrappedValue == true, let karaokeFill, let karaokeFillColor {"), true,
+                    "设置分组: 卡拉OK效果开着时文字颜色叫未唱颜色、才摆已唱颜色")
         let layoutPart = settingsView.components(separatedBy: "        case .layout:\n            if let miniLyricsLayout {").dropFirst().first?
             .components(separatedBy: "    /// 迷你顶部那一行的某一样勾没勾。").first ?? ""
         expectEqual(!layoutPart.isEmpty && !layoutPart.contains("卡拉OK效果") && !layoutPart.contains("lyricsWindowMiniFadeOnHover"), true,
@@ -1114,8 +1119,10 @@ func runLyricsWindowTests() {
         }
         expectEqual(["背景", "方向", "玻璃浓淡", "底部颜色"].map(group), Array(repeating: Optional("背景"), count: 4),
                     "设置分组: 搜索里背景那几样归「背景」")
-        expectEqual(["字体", "粗细", "字号", "卡拉OK效果", "文字颜色", "指定颜色", "已唱颜色"].map(group),
-                    Array(repeating: Optional("文字"), count: 7), "设置分组: 搜索里文字那几样归「文字」")
+        expectEqual(["字体", "粗细", "字号"].map(group), Array(repeating: Optional("字体"), count: 3),
+                    "设置分组: 搜索里字体那几样归「字体」")
+        expectEqual(["卡拉OK效果", "文字颜色", "指定颜色", "已唱颜色", "HDR 高亮"].map(group), Array(repeating: Optional("颜色"), count: 5),
+                    "设置分组: 搜索里颜色那几样归「颜色」")
         expectEqual(["歌词布局", "长句处理"].map(group), [Optional("布局"), Optional("布局")], "设置分组: 搜索里歌词布局、长句处理归「布局」")
         expectEqual(group("悬停时淡化"), Optional("行为"), "设置分组: 搜索里悬浮淡化归「行为」")
         expectEqual(group("对齐方式"), Optional("布局"), "设置分组: 搜索里对齐方式归「布局」")

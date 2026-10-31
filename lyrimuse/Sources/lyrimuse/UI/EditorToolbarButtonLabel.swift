@@ -17,6 +17,9 @@ struct EditorToolbarButtonLabel: View {
     var detail: String?
     /// 标题后面标「Beta」(`SettingsBetaBadge`);占的宽度从摘要那一截让出来。
     var beta = false
+    /// 按内容分宽的那一行(`EditorToolbarContentWidthRow`)用:摘要的理想宽度就是文字本身的宽(上限仍是 `summaryWidth`),
+    /// 那一行据此给每颗量宽。等分的行不传,理由见 `summaryWidth`。
+    var fitsContent = false
 
     /// 图标那一格的宽度 —— **定宽,而且必须定宽**:这批图标的本征宽度在 13~15pt 之间不等,
     /// 不定宽的话同一列胶囊的标题起笔前后差 2.5pt。
@@ -53,10 +56,52 @@ struct EditorToolbarButtonLabel: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .frame(idealWidth: Self.summaryWidth, maxWidth: Self.summaryWidth, alignment: .leading)
+                .frame(idealWidth: fitsContent ? nil : Self.summaryWidth, maxWidth: Self.summaryWidth, alignment: .leading)
                 .layoutPriority(-1)
         }
         // 悬停给出整句:摘要被压短或只报了数量时,不用点开浮层也知道是什么。
         .help(title + " · " + (detail ?? summary))
+    }
+}
+
+/// 一行工具栏胶囊按内容分宽(水位法):放得下时每颗按自己的理想宽度,放不下时摘要短的照旧拿满,亏空摊给最长的那几颗
+/// (它们一样宽,先压摘要)。等分的话,摘要本来读得完的那颗也会陪着最长那颗被截。按钮的标签要传 `fitsContent: true`,
+/// 否则理想宽度恒带着 140 的摘要,分不出长短。这一行不跟上一行逐列对齐。
+struct EditorToolbarContentWidthRow: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let widths = widths(available: proposal.width, subviews: subviews)
+        let height = zip(subviews, widths)
+            .map { $0.sizeThatFits(ProposedViewSize(width: $1, height: proposal.height)).height }
+            .max() ?? 0
+        return CGSize(width: widths.reduce(0, +) + gaps(subviews), height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX
+        for (subview, width) in zip(subviews, widths(available: bounds.width, subviews: subviews)) {
+            subview.place(at: CGPoint(x: x, y: bounds.midY), anchor: .leading,
+                          proposal: ProposedViewSize(width: width, height: bounds.height))
+            x += width + spacing
+        }
+    }
+
+    private func gaps(_ subviews: Subviews) -> CGFloat {
+        spacing * CGFloat(max(subviews.count - 1, 0))
+    }
+
+    /// 从理想宽度最小的那颗起,每颗拿 min(理想宽度, 剩余宽度 / 剩下的颗数)。
+    private func widths(available: CGFloat?, subviews: Subviews) -> [CGFloat] {
+        let ideals = subviews.map { $0.sizeThatFits(.unspecified).width }
+        guard let available else { return ideals }
+        var remaining = max(available - gaps(subviews), 0)
+        var result = ideals
+        for (rank, index) in ideals.indices.sorted(by: { ideals[$0] < ideals[$1] }).enumerated() {
+            let width = min(ideals[index], remaining / CGFloat(ideals.count - rank))
+            result[index] = width
+            remaining -= width
+        }
+        return result
     }
 }

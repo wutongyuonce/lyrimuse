@@ -19,7 +19,7 @@ import SwiftUI
 /// 卡拉OK效果 / 跟随封面 / 副行改了这里当场跟着变;副行开着时两行的落点同本体(`TouchBarLyricsStyle` 的两行那一节)。
 /// 在放歌时演真实的这一句;没在放歌时是示例句(同悬浮歌词编辑台那组自我说明的句子,副行开着也有字看),只画最终
 /// 颜色、不演逐字染色(全仓预览的原则,见 `SectionPreviewBars` 头注)。设置窗口看不见时停表(`previewHostVisible`)。
-/// 三键点不动(预览不该能操作真实播放)。上面叠了几块可点区域:歌词那一格打开「歌词」浮层,封面、三键、收起键、右边的
+/// 三键点不动(预览不该能操作真实播放)。上面叠了几块可点区域:歌词那一格打开「内容」浮层,封面、三键、收起键、右边的
 /// 功能栏打开「布局」浮层,跟工具栏那几颗按钮弹的是同一份(`TouchBarSettingsGroup.popoverContent`)。见 17 章决策 38。
 struct TouchBarPreviewStage: View {
     /// 整条触控栏(模拟器 2nd generation 实拍量的):给 App 的那一块 + 间隙 + 收起的功能栏 + 右端留白。
@@ -61,12 +61,12 @@ struct TouchBarPreviewStage: View {
     @State private var hoveredHotspot: Hotspot?
     @State private var presentedHotspot: Hotspot?
 
-    /// 预览上能点的几块:歌词那一格开「歌词」,封面、三键、「⋯」键、收起键、右边的功能栏开「布局」。「样式」管整条的颜色,
+    /// 预览上能点的几块:歌词那一格开「内容」,封面、三键、「⋯」键、收起键、右边的功能栏开「布局」。「颜色」管整条的颜色,
     /// 没有单独一块,从工具栏进。
     private enum Hotspot: Hashable {
         case lyrics, artwork, controls, more, collapse, controlStrip
 
-        var group: TouchBarSettingsGroup { self == .lyrics ? .lyrics : .layout }
+        var group: TouchBarSettingsGroup { self == .lyrics ? .content : .layout }
 
         /// 旁白读的那一句。封面、三键这几块开的是同一组浮层,前面带上这一块的名字才分得清;歌词那一格跟浮层同名,不重复。
         var accessibilityLabel: String {
@@ -124,7 +124,7 @@ struct TouchBarPreviewStage: View {
         let rows = LyricRows(main: spec, secondary: secondarySpec, twoRows: snapshot.secondary.showsSecondaryRow)
         return VStack(spacing: SectionPreviewMetrics.captionSpacing) {
             stage(rows: rows, lyricsWidth: lyricsWidth, hidesStrip: hidesStrip, escapeKey: escapeKey, snapshot: snapshot)
-            Text(scrolls ? L10n.t("预览 · 左右滑动查看完整内容 · 本句较长，将横向滚动") : L10n.t("预览 · 左右滑动查看完整内容"))
+            Text(scrolls ? L10n.t("预览 · 左右滚动查看完整内容 · 本句较长，将横向滚动") : L10n.t("预览 · 左右滚动查看完整内容"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(height: SectionPreviewMetrics.captionHeight)
@@ -159,12 +159,23 @@ struct TouchBarPreviewStage: View {
                 .background(deck)
         }
         .scrollIndicators(.visible)
+        // 右缘一段渐隐:整条比内容列宽,硬切的右边看着像没画完,渐隐表示后面还有。只是遮罩,不挡可点区域。
+        .mask {
+            HStack(spacing: 0) {
+                Color.black
+                LinearGradient(colors: [.black, .black.opacity(0)], startPoint: .leading, endPoint: .trailing)
+                    .frame(width: Self.trailingFadeWidth)
+            }
+        }
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: SettingsPage<EmptyView>.maxCardColumnWidth)
         .clipShape(shape)
         .overlay(shape.strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5))
         .environment(\.colorScheme, .dark)
     }
+
+    /// 预览右缘渐隐那一段的宽。
+    private static let trailingFadeWidth: CGFloat = 36
 
     /// 触控栏四周那一圈键盘面(深空灰铝)。不跟设置窗口的浅深色走:那一块本来就是机身。
     private var deck: some View {

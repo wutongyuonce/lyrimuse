@@ -3012,7 +3012,8 @@ private struct AppearanceSettingsTab: View {
                 // 工具栏浮层之外的全量兜底:默认折叠,展开后一组一张卡,顺序和组名跟工具栏一致。
                 LyricsWindowAllSettingsDrawer(groupNames: lyricsWindowDrawerGroupNames) {
                     SettingsGroupCard(title: L10n.t("背景")) { lyricsWindowAppearanceRows(.background) }
-                    SettingsGroupCard(title: L10n.t("文字")) { lyricsWindowAppearanceRows(.text) }
+                    SettingsGroupCard(title: L10n.t("字体")) { lyricsWindowAppearanceRows(.font) }
+                    SettingsGroupCard(title: L10n.t("颜色")) { lyricsWindowAppearanceRows(.color) }
                     if lyricsWindowPreviewShowsMini {
                         SettingsGroupCard(title: L10n.t("行为")) { lyricsWindowBehaviorRows }
                     }
@@ -3037,11 +3038,12 @@ private struct AppearanceSettingsTab: View {
     /// 「重置」的作用范围声明,工具栏那颗和抽屉那一行共用这一句,两个入口必须一字不差。
     ///
     /// 直接点名「迷你尺寸 / 完整尺寸」(跟预览下面那个切换上的字一样),别写成「当前预览的尺寸」——
-    /// 那句读起来像"把窗口大小恢复默认"。窗口的大小和位置本来就不归这颗按钮管,也写明。
+    /// 那句读起来像"把窗口大小恢复默认"。只点名会让人以为被重置的东西:两种尺寸共用的读音 / 译文
+    /// (`showRomanization` / `showTranslation`,`LyricsWindowStyleDefaults` 不碰)、网页歌词、窗口大小。
     private var lyricsWindowResetScope: String {
         lyricsWindowPreviewShowsMini
-            ? L10n.t("仅恢复迷你尺寸的设置，完整尺寸、网页歌词和窗口大小保持不变")
-            : L10n.t("仅恢复完整尺寸的设置，迷你尺寸、网页歌词和窗口大小保持不变")
+            ? L10n.t("仅限迷你尺寸，不含读音、译文、网页歌词和窗口大小")
+            : L10n.t("仅限完整尺寸，不含读音、译文、网页歌词和窗口大小")
     }
 
     /// 抽屉里的「恢复默认」:动作跟工具栏「重置 ▾」是同一个函数,标题 / 副标题也同一份。
@@ -3050,8 +3052,8 @@ private struct AppearanceSettingsTab: View {
     /// 「全部设置」抽屉折起来时列的组名,顺序同抽屉里各卡(迷你、完整两种尺寸的组不同)。
     private var lyricsWindowDrawerGroupNames: [String] {
         lyricsWindowPreviewShowsMini
-            ? [L10n.t("背景"), L10n.t("文字"), L10n.t("行为"), L10n.t("内容"), L10n.t("布局"), L10n.t("顶部信息"), L10n.t("网页歌词")]
-            : [L10n.t("背景"), L10n.t("文字"), L10n.t("内容"), L10n.t("布局"), L10n.t("封面"), L10n.t("网页歌词")]
+            ? [L10n.t("背景"), L10n.t("字体"), L10n.t("颜色"), L10n.t("行为"), L10n.t("内容"), L10n.t("布局"), L10n.t("顶部信息"), L10n.t("网页歌词")]
+            : [L10n.t("背景"), L10n.t("字体"), L10n.t("颜色"), L10n.t("内容"), L10n.t("布局"), L10n.t("封面"), L10n.t("网页歌词")]
     }
 
     private var lyricsWindowResetRow: some View {
@@ -3075,21 +3077,16 @@ private struct AppearanceSettingsTab: View {
     /// 只管当前尺寸),动作本体是 `LyricsWindowStyleDefaults.restoreDefaults(mini:)`,作用范围那句
     /// 见 `lyricsWindowResetScope`。
     ///
-    /// 按钮按抽屉的顺序从上往下、从左往右排满,中间不留空:迷你是「背景 · 文字 · 行为」「内容 · 布局 · 顶部信息 · 网页歌词」,
-    /// 完整是「背景 · 文字 · 内容」「布局 · 封面 · 网页歌词」。完整第二行末尾的 `EditorToolbarResetReserve` 让它跟第一行
-    /// 逐列对齐(按钮宽度是一行之内平分出来的,理由同 `MenuBarEditorStage.toolbarRow2`);迷你第二行四颗、本来对不成列,
-    /// 不放占位,同悬浮歌词第二行(19 章决策 19)。
+    /// 按钮按抽屉的顺序从上往下、从左往右排满,中间不留空:第一行两种尺寸都是「背景 · 字体 · 颜色」(管长什么样,同悬浮歌词
+    /// 第一行),第二行迷你是「行为 · 内容 · 布局 · 顶部信息 · 网页歌词」,完整是「内容 · 布局 · 封面 · 网页歌词」。第二行比
+    /// 第一行多、本来对不成列,不放 `EditorToolbarResetReserve` 占位,同悬浮歌词第二行(19 章决策 19)。
     private var lyricsWindowToolbar: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // 顺序同「全部设置」抽屉的卡,分组跟抽屉、设置搜索同名(07 章决策 119);两行三列对齐,空位只留在最后。
+            // 顺序同「全部设置」抽屉的卡,分组跟抽屉、设置搜索同名,字体 / 颜色两组跟另外三个形态同名。
             HStack(spacing: 8) {
                 lyricsWindowToolbarButton(.background)
-                lyricsWindowToolbarButton(.text)
-                if lyricsWindowPreviewShowsMini {
-                    lyricsWindowToolbarButton(.behavior)
-                } else {
-                    lyricsWindowToolbarButton(.content)
-                }
+                lyricsWindowToolbarButton(.font)
+                lyricsWindowToolbarButton(.color)
                 Spacer(minLength: 8)
                 EditorToolbarResetMenu(scope: lyricsWindowResetScope) {
                     LyricsWindowStyleDefaults.restoreDefaults(mini: lyricsWindowPreviewShowsMini)
@@ -3098,15 +3095,13 @@ private struct AppearanceSettingsTab: View {
             .overlay(alignment: .top) { lyricsWindowProbeAnchor(lyricsWindowRow1Probe) }
             HStack(spacing: 8) {
                 if lyricsWindowPreviewShowsMini {
-                    lyricsWindowToolbarButton(.content)
+                    lyricsWindowToolbarButton(.behavior)
                 }
+                lyricsWindowToolbarButton(.content)
                 lyricsWindowToolbarButton(.layout)
                 lyricsWindowToolbarButton(.info)
                 lyricsWindowToolbarButton(.web)
                 Spacer(minLength: 8)
-                if !lyricsWindowPreviewShowsMini {
-                    EditorToolbarResetReserve()
-                }
             }
             .overlay(alignment: .top) { lyricsWindowProbeAnchor(lyricsWindowRow2Probe) }
         }
@@ -3134,6 +3129,16 @@ private struct AppearanceSettingsTab: View {
         }
     }
 
+    /// 文字颜色几档的名字,工具栏「颜色」摘要和那一格的下拉共用。
+    private func lyricsWindowTextColorModeName(_ mode: LyricsWindowTextColorMode) -> String {
+        switch mode {
+        case .auto: L10n.t("自动")
+        case .light: L10n.t("浅色")
+        case .dark: L10n.t("深色")
+        case .custom: L10n.t("自定义")
+        }
+    }
+
     /// 背景几档的名字,工具栏摘要和「背景」那一行的胶囊分段共用。
     private func lyricsWindowBackgroundModeName(_ mode: LyricsWindowBackgroundMode) -> String {
         switch mode {
@@ -3154,15 +3159,21 @@ private struct AppearanceSettingsTab: View {
                 : [settings.lyricsWindowBackgroundColorHex, settings.lyricsWindowBackgroundColorEndHex]
             return EditorToolbarButtonLabel(icon: "photo.artframe", title: L10n.t("背景"),
                                             summary: lyricsWindowBackgroundSummary(mode, colors: colors))
-        case .text:
-            // 摘要报字体和粗细(迷你再加字号),同悬浮歌词「文字」那颗。
+        case .font:
+            // 摘要报字体和粗细(迷你再加字号),同悬浮歌词「字体」那颗。
             var summary = FontFamilyPicker.displayName(
                 for: mini ? settings.lyricsWindowMiniFontFamily : settings.lyricsWindowFontFamily)
                 + " " + (mini ? settings.lyricsWindowMiniFontWeight : settings.lyricsWindowFontWeight).displayName
             if mini {
                 summary += " " + String(format: L10n.t("%@pt"), "\(Int(settings.lyricsWindowMiniFontSize))")
             }
-            return EditorToolbarButtonLabel(icon: "textformat", title: L10n.t("文字"), summary: summary)
+            return EditorToolbarButtonLabel(icon: "textformat", title: L10n.t("字体"), summary: summary)
+        case .color:
+            // 卡拉OK效果开着报它(同菜单栏「颜色」那颗),关着报文字颜色的档位。
+            let karaoke = mini ? settings.lyricsWindowMiniLyricsKaraoke : settings.lyricsWindowLyricsKaraoke
+            let textMode = mini ? settings.lyricsWindowMiniTextColorMode : settings.lyricsWindowTextColorMode
+            return EditorToolbarButtonLabel(icon: "paintpalette", title: L10n.t("颜色"),
+                                            summary: karaoke ? L10n.t("卡拉OK效果") : lyricsWindowTextColorModeName(textMode))
         case .behavior:
             // 图标、摘要写法同悬浮歌词「行为」那颗(`OverlayEditorStage.behaviorSummary`)。
             return EditorToolbarButtonLabel(
@@ -3173,11 +3184,11 @@ private struct AppearanceSettingsTab: View {
                     (title: L10n.t("全屏时隐藏"), isOn: settings.lyricsWindowMiniHideInFullScreen),
                 ]))
         case .layout:
-            // 完整尺寸的「布局」只有对齐方式一项,摘要就报它。
+            // 完整尺寸的「布局」只有对齐方式一项,摘要就报它(「自动」报「自动对齐」)。
             guard mini else {
                 return EditorToolbarButtonLabel(
                     icon: "rectangle.split.1x2", title: L10n.t("布局"),
-                    summary: LyricsAlignmentSegmentedControl.label(for: settings.lyricsWindowLyricsAlignment))
+                    summary: LyricsAlignmentSegmentedControl.summary(for: settings.lyricsWindowLyricsAlignment))
             }
             // 「单行 / 双行」档下长句处理改成了滚动才追加 —— 默认值不报,跟菜单栏「布局」摘要同一条规则。
             var summary = LyricsWindowMiniLyricsLayoutLabel.text(for: settings.lyricsWindowMiniLyricsLayout)
@@ -3223,8 +3234,7 @@ private struct AppearanceSettingsTab: View {
     /// 不让系统翻下来(同另外几段编辑台,04 章决策 34、61)。
     private func lyricsWindowToolbarButton(_ item: LyricsWindowToolbarItem) -> some View {
         Button {
-            let firstRow: [LyricsWindowToolbarItem] = lyricsWindowPreviewShowsMini
-                ? [.background, .text, .behavior] : [.background, .text, .content]
+            let firstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]
             let probe = firstRow.contains(item) ? lyricsWindowRow1Probe : lyricsWindowRow2Probe
             lyricsWindowPopoverMaxHeight = probe.popoverHeightLimit()
             lyricsWindowPopover = item
@@ -3251,9 +3261,13 @@ private struct AppearanceSettingsTab: View {
             SettingsPopoverShell(title: L10n.t("背景"), width: 540) {
                 VStack(spacing: 0) { lyricsWindowAppearanceRows(.background) }
             }
-        case .text:
-            SettingsPopoverShell(title: L10n.t("文字"), width: 640) {
-                VStack(spacing: 0) { lyricsWindowAppearanceRows(.text) }
+        case .font:
+            SettingsPopoverShell(title: L10n.t("字体"), width: 640) {
+                VStack(spacing: 0) { lyricsWindowAppearanceRows(.font) }
+            }
+        case .color:
+            SettingsPopoverShell(title: L10n.t("颜色"), width: 640) {
+                VStack(spacing: 0) { lyricsWindowAppearanceRows(.color) }
             }
         case .behavior:
             SettingsPopoverShell(title: L10n.t("行为"), width: 480) {
@@ -3592,13 +3606,11 @@ private struct AppearanceSettingsTab: View {
                 }
             }
             .animation(.default, value: mode.wrappedValue)
-        case .text:
-            // 排法同悬浮歌词「文字」浮层:字体 → 粗细 → 字号 → 卡拉OK效果 → 文字颜色 → 已唱颜色(07 章决策 119)。
-            // 字号只有迷你传,完整尺寸这一块是另外五样。
+        case .font:
+            // 字体 → 粗细 → 字号,同悬浮歌词、菜单栏、灵动岛的「字体」组。字号只有迷你传。
             // 完整尺寸的字号不给配:这扇窗的字号是跟着窗口尺寸算出来的(完整走 lyricFontSize、迷你走
             // miniFontSize),再给一根滑杆就是让两套规则打架 —— 拖窗口会把用户调好的数悄悄改掉。
-            // 两列小块:字体 + 粗细、字号 + 卡拉OK、文字颜色 + 已唱颜色(完整尺寸没有字号那一块),
-            // 往上弹的浮层只有按钮上方约 200pt,一行一个控件放不下。
+            // 两列小块:往上弹的浮层只有按钮上方约 200pt,一行一个控件放不下。
             SettingsTileGrid {
                 SettingsControlCell(
                     icon: "textformat",
@@ -3647,17 +3659,24 @@ private struct AppearanceSettingsTab: View {
                         }
                     }
                 }
-                // 跟「已唱颜色」同一块:两样都只管逐字填色。生效链路见 AppSettings.lyricsWindowMiniLyricsKaraoke / lyricsWindowLyricsKaraoke。
+            }
+        case .color:
+            // 卡拉OK效果 → 文字颜色(开着卡拉OK时叫「未唱颜色」)→ 已唱颜色(只在开着卡拉OK时出现)→ HDR 高亮,
+            // 叫法和图标同另外三个形态的「颜色」组。两列小块,理由同「字体」。
+            SettingsTileGrid {
+                // 生效链路见 AppSettings.lyricsWindowMiniLyricsKaraoke / lyricsWindowLyricsKaraoke;关着时整行高亮(07 章决策 116)。
                 if let karaoke {
-                    SettingsToggleTile(icon: "sparkles", title: L10n.t("卡拉OK效果"), isOn: karaoke)
+                    SettingsToggleTile(icon: "sparkles", title: L10n.t("卡拉OK效果"),
+                                       help: L10n.t("逐字歌词随演唱逐字高亮；无逐字数据的歌曲整行高亮"),
+                                       isOn: karaoke)
                 }
                 // 文字颜色是**自己一颗设置**,不是背景的派生物:「深底配深字」「毛玻璃上钉死白字」这类搭配要能表达。
                 // `.auto` 档按背景亮度算(LyricsWindowBackgroundLuma),仍是默认。
                 // 选「自定义」时取色块挂在这一格上;它叫「指定颜色」(悬停提示与搜索高亮),别叫「颜色」——
                 // 背景那一组已经有一格「颜色」。
                 SettingsControlCell(
-                    icon: "paintpalette",
-                    title: L10n.t("文字颜色"),
+                    icon: karaoke?.wrappedValue == true ? "circle.lefthalf.filled" : "paintpalette",
+                    title: karaoke?.wrappedValue == true ? L10n.t("未唱颜色") : L10n.t("文字颜色"),
                     // 迷你的顶部信息和控制条跟歌词紧挨成一块,文字色一起走(LyricsWindowView.miniPrimaryColor);
                     // 完整尺寸只管歌词。说明按尺寸分开写,别合成一句。
                     help: fontSize != nil
@@ -3668,14 +3687,7 @@ private struct AppearanceSettingsTab: View {
                         SettingsGlassMenuPicker(
                             selection: textColorMode,
                             options: [LyricsWindowTextColorMode.auto, .light, .dark, .custom],
-                            label: { mode in
-                                switch mode {
-                                case .auto: return L10n.t("自动")
-                                case .light: return L10n.t("浅色")
-                                case .dark: return L10n.t("深色")
-                                case .custom: return L10n.t("自定义")
-                                }
-                            },
+                            label: lyricsWindowTextColorModeName,
                             compact: true
                         )
                         if textColorMode.wrappedValue.usesCustomColor {
@@ -3685,12 +3697,12 @@ private struct AppearanceSettingsTab: View {
                         }
                     }
                 }
-                // 一格下拉,选「自定义颜色」时旁边露出取色器(同悬浮歌词「未唱颜色」)。
-                if let karaokeFill, let karaokeFillColor {
+                // 一格下拉,选「自定义」时旁边露出取色器(同悬浮歌词「未唱颜色」)。卡拉OK效果关着时没有已唱部分,不摆这一格。
+                if karaoke?.wrappedValue == true, let karaokeFill, let karaokeFillColor {
                     SettingsControlCell(
                         icon: "paintbrush.pointed",
                         title: L10n.t("已唱颜色"),
-                        help: L10n.t("逐字填色时已唱部分使用此颜色；未唱部分和其他行仍使用文字颜色。关闭「卡拉OK效果」时无效")
+                        help: L10n.t("逐字填色时已唱部分使用此颜色")
                     ) {
                         HStack(spacing: 6) {
                             SettingsGlassMenuPicker(
@@ -3713,6 +3725,7 @@ private struct AppearanceSettingsTab: View {
                         isOn: hdrHighlight)
                 }
             }
+            .animation(.default, value: karaoke?.wrappedValue)
         case .layout:
             if let miniLyricsLayout {
                 SettingsRowGroup {
@@ -3757,7 +3770,7 @@ private struct AppearanceSettingsTab: View {
             SettingsRow(
                 icon: "text.alignleft",
                 title: L10n.t("对齐方式"),
-                help: L10n.t("「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左")
+                help: L10n.t("「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左")
             ) {
                 LyricsAlignmentSegmentedControl(selection: alignment, options: LyricsRestingAlignment.notchOptions)
             }
@@ -4114,7 +4127,7 @@ private struct NotchLyricsAlignmentRow: View {
             icon: "text.alignleft",
             title: L10n.t("对齐方式"),
             // 「自动」那一档按什么走也写在这条 help 里(菜单栏那一行用的是另一条词条)。
-            help: L10n.t("仅作用于可完整显示的句子，需横向滚动的句子不受影响。「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左对齐")
+            help: L10n.t("仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左")
         ) {
             LyricsAlignmentSegmentedControl(selection: $settings.notchLyricsAlignment,
                                             options: LyricsRestingAlignment.notchOptions)
@@ -4494,22 +4507,25 @@ struct NotchBehaviorPopover: View {
 
 // MARK: - 歌词窗口「全部设置」抽屉
 
-/// 「歌词窗口」外观行分成的三块(见 `SettingsView.lyricsWindowAppearanceRowsImpl`)。
 /// 「已唱颜色」各档的名字:下拉标题和菜单项共用一份(07 章决策 117)。
 enum LyricsWindowKaraokeFillLabel {
     static func text(for fill: LyricsWindowKaraokeFill) -> String {
         switch fill {
-        case .text: return L10n.t("跟随文字颜色")
+        // 「已唱颜色」只在卡拉OK效果开着时出现,那时文字颜色那一格叫「未唱颜色」。
+        case .text: return L10n.t("跟随未唱颜色")
         case .artwork: return L10n.t("跟随封面")
-        case .custom: return L10n.t("自定义颜色")
+        case .custom: return L10n.t("自定义")
         }
     }
 }
 
+/// 「歌词窗口」外观行分成的四块(见 `SettingsView.lyricsWindowAppearanceRowsImpl`)。
 enum LyricsWindowAppearancePart {
     case background
-    /// 字体 / 粗细 / 字号 / 卡拉OK效果 / 文字颜色 / 已唱颜色;只有迷你有的几样只在迷你摆(07 章决策 119)。
-    case text
+    /// 字体 / 粗细 / 字号;字号只在迷你摆。
+    case font
+    /// 卡拉OK效果 / 文字颜色(未唱颜色)/ 已唱颜色 / HDR 高亮;HDR 高亮只在完整尺寸摆。
+    case color
     /// 迷你专有:歌词布局(单行 / 双行 / 多行)+ 长句处理。完整尺寸没有这一块。
     case layout
 }
@@ -4615,7 +4631,8 @@ enum LyricsWindowStyleDefaults {
 /// 「歌词窗口」工具栏的胶囊。`info` 按尺寸是「顶部信息」(迷你)或「封面」(完整);`behavior`、`layout` 只有迷你有。
 enum LyricsWindowToolbarItem: Equatable {
     case background
-    case text
+    case font
+    case color
     case behavior
     case content
     case layout

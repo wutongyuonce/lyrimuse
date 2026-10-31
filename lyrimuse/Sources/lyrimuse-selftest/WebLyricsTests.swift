@@ -850,14 +850,14 @@ func runWebLyricsTests() {
                     "网页歌词 MSE: 副屏页面的 CSP 放行 blob: 媒体地址(Chromium 按 CSP 拦 MediaSource 的地址)")
         expectEqual(sourceBytes(app("WebLyrics/WebLyricsVideoEncoder.swift"), contain: "VTSessionSetProperty(made, key: kVTCompressionPropertyKey_ReferenceBufferCount"), false,
                     "网页歌词: 编码器不设参考帧数(有的机器设 1 就每帧都是关键帧)")
-        expectEqual(sourceHas(app("Settings/WebLyricsSettingsCard.swift"), "subtitle: L10n.t(\"在浏览器中显示歌词窗口\"), beta: true) {")
+        expectEqual(sourceHas(app("Settings/WebLyricsSettingsCard.swift"), "subtitle: L10n.t(\"在浏览器中显示歌词窗口\")) {")
                         && sourceHas(app("SettingsView.swift"), "SettingsGroupCard(title: L10n.t(\"网页歌词\"), beta: true) { LyricsWindowWebSettingsRows() }")
                         && sourceHas(app("SettingsView.swift"), "summary: settings.webLyricsEnabled ? L10n.t(\"已开启\") : L10n.t(\"未开启\"), beta: true)")
                         && sourceHas(app("SettingsView.swift"), "SettingsPopoverShell(title: L10n.t(\"网页歌词\"), beta: true, width: 460) {"), true,
-                    "网页歌词: 设置行、全部设置的分组、编辑台工具栏按钮、浮层标题四处入口都标 Beta")
+                    "网页歌词: 全部设置的分组、编辑台工具栏按钮、浮层标题三处入口标 Beta,组里那一行不重复标")
         let webCard = app("Settings/WebLyricsSettingsCard.swift")
         expectEqual(sourceHas(webCard, "qrTile(host, label: links.ip == nil ? nil : L10n.t(\"iPhone、iPad\"))")
-                        && sourceHas(webCard, "if let ip = links.ip { qrTile(ip, label: L10n.t(\"安卓\")) }")
+                        && sourceHas(webCard, "if let ip = links.ip { qrTile(ip, label: L10n.t(\"Android\")) }")
                         && sourceHas(webCard, "private static var cache: [String: NSImage] = [:]"), true,
                     "网页歌词: 有 IP 链接时二维码并排两个(主机名给 iPhone、IP 给安卓),按链接各缓存一张")
         expectEqual(sourceHas(pagesSource, "<canvas id=\"gl\" width=\"0\" height=\"0\" style=\"display: none; pointer-events: none\"></canvas>")

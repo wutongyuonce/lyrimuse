@@ -858,7 +858,7 @@
         }
       }
     },
-    "歌词窗口的背景：跟随封面／纯色／渐变／毛玻璃" : {
+    "歌词窗口的背景：跟随封面、纯色、渐变或毛玻璃" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -870,7 +870,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "歌詞視窗的背景：跟隨封面／純色／漸層／毛玻璃"
+            "value" : "歌詞視窗的背景：跟隨封面、純色、漸層或毛玻璃"
           }
         }
       }
@@ -892,7 +892,7 @@
         }
       }
     },
-    "迷你尺寸顶部显示歌名／歌手／专辑" : {
+    "迷你尺寸顶部显示歌名、歌手和专辑" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -904,41 +904,41 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "迷你尺寸頂部顯示歌名／歌手／專輯"
+            "value" : "迷你尺寸頂部顯示歌名、歌手和專輯"
           }
         }
       }
     },
-    "仅恢复迷你尺寸的设置，完整尺寸、网页歌词和窗口大小保持不变" : {
+    "仅限迷你尺寸，不含读音、译文、网页歌词和窗口大小" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resets only the Mini Size settings; the Full Size, Web Lyrics and the window’s dimensions stay as they are"
+            "value" : "Mini Size only. Romanization, Translation, Web Lyrics and the window size stay as they are"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "僅恢復迷你尺寸的設定，完整尺寸、網頁歌詞和視窗大小保持不變"
+            "value" : "僅限迷你尺寸，不含讀音、譯文、網頁歌詞和視窗大小"
           }
         }
       }
     },
-    "仅恢复完整尺寸的设置，迷你尺寸、网页歌词和窗口大小保持不变" : {
+    "仅限完整尺寸，不含读音、译文、网页歌词和窗口大小" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resets only the Full Size settings; the Mini Size, Web Lyrics and the window’s dimensions stay as they are"
+            "value" : "Full Size only. Romanization, Translation, Web Lyrics and the window size stay as they are"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "僅恢復完整尺寸的設定，迷你尺寸、網頁歌詞和視窗大小保持不變"
+            "value" : "僅限完整尺寸，不含讀音、譯文、網頁歌詞和視窗大小"
           }
         }
       }
@@ -1323,25 +1323,25 @@
         }
       }
     },
-    "仅作用于可完整显示的句子，需横向滚动的句子不受影响。「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左对齐" : {
+    "仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies only to lines that fit; lines that scroll horizontally aren’t affected. Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left"
+            "value" : "Applies only to lines that fit. Automatic follows the duet parts: choruses are centered, and lines without duet info stay left"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅作用于可完整显示的句子，需横向滚动的句子不受影响。「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左对齐"
+            "value" : "仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "僅作用於可完整顯示的句子，需橫向捲動的句子不受影響。「自動」按對唱聲部對齊：各聲部靠向各自一側，合唱置中，無對唱資訊時靠左對齊"
+            "value" : "僅作用於能完整顯示的句子；「自動」按對唱聲部對齊，合唱置中，無對唱資訊時靠左"
           }
         }
       }
@@ -4225,25 +4225,25 @@
         }
       }
     },
-    "不含宽度和总开关" : {
+    "不含宽度和「菜单栏歌词」开关" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Width and the master toggle are left alone"
+            "value" : "Width and the Menu Bar Lyrics switch stay as they are"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含宽度和总开关"
+            "value" : "不含宽度和「菜单栏歌词」开关"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含寬度和總開關"
+            "value" : "不含寬度和「選單列歌詞」開關"
           }
         }
       }
@@ -7346,25 +7346,25 @@
         }
       }
     },
-    "能完整显示的句子在这一格里靠哪边，显示不下的会横向滚动" : {
+    "仅作用于能完整显示的句子" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Where lines that fit sit in the slot. Lines that don’t fit scroll"
+            "value" : "Applies only to lines that fit"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "能完整显示的句子在这一格里靠哪边，显示不下的会横向滚动"
+            "value" : "仅作用于能完整显示的句子"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "能完整顯示的句子在這一格裡靠哪邊，顯示不下的會橫向捲動"
+            "value" : "僅作用於能完整顯示的句子"
           }
         }
       }
@@ -13964,7 +13964,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未演唱部分的文字顏色。預設跟隨系統：自動配合淺色 / 深色選單列，開啟選單時自動反白"
+            "value" : "未演唱部分的文字顏色。預設跟隨系統：自動配合淺色 / 深色選單列，打開選單時自動反白"
           }
         }
       }
@@ -19996,25 +19996,25 @@
         }
       }
     },
-    "随演唱进度将已演唱部分显示为系统强调色。仅在歌曲有逐字时间轴时生效；打开菜单反白期间暂停着色" : {
+    "随演唱进度为已唱部分着色，仅在歌曲有逐字时间轴时生效" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tints the sung portion with the system accent color, following the vocal timing. Only takes effect when this track has word-level timing; fill pauses while the menu is open and highlighted"
+            "value" : "Colors the sung part as the vocals progress. Only works when the song has word-level timing"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "随演唱进度将已演唱部分显示为系统强调色。仅在歌曲有逐字时间轴时生效；打开菜单反白期间暂停着色"
+            "value" : "随演唱进度为已唱部分着色，仅在歌曲有逐字时间轴时生效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隨演唱進度將已演唱部分顯示為系統強調色。僅在歌曲有逐字時間軸時生效；開啟選單反白期間暫停著色"
+            "value" : "隨演唱進度為已唱部分著色，僅在歌曲有逐字時間軸時生效"
           }
         }
       }
@@ -23209,48 +23209,48 @@
         }
       }
     },
-    "预览 · 左右滑动查看完整内容" : {
+    "预览 · 左右滚动查看完整内容" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preview · swipe sideways for the whole bar"
+            "value" : "Preview · scroll sideways to see the whole bar"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预览 · 左右滑动查看完整内容"
+            "value" : "预览 · 左右滚动查看完整内容"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預覽 · 左右滑動查看完整內容"
+            "value" : "預覽 · 左右捲動查看完整內容"
           }
         }
       }
     },
-    "预览 · 左右滑动查看完整内容 · 本句较长，将横向滚动" : {
+    "预览 · 左右滚动查看完整内容 · 本句较长，将横向滚动" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preview · swipe sideways for the whole bar · this line is long and scrolls"
+            "value" : "Preview · scroll sideways to see the whole bar · this line is long and scrolls"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预览 · 左右滑动查看完整内容 · 本句较长，将横向滚动"
+            "value" : "预览 · 左右滚动查看完整内容 · 本句较长，将横向滚动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預覽 · 左右滑動查看完整內容 · 本句較長，將橫向捲動"
+            "value" : "預覽 · 左右捲動查看完整內容 · 本句較長，將橫向捲動"
           }
         }
       }
@@ -24851,23 +24851,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "預設標註日文、韓文、中文和粵語"
-          }
-        }
-      }
-    },
-    "菜单栏歌词的字重。「常规」即系统菜单栏的默认字重；中文只加粗不加宽，英文字重越大宽度略增" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "How heavy the menu bar lyrics are drawn. Regular is exactly the system default weight. Chinese only gets bolder, Latin text also gets slightly wider"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選單列歌詞的字重。「標準」即系統選單列的預設字重；中文只加粗不加寬，英文字重越大寬度略增"
           }
         }
       }
@@ -27039,25 +27022,25 @@
         }
       }
     },
-    "在歌词区域最左或最右侧显示菜单栏图标，图标颜色自下而上填充以表示播放进度：已填充部分使用「已唱颜色」，其余使用「未唱颜色」。仅在显示歌词时出现" : {
+    "图标自下而上填充以表示播放进度，颜色取自「颜色」组" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the menu bar icon at the far left or right of the lyrics area, filling from the bottom up to show playback progress: the filled part uses Sung Color and the rest Unsung Color. Appears only while lyrics are shown"
+            "value" : "The icon fills from the bottom up to show playback progress, using the colors set under Color"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在歌词区域最左或最右侧显示菜单栏图标，图标颜色自下而上填充以表示播放进度：已填充部分使用「已唱颜色」，其余使用「未唱颜色」。仅在显示歌词时出现"
+            "value" : "图标自下而上填充以表示播放进度，颜色取自「颜色」组"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在歌詞區域最左或最右側顯示選單列圖像，圖像顏色自下而上填充以表示播放進度：已填充部分使用「已唱顏色」，其餘使用「未唱顏色」。僅在顯示歌詞時出現"
+            "value" : "圖像由下而上填滿以表示播放進度，顏色取自「顏色」群組"
           }
         }
       }
@@ -27085,48 +27068,48 @@
         }
       }
     },
-    "在主歌词下方增加一行，高度不变（两行分别为 10pt / 9pt，「字号」不生效）。译文和读音对应当前句，「下一句」显示即将演唱的歌词；开启副行时，主行不再提前切换到下一句。副行不滚动，空间不足时末尾渐隐" : {
+    "在歌词下方增加一行；开启后两行字号固定，「字号」不生效" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adds a second line under the lyric without changing the item’s height (10pt / 9pt; Font Size has no effect). Translation and Romanization show the current line; Next Line shows the upcoming one. With a second line on, the main line no longer switches early. The second line doesn’t scroll; its end fades out when it doesn’t fit"
+            "value" : "Adds a line under the lyrics. With it on, both lines use a fixed size and Font Size has no effect"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在主歌词下方增加一行，高度不变（两行分别为 10pt / 9pt，「字号」不生效）。译文和读音对应当前句，「下一句」显示即将演唱的歌词；开启副行时，主行不再提前切换到下一句。副行不滚动，空间不足时末尾渐隐"
+            "value" : "在歌词下方增加一行；开启后两行字号固定，「字号」不生效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在主歌詞下方增加一行，高度不變（兩行分別為 10pt / 9pt，「字級」不生效）。譯文和讀音對應目前句，「下一句」顯示即將演唱的歌詞；開啟副行時，主行不再提前切換到下一句。副行不捲動，空間不足時末尾漸隱"
+            "value" : "在歌詞下方增加一行；開啟後兩行字級固定，「字級」不生效"
           }
         }
       }
     },
-    "指针移到菜单栏歌词上时显示「上一曲 / 播放暂停 / 下一曲」三个按钮，移开后恢复。暂停后歌词收起为图标，或区域过窄放不下三个按钮时不显示。点按按钮以外的区域仍会打开面板" : {
+    "指针移到歌词上时显示上一首、播放/暂停、下一首按钮" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn’t take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel"
+            "value" : "Shows Previous, Play/Pause and Next when you hover over the lyrics"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指针移到菜单栏歌词上时显示「上一曲 / 播放暂停 / 下一曲」三个按钮，移开后恢复。暂停后歌词收起为图标，或区域过窄放不下三个按钮时不显示。点按按钮以外的区域仍会打开面板"
+            "value" : "指针移到歌词上时显示上一首、播放/暂停、下一首按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指標移到選單列歌詞上時顯示「上一曲 / 播放暫停 / 下一曲」三個按鈕，移開後恢復。暫停後歌詞收起為圖像，或區域過窄放不下三個按鈕時不顯示。按一下按鈕以外的區域仍會開啟面板"
+            "value" : "指標移到歌詞上時顯示上一首、播放/暫停、下一首按鈕"
           }
         }
       }
@@ -27154,25 +27137,25 @@
         }
       }
     },
-    "默认跟随系统菜单栏字号，可在 10～16pt 之间调整，16pt 仍在菜单栏高度范围内。拖回系统字号即恢复跟随" : {
+    "默认跟随系统菜单栏字号" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Follows the system menu bar by default; adjustable from 10 to 16pt, and 16pt still fits the menu bar. Drag back to the system size to follow it again"
+            "value" : "Follows the system menu bar size by default"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认跟随系统菜单栏字号，可在 10～16pt 之间调整，16pt 仍在菜单栏高度范围内。拖回系统字号即恢复跟随"
+            "value" : "默认跟随系统菜单栏字号"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預設跟隨系統選單列字級，可在 10～16pt 之間調整，16pt 仍在選單列高度範圍內。拖回系統字級即恢復跟隨"
+            "value" : "預設跟隨系統選單列字級"
           }
         }
       }
@@ -27200,25 +27183,25 @@
         }
       }
     },
-    "自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置" : {
+    "「自动」按对唱声部对齐，合唱和无对唱信息时居中" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic (default): switches between left / right / center by duet vocal part\nOthers: ignore vocal parts and stay fixed in one position"
+            "value" : "Automatic follows the duet parts: choruses and lines without duet info are centered"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置"
+            "value" : "「自动」按对唱声部对齐，合唱和无对唱信息时居中"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自動（預設）：按對唱聲部在左 / 右 / 置中之間切換\n其他：忽略聲部，固定在同一位置"
+            "value" : "「自動」按對唱聲部對齊，合唱和無對唱資訊時置中"
           }
         }
       }
@@ -30574,19 +30557,19 @@
         }
       }
     },
-    "歌曲无歌词或仍在搜索时，在歌词位置显示歌名，不收起为小图标；获取歌词后立即切换为歌词。暂停时仍收起为图标，广告期间不显示" : {
+    "歌曲无歌词或仍在搜索时，在歌词位置显示歌名" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "While a song has no lyrics or is still being searched, keep the lyrics slot with the song title instead of collapsing to the icon; the line is swapped in as soon as lyrics arrive. Still collapses when paused, and never shows during ads"
+            "value" : "Shows the song title in place of lyrics while there are none or they’re still being found"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "歌曲無歌詞或仍在搜尋時，在歌詞位置顯示歌名，不收起為小圖像；取得歌詞後立即切換為歌詞。暫停時仍收起為圖像，廣告期間不顯示"
+            "value" : "歌曲無歌詞或仍在搜尋時，在歌詞位置顯示歌名"
           }
         }
       }
@@ -36273,29 +36256,6 @@
         }
       }
     },
-    "在主行下方增加一行：译文和读音对应当前句，「下一句」为即将演唱的歌词。开启后两行字号固定为 14pt / 11pt，「字号」不生效，主行也不再提前切换到下一句；副行空间不足时，按该句时长横向滚动" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adds a second line under the main line: Translation and Romanization follow the current line, and Next Line shows the upcoming one. With it on, the two lines are fixed at 14pt / 11pt (Font Size has no effect) and the main line no longer switches early. A second line that doesn’t fit scrolls across over the line’s duration"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在主行下方增加一行：译文和读音对应当前句，「下一句」为即将演唱的歌词。开启后两行字号固定为 14pt / 11pt，「字号」不生效，主行也不再提前切换到下一句；副行空间不足时，按该句时长横向滚动"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在主行下方增加一行：譯文和讀音對應目前句，「下一句」為即將演唱的歌詞。開啟後兩行字級固定為 14pt / 11pt，「字級」不生效，主行也不再提前切換到下一句；副行空間不足時，按該句時長橫向捲動"
-          }
-        }
-      }
-    },
     "展开时隐藏功能栏" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -37584,25 +37544,25 @@
         }
       }
     },
-    "不含总开关" : {
+    "不含「触控栏歌词」开关" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The master toggle is left alone"
+            "value" : "The Touch Bar Lyrics switch stays as it is"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含总开关"
+            "value" : "不含「触控栏歌词」开关"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不含總開關"
+            "value" : "不含「觸控列歌詞」開關"
           }
         }
       }
@@ -39940,48 +39900,48 @@
         }
       }
     },
-    "跟随文字颜色" : {
+    "跟随未唱颜色" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Match Text Color"
+            "value" : "Match Unsung Color"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "跟随文字颜色"
+            "value" : "跟随未唱颜色"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "跟隨文字顏色"
+            "value" : "跟隨未唱顏色"
           }
         }
       }
     },
-    "逐字填色时已唱部分使用此颜色；未唱部分和其他行仍使用文字颜色。关闭「卡拉OK效果」时无效" : {
+    "逐字填色时已唱部分使用此颜色" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The part already sung takes this color as lyrics fill word by word. Unsung words and other lines keep the text color. Has no effect when Karaoke Effect is off"
+            "value" : "The color of the sung part as lyrics fill word by word"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "逐字填色时已唱部分使用此颜色；未唱部分和其他行仍使用文字颜色。关闭「卡拉OK效果」时无效"
+            "value" : "逐字填色时已唱部分使用此颜色"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "逐字填色時已唱部分使用此顏色；未唱部分和其他行仍使用文字顏色。關閉「卡拉OK效果」時無效"
+            "value" : "逐字填色時已唱部分使用此顏色"
           }
         }
       }
@@ -40766,7 +40726,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "淡化時點按穿透"
+            "value" : "淡化時讓點按穿透"
           }
         }
       }
@@ -48467,19 +48427,19 @@
         }
       }
     },
-    "「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左" : {
+    "「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left"
+            "value" : "Automatic follows the duet parts: choruses are centered, and lines without duet info stay left"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「自動」按對唱聲部對齊：各聲部靠向各自一側，合唱置中，無對唱資訊時靠左"
+            "value" : "「自動」按對唱聲部對齊，合唱置中，無對唱資訊時靠左"
           }
         }
       }
@@ -54205,7 +54165,7 @@
         }
       }
     },
-    "安卓" : {
+    "Android" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -54217,7 +54177,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安卓"
+            "value" : "Android"
           }
         },
         "zh-Hant" : {
@@ -57881,6 +57841,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "預覽 %@"
+          }
+        }
+      }
+    },
+    "无副行" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Single Line"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无副行"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無副行"
+          }
+        }
+      }
+    },
+    "自动对齐" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto Align"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动对齐"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動對齊"
+          }
+        }
+      }
+    },
+    "更改后需重新打开本机地址" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After changing it, reopen the local address"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改后需重新打开本机地址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改後需重新開啟本機位址"
           }
         }
       }

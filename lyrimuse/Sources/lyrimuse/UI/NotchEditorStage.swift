@@ -324,12 +324,13 @@ struct NotchEditorStage: View {
     /// `NotchBehaviorSettingsRows`,`SettingsView.swift`)。
     ///
     /// 横向预算(离屏复刻这一行的版式、`NSHostingView.fittingSize` 量的):四颗入口、摘要压到零时的硬下限中文 374.0 / 英文 468.0,
-    /// 都在最窄卡片列 499 之内,标题在任何窄档都不会截,亏空全由摘要吃(`toolbarButton` 摘要限宽 140 + `.layoutPriority(-1)`)。
-    /// 600pt 下四截摘要每截约 56pt(中文)/ 33pt(英文):摘要内容按中文 56pt 读得完来定(「显示歌词」「较粗 13pt」「3 项开启」
-    /// 「全部关闭」都在 48–54pt),英文仍会被压短、悬停给整句。再加第五个入口或把哪个标题改长之前,先重新离屏量一遍,不要凭感觉
-    /// 现改数字。
+    /// 都在最窄卡片列 499 之内,标题在任何窄档都不会截,亏空全由摘要吃(摘要限宽 140 + `.layoutPriority(-1)`)。
+    ///
+    /// 这一行按内容分宽(`EditorToolbarContentWidthRow`),不等分、也不放跟第一行「重置 ▾」等宽的占位:「歌词行」的摘要
+    /// 按偏离默认的项拼,常常比另外三颗长得多,等分时「展开时 · 7 项开启」这种本来读得完的也陪着被截。代价是这一行
+    /// 不跟第一行逐列对齐。再加第五个入口或把哪个标题改长之前,先重新离屏量一遍,不要凭感觉现改数字。
     private var toolbarRow2: some View {
-        HStack(spacing: 8) {
+        EditorToolbarContentWidthRow(spacing: 8) {
             toolbarButton(
                 icon: "text.alignleft",
                 title: L10n.t("歌词行"),
@@ -358,10 +359,8 @@ struct NotchEditorStage: View {
                 detail: SettingsToggleSummary.detail(behaviorEntries),
                 target: .behavior
             )
-            Spacer(minLength: 8)
-            // 跟第一行「重置 ▾」等宽的隐藏占位:两行的弹性预算一样,四颗入口才逐列对齐。
-            EditorToolbarResetReserve()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .font(.system(size: 12))
         .padding(.horizontal, 2)
     }
@@ -394,9 +393,10 @@ struct NotchEditorStage: View {
         if settings.notchLyricsColor != AppSettings.defaultNotchLyricsColor {
             parts.append(settings.notchLyricsColor.displayName)
         }
-        // 「副行」同一条规则:四选一、默认「下一句」,只在非默认时报,写成「副行 · 译文」。
+        // 「副行」同一条规则:四选一、默认「下一句」,只在非默认时报档名本身(「译文」),关掉时报「无副行」;
+        // 不带「副行 ·」前缀,同菜单栏「内容」那颗。
         if settings.notchSecondaryLine != AppSettings.defaultNotchSecondaryLine {
-            parts.append("\(L10n.t("副行")) · \(settings.notchSecondaryLine.displayName)")
+            parts.append(settings.notchSecondaryLine == .off ? L10n.t("无副行") : settings.notchSecondaryLine.displayName)
         }
         // 「展开时预览下一句」(从「展开态」搬来):副行选「下一句」时它被顶掉、浮层里也不显示
         // (`NotchLyricRowSettingsRows`),摘要跟浮层说同一套话;没被顶掉就按"只列开着的"。
@@ -477,12 +477,22 @@ struct NotchEditorStage: View {
             popoverAnchor = .toolbar
             popover = target
         } label: {
-            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail)
+            // 第二行按内容分宽,那一行的标签报文字本身的宽(`EditorToolbarContentWidthRow`)。
+            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail,
+                                     fitsContent: Self.isSecondRow(target))
         }
         .editorToolbarButtonStyle()
         .popover(isPresented: popoverBinding(target), arrowEdge: .top) {
             popoverContent(for: target)
                 .environment(\.settingsPopoverMaxHeight, popoverMaxHeight)
+        }
+    }
+
+    /// 第二行的四颗(歌词行 / 字体 / 展开时 / 行为)。跟 `rowOffsetAboveStage` 的分行一致。
+    private static func isSecondRow(_ target: StagePopover) -> Bool {
+        switch target {
+        case .style, .screen, .leftEar, .rightEar: return false
+        case .lyricRow, .font, .expanded, .behavior: return true
         }
     }
 

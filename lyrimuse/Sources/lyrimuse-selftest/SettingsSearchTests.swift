@@ -184,7 +184,6 @@ func runSettingsSearchTests() {
         // 跟目录必须不相交(下面那条断言)。悬浮歌词抽屉里同名的那个组标题因此顺带被目录覆盖 ——
         // 搜「背景」会落到歌词窗口那一行,不再是查无此项。
         "颜色", "内容", "排版", "行为",                              // 悬浮歌词抽屉的组标题(「内容」也是歌词窗口抽屉的卡头,「颜色」也是菜单栏抽屉的卡头;「主题」组按标题登记了)
-        "文字",                                                   // 歌词窗口抽屉的卡头
         // 「封面」同「背景」:迷你「顶部信息」里有一行真的叫这个名字、已登记在目录里,
         // 所以完整尺寸那张同名卡头顺带被目录覆盖,不能再留在白名单里(两者必须不相交)。
         "顶部信息", "布局",                                       // 歌词显示 › 歌词窗口 的卡头
@@ -414,8 +413,8 @@ func runSettingsSearchTests() {
         func gate(_ path: [String], _ title: String, false falseConditions: Set<String>) -> String? {
             SettingsSearchCatalog.gateTitle(path: path, title: title) { !falseConditions.contains($0) }
         }
-        expectEqual(gate(menuBar, "屏幕", false: ["menuBar.centerSelected"]), "歌词位置", "搜索门: 没选菜单栏正中时「显示在」落到「歌词位置」")
-        expectEqual(gate(menuBar, "屏幕", false: []), nil, "搜索门: 行在页面上不加门")
+        expectEqual(gate(menuBar, "显示在", false: ["menuBar.centerSelected"]), "歌词位置", "搜索门: 没选菜单栏正中时「显示在」落到「歌词位置」")
+        expectEqual(gate(menuBar, "显示在", false: []), nil, "搜索门: 行在页面上不加门")
         expectEqual(gate(menuBar, "对齐方式", false: ["menuBar.centerIdle"]), "歌词位置",
                     "搜索门: 放在菜单栏正中时对齐方式落到「歌词位置」")
         expectEqual(gate(menuBar, "对齐方式", false: []), nil, "搜索门: 两种宽度模式都有对齐方式,不加门")
@@ -455,7 +454,7 @@ func runSettingsSearchTests() {
         expectEqual(sourceHas(stage, "if settings.menuBarLyricsPlacement == .screenCenter {\nMenuBarCenterScreenRow()")
                     && sourceHas(stage, "if !MenuBarPlacementRow.centerInUse(settings) {\nMenuBarWidthModeRow()")
                     && sourceHas(stage, "CardDivider()\nMenuBarAlignmentRow()")
-                    && !stage.contains("menuBarLyricsWidthMode == .fixed")
+                    && !stage.contains("if settings.menuBarLyricsWidthMode == .fixed")
                     && sourceHas(stage, "if settings.menuBarLyricsKaraoke || settings.menuBarLyricsIconPosition != .off {")
                     && sourceHas(stage, "if settings.menuBarLyricsContent == .lyrics {\nMenuBarSecondaryLineRow()")
                     && sourceHas(search, "case \"menuBar.showsLyrics\": return s.menuBarLyricsContent == .lyrics")

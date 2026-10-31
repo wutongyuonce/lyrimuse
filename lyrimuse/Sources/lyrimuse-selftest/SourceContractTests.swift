@@ -3545,7 +3545,7 @@ func runSourceContractSettingsTests() {
             //  - `defaultNotchContentWidth`:灵动岛稳态宽 / 展开宽共用的默认值(宽度变成一对时
             //    抽出来的,为了两个键"没存过"时一定相等)。宽度是**结构性尺寸**设置,「重置」按既定取舍
             //    不碰它(见 AppSettings 那段注释与 05 章「重置」节:不含总开关和宽度),抽屉里那一行的
-            //    副标题也写着「不含宽度和总开关」—— 把它塞进 restoreDefaults() 才是违背文案。
+            //    副标题也写着「不含宽度和「灵动岛歌词」开关」—— 把它塞进 restoreDefaults() 才是违背文案。
             //  - `defaultNotchExpandedContentWidth`:同上,展开态那一半(从共用稳态常量拆出来,
             //    用户把自己在用的 252 / 482 定为默认时两个数不再相等)。同样是宽度,同样不进「重置」。
             let exempt: Set<String> = ["defaultNotchContentWidth", "defaultNotchExpandedContentWidth"]
@@ -3746,13 +3746,13 @@ func runSourceContractSettingsTests() {
                     "抽屉镜像(触控栏): 浮层里的行视图抽屉都要装配")
     }
 
-    // ---- 编辑台工具栏第二行的对齐占位(灵动岛) ----
+    // ---- 编辑台工具栏第二行的对齐占位(菜单栏)与按内容分宽(灵动岛) ----
     //
     // 按钮宽度是**一行之内平分**出来的,第一行末尾那颗「重置 ▾」占掉的一截就是两行错位的全部原因
     // (机制、代价与离屏实测见 `EditorToolbarResetReserve` 头注)。占位漏掉既不报错也不影响功能,
     // 只会让两行按钮重新错开一截 —— 正是那种下次重排工具栏时会被顺手删掉、且没人看得出来的东西。
     // 悬浮歌词不在这里:它第二行五颗、第一行三颗,本来对不成列,放了占位只会把五颗的摘要一起压成「…」(19 章决策 19)。
-    // 菜单栏第二行两颗、第一行三颗,第二行再补一颗隐藏副本凑成同列数。
+    // 菜单栏第二行两颗、第一行三颗,第二行再补一颗隐藏副本凑成同列数。灵动岛第二行按内容分宽,不对列。
     do {
         let sourcesDir = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
@@ -3760,8 +3760,11 @@ func runSourceContractSettingsTests() {
         let notch = try? String(contentsOfFile: sourcesDir.appendingPathComponent("lyrimuse/UI/NotchEditorStage.swift").path, encoding: .utf8)
         let menuBar = try? String(contentsOfFile: sourcesDir.appendingPathComponent("lyrimuse/UI/MenuBarEditorStage.swift").path, encoding: .utf8)
         expectEqual(notch != nil && menuBar != nil, true, "工具栏对齐闸: 两段编辑台的文件都读得到(读不到 = 路径挪了)")
-        expectEqual(notch?.contains("EditorToolbarResetReserve()"), true,
-                    "工具栏对齐闸: 灵动岛工具栏第二行末尾要有 EditorToolbarResetReserve(),否则这一行整体比第一行宽出「重置 ▾」那一截")
+        // 灵动岛第二行按内容分宽(「歌词行」摘要常比另外三颗长得多,等分时短的也陪着被截),不放占位、不跟第一行对列。
+        expectEqual(notch.map { sourceHas($0, "private var toolbarRow2: some View {\nEditorToolbarContentWidthRow(spacing: 8) {")
+                                && sourceHas($0, "fitsContent: Self.isSecondRow(target))")
+                                && !$0.contains("EditorToolbarResetReserve()") }, true,
+                    "工具栏分宽: 灵动岛第二行按内容分宽,标签报文字本身的宽,不放「重置 ▾」占位")
         expectEqual(menuBar.map { $0.contains("EditorToolbarResetReserve()") && $0.contains("toolbarGhostButton(icon:") }, true,
                     "工具栏对齐闸: 菜单栏工具栏第二行末尾要有第一行第三颗的隐藏副本和 EditorToolbarResetReserve(),否则两颗比上面宽一截")
     }

@@ -205,6 +205,7 @@ final class SettingsSearchRouter: ObservableObject {
         case "lyricsWindow.glass": return windowBackground == .glass
         case "lyricsWindow.customText":
             return (mini ? s.lyricsWindowMiniTextColorMode : s.lyricsWindowTextColorMode).usesCustomColor
+        case "lyricsWindow.karaoke": return mini ? s.lyricsWindowMiniLyricsKaraoke : s.lyricsWindowLyricsKaraoke
         case "lyricsWindow.miniFade": return s.lyricsWindowMiniFadeOnHover
         case "lyricsWindow.miniLayoutNotList": return s.lyricsWindowMiniLyricsLayout != .list
         case "web.lan": return s.webLyricsAllowLAN

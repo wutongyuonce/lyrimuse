@@ -789,7 +789,7 @@ func runTouchBarTests() {
             let to = rows.range(of: "\nstruct ", range: from.upperBound..<rows.endIndex)?.lowerBound ?? rows.endIndex
             return String(rows[from.upperBound..<to])
         }
-        let rowViews = structBody("TouchBarLyricsRows") + structBody("TouchBarStyleRows") + structBody("TouchBarLayoutRows")
+        let rowViews = structBody("TouchBarContentRows") + structBody("TouchBarColorRows") + structBody("TouchBarLayoutRows")
             + structBody("TouchBarBehaviorRows")
         let restore = rows.range(of: "static func restoreDefaults() {")
             .map { String(rows[$0.upperBound...].prefix { $0 != "}" }) } ?? ""
@@ -856,7 +856,8 @@ func runTouchBarTests() {
                     "悬浮歌词彩虹: 内置「彩虹」主题带深色描边,套用 / 另存 / 老 JSON / 判等都带上彩虹")
         let styleRows = code(appDir.appendingPathComponent("UI/OverlayStyleSettingsRows.swift")) ?? ""
         expectEqual(styleRows.contains("settings.overlayRainbow = ColorTheme.defaultTheme.rainbow")
-                        && styleRows.contains("if settings.overlayLyricsKaraoke && !settings.overlayRainbow {"), true,
+                        && styleRows.contains("private var pairedKaraokeColors: Bool { settings.overlayLyricsKaraoke && !settings.overlayRainbow }")
+                        && styleRows.contains("if pairedKaraokeColors {"), true,
                     "悬浮歌词彩虹: 恢复默认关掉彩虹,彩虹时藏起未唱颜色")
         let notchRow = code(appDir.appendingPathComponent("UI/NotchLyricsView+LyricRow.swift")) ?? ""
         let notchExpanded = code(appDir.appendingPathComponent("UI/NotchLyricsView+Expanded.swift")) ?? ""
@@ -959,7 +960,7 @@ func runTouchBarTests() {
                         && previewSource.contains("still: reduceMotion,")
                         && previewSource.contains("let scrolls = !reduceMotion && "), true,
                     "触控栏减弱动态: 预览同本体,「横向滚动」提示也看它")
-        expectEqual(structBody("TouchBarStyleRows").contains(
+        expectEqual(structBody("TouchBarColorRows").contains(
                         "subtitle: reduceMotion ? L10n.t(\"系统已开启「减弱动态效果」，触控栏歌词不滚动、不逐字高亮\") : nil"),
                     true, "触控栏减弱动态: 卡拉OK效果那一行说明为什么没效果")
 
@@ -970,15 +971,19 @@ func runTouchBarTests() {
         expectEqual(touchBarBranch?.contains("L10n.t(\"此 Mac 未配备触控栏\")"), true,
                     "触控栏: 没有触控栏时放「这台 Mac 没有触控栏」那张说明卡")
         // 副行开着时两行字号由触控栏的高定,「字号」那一行留着、尾部换成「由副行决定」(同菜单栏),而且紧跟在「副行」下面。
-        let lyricsRows = structBody("TouchBarLyricsRows")
-        expectEqual(lyricsRows.contains("if settings.touchBarSecondaryLine.showsSecondaryRow {")
-                        && lyricsRows.contains("L10n.t(\"由副行决定\")"), true,
+        let contentRows = structBody("TouchBarContentRows")
+        expectEqual(contentRows.contains("if settings.touchBarSecondaryLine.showsSecondaryRow {")
+                        && contentRows.contains("L10n.t(\"由副行决定\")"), true,
                     "触控栏: 副行开着时「字号」那一行显示「由副行决定」")
-        let secondaryAt = lyricsRows.range(of: "title: L10n.t(\"副行\")")?.lowerBound
-        let sizeAt = lyricsRows.range(of: "title: L10n.t(\"字号\")")?.lowerBound
-        let alignAt = lyricsRows.range(of: "title: L10n.t(\"对齐方式\")")?.lowerBound
-        expectEqual(secondaryAt != nil && sizeAt != nil && alignAt != nil && secondaryAt! < sizeAt! && sizeAt! < alignAt!, true,
-                    "触控栏: 「歌词」组按 副行 → 字号 → 对齐方式 排")
+        let secondaryAt = contentRows.range(of: "title: L10n.t(\"副行\")")?.lowerBound
+        let sizeAt = contentRows.range(of: "title: L10n.t(\"字号\")")?.lowerBound
+        expectEqual(secondaryAt != nil && sizeAt != nil && secondaryAt! < sizeAt!, true,
+                    "触控栏: 「内容」组按 副行 → 字号 排")
+        let layoutRowsBody = structBody("TouchBarLayoutRows")
+        let alignAt = layoutRowsBody.range(of: "title: L10n.t(\"对齐方式\")")?.lowerBound
+        let artworkAt = layoutRowsBody.range(of: "title: L10n.t(\"显示封面\")")?.lowerBound
+        expectEqual(alignAt != nil && artworkAt != nil && alignAt! < artworkAt! && !contentRows.contains("对齐方式"), true,
+                    "触控栏: 对齐方式归「布局」、排在最前,跟另外几个形态同组")
         // 歌词那一格填满剩下的宽度,不给固定的期望宽度:给了的话放不下时系统先藏封面和三键,
         // 「显示封面」「显示播放控制」拨了也没反应。
         expectEqual(controller.contains("lyricsContainer.setContentHuggingPriority(.init(1), for: .horizontal)"), true,
@@ -1034,12 +1039,12 @@ func runTouchBarTests() {
         // 预览上的可点区域(17 章决策 38):歌词那一格开「歌词」,封面、三键、收起键、功能栏开「布局」,浮层同工具栏那一份;
         // 那一排用 padding 摆位置(浮层认布局 frame、不认 offset)。漏了不报错,只表现成点了没反应、或浮层弹在别处。
         expectEqual(preview.contains("case lyrics, artwork, controls, more, collapse, controlStrip")
-                        && preview.contains("var group: TouchBarSettingsGroup { self == .lyrics ? .lyrics : .layout }")
+                        && preview.contains("var group: TouchBarSettingsGroup { self == .lyrics ? .content : .layout }")
                         && preview.contains("spot.group.popoverContent()")
                         && preview.contains(".environment(\\.colorScheme, colorScheme)")
                         && preview.contains(".padding(.leading, escapeSlot + CGFloat(TouchBarLyricsStyle.firstItemX))")
                         && !preview.contains(".offset(x: CGFloat(TouchBarLyricsStyle.firstItemX))"), true,
-                    "触控栏预览: 点歌词开「歌词」,点封面 / 三键 / 收起键 / 功能栏开「布局」")
+                    "触控栏预览: 点歌词开「内容」,点封面 / 三键 / 收起键 / 功能栏开「布局」")
         for spot in ["lyrics", "artwork", "controls", "more", "collapse", "controlStrip"] {
             expectEqual(preview.contains(".overlay { hotspot(.\(spot)) }"), true, "触控栏预览: \(spot) 那一块挂了可点区域")
         }

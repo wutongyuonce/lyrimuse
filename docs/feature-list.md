@@ -36,7 +36,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Notch lyrics](#feature-notch-lyrics) | Settings › Lyrics Display › Notch › Notch Lyrics |
 | [Menu bar lyrics](#feature-menu-bar-lyrics) | Settings › Lyrics Display › Menu Bar › Menu Bar Lyrics |
 | [Touch Bar lyrics](#feature-touch-bar-lyrics) | Settings › Lyrics Display › Touch Bar › Touch Bar Lyrics |
-| [Lyrics window HDR highlight](#feature-lyrics-window-hdr) | Settings › Lyrics Display › Lyrics Window › Text › HDR Highlight |
+| [Lyrics window HDR highlight](#feature-lyrics-window-hdr) | Settings › Lyrics Display › Lyrics Window › Color › HDR Highlight |
 | [Mini window hides when paused or in full screen](#feature-mini-window-auto-hide) | Settings › Lyrics Display › Lyrics Window › Behavior › Hide When Paused |
 | [Line transition](#feature-line-transition) | Settings › Lyrics Display › Floating Lyrics › Layout › Line Transition |
 | [Fade when the pointer is over it](#feature-fade-on-hover) | Settings › Lyrics Display › Floating Lyrics › Behavior › Fade on Hover |
@@ -303,7 +303,7 @@ On a MacBook Pro with a Touch Bar, the current line scrolls along as it is sung,
 - Off by default
 - Settings: Lyrics Display › Touch Bar › Touch Bar Lyrics
 - Settings: Keyboard Shortcuts › Expand/Collapse Touch Bar Lyrics
-- Settings: Lyrics Display › Touch Bar › Style › Lyrics Color
+- Settings: Lyrics Display › Touch Bar › Color › Text Color
 - Settings: Lyrics Display › Touch Bar › Behavior › Expand When Playback Starts
 - Settings: Lyrics Display › Touch Bar › Layout › Show More Button
 
@@ -325,7 +325,7 @@ Full-page lyrics modelled on Apple Music's lyrics view: blurred artwork behind, 
 On an HDR display, the sung part of the current line in the lyrics window is brightened past normal white. Off by default and uses more power when on. Full size only.
 
 - Off by default
-- Settings: Lyrics Display › Lyrics Window › Text › HDR Highlight
+- Settings: Lyrics Display › Lyrics Window › Color › HDR Highlight
 
 <a id="feature-mini-lyrics-window"></a>
 
@@ -396,8 +396,8 @@ Each word lights up as it is sung. Floating lyrics, the notch, the menu bar, the
 - Settings: Lyrics Display › Floating Lyrics › Color › Karaoke Effect
 - Settings: Lyrics Display › Notch › Lyric Row › Karaoke Effect
 - Settings: Lyrics Display › Menu Bar › Color › Karaoke Effect
-- Settings: Lyrics Display › Touch Bar › Style › Karaoke Effect
-- Settings: Lyrics Display › Lyrics Window › Text › Karaoke Effect
+- Settings: Lyrics Display › Touch Bar › Color › Karaoke Effect
+- Settings: Lyrics Display › Lyrics Window › Color › Karaoke Effect
 
 <a id="feature-line-transition"></a>
 
@@ -1068,19 +1068,18 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### Lyrics Display › Menu Bar
 
 - **Menu Bar Lyrics**
-- **Max Width**
-- **Reset to Defaults**: Width and the master toggle are left alone
+- **Reset to Defaults**: Width and the Menu Bar Lyrics switch stay as they are
 
 ### Lyrics Display › Menu Bar › Content
 
 - **What’s Shown**
 - **Second Line**
-- **Icon Beside Lyrics**: Shows the menu bar icon at the far left or right of the lyrics area, filling from the bottom up to show playback progress: the filled part uses Sung Color and the rest Unsung Color. Appears only while lyrics are shown
+- **Icon Beside Lyrics**: The icon fills from the bottom up to show playback progress, using the colors set under Color
 
 ### Lyrics Display › Menu Bar › Layout
 
 - **Lyrics Position**: Menu Bar Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch
-- **Display**
+- **Show On**
 - **Width Mode**: Fixed: every song uses the set width Adaptive: each song gets its own width from its lyrics, up to the set width
 - **Alignment**
 
@@ -1097,30 +1096,28 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Weight**
 - **Font Size**
 
+### Lyrics Display › Menu Bar › Width
+
+- **Max Width**
+
 ### Lyrics Display › Menu Bar › Behavior
 
 - **Show Controls on Hover**
-- **Show Title When No Lyrics**: While a song has no lyrics or is still being searched, keep the lyrics slot with the song title instead of collapsing to the icon; the line is swapped in as soon as lyrics arrive. Still collapses when paused, and never shows during ads
+- **Show Title When No Lyrics**: Shows the song title in place of lyrics while there are none or they’re still being found
 
 ### Lyrics Display › Touch Bar
 
 - **Touch Bar Lyrics**
-- **Reset to Defaults**: The master toggle is left alone
+- **Reset to Defaults**: The Touch Bar Lyrics switch stays as it is
 
-### Lyrics Display › Touch Bar › Lyrics
+### Lyrics Display › Touch Bar › Content
 
 - **Second Line**
 - **Font Size**
-- **Alignment**
-
-### Lyrics Display › Touch Bar › Style
-
-- **Karaoke Effect**
-- **Lyrics Color**: White, artwork color, a custom color or a rainbow
-- **Dimmed Text Brightness**: Brightness of unsung words and the second line
 
 ### Lyrics Display › Touch Bar › Layout
 
+- **Alignment**
 - **Show Artwork**
 - **Artwork Position**
 - **Show Playback Controls**: Previous, Play/Pause and Next, plus a settings button
@@ -1128,6 +1125,12 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Show More Button**: Tap it to switch to playback position, lyrics calibration, Favorite, Shuffle/Repeat and Volume. Items the current player doesn’t support are hidden
 - **Hide Control Strip While Expanded**: Lyrics fill the whole Touch Bar. To reach brightness, volume and other system buttons, tap ✕ on the left to collapse the lyrics first
 - **System Control Strip**: Add, remove or reorder the brightness, volume and other system buttons on the right of the Touch Bar in System Settings › Keyboard › Touch Bar Settings…
+
+### Lyrics Display › Touch Bar › Color
+
+- **Karaoke Effect**
+- **Text Color**: White, artwork color, a custom color or a rainbow
+- **Dimmed Text Brightness**: Brightness of unsung words and the second line
 
 ### Lyrics Display › Touch Bar › Behavior
 
@@ -1159,16 +1162,11 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Glass Density**: Frosted glass material density (five levels)
 - **Bottom Color**
 
-### Lyrics Display › Lyrics Window › Text
+### Lyrics Display › Lyrics Window › Font
 
 - **Font Size** (mini size only): Ceiling for the mini size’s lyrics font size
-- **Karaoke Effect**
-- **Text Color**: The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness
-- **Custom Color**
 - **Font**: Lyrics font for the lyrics window (main text, translation, romanization)
 - **Weight**
-- **Sung Color**
-- **HDR Highlight** (full size only): Brightens the sung part on HDR displays. Uses more power when on
 
 ### Lyrics Display › Lyrics Window › Layout
 
@@ -1182,6 +1180,14 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Click Through While Faded** (mini size only): While faded, clicks pass through to the window below. Hold ⌥ to make it opaque and interact with it
 - **Hide When Paused** (mini size only)
 - **Hide in Full Screen** (mini size only)
+
+### Lyrics Display › Lyrics Window › Color
+
+- **Karaoke Effect**
+- **Text Color**: The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness
+- **Custom Color**
+- **Sung Color**
+- **HDR Highlight** (full size only): Brightens the sung part on HDR displays. Uses more power when on
 
 ### Lyrics Display › Lyrics Window › Content
 

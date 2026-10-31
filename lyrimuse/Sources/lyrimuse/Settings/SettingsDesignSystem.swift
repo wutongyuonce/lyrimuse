@@ -1676,7 +1676,7 @@ private struct PopoverContentHeightKey: PreferenceKey {
 }
 
 /// 一组布尔开关归约成编辑台工具栏按钮上那句摘要:全开「全部开启」、全关「全部关闭」,部分开着只报**开了几项**
-/// (「3 项开启」/「3 On」)。
+/// (「3 项开启」/「3 On」)。只有一项时报「已开启」/「未开启」:「全部开启」读着像有好几项。
 ///
 /// 只报数量、不列标题:胶囊上留给摘要的宽度只有五六十 pt,列标题必然被截成半截,摘要必须读得完。开着的是哪几项放进
 /// 悬停说明(`detail`),点开浮层看全。
@@ -1689,6 +1689,7 @@ enum SettingsToggleSummary {
     @MainActor
     static func text(_ entries: [(title: String, isOn: Bool)]) -> String {
         let onCount = entries.filter { $0.isOn }.count
+        if entries.count == 1 { return onCount == 1 ? L10n.t("已开启") : L10n.t("未开启") }
         if onCount == entries.count { return L10n.t("全部开启") }
         if onCount == 0 { return L10n.t("全部关闭") }
         return String(format: L10n.t("%@ 项开启"), "\(onCount)")

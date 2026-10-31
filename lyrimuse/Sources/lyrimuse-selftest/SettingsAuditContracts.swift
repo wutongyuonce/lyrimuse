@@ -208,7 +208,7 @@ func runSettingsAuditContracts() {
     }
     expectEqual(localized.isEmpty, false, "工具栏摘要: 读到了 Localizable.xcstrings")
     let summaryKeys = ["全部开启", "全部关闭", "%@ 项开启", "自动", "居中", "左对齐", "右对齐", "自由", "顶部居中", "底部居中",
-                       "已开启", "未开启", "跟随窗口", "全部屏幕", "内建屏幕", "已断开"]
+                       "已开启", "未开启", "跟随窗口", "全部屏幕", "内建屏幕", "已断开", "无副行", "自动对齐"]
     let tooLong = summaryKeys.filter { key in
         guard let en = localized[key]?["en"], let hant = localized[key]?["zh-Hant"] else { return true }
         let filled = { (s: String) in s.replacingOccurrences(of: "%@", with: "9") }
@@ -232,4 +232,40 @@ func runSettingsAuditContracts() {
     expectEqual(sourceHas(overlayBehavior, "case .dragNeedsLongPress: return AppSettings.shared.overlayPlacementMode == .free")
                 && sourceHas(overlayBehavior, ".disabled(!item.isApplicable)"), true,
                 "悬浮歌词「长按拖动」: 位置不是「自由」时置灰")
+
+    // ---- 歌词窗口 / 菜单栏 / 触控栏:跨形态同名、同序 ----
+    expectEqual(sourceHas(toggleText, "if entries.count == 1 { return onCount == 1 ? L10n.t(\"已开启\") : L10n.t(\"未开启\") }"), true,
+                "工具栏摘要: 只有一项的开关报已开启 / 未开启,不报全部开启")
+    expectEqual(OverlayDuetAlignmentOverride.allCases, [.automatic, .leading, .center, .trailing],
+                "对齐方式: 悬浮歌词几档的顺序同另外几个形态(自动 / 左对齐 / 居中 / 右对齐)")
+    let menuBarStage = app("UI/MenuBarEditorStage.swift")
+    let menuBarColors = sourceBody("struct MenuBarColorRows: View {", in: menuBarStage)
+    expectEqual(!menuBarColors.contains("SettingsTileGrid") && !menuBarColors.contains("SettingsToggleTile")
+                && sourceHas(menuBarColors, "icon: \"sparkles\",\ntitle: L10n.t(\"卡拉OK效果\"),")
+                && sourceHas(menuBarColors, "icon: settings.menuBarLyricsKaraoke ? \"circle.lefthalf.filled\" : \"paintpalette\","), true,
+                "菜单栏「颜色」: 两颗开关和颜色行同一块行组,卡拉OK效果图标同另外几个形态,颜色行图标跟着标题换")
+    expectEqual(sourceHas(menuBarStage, "settings.menuBarLyricsWidthMode == .fixed && !MenuBarPlacementRow.centerInUse(settings)\n? L10n.t(\"宽度\") : L10n.t(\"最大宽度\")")
+                && sourceHas(menuBarStage, "SettingsRow(icon: \"arrow.left.and.right\", title: Self.title(settings)) {")
+                && sourceHas(menuBarStage, ".accessibilityLabel(MenuBarWidthRow.title(settings))"), true,
+                "菜单栏宽度滑杆: 固定宽度时叫「宽度」,自适应或放正中时叫「最大宽度」,读屏名同一个")
+    expectEqual(sourceHas(menuBarStage, "parts.append(choice == .off ? L10n.t(\"无副行\") : choice.displayName)")
+                && !sourceBody("private var contentSummary: String {", in: menuBarStage).contains("L10n.t(\"副行\")"), true,
+                "菜单栏「内容」摘要: 副行只报档名(关掉报「无副行」),不带「副行 ·」前缀")
+    expectEqual(sourceHas(notchStage, "parts.append(settings.notchSecondaryLine == .off ? L10n.t(\"无副行\") : settings.notchSecondaryLine.displayName)"),
+                true, "灵动岛「歌词行」摘要: 副行只报档名,不带「副行 ·」前缀")
+    let touchBarRows = app("UI/TouchBarSettingsRows.swift")
+    expectEqual(sourceHas(touchBarRows, "case .content: return L10n.t(\"内容\")\ncase .color: return L10n.t(\"颜色\")")
+                && sourceHas(touchBarRows, "case .layout: return \"rectangle.split.1x2\"")
+                && sourceHas(touchBarRows, "SettingsRow(icon: \"paintpalette\", title: L10n.t(\"文字颜色\"),")
+                && sourceHas(touchBarRows, "if settings.touchBarLyricsKaraoke { parts.append(L10n.t(\"卡拉OK效果\")) }"), true,
+                "触控栏: 组名「内容 / 颜色 / 布局 / 行为」,颜色那一行叫文字颜色,布局图标同另外几个形态")
+    expectEqual(sourceHas(menuBarStage, "icon: \"rectangle.split.1x2\",\ntitle: L10n.t(\"布局\"),"), true,
+                "菜单栏: 「布局」入口图标同歌词窗口、触控栏")
+    let overlayColors = sourceBody("struct OverlayColorSettingsRows: View {", in: styleRows)
+    expectEqual(sourceHas(overlayColors, "title: pairedKaraokeColors ? L10n.t(\"已唱颜色\") : L10n.t(\"文字颜色\")) {")
+                && sourceHas(overlayColors, "label: { $0 ? L10n.t(\"跟随封面\") : L10n.t(\"自定义\") },"), true,
+                "悬浮歌词「颜色」: 开着卡拉OK时文字颜色那一格叫已唱颜色,下拉选项叫「自定义」")
+    expectEqual(sourceHas(app("Settings/WebLyricsSettingsCard.swift"),
+                          "note: settings.webLyricsAllowLAN ? L10n.t(\"更改后需重新扫码连接\") : L10n.t(\"更改后需重新打开本机地址\"))"),
+                true, "网页歌词「端口」: 说明按局域网开没开写")
 }

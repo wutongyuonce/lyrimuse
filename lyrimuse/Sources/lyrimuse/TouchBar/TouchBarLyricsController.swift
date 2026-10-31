@@ -172,7 +172,7 @@ final class TouchBarLyricsController: NSObject, NSTouchBarDelegate {
     /// 主行那一格的上缘和高:一行时占满整条高,两行时挪到上面那一格(`setRowLayout`)。
     private lazy var mainRowTop = lyricsView.topAnchor.constraint(equalTo: lyricsContainer.topAnchor)
     private lazy var mainRowHeight = lyricsView.heightAnchor.constraint(equalToConstant: TouchBarLyricsCell.barHeight)
-    /// 「歌词颜色」选「跟随封面」时歌词的颜色(`TouchBarLyricsCell.coverAccent(hex:)`);取不到封面主色时 nil,退回白色。
+    /// 「文字颜色」选「跟随封面」时歌词的颜色(`TouchBarLyricsCell.coverAccent(hex:)`);取不到封面主色时 nil,退回白色。
     private var coverAccent: NSColor?
     /// 展开态那三项,建一次留着(触控栏重新展开时会再问代理要)。
     private var items: [NSTouchBarItem.Identifier: NSTouchBarItem] = [:]

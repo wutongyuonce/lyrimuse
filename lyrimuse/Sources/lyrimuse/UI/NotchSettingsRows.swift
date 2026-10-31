@@ -294,15 +294,15 @@ enum NotchStyleDefaults {
         settings.notchSecondaryLine = AppSettings.defaultNotchSecondaryLine
         // 「卡拉OK效果」在「歌词行」浮层里,同属内容开关。
         settings.notchLyricsKaraoke = AppSettings.defaultNotchLyricsKaraoke
-        // 「字体」组三项。它们是字形、不是宽度那类结构性尺寸,按钮自报的排除范围「不含宽度和总开关」
+        // 「字体」组三项。它们是字形、不是宽度那类结构性尺寸,按钮自报的排除范围「不含宽度和「灵动岛歌词」开关」
         // 里也没有它们 —— 进重置(重置覆盖闸也会盯着这三个 defaultNotch* 常量)。
         settings.notchFontFamilyName = AppSettings.defaultNotchFontFamilyName
         settings.notchFontWeight = AppSettings.defaultNotchFontWeight
         settings.notchFontSize = AppSettings.defaultNotchFontSize
-        // 歌词行「高度」同样进重置:按钮自报的排除范围只有「宽度和总开关」,它不在里面。
+        // 歌词行「高度」同样进重置:按钮自报的排除范围只有宽度和「灵动岛歌词」开关,它不在里面。
         settings.notchLyricRowHeight = AppSettings.defaultNotchLyricRowHeight
         // 「行为」组的开关都进重置:这颗按钮叫「恢复默认风格与开关」,界面自报的排除范围只有
-        // "不含宽度和总开关"。
+        // "不含宽度和「灵动岛歌词」开关"。
         settings.notchHideDuringScreenCapture = AppSettings.defaultNotchHideDuringScreenCapture
         settings.notchHideWhenNotPlaying = AppSettings.defaultNotchHideWhenNotPlaying
         settings.notchCollapseLyricsWhenNoLyrics = AppSettings.defaultNotchCollapseLyricsWhenNoLyrics

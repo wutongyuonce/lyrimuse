@@ -502,7 +502,7 @@ struct PanelQuickSettings: View {
                 )
             }
             // 放在菜单栏正中时宽度模式与对齐方式管不到(窗口宽跟着内容走、恒居中),判据同设置页那一组(`MenuBarLayoutRows`);
-            // 「最大宽度」两种位置都管。
+            // 宽度滑杆两种位置都管,标题按宽度模式和位置叫「宽度」或「最大宽度」(`MenuBarWidthRow.title`)。
             let centerInUse = MenuBarPlacementRow.centerInUse(settings)
             if !centerInUse {
                 row(L10n.t("宽度模式")) {
@@ -518,7 +518,7 @@ struct PanelQuickSettings: View {
                     )
                 }
             }
-            sliderRow(L10n.t("最大宽度"), value: Binding(
+            sliderRow(MenuBarWidthRow.title(settings), value: Binding(
                 get: { menuBarWidthThrottle.value(or: Double(settings.menuBarLyricsWidth)) },
                 set: { menuBarWidthThrottle.update($0, commit: settings.setMenuBarLyricsWidth(fromSlider:)) }
             ), range: AppSettings.menuBarLyricsWidthRange, step: 10,

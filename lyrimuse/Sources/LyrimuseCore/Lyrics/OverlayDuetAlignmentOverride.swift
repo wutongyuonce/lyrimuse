@@ -16,10 +16,13 @@
 /// 只影响悬浮窗(`LyricsOverlayView`),不影响歌词窗口(第 07 章)——按现象是的原话
 /// 范围来实现;歌词窗口对没有声部信息的兜底本来就是靠左(悬浮窗是居中),两边默认已经
 /// 不一致,这次不动它。
+///
+/// 声明序就是设置里几档的顺序(自动 / 左对齐 / 居中 / 右对齐,同另外几个形态共用的 `LyricsAlignmentSegmentedControl`):
+/// 分段控件按 `allCases` 画。存盘按原始值,换序不影响已存的设置。
 public enum OverlayDuetAlignmentOverride: String, Codable, Hashable, CaseIterable, Sendable {
     case automatic
-    case center
     case leading
+    case center
     case trailing
 
     /// 决定 VStack 对齐 / frame 锚点 / 文本对齐要用哪个声部值——**永远返回非 nil**,

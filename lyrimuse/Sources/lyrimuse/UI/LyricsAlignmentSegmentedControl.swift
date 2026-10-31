@@ -45,6 +45,11 @@ struct LyricsAlignmentSegmentedControl: View {
         }
     }
 
+    /// 工具栏摘要里的写法:「自动」单拿出来看不出是什么自动,报「自动对齐」;其余几档名字本身带着「对齐」/「居中」。
+    static func summary(for option: LyricsRestingAlignment) -> String {
+        option == .automatic ? L10n.t("自动对齐") : label(for: option)
+    }
+
     // 外观同设置页其余分段(`SettingsPillSegmentedControl`):灵动岛、菜单栏、触控栏的「对齐方式」跟悬浮歌词那一组一个样子。
     var body: some View {
         SettingsPillSegmentedControl(selection: $selection, options: options, label: Self.label(for:), minWidth: 56)

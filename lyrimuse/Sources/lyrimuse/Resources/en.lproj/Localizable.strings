@@ -131,6 +131,7 @@
 "Amazon Music 曲目 ID 一致" = "Same Amazon Music track ID";
 "Amazon Music 歌手页" = "Amazon Music artist page";
 "Amazon Music 歌曲页" = "Amazon Music song page";
+"Android" = "Android";
 "Apple Music" = "Apple Music";
 "Apple Music 播放的曲目 ID 一致" = "Same Apple Music track ID from playback";
 "Apple Music 检索结果为同一曲目" = "Same track found by Apple Music search";
@@ -266,7 +267,8 @@
 "「正在收听」后面显示" = "After “Listening to”";
 "「第 N 次收听」会将同一首歌曲的不同写法（繁简、括号风格、合唱署名等）合并计数。此处列出合并到这一行的每种写法、各自的次数与原因，以及每次收听的时间" = "“Play #N” merges different spellings of the same track (Traditional/Simplified, bracket styles, artist credits and so on). This lists every spelling folded into this row with its own count and the reason, plus every individual play";
 "「自动」优先带刘海的屏幕；指定的屏幕断开时暂按「自动」显示" = "Automatic prefers the display with the notch. If the chosen display is disconnected, Automatic is used until it’s back";
-"「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左" = "Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left";
+"「自动」按对唱声部对齐，合唱和无对唱信息时居中" = "Automatic follows the duet parts: choruses and lines without duet info are centered";
+"「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左" = "Automatic follows the duet parts: choruses are centered, and lines without duet info stay left";
 "「自动」选择带刘海的屏幕；「全部屏幕」在每块屏幕上各显示一个；指定的屏幕断开时按「自动」显示，插回后回到那块屏幕" = "Automatic picks the display with the notch; All Displays shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again";
 "「获取 Lyrimuse」" = "“Get Lyrimuse”";
 "一" = "M";
@@ -323,9 +325,9 @@
 "不分组" = "No Grouping";
 "不可用" = "Unusable";
 "不可用：%@" = "Unusable: %@";
+"不含「触控栏歌词」开关" = "The Touch Bar Lyrics switch stays as it is";
 "不含宽度和「灵动岛歌词」开关" = "Width and the Notch Lyrics switch stay as they are";
-"不含宽度和总开关" = "Width and the master toggle are left alone";
-"不含总开关" = "The master toggle is left alone";
+"不含宽度和「菜单栏歌词」开关" = "Width and the Menu Bar Lyrics switch stay as they are";
 "不含播放时实时生成的读音" = "Excludes romanization generated during playback";
 "不含时间戳" = "No timestamps";
 "不显示" = "None";
@@ -393,11 +395,12 @@
 "人工修正" = "Manually Edited";
 "人工修正 %@ 首" = "%@ manually edited";
 "人工修正过的歌词删除后无法恢复" = "Manually edited lyrics can’t be recovered once deleted";
-"仅作用于可完整显示的句子，需横向滚动的句子不受影响。「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左对齐" = "Applies only to lines that fit; lines that scroll horizontally aren’t affected. Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left";
 "仅作用于悬浮歌词和歌词窗口" = "Applies only to Floating Lyrics and the Lyrics Window";
 "仅作用于歌词；「自动」根据背景亮度在浅色与深色之间切换" = "Applies to lyrics only; Automatic switches between light and dark based on background brightness";
 "仅作用于歌词；字号随窗口大小自动调整" = "Applies to lyrics only; size scales with the window";
 "仅作用于歌词；顶部信息和播放控制仍用系统字体" = "Lyrics only; the header and playback controls keep the system font";
+"仅作用于能完整显示的句子" = "Applies only to lines that fit";
+"仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左" = "Applies only to lines that fit. Automatic follows the duet parts: choruses are centered, and lines without duet info stay left";
 "仅列出可翻译为当前译文语言的语言，因此可能少于「系统设置」中的数量。点按未下载的语言即可下载" = "Only languages that can be translated into your translation language are listed, so there may be fewer than in System Settings. Click a language that isn’t downloaded to download it";
 "仅列出已勾选的播放器；开启「自动识别」时，还会列出本机已安装的播放器" = "Only the players you’ve selected are listed. With Auto-detect on, players installed on this Mac are listed too";
 "仅列出所选播放器所需的权限" = "Only permissions your players need are listed";
@@ -408,8 +411,6 @@
 "仅在机器人安全设置选择「加签」时需要填写，留空则按未加签处理" = "Only needed if the bot’s security settings have “Signature” enabled; leave it blank to treat it as unsigned";
 "仅当前条目" = "Current entry only";
 "仅恢复主题、字体和颜色" = "Resets theme, font and colors only";
-"仅恢复完整尺寸的设置，迷你尺寸、网页歌词和窗口大小保持不变" = "Resets only the Full Size settings; the Mini Size, Web Lyrics and the window’s dimensions stay as they are";
-"仅恢复迷你尺寸的设置，完整尺寸、网页歌词和窗口大小保持不变" = "Resets only the Mini Size settings; the Full Size, Web Lyrics and the window’s dimensions stay as they are";
 "仅搜索无歌词或仅有纯文本歌词的歌曲" = "Only songs with no lyrics or plain-text lyrics";
 "仅显示所用播放器和播放进度，不发送歌名、歌手、专辑、歌词、链接和「在播放器上收听」按钮" = "Shows only the player you’re using and the progress. The title, artist, album, lyrics, links and the “Listen on Player” button aren’t sent";
 "仅有纯文本，无时间戳" = "Plain text only, no timing";
@@ -428,6 +429,8 @@
 "仅识别勾选的播放器；未勾选的播放器不显示歌词，也不计入收听记录" = "Only the players you check are detected. The rest don’t show lyrics or count toward your listening history";
 "仅调整主行；副行和下一句预览固定为 %@pt" = "Main line only; the second line and next-line preview stay at %@pt";
 "仅部分专辑提供；低电量或「减弱动态效果」时自动暂停" = "Available on some albums only; pauses in Low Power Mode or with Reduce Motion on";
+"仅限完整尺寸，不含读音、译文、网页歌词和窗口大小" = "Full Size only. Romanization, Translation, Web Lyrics and the window size stay as they are";
+"仅限迷你尺寸，不含读音、译文、网页歌词和窗口大小" = "Mini Size only. Romanization, Translation, Web Lyrics and the window size stay as they are";
 "今天" = "Today";
 "今天 %@" = "Today at %@";
 "今天收听 %1$@ 次 · 本周 %2$@ 次" = "%1$@ plays today · %2$@ this week";
@@ -810,6 +813,7 @@
 "图标换成专辑封面" = "Use Artwork as Icon";
 "图标旁" = "Beside Icon";
 "图标样式" = "Icon Style";
+"图标自下而上填充以表示播放进度，颜色取自「颜色」组" = "The icon fills from the bottom up to show playback progress, using the colors set under Color";
 "圆角" = "Corners";
 "在 %@ 上收听" = "Listen on %@";
 "在 %@ 中打开" = "Open in %@";
@@ -843,8 +847,6 @@
 "在「歌词显示」中选择译文和读音的显示位置" = "Choose where translations and romanization appear in Lyrics Display";
 "在「系统设置 › 隐私与安全性 › %@」中开启 Lyrimuse。若列表中没有，请通过「+」添加当前运行的 Lyrimuse.app；若已开启但仍无效，请移除旧条目并重新添加，然后重启 Lyrimuse" = "Turn on Lyrimuse in System Settings › Privacy & Security › %@. If it isn’t listed, use “+” to add the Lyrimuse.app you’re running. If it’s already on but still has no effect, remove the old entry, add it again, then restart Lyrimuse";
 "在主歌词下方增加一行。译文和读音对应当前句，「下一句」显示即将演唱的歌词，选择后展开区不再重复显示下一句预览。空间不足时歌词行自动增高" = "Adds a line under the main lyric. Translation and Romanization match the current line; Next Line shows the upcoming one, and the expanded area then no longer repeats the next-line preview. The lyric row grows when space runs short";
-"在主歌词下方增加一行，高度不变（两行分别为 10pt / 9pt，「字号」不生效）。译文和读音对应当前句，「下一句」显示即将演唱的歌词；开启副行时，主行不再提前切换到下一句。副行不滚动，空间不足时末尾渐隐" = "Adds a second line under the lyric without changing the item’s height (10pt / 9pt; Font Size has no effect). Translation and Romanization show the current line; Next Line shows the upcoming one. With a second line on, the main line no longer switches early. The second line doesn’t scroll; its end fades out when it doesn’t fit";
-"在主行下方增加一行：译文和读音对应当前句，「下一句」为即将演唱的歌词。开启后两行字号固定为 14pt / 11pt，「字号」不生效，主行也不再提前切换到下一句；副行空间不足时，按该句时长横向滚动" = "Adds a second line under the main line: Translation and Romanization follow the current line, and Next Line shows the upcoming one. With it on, the two lines are fixed at 14pt / 11pt (Font Size has no effect) and the main line no longer switches early. A second line that doesn’t fit scrolls across over the line’s duration";
 "在企业微信群中：群设置 → 群机器人 → 添加机器人，创建后拷贝 Webhook 地址，无需额外的签名设置" = "In your WeCom group: Group Settings → Group Bots → Add a Bot, then copy the webhook URL after creating it. No extra signature setup is needed";
 "在其他设备上播放，Last.fm 已收到" = "Playing on another device; Last.fm has received it";
 "在列表中显示" = "Show in List";
@@ -857,7 +859,7 @@
 "在播放器中播放任意歌曲，歌词将自动显示" = "Play something in your player and lyrics will appear here";
 "在支持 HDR 的屏幕上提亮已唱部分，开启后更耗电" = "Brightens the sung part on HDR displays. Uses more power when on";
 "在歌手前添加「演唱：」，在专辑前添加「专辑：」。歌名和歌手位于同一行时不添加" = "Adds “by” before the artist and “on” before the album. Not added when the title and artist share a line";
-"在歌词区域最左或最右侧显示菜单栏图标，图标颜色自下而上填充以表示播放进度：已填充部分使用「已唱颜色」，其余使用「未唱颜色」。仅在显示歌词时出现" = "Shows the menu bar icon at the far left or right of the lyrics area, filling from the bottom up to show playback progress: the filled part uses Sung Color and the rest Unsung Color. Appears only while lyrics are shown";
+"在歌词下方增加一行；开启后两行字号固定，「字号」不生效" = "Adds a line under the lyrics. With it on, both lines use a fixed size and Font Size has no effect";
 "在洛雪音乐的设置中开启开放 API 后可调节音量" = "Turn on Open API in LX Music settings to adjust its volume";
 "在浏览器中打开" = "Open in Browser";
 "在浏览器中授权" = "Authorize in Your Browser";
@@ -916,7 +918,6 @@
 "存在差异" = "Different";
 "存在标题更吻合的候选，撤销逐字加分" = "A candidate matches the title better, so the word-timing bonus is withdrawn";
 "孟加拉语" = "Bangla";
-"安卓" = "Android";
 "安装并登录后将自动连接；网页版和手机版不支持连接" = "Connects automatically once it’s installed and you’re signed in. The web and mobile apps can’t connect";
 "完全一致" = "Identical";
 "完全同名 120 · 仅括号差异 60 · 中英双语同名 30" = "Exact title 120 · parenthetical-only difference 60 · bilingual same name 30";
@@ -1326,7 +1327,7 @@
 "指针停在灵动岛上时，双指左右滑动切歌，上下滑动调节音量" = "With the pointer over the notch, swipe left or right with two fingers to change tracks, or up and down to adjust the volume";
 "指针在歌词行上时不展开，歌词行淡化，点按穿透到下层窗口" = "With the pointer on the lyric row, the row fades instead of expanding, and clicks pass through to the window below";
 "指针悬停在封面上时也显示此行" = "Also shown when hovering over the artwork";
-"指针移到菜单栏歌词上时显示「上一曲 / 播放暂停 / 下一曲」三个按钮，移开后恢复。暂停后歌词收起为图标，或区域过窄放不下三个按钮时不显示。点按按钮以外的区域仍会打开面板" = "Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn’t take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel";
+"指针移到歌词上时显示上一首、播放/暂停、下一首按钮" = "Shows Previous, Play/Pause and Next when you hover over the lyrics";
 "按 %@ 秒校验" = "Validated against %@s";
 "按 %@ 秒的曲目时长校验" = "Validated against a track length of %@s";
 "按 ISRC 补查未应答的源" = "By ISRC: re-queried sources that didn’t respond";
@@ -1473,6 +1474,7 @@
 "方糖 · 消息详情" = "ServerChan · Message details";
 "旁遮普语" = "Punjabi";
 "无 GitHub 账号时，可发送邮件至 %@；右键点按可拷贝地址" = "Without a GitHub account, email %@. Right-click to copy the address";
+"无副行" = "Single Line";
 "无匹配的字体" = "No matching fonts";
 "无可保存的更改" = "No changes to save";
 "无可恢复的歌词" = "No hidden lyrics to restore";
@@ -1610,6 +1612,7 @@
 "更改…" = "Change…";
 "更改位置后，已有文件不会随之移动" = "Existing files stay where they are when you change the location";
 "更改后需同步修改 OBS 中的地址" = "After changing it, update the URL in OBS";
+"更改后需重新打开本机地址" = "After changing it, reopen the local address";
 "更改后需重新扫码连接" = "After changing it, scan the QR code again to reconnect";
 "更新" = "Updates";
 "更新与帮助" = "Updates & Help";
@@ -1824,7 +1827,7 @@
 "歌曲" = "Track";
 "歌曲信息" = "Song Info";
 "歌曲开始播放后将显示歌词" = "Lyrics will show once the song starts";
-"歌曲无歌词或仍在搜索时，在歌词位置显示歌名，不收起为小图标；获取歌词后立即切换为歌词。暂停时仍收起为图标，广告期间不显示" = "While a song has no lyrics or is still being searched, keep the lyrics slot with the song title instead of collapsing to the icon; the line is swapped in as soon as lyrics arrive. Still collapses when paused, and never shows during ads";
+"歌曲无歌词或仍在搜索时，在歌词位置显示歌名" = "Shows the song title in place of lyrics while there are none or they’re still being found";
 "歌曲榜" = "Top tracks";
 "歌曲榜，按「每类列出」的条数，一行一首" = "Top tracks, as many as “Items per List”, one per line";
 "歌曲简介" = "Song Notes";
@@ -1881,7 +1884,7 @@
 "歌词窗口…" = "Lyrics Window…";
 "歌词窗口的文字颜色；「自动」根据背景亮度在浅色与深色之间切换" = "The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness";
 "歌词窗口的歌词字体（正文、译文、读音）" = "Lyrics font for the lyrics window (main text, translation, romanization)";
-"歌词窗口的背景：跟随封面／纯色／渐变／毛玻璃" = "The lyrics window’s background: follow artwork, solid, gradient, or frosted glass";
+"歌词窗口的背景：跟随封面、纯色、渐变或毛玻璃" = "The lyrics window’s background: follow artwork, solid, gradient, or frosted glass";
 "歌词管理" = "Lyrics Manager";
 "歌词管理…" = "Lyrics Manager…";
 "歌词类型" = "Lyrics Type";
@@ -2269,7 +2272,6 @@
 "背景" = "Background";
 "背景颜色" = "Background Color";
 "胜者" = "Winner";
-"能完整显示的句子在这一格里靠哪边，显示不下的会横向滚动" = "Where lines that fit sit in the slot. Lines that don’t fit scroll";
 "腾讯旗下的音乐 App" = "Tencent’s music app";
 "腾讯旗下的音乐平台" = "Tencent’s music service";
 "腾讯音乐旗下的音乐 App" = "A music app from Tencent Music";
@@ -2291,6 +2293,7 @@
 "自动匹配的歌词与当前条目同步：更换歌词时一并更新，手动修改也会同步" = "Automatically matched lyrics stay in sync with the current entry: replacements and manual edits apply to both";
 "自动匹配缺失歌词" = "Auto-Match Missing Lyrics";
 "自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试" = "The automatic backup couldn’t be written, so nothing was deleted this time to keep it recoverable. Check your disk space and write access to the config folder, then try again";
+"自动对齐" = "Auto Align";
 "自动展开" = "Auto-Expand";
 "自动检查" = "Check Automatically";
 "自动识别" = "Auto-detect";
@@ -2300,7 +2303,6 @@
 "自动跳过 YouTube Music 广告" = "Skip YouTube Music Ads Automatically";
 "自动选定歌词时的记录，重新搜索的结果可能不同" = "Saved when the lyrics were picked automatically; searching again now may give different results";
 "自动隐藏" = "Auto-Hide";
-"自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置" = "Automatic (default): switches between left / right / center by duet vocal part\nOthers: ignore vocal parts and stay fixed in one position";
 "自定义" = "Custom";
 "自定义内容按纯文本推送，不套用各平台的卡片排版" = "Custom content is sent as plain text, without each platform’s card layout";
 "自定义按钮" = "Custom Button";
@@ -2329,7 +2331,6 @@
 "菜单栏图标" = "Menu Bar Icon";
 "菜单栏图标：%@" = "Menu bar icon: %@";
 "菜单栏歌词" = "Menu Bar Lyrics";
-"菜单栏歌词的字重。「常规」即系统菜单栏的默认字重；中文只加粗不加宽，英文字重越大宽度略增" = "How heavy the menu bar lyrics are drawn. Regular is exactly the system default weight. Chinese only gets bolder, Latin text also gets slightly wider";
 "菜单栏正中" = "Menu Bar Center";
 "菜单栏正中：歌词显示在菜单栏中间，避开 App 菜单、右侧图标和刘海" = "Menu Bar Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch";
 "落后 %d 分" = "Behind by %d";
@@ -2477,7 +2478,7 @@
 "跟随播放" = "Follow Playback";
 "跟随播放器启动" = "Launch with Player";
 "跟随播放器退出" = "Quit with Player";
-"跟随文字颜色" = "Match Text Color";
+"跟随未唱颜色" = "Match Unsung Color";
 "跟随窗口" = "Follow Window";
 "跟随系统" = "Follow System";
 "跟随系统语言" = "Follow System Language";
@@ -2591,7 +2592,7 @@
 "迷你尺寸顶部信息占窗口高度的百分比，字号与封面随之缩放" = "How much of the window’s height the mini size’s header takes up; the text and artwork scale with it";
 "迷你尺寸顶部信息左侧的封面缩略图" = "The small artwork thumbnail beside the mini size’s top info";
 "迷你尺寸顶部显示已播放时间与歌曲时长" = "Shows elapsed time and track length at the top of the mini size";
-"迷你尺寸顶部显示歌名／歌手／专辑" = "Show the title, artist, and album at the top of the mini size";
+"迷你尺寸顶部显示歌名、歌手和专辑" = "Show the title, artist, and album at the top of the mini size";
 "退出 Lyrimuse" = "Quit Lyrimuse";
 "退出全屏" = "Exit Full Screen";
 "退出时安装" = "Install on Quit";
@@ -2612,7 +2613,7 @@
 "选择要分享的句子" = "Pick the lines to share";
 "透明" = "Transparent";
 "逐字" = "Word-by-Word";
-"逐字填色时已唱部分使用此颜色；未唱部分和其他行仍使用文字颜色。关闭「卡拉OK效果」时无效" = "The part already sung takes this color as lyrics fill word by word. Unsung words and other lines keep the text color. Has no effect when Karaoke Effect is off";
+"逐字填色时已唱部分使用此颜色" = "The color of the sung part as lyrics fill word by word";
 "逐字时间轴" = "Word timing";
 "逐字时间轴 %@ 首" = "%@ with word timing";
 "逐字歌词" = "Word-by-word";
@@ -2712,7 +2713,7 @@
 "除 %@ 外" = "All except %@";
 "随当前窗口切换屏幕，相对位置不变" = "Moves to the display of the window you’re using, keeping its relative position";
 "随机播放" = "Shuffle";
-"随演唱进度将已演唱部分显示为系统强调色。仅在歌曲有逐字时间轴时生效；打开菜单反白期间暂停着色" = "Tints the sung portion with the system accent color, following the vocal timing. Only takes effect when this track has word-level timing; fill pauses while the menu is open and highlighted";
+"随演唱进度为已唱部分着色，仅在歌曲有逐字时间轴时生效" = "Colors the sung part as the vocals progress. Only works when the song has word-level timing";
 "隐私" = "Privacy";
 "隐藏" = "Hide";
 "隐藏/恢复全部歌词" = "Hide/Restore All Lyrics";
@@ -2752,8 +2753,8 @@
 "预览 %@" = "Preview %@";
 "预览 · 好友在 Discord 上看到的效果" = "Preview · What friends see on Discord";
 "预览 · 好友所见效果，按钮仅对他人可见" = "Preview · What friends see; buttons are visible only to others";
-"预览 · 左右滑动查看完整内容" = "Preview · swipe sideways for the whole bar";
-"预览 · 左右滑动查看完整内容 · 本句较长，将横向滚动" = "Preview · swipe sideways for the whole bar · this line is long and scrolls";
+"预览 · 左右滚动查看完整内容" = "Preview · scroll sideways to see the whole bar";
+"预览 · 左右滚动查看完整内容 · 本句较长，将横向滚动" = "Preview · scroll sideways to see the whole bar · this line is long and scrolls";
 "预览 · 已关闭，Discord 上不会显示" = "Preview · Turned off, nothing shows on Discord";
 "预览 · 已暂时隐藏，%@ 恢复" = "Preview · Hidden until %@";
 "预览 · 当前未播放，显示示例" = "Preview · Nothing playing, showing an example";
@@ -2792,7 +2793,7 @@
 "默认标题" = "Default title";
 "默认正文" = "Default body";
 "默认正文的第一行：次数、跟上一期比、时长" = "First line of the default body: plays, change from last period, listening time";
-"默认跟随系统菜单栏字号，可在 10～16pt 之间调整，16pt 仍在菜单栏高度范围内。拖回系统字号即恢复跟随" = "Follows the system menu bar by default; adjustable from 10 to 16pt, and 16pt still fits the menu bar. Drag back to the system size to follow it again";
+"默认跟随系统菜单栏字号" = "Follows the system menu bar size by default";
 "（%@）" = " (%@)";
 "（已调）" = " (adjusted)";
 "（正在播放）" = " (now playing)";

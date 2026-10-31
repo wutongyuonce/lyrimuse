@@ -89,7 +89,8 @@ struct OverlayTypeSettingsRows: View {
 /// 「颜色」那一组:卡拉OK效果 / 文字描边 / 毛玻璃背景三个开关一行小块,下面文字颜色 / 未唱颜色 / 描边颜色 /
 /// 背景颜色几格(两列)。
 ///
-/// - 未唱颜色只在开着卡拉OK时出现:没有卡拉OK就没有"已唱 / 未唱"。它跟文字颜色是平级的一对,各自能跟随封面或选色。
+/// - 未唱颜色只在开着卡拉OK时出现:没有卡拉OK就没有"已唱 / 未唱"。那时文字颜色那一格(`foregroundColor`,唱到的那半)
+///   改叫「已唱颜色」,跟未唱颜色成对;关着或选了彩虹时只有一格,叫「文字颜色」。四个形态同一套叫法和图标。
 /// - 描边颜色只在开着描边时出现;描边只让选颜色(含 alpha),粗细是固定常量(LyricsOverlayView 的 OptionalTextStroke)。
 /// - 毛玻璃改变的是背景颜色的含义(从卡片本色变成玻璃上的着色);开着时浓淡下拉挂在毛玻璃那一块上
 ///   (SwiftUI 的 Material 做不成连续滑杆,见 OverlayGlassIntensity)。
@@ -123,7 +124,8 @@ struct OverlayColorSettingsRows: View {
                 }
             }
             SettingsTileGrid(columns: 2) {
-                SettingsControlCell(icon: "paintbrush", title: L10n.t("文字颜色")) {
+                SettingsControlCell(icon: pairedKaraokeColors ? "paintbrush.pointed" : "paintpalette",
+                                    title: pairedKaraokeColors ? L10n.t("已唱颜色") : L10n.t("文字颜色")) {
                     HStack(spacing: 8) {
                         SettingsGlassMenuPicker(
                             selection: textColorSource,
@@ -140,7 +142,7 @@ struct OverlayColorSettingsRows: View {
                     }
                 }
                 // 彩虹时没唱到的字固定是暗一档的彩虹,没有可调的颜色。
-                if settings.overlayLyricsKaraoke && !settings.overlayRainbow {
+                if pairedKaraokeColors {
                     SettingsControlCell(icon: "circle.lefthalf.filled", title: L10n.t("未唱颜色")) {
                         colorModeMenu(
                             follows: $settings.karaokeUnsungFollowsCoverArt,
@@ -181,7 +183,10 @@ struct OverlayColorSettingsRows: View {
         .animation(.default, value: settings.overlayRainbow)
     }
 
-    /// 「文字颜色」从哪来:跟随封面 / 自定义颜色 / 彩虹三选一,落在 `followsCoverArt` 和 `overlayRainbow` 两个设置上。
+    /// 开着卡拉OK、又不是彩虹时,颜色是「已唱 / 未唱」一对;否则只有一格「文字颜色」。
+    private var pairedKaraokeColors: Bool { settings.overlayLyricsKaraoke && !settings.overlayRainbow }
+
+    /// 「文字颜色」从哪来:跟随封面 / 自定义 / 彩虹三选一,落在 `followsCoverArt` 和 `overlayRainbow` 两个设置上。
     private var textColorSource: Binding<OverlayTextColorSource> {
         Binding(
             get: { settings.overlayRainbow ? .rainbow : (settings.followsCoverArt ? .cover : .custom) },
@@ -191,7 +196,7 @@ struct OverlayColorSettingsRows: View {
             })
     }
 
-    /// 「未唱颜色」的取色控件:玻璃下拉选"跟随封面"还是"自定义颜色",
+    /// 「未唱颜色」的取色控件:玻璃下拉选"跟随封面"还是"自定义",
     /// 选了自定义才在旁边露出取色器。
     ///
     /// 这里**不用** `Toggle(带文字标签, isOn:)`:macOS 上这个标签
@@ -202,7 +207,7 @@ struct OverlayColorSettingsRows: View {
             SettingsGlassMenuPicker(
                 selection: follows,
                 options: [true, false],
-                label: { $0 ? L10n.t("跟随封面") : L10n.t("自定义颜色") },
+                label: { $0 ? L10n.t("跟随封面") : L10n.t("自定义") },
                 compact: true
             )
             if !follows.wrappedValue {
@@ -292,7 +297,7 @@ struct OverlayLayoutSettingsRows: View {
         SettingsRow(
             icon: "text.alignleft",
             title: L10n.t("对齐方式"),
-            help: L10n.t("自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置")
+            help: L10n.t("「自动」按对唱声部对齐，合唱和无对唱信息时居中")
         ) {
             // 故意不用系统 `.pickerStyle(.segmented)`(三轮修法都没
             // 按住"选了哪个选项、控件整体宽度就跟着变"这个问题,完整排查过程见
@@ -430,14 +435,14 @@ struct OverlayAlignmentSegmentedControl: View {
     static func label(for option: OverlayDuetAlignmentOverride) -> String {
         switch option {
         case .automatic: return L10n.t("自动")
-        case .center: return L10n.t("居中")
         case .leading: return L10n.t("左对齐")
+        case .center: return L10n.t("居中")
         case .trailing: return L10n.t("右对齐")
         }
     }
 
     var body: some View {
-        // 顺序直接用 allCases(声明序:自动/居中/左/右),不另抄一份数组 —— 抄一份的话
+        // 顺序直接用 allCases(声明序:自动/左/居中/右,同 `LyricsAlignmentSegmentedControl`),不另抄一份数组 —— 抄一份的话
         // 以后往枚举里加一个方向,这里不加就是"设置里选不到的合法值"。
         SettingsPillSegmentedControl(
             selection: $selection,
@@ -814,14 +819,14 @@ enum OverlayStyleSummary {
 //  —— 是 `theme` / `text` / `background` / `layout` 四截,`color` 那一截随
 //  「配色」浮层一起拆成了前面的 `theme` 和 `background`。)
 
-/// 悬浮歌词「文字颜色」那一格的三档。
+/// 悬浮歌词「文字颜色 / 已唱颜色」那一格的三档。
 enum OverlayTextColorSource: CaseIterable, Hashable {
     case cover, custom, rainbow
 
     var displayName: String {
         switch self {
         case .cover: return L10n.t("跟随封面")
-        case .custom: return L10n.t("自定义颜色")
+        case .custom: return L10n.t("自定义")
         case .rainbow: return L10n.t("彩虹")
         }
     }

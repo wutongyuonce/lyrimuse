@@ -1,22 +1,22 @@
 import LyrimuseCore
 import SwiftUI
 
-// 「歌词显示 › 触控栏」那一段的编辑台:预览上面两行工具栏(歌词 / 样式 + 「重置 ▾」,布局 / 行为,四个浮层),预览下面是总开关卡和
-// 默认折叠的「全部设置」抽屉。浮层和抽屉装配同一份行视图(`TouchBarLyricsRows` / `TouchBarStyleRows` / `TouchBarLayoutRows` /
-// `TouchBarBehaviorRows`),四组的顺序和标题两边一致。预览上点歌词那一格、封面、三键这些也能打开对应的浮层(`TouchBarPreviewStage`,弹的是同一份
+// 「歌词显示 › 触控栏」那一段的编辑台:预览上面两行工具栏(内容 / 颜色 + 「重置 ▾」,布局 / 行为,四个浮层),预览下面是总开关卡和
+// 默认折叠的「全部设置」抽屉。浮层和抽屉装配同一份行视图(`TouchBarContentRows` / `TouchBarColorRows` / `TouchBarLayoutRows` /
+// `TouchBarBehaviorRows`),四组的顺序和标题两边一致。组名、图标跟另外几个形态同一套:「颜色」管卡拉OK和文字颜色,对齐方式归「布局」。预览上点歌词那一格、封面、三键这些也能打开对应的浮层(`TouchBarPreviewStage`,弹的是同一份
 // `TouchBarSettingsGroup.popoverContent`),工具栏照歌词窗口那一段摆在预览上面。
 
 /// 工具栏的四个入口,也是抽屉里四组的顺序。
 enum TouchBarSettingsGroup: CaseIterable {
-    case lyrics
-    case style
+    case content
+    case color
     case layout
     case behavior
 
     var title: String {
         switch self {
-        case .lyrics: return L10n.t("歌词")
-        case .style: return L10n.t("样式")
+        case .content: return L10n.t("内容")
+        case .color: return L10n.t("颜色")
         case .layout: return L10n.t("布局")
         case .behavior: return L10n.t("行为")
         }
@@ -24,9 +24,9 @@ enum TouchBarSettingsGroup: CaseIterable {
 
     var icon: String {
         switch self {
-        case .lyrics: return "text.alignleft"
-        case .style: return "paintpalette"
-        case .layout: return "rectangle.split.3x1"
+        case .content: return "checklist"
+        case .color: return "paintpalette"
+        case .layout: return "rectangle.split.1x2"
         case .behavior: return "switch.2"
         }
     }
@@ -38,10 +38,9 @@ extension TouchBarSettingsGroup {
     @MainActor @ViewBuilder
     func popoverContent() -> some View {
         switch self {
-        // 「歌词」520:对齐方式四档胶囊分段 + 不折行的行名。
-        case .lyrics: SettingsPopoverShell(title: title, width: 520) { TouchBarLyricsRows() }
-        case .style: SettingsPopoverShell(title: title, width: 520) { TouchBarStyleRows() }
-        // 「布局」四个开关两列小块、封面和三键的左 / 右下拉挂在小块里;「行为」三个开关两列。
+        case .content: SettingsPopoverShell(title: title, width: 520) { TouchBarContentRows() }
+        case .color: SettingsPopoverShell(title: title, width: 520) { TouchBarColorRows() }
+        // 「布局」对齐方式一行(四档胶囊分段)、四个开关两列小块、封面和三键的左 / 右下拉挂在小块里;「行为」三个开关两列。
         // 别排成一行三格:要 780 宽,浮层伸出设置窗口外。
         case .layout: SettingsPopoverShell(title: title, width: 680) { TouchBarLayoutRows() }
         case .behavior: SettingsPopoverShell(title: title, width: 580) { TouchBarBehaviorRows() }
@@ -51,17 +50,18 @@ extension TouchBarSettingsGroup {
 
 // MARK: - 四组行视图
 
-/// 「歌词」组:副行 → 字号 → 对齐方式。字号紧跟在副行下面:副行开着时两行的字号由触控栏的高定(14 / 11pt,见
+/// 「内容」组:副行 → 字号。字号紧跟在副行下面:副行开着时两行的字号由触控栏的高定(14 / 11pt,见
 /// `TouchBarLyricsStyle`),滑杆拨了也没效果,行留着、尾部换成一句灰字「由副行决定」(同菜单栏「字号」那一行)。
-struct TouchBarLyricsRows: View {
+struct TouchBarContentRows: View {
     @ObservedObject private var settings = AppSettings.shared
 
     var body: some View {
         SettingsRowGroup {
             VStack(spacing: 0) {
                 // 四选一同灵动岛 / 菜单栏的「副行」(同一个枚举、同一套显示名),各存各的键,默认「下一句」。
+                // 说明同菜单栏「副行」那一句;两行的字号、主行不提前换句、副行放不下时怎么滚写在 17 章。
                 SettingsRow(icon: "text.append", title: L10n.t("副行"),
-                            help: L10n.t("在主行下方增加一行：译文和读音对应当前句，「下一句」为即将演唱的歌词。开启后两行字号固定为 14pt / 11pt，「字号」不生效，主行也不再提前切换到下一句；副行空间不足时，按该句时长横向滚动")) {
+                            help: L10n.t("在歌词下方增加一行；开启后两行字号固定，「字号」不生效")) {
                     SettingsGlassMenuPicker(
                         selection: $settings.touchBarSecondaryLine,
                         options: LyricSecondaryLine.allCases,
@@ -94,22 +94,15 @@ struct TouchBarLyricsRows: View {
                         }
                     }
                 }
-                CardDivider()
-                // 同灵动岛「对齐方式」那四档(含按对唱声部走的「自动」),说明文案也是同一条。
-                SettingsRow(icon: "text.alignleft", title: L10n.t("对齐方式"),
-                            help: L10n.t("仅作用于可完整显示的句子，需横向滚动的句子不受影响。「自动」按对唱声部对齐：各声部靠向各自一侧，合唱居中，无对唱信息时靠左对齐")) {
-                    LyricsAlignmentSegmentedControl(selection: $settings.touchBarLyricsAlignment,
-                                                    options: LyricsRestingAlignment.notchOptions)
-                }
             }
         }
     }
 }
 
-/// 「样式」组:卡拉OK效果、歌词颜色(白色 / 跟随封面 / 自定义,自定义时挂色块)、暗部亮度。底色恒黑,自选色照原色画,
+/// 「颜色」组:卡拉OK效果、文字颜色(白色 / 跟随封面 / 自定义 / 彩虹,自定义时挂色块)、暗部亮度。底色恒黑,自选色照原色画,
 /// 没唱到的部分和副行仍有亮度下限(17 章决策 30、51)。系统开了「减弱动态效果」时卡拉OK效果那一行多一句副标题,
 /// 说明这时不逐字填色(17 章决策 43)。
-struct TouchBarStyleRows: View {
+struct TouchBarColorRows: View {
     @ObservedObject private var settings = AppSettings.shared
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -125,7 +118,7 @@ struct TouchBarStyleRows: View {
                     Toggle("", isOn: $settings.touchBarLyricsKaraoke)
                 }
                 CardDivider()
-                SettingsRow(icon: "paintpalette", title: L10n.t("歌词颜色"),
+                SettingsRow(icon: "paintpalette", title: L10n.t("文字颜色"),
                             subtitle: settings.touchBarLyricsColorMode == .cover
                                 ? L10n.t("歌词使用封面主色；无法获取时为白色") : nil) {
                     HStack(spacing: 8) {
@@ -170,15 +163,23 @@ struct TouchBarStyleRows: View {
     }
 }
 
-/// 「布局」组:封面、播放控制各自显不显示、摆在歌词哪一边(`TouchBarSide`,两项各管各的,开着那一块才挂左 / 右下拉),
+/// 「布局」组:对齐方式,封面、播放控制各自显不显示、摆在歌词哪一边(`TouchBarSide`,两项各管各的,开着那一块才挂左 / 右下拉),
 /// 「⋯」键,展开时隐藏功能栏,以及去系统设置里调功能栏的入口。
 struct TouchBarLayoutRows: View {
     @ObservedObject private var settings = AppSettings.shared
 
-    // 四个开关两列小块(封面、三键开着时左 / 右下拉挂在那一块上),去系统设置那一行单独一框。说明都收进 ⓘ:
-    // 往上弹的浮层只有按钮上方约 200pt,一行一个开关加副标题放不下。
+    // 对齐方式单独一框(四档分段太宽,放不进小块),四个开关两列小块(封面、三键开着时左 / 右下拉挂在那一块上),
+    // 去系统设置那一行单独一框。说明都收进 ⓘ:往上弹的浮层只有按钮上方约 200pt,一行一个开关加副标题放不下。
     var body: some View {
         SettingsRowGroupStack {
+            SettingsRowGroup {
+                // 同灵动岛「对齐方式」那四档(含按对唱声部走的「自动」),说明文案也是同一条。
+                SettingsRow(icon: "text.alignleft", title: L10n.t("对齐方式"),
+                            help: L10n.t("仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左")) {
+                    LyricsAlignmentSegmentedControl(selection: $settings.touchBarLyricsAlignment,
+                                                    options: LyricsRestingAlignment.notchOptions)
+                }
+            }
             SettingsTileGrid {
                 SettingsToggleTile(icon: "photo", title: L10n.t("显示封面"), isOn: $settings.touchBarShowsArtwork) {
                     if settings.touchBarShowsArtwork {
@@ -268,20 +269,20 @@ struct TouchBarSidePicker: View {
 @MainActor
 enum TouchBarStyleDefaults {
     /// 两个入口的作用范围说明,必须一字不差。
-    static var scope: String { L10n.t("不含总开关") }
+    static var scope: String { L10n.t("不含「触控栏歌词」开关") }
 
     static func restoreDefaults() {
         let settings = AppSettings.shared
-        // 「歌词」
+        // 「内容」
         settings.touchBarSecondaryLine = AppSettings.defaultTouchBarSecondaryLine
         settings.touchBarLyricsFontSize = TouchBarLyricsStyle.defaultFontSize
-        settings.touchBarLyricsAlignment = AppSettings.defaultTouchBarLyricsAlignment
-        // 「样式」
+        // 「颜色」
         settings.touchBarLyricsKaraoke = AppSettings.defaultTouchBarLyricsKaraoke
         settings.touchBarLyricsColorMode = AppSettings.defaultTouchBarLyricsColorMode
         settings.touchBarLyricsColorHex = AppSettings.defaultTouchBarLyricsColorHex
         settings.touchBarLyricsDimLevel = TouchBarLyricsStyle.defaultDimLevel
         // 「布局」
+        settings.touchBarLyricsAlignment = AppSettings.defaultTouchBarLyricsAlignment
         settings.touchBarShowsArtwork = AppSettings.defaultTouchBarShowsArtwork
         settings.touchBarArtworkSide = AppSettings.defaultTouchBarArtworkSide
         settings.touchBarShowsControls = AppSettings.defaultTouchBarShowsControls
@@ -297,7 +298,7 @@ enum TouchBarStyleDefaults {
 
 // MARK: - 工具栏
 
-/// 预览上面那排工具栏:胶囊按钮(图标 · 标题 · 当前值摘要)点开是浮层。按抽屉的顺序排成两行两颗:第一行「歌词」「样式」
+/// 预览上面那排工具栏:胶囊按钮(图标 · 标题 · 当前值摘要)点开是浮层。按抽屉的顺序排成两行两颗:第一行「内容」「颜色」
 /// +「重置 ▾」,第二行「布局」「行为」+ 等宽占位 `EditorToolbarResetReserve`,两行逐列对齐。四颗挤一行时摘要只剩一两个字
 /// (17 章决策 53)。
 struct TouchBarEditorToolbar: View {
@@ -314,8 +315,8 @@ struct TouchBarEditorToolbar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                toolbarButton(.lyrics)
-                toolbarButton(.style)
+                toolbarButton(.content)
+                toolbarButton(.color)
                 Spacer(minLength: 8)
                 EditorToolbarResetMenu(scope: TouchBarStyleDefaults.scope) { TouchBarStyleDefaults.restoreDefaults() }
             }
@@ -364,23 +365,16 @@ struct TouchBarEditorToolbar: View {
     /// 摘要只说偏离默认值的那部分(同灵动岛「歌词行」那颗按钮),拼接用 `ListFormatter`。
     private func summary(for group: TouchBarSettingsGroup) -> String {
         switch group {
-        case .lyrics:
-            // 副行开着时报副行(两行的字号由触控栏的高定),关着时报字号;对齐方式非默认才报。
-            var parts: [String] = []
+        case .content:
+            // 副行开着时报副行(两行的字号由触控栏的高定),关着时报字号。
             if settings.touchBarSecondaryLine.showsSecondaryRow {
-                parts.append("\(L10n.t("副行")) · \(settings.touchBarSecondaryLine.displayName)")
-            } else {
-                parts.append(String(format: L10n.t("%@pt"),
-                                    "\(Int(TouchBarLyricsStyle.clampedFontSize(settings.touchBarLyricsFontSize)))"))
+                return "\(L10n.t("副行")) · \(settings.touchBarSecondaryLine.displayName)"
             }
-            if settings.touchBarLyricsAlignment != AppSettings.defaultTouchBarLyricsAlignment {
-                parts.append(LyricsAlignmentSegmentedControl.label(for: settings.touchBarLyricsAlignment))
-            }
-            return L10n.list(parts)
-        case .style:
-            // 卡拉OK 开着才报;颜色一直报;暗部亮度非默认才报。
+            return String(format: L10n.t("%@pt"), "\(Int(TouchBarLyricsStyle.clampedFontSize(settings.touchBarLyricsFontSize)))")
+        case .color:
+            // 卡拉OK效果开着才报;颜色一直报;暗部亮度非默认才报。
             var parts: [String] = []
-            if settings.touchBarLyricsKaraoke { parts.append(L10n.t("卡拉OK")) }
+            if settings.touchBarLyricsKaraoke { parts.append(L10n.t("卡拉OK效果")) }
             parts.append(settings.touchBarLyricsColorMode == .custom
                          ? L10n.t("自定义颜色") : settings.touchBarLyricsColorMode.displayName)
             let dim = TouchBarLyricsStyle.clampedDimLevel(settings.touchBarLyricsDimLevel)
@@ -389,8 +383,11 @@ struct TouchBarEditorToolbar: View {
             }
             return L10n.list(parts)
         case .layout:
-            // 只列显示着的;摆在右边(非默认)时带上位置。
+            // 对齐方式非默认才报;封面、三键这几样只列显示着的,摆在右边(非默认)时带上位置。
             var parts: [String] = []
+            if settings.touchBarLyricsAlignment != AppSettings.defaultTouchBarLyricsAlignment {
+                parts.append(LyricsAlignmentSegmentedControl.summary(for: settings.touchBarLyricsAlignment))
+            }
             if settings.touchBarShowsArtwork {
                 parts.append(sided(L10n.t("封面"), settings.touchBarArtworkSide, default: AppSettings.defaultTouchBarArtworkSide))
             }
@@ -434,8 +431,8 @@ struct TouchBarAllSettingsDrawer: View {
                 disclosureHeader
             }
             if isExpanded {
-                SettingsGroupCard(title: TouchBarSettingsGroup.lyrics.title) { TouchBarLyricsRows() }
-                SettingsGroupCard(title: TouchBarSettingsGroup.style.title) { TouchBarStyleRows() }
+                SettingsGroupCard(title: TouchBarSettingsGroup.content.title) { TouchBarContentRows() }
+                SettingsGroupCard(title: TouchBarSettingsGroup.color.title) { TouchBarColorRows() }
                 SettingsGroupCard(title: TouchBarSettingsGroup.layout.title) { TouchBarLayoutRows() }
                 SettingsGroupCard(title: TouchBarSettingsGroup.behavior.title) { TouchBarBehaviorRows() }
                 SettingsCard(cornerRadius: 18) {
@@ -472,7 +469,7 @@ struct TouchBarAllSettingsDrawer: View {
                     .font(.system(size: 13))
                 Spacer(minLength: 12)
                 if !isExpanded {
-                    AllSettingsGroupNames([TouchBarSettingsGroup.lyrics, .style, .layout, .behavior].map(\.title))
+                    AllSettingsGroupNames(TouchBarSettingsGroup.allCases.map(\.title))
                 }
             }
             .padding(.horizontal, SettingsRowMetrics.horizontalPadding)

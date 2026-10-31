@@ -151,7 +151,7 @@ public enum SettingsSearchCatalog {
         let window = ["歌词显示", "歌词窗口"]
         let lastfm = ["Last.fm", "规则"]
         var gates: [RowGate] = [
-            RowGate(menuBar, "屏幕", "menuBar.centerSelected", "歌词位置"),
+            RowGate(menuBar, "显示在", "menuBar.centerSelected", "歌词位置"),
             RowGate(menuBar, "宽度模式", "menuBar.centerIdle", "歌词位置"),
             RowGate(menuBar, "对齐方式", "menuBar.centerIdle", "歌词位置"),
             RowGate(menuBar, "副行", "menuBar.showsLyrics", "显示内容"),
@@ -182,6 +182,7 @@ public enum SettingsSearchCatalog {
             RowGate(window, "底部颜色", "lyricsWindow.gradient", "背景"),
             RowGate(window, "玻璃浓淡", "lyricsWindow.glass", "背景"),
             RowGate(window, "指定颜色", "lyricsWindow.customText", "文字颜色"),
+            RowGate(window, "已唱颜色", "lyricsWindow.karaoke", "卡拉OK效果"),
             RowGate(window, "淡化时点按穿透", "lyricsWindow.miniFade", "悬停时淡化"),
             RowGate(window, "长句处理", "lyricsWindow.miniLayoutNotList", "歌词布局"),
             RowGate(window, "允许远程控制", "web.lan", "允许局域网访问"),
@@ -269,12 +270,12 @@ public enum SettingsSearchCatalog {
     /// `AppearanceSettingsTab.Section` 的源码枚举核它。这一段的「全部设置」抽屉不靠 `drawer`
     /// 字段展开(那个字段是 `LyricsSurface` 类型),靠行高亮信号,见 `LyricsWindowAllSettingsDrawer`。
     /// 只在一种尺寸下才有的行按两份名单标上 `lyricsWindowMini`。
-    private static func lyricsWindow(_ title: String, sub: String? = nil, kw: [String] = [],
+    private static func lyricsWindow(_ title: String, alt: [String] = [], sub: String? = nil, kw: [String] = [],
                                      group: String? = nil) -> SettingsSearchEntry {
         SettingsSearchEntry(destination: .tab("appearance"),
                             sectionKey: LyricsSurface.appearanceSectionStorageKey,
                             sectionValue: lyricsWindowSectionValue,
-                            titleKey: title, subtitleKey: sub, keywords: kw,
+                            titleKey: title, alternateTitleKeys: alt, subtitleKey: sub, keywords: kw,
                             pathKeys: ["歌词显示", "歌词窗口"] + (group.map { [$0] } ?? []),
                             lyricsWindowMini: lyricsWindowMiniOnlyTitles.contains(title) ? true
                                 : lyricsWindowFullOnlyTitles.contains(title) ? false : nil)
@@ -422,7 +423,7 @@ public enum SettingsSearchCatalog {
         surface(.overlay, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.overlay, "字号", kw: ["大小", "font size"], group: "字体"),
         surface(.overlay, "卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "颜色"),
-        surface(.overlay, "文字颜色", kw: ["字色", "颜色", "跟随封面", "彩虹", "渐变"], group: "颜色"),
+        surface(.overlay, "文字颜色", alt: ["已唱颜色"], kw: ["字色", "颜色", "跟随封面", "彩虹", "渐变"], group: "颜色"),
         surface(.overlay, "文字描边", kw: ["描边", "outline"], group: "颜色"),
         surface(.overlay, "描边颜色", kw: ["描边"], group: "颜色"),
         surface(.overlay, "未唱颜色", kw: ["卡拉OK", "未唱", "未唱颜色", "逐字", "karaoke", "跟随封面"], group: "颜色"),
@@ -502,7 +503,7 @@ public enum SettingsSearchCatalog {
         surface(.menuBar, "菜单栏歌词", kw: ["开关", "跑马灯", "总开关"], inDrawer: false),
         surface(.menuBar, "显示内容", kw: ["歌名", "歌手", "只显示歌名", "歌曲名"], group: "内容"),
         surface(.menuBar, "歌词位置", kw: ["菜单栏正中", "图标旁", "中间", "居中", "刘海"], group: "布局"),
-        surface(.menuBar, "屏幕", kw: ["显示在", "全部屏幕", "所有屏幕", "自动", "指定屏幕", "显示器", "外接屏", "多屏"], group: "布局"),
+        surface(.menuBar, "显示在", kw: ["屏幕", "全部屏幕", "所有屏幕", "自动", "指定屏幕", "显示器", "外接屏", "多屏"], group: "布局"),
         surface(.menuBar, "宽度模式", kw: ["固定", "自适应", "宽度"], group: "布局"),
         surface(.menuBar, "对齐方式", kw: ["居中", "左对齐", "右对齐"], group: "布局"),
         surface(.menuBar, "副行", kw: ["下一句", "译文", "读音", "罗马音", "双排", "两行"], group: "内容"),
@@ -514,20 +515,21 @@ public enum SettingsSearchCatalog {
         surface(.menuBar, "字体", kw: ["字体族", "font"], group: "字体"),
         surface(.menuBar, "粗细", kw: ["字重", "weight"], group: "字体"),
         surface(.menuBar, "字号", kw: ["大小", "font size"], group: "字体"),
-        surface(.menuBar, "最大宽度", kw: ["宽度", "pt"]),
+        // 行名按宽度模式叫「宽度」或「最大宽度」(`MenuBarWidthRow.title`)。
+        surface(.menuBar, "最大宽度", alt: ["宽度"], kw: ["宽度", "pt"], group: "宽度"),
         surface(.menuBar, "悬停时显示播放控制", kw: ["悬停", "播放控制", "鼠标"], group: "行为"),
         surface(.menuBar, "无歌词时显示歌名", kw: ["歌名", "兜底", "没有歌词"], group: "行为"),
-        surface(.menuBar, "恢复默认", sub: "不含宽度和总开关", kw: ["重置"]),
+        surface(.menuBar, "恢复默认", sub: "不含宽度和「菜单栏歌词」开关", kw: ["重置"]),
 
 
         // ---- 歌词显示 › 触控栏 ----
         touchBar(touchBarToggleTitleKey, kw: ["Touch Bar", "触控栏", "功能栏", "Control Strip", "开关"]),
-        touchBar("副行", kw: ["下一句", "译文", "读音", "罗马音", "两行", "双行"], group: "歌词"),
-        touchBar("字号", kw: ["大小", "font size"], group: "歌词"),
-        touchBar("对齐方式", kw: ["左对齐", "居中", "右对齐", "自动", "靠左", "靠右", "对唱"], group: "歌词"),
-        touchBar("卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "样式"),
-        touchBar("歌词颜色", sub: "白色、跟随封面、自定义颜色或彩虹", kw: ["颜色", "主色", "封面颜色", "跟随封面", "自定义", "白色", "彩虹", "渐变"], group: "样式"),
-        touchBar("暗部亮度", sub: "未唱部分与副行的亮度", kw: ["亮度", "透明度", "未唱", "副行", "太暗", "brightness"], group: "样式"),
+        touchBar("副行", kw: ["下一句", "译文", "读音", "罗马音", "两行", "双行"], group: "内容"),
+        touchBar("字号", kw: ["大小", "font size"], group: "内容"),
+        touchBar("对齐方式", kw: ["左对齐", "居中", "右对齐", "自动", "靠左", "靠右", "对唱"], group: "布局"),
+        touchBar("卡拉OK效果", kw: ["逐字", "染色", "karaoke"], group: "颜色"),
+        touchBar("文字颜色", sub: "白色、跟随封面、自定义颜色或彩虹", kw: ["歌词颜色", "颜色", "主色", "封面颜色", "跟随封面", "自定义", "白色", "彩虹", "渐变"], group: "颜色"),
+        touchBar("暗部亮度", sub: "未唱部分与副行的亮度", kw: ["亮度", "透明度", "未唱", "副行", "太暗", "brightness"], group: "颜色"),
         touchBar("显示封面", kw: ["封面缩略图", "专辑图", "位置", "左边", "右边"], group: "布局"),
         touchBar("封面位置", kw: ["位置", "左边", "右边", "封面"], group: "布局"),
         touchBar("显示播放控制", sub: "上一首、播放/暂停、下一首和设置按钮",
@@ -543,7 +545,7 @@ public enum SettingsSearchCatalog {
         touchBar("开始播放时自动展开", kw: ["自动", "展开", "播放", "弹出", "行为"], group: "行为"),
         touchBar("暂停时自动收起", kw: ["自动", "收起", "暂停", "隐藏", "行为"], group: "行为"),
         touchBar("纯音乐/无歌词时收起", kw: ["自动", "收起", "纯音乐", "无歌词", "没有歌词", "隐藏", "行为"], group: "行为"),
-        touchBar("恢复默认", sub: "不含总开关", kw: ["重置"]),
+        touchBar("恢复默认", sub: "不含「触控栏歌词」开关", kw: ["重置"]),
 
         // ---- 歌词显示 › 歌词窗口 ----
         // 预览下面那张卡「歌词窗口 [打开]」。搜「打开歌词窗口」另有快捷键那一条,各跳各的。
@@ -561,7 +563,7 @@ public enum SettingsSearchCatalog {
         lyricsWindow("备用链接（IP 地址）", kw: ["IP", "安卓", "Android", "打不开"], group: "网页歌词"),
         lyricsWindow("重置访问密钥", sub: "已分享的链接将失效", kw: ["密钥", "重新生成", "失效", "安全", "链接"], group: "网页歌词"),
         lyricsWindow("端口", sub: "更改后需重新扫码连接", kw: ["port", "3939", "占用", "网页"], group: "网页歌词"),
-        lyricsWindow("背景", sub: "歌词窗口的背景：跟随封面／纯色／渐变／毛玻璃",
+        lyricsWindow("背景", sub: "歌词窗口的背景：跟随封面、纯色、渐变或毛玻璃",
                      kw: ["背景", "跟随封面", "纯色", "渐变", "颜色", "不透明度", "透明"],
                      group: "背景"),
         lyricsWindow("方向", kw: ["渐变", "背景", "从上到下", "从左到右", "横向", "竖向"], group: "背景"),
@@ -570,7 +572,7 @@ public enum SettingsSearchCatalog {
         lyricsWindow("玻璃浓淡", sub: "毛玻璃的材质浓淡（五档）",
                      kw: ["毛玻璃", "玻璃", "模糊", "透明", "材质", "背景", "浓淡"], group: "背景"),
         lyricsWindow("字号", sub: "迷你尺寸的歌词字号上限",
-                     kw: ["字体大小", "大小", "迷你"], group: "文字"),
+                     kw: ["字体大小", "大小", "迷你"], group: "字体"),
         // 跟悬浮歌词那条「长句处理」同名、不同段,各自跳到自己那一段。
         lyricsWindow("长句处理", sub: "迷你尺寸中一行显示不下时换行或滚动",
                      kw: ["换行", "滚动", "跑马灯", "折行", "长句", "太长", "迷你"], group: "布局"),
@@ -584,16 +586,17 @@ public enum SettingsSearchCatalog {
         // 跟悬浮歌词、灵动岛那两条同名、不同段,各自跳到自己那一段。
         lyricsWindow("暂停时隐藏", kw: ["自动隐藏", "暂停", "没在播放", "迷你"], group: "行为"),
         lyricsWindow("全屏时隐藏", kw: ["全屏", "隐藏", "自动隐藏", "遮挡", "看视频", "fullscreen", "迷你"], group: "行为"),
-        lyricsWindow("卡拉OK效果", kw: ["逐字", "染色", "karaoke", "迷你", "完整"], group: "文字"),
+        lyricsWindow("卡拉OK效果", kw: ["逐字", "染色", "karaoke", "迷你", "完整"], group: "颜色"),
         // 跟悬浮歌词那条「字体」同名、不同段:搜「字体」会同时列出两处,各自跳到自己那一段。
-        lyricsWindow("文字颜色", sub: "歌词窗口的文字颜色；「自动」根据背景亮度在浅色与深色之间切换",
-                     kw: ["颜色", "字体颜色", "文字", "浅色", "深色", "自定义", "自动"], group: "文字"),
-        lyricsWindow("指定颜色", kw: ["文字颜色", "自定义", "颜色"], group: "文字"),
+        // 开着卡拉OK效果时这一行叫「未唱颜色」。
+        lyricsWindow("文字颜色", alt: ["未唱颜色"], sub: "歌词窗口的文字颜色；「自动」根据背景亮度在浅色与深色之间切换",
+                     kw: ["颜色", "字体颜色", "文字", "浅色", "深色", "自定义", "自动"], group: "颜色"),
+        lyricsWindow("指定颜色", kw: ["文字颜色", "自定义", "颜色"], group: "颜色"),
         lyricsWindow("字体", sub: "歌词窗口的歌词字体（正文、译文、读音）",
-                     kw: ["字体", "字型", "font", "歌词窗口"], group: "文字"),
-        lyricsWindow("粗细", kw: ["字重", "weight", "迷你", "完整"], group: "文字"),
-        lyricsWindow("已唱颜色", kw: ["卡拉OK", "填色", "逐字", "跟随封面", "颜色", "迷你", "完整"], group: "文字"),
-        lyricsWindow("HDR 高亮", kw: ["HDR", "EDR", "高亮", "提亮", "亮度", "已唱", "完整"], group: "文字"),
+                     kw: ["字体", "字型", "font", "歌词窗口"], group: "字体"),
+        lyricsWindow("粗细", kw: ["字重", "weight", "迷你", "完整"], group: "字体"),
+        lyricsWindow("已唱颜色", kw: ["卡拉OK", "填色", "逐字", "跟随封面", "颜色", "迷你", "完整"], group: "颜色"),
+        lyricsWindow("HDR 高亮", kw: ["HDR", "EDR", "高亮", "提亮", "亮度", "已唱", "完整"], group: "颜色"),
         // 跟灵动岛、菜单栏、触控栏那几条同名、不同段,各自跳到自己那一段。
         lyricsWindow("对齐方式", sub: "完整尺寸歌词的对齐；「自动」按对唱声部对齐",
                      kw: ["对齐", "左对齐", "居中", "右对齐", "靠左", "靠右", "对唱", "alignment"], group: "布局"),
@@ -601,7 +604,7 @@ public enum SettingsSearchCatalog {
         lyricsWindow("译文", kw: ["翻译", "显示译文"], group: "内容"),
         lyricsWindow("进度条", sub: "关闭后，仅在悬停显示播放控制时出现",
                      kw: ["进度", "底部", "播放进度", "隐藏进度条", "迷你", "progress"], group: "内容"),
-        lyricsWindow("歌名", sub: "迷你尺寸顶部显示歌名／歌手／专辑",
+        lyricsWindow("歌名", sub: "迷你尺寸顶部显示歌名、歌手和专辑",
                      kw: ["顶部信息", "标题", "迷你"], group: "顶部信息"),
         lyricsWindow("歌手", kw: ["顶部信息", "艺人", "迷你"], group: "顶部信息"),
         lyricsWindow("专辑", kw: ["顶部信息", "迷你"], group: "顶部信息"),
