@@ -29,10 +29,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko")
-LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어"}
+LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko", "es")
+LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어", "es": "Español"}
 DOC_FILES = {"en": "feature-list.md", "zh-Hans": "feature-list.zh-CN.md", "zh-Hant": "feature-list.zh-Hant.md",
-             "ja": "feature-list.ja.md", "ko": "feature-list.ko.md"}
+             "ja": "feature-list.ja.md", "ko": "feature-list.ko.md", "es": "feature-list.es.md"}
 BRANDS = {"ListenBrainz", "Last.fm", "Discord"}
 
 CHROME = {
@@ -135,6 +135,26 @@ CHROME = {
         "full_only": " (전체 크기만)",
         "sep": ": ",
         "generated": "scripts/gen-feature-list.py가 shared/feature-list.json과 shared/settings-catalog.json으로 생성합니다. 목록을 바꾸려면 이 두 파일을 수정하세요.",
+    },
+    "es": {
+        "title": "Lista de funciones de Lyrimuse",
+        "intro": "Esta lista recoge cada función de Lyrimuse: qué hace, dónde está en Ajustes y si viene activada o desactivada al instalarla; al final aparecen todos los ajustes de la ventana Ajustes. Se mantiene junto con el código y se actualiza cada vez que cambian las funciones.",
+        "toc": "Contenido",
+        "off_title": "Desactivadas hasta que las actives",
+        "off_intro": "Estas funciones siguen desactivadas después de instalar. Actívalas primero en Ajustes (algunas también necesitan una cuenta o un permiso):",
+        "col_feature": "Función",
+        "col_where": "Dónde activarla",
+        "default_on": "Activada por omisión",
+        "default_off": "Desactivada por omisión",
+        "where": "Ajustes",
+        "index_title": "Todos los ajustes",
+        "index_intro": "Todos los ajustes de la ventana Ajustes, según dónde están: {n} en total. Escribe un nombre en el campo de búsqueda de la parte superior de la barra lateral de Ajustes para ir directamente a él.",
+        "settings": "Ajustes",
+        "labs": "Laboratorio",
+        "mini_only": " (solo tamaño mini)",
+        "full_only": " (solo tamaño completo)",
+        "sep": ": ",
+        "generated": "Generado por scripts/gen-feature-list.py a partir de shared/feature-list.json y shared/settings-catalog.json; para cambiar la lista, edita esos archivos.",
     },
 }
 
@@ -265,7 +285,7 @@ def load_model(root: Path = ROOT) -> dict:
             joined = ""
             for line in lines:
                 if joined:
-                    if lang in ("en", "ko"):
+                    if lang in ("en", "ko", "es"):
                         joined += " "
                     elif lang == "ja":
                         joined += "" if joined[-1] in "。：！？" else "。"

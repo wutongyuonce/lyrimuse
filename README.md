@@ -6,7 +6,7 @@
 
 **Desktop lyrics, reimagined for the Mac.**
 
-**Language / 语言 / 語言 / 言語 / 언어:** **English** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-Hant.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+**Language / 语言 / 語言 / 言語 / 언어 / Idioma:** **English** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-Hant.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Español](README.es.md)
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
 ![Architecture](https://img.shields.io/badge/arch-Apple%20Silicon%20%2B%20Intel-blue)

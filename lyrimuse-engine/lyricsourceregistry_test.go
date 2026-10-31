@@ -274,11 +274,13 @@ func TestSwiftSearchEmptyStateCountMatchesSourceCount(t *testing.T) {
 func TestDocsSourceCountMatchesSourceCount(t *testing.T) {
 	chineseDigits := map[int]string{5: "五", 6: "六", 7: "七", 8: "八", 9: "九", 10: "十", 11: "十一", 12: "十二", 13: "十三", 14: "十四", 15: "十五"}
 	englishWords := map[int]string{5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve", 13: "Thirteen", 14: "Fourteen", 15: "Fifteen"}
+	spanishWords := map[int]string{5: "cinco", 6: "seis", 7: "siete", 8: "ocho", 9: "nueve", 10: "diez", 11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince"}
 	n := len(allLyricSourceConstants())
 	zh, okZh := chineseDigits[n]
 	en, okEn := englishWords[n]
-	if !okZh || !okEn {
-		t.Fatalf("源数量是 %d,没有对应的中英数字——请在两张表里补上再跑这个测试", n)
+	es, okEs := spanishWords[n]
+	if !okZh || !okEn || !okEs {
+		t.Fatalf("源数量是 %d,没有对应的中、英、西数字——请在三张表里补上再跑这个测试", n)
 	}
 	checks := []struct{ path, needle string }{
 		{"../docs/features/01-overview.md", zh + "个歌词源:`music.163.com`"},
@@ -323,6 +325,7 @@ func TestDocsSourceCountMatchesSourceCount(t *testing.T) {
 		{"../README.zh-Hant.md", regexp.MustCompile(`([一二三四五六七八九十]+|\d+)個歌詞來?源`), zh},
 		{"../README.ja.md", regexp.MustCompile(`(\d+)の歌詞ソース`), strconv.Itoa(n)},
 		{"../README.ko.md", regexp.MustCompile(`(\d+)개 가사 소스`), strconv.Itoa(n)},
+		{"../README.es.md", regexp.MustCompile(`(?i)\b(cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|\d+) fuentes de letras\b`), es},
 	}
 	for _, r := range readmes {
 		raw, err := os.ReadFile(r.path)

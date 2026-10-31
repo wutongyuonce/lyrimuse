@@ -1,6 +1,6 @@
 # LyrimuseがLast.fmにScrobbleするしくみ
 
-*[English](scrobbling.md) · [简体中文](scrobbling.zh-CN.md) · **日本語** · [한국어](scrobbling.ko.md)*
+*[English](scrobbling.md) · [简体中文](scrobbling.zh-CN.md) · **日本語** · [한국어](scrobbling.ko.md) · [Español](scrobbling.es.md)*
 
 ## 1. 再生がカウントされる条件
 

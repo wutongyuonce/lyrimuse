@@ -60,6 +60,7 @@ public enum FeedbackLinks {
         case "zh-hant": dir = "zh-Hant/"
         case "ja": dir = "ja/"
         case "ko": dir = "ko/"
+        case "es": dir = "es/"
         default: dir = ""
         }
         return URL(string: "https://yudaotor.github.io/lyrimuse/" + dir + "features/")!

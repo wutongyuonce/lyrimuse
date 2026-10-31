@@ -3154,10 +3154,11 @@ func runSourceContractSurfaceTests() {
                     "反馈链接: 邮件正文末尾带版本、系统、播放器")
         expectEqual(FeedbackLinks.helpURL.absoluteString, "https://github.com/Yudaotor/lyrimuse/discussions/categories/q-a",
                     "反馈链接: 使用求助进讨论区问答分类")
-        expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko", "fr"].map { FeedbackLinks.featureListURL(language: $0).absoluteString },
+        expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko", "es", "fr"].map { FeedbackLinks.featureListURL(language: $0).absoluteString },
                     ["https://yudaotor.github.io/lyrimuse/features/", "https://yudaotor.github.io/lyrimuse/zh/features/",
                      "https://yudaotor.github.io/lyrimuse/zh-Hant/features/", "https://yudaotor.github.io/lyrimuse/ja/features/",
-                     "https://yudaotor.github.io/lyrimuse/ko/features/", "https://yudaotor.github.io/lyrimuse/features/"],
+                     "https://yudaotor.github.io/lyrimuse/ko/features/", "https://yudaotor.github.io/lyrimuse/es/features/",
+                     "https://yudaotor.github.io/lyrimuse/features/"],
                     "反馈链接: 功能清单按界面语言开落地页对应的那一份,认不出的语言开英文")
         expectEqual(FeedbackLinks.macOSVersionString(OperatingSystemVersion(majorVersion: 27, minorVersion: 0, patchVersion: 1)),
                     "27.0.1", "反馈链接: 系统版本号三段")
@@ -3326,6 +3327,9 @@ func runSourceContractSurfaceTests() {
         expectEqual(LegalNoticeLinks.usageNoticeURL(language: "ko").absoluteString,
                     "https://github.com/Yudaotor/lyrimuse/blob/main/README.ko.md#%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4-%EB%B0%8F-%EC%A0%80%EC%9E%91%EA%B6%8C",
                     "版权说明: 韩文界面开韩文 README 的「라이선스 및 저작권」,空格在锚点里是连字符")
+        expectEqual(LegalNoticeLinks.usageNoticeURL(language: "es").absoluteString,
+                    "https://github.com/Yudaotor/lyrimuse/blob/main/README.es.md#licencia-y-derechos-de-autor",
+                    "版权说明: 西语界面开西语 README 的「Licencia y derechos de autor」")
         expectEqual(LegalNoticeLinks.thirdPartyLicensesOnGitHub.absoluteString,
                     "https://github.com/Yudaotor/lyrimuse/blob/main/THIRD_PARTY_LICENSES", "版权说明: 第三方许可的 GitHub 兜底指向仓库根那份")
 
@@ -3344,7 +3348,7 @@ func runSourceContractSurfaceTests() {
         } else {
             expectEqual(true, false, "版权说明: 读不到 README.md(路径挪了?)")
         }
-        for (file, heading) in [("README.zh-CN.md", "许可与版权说明"), ("README.ja.md", "ライセンスと著作権"), ("README.ko.md", "라이선스 및 저작권")] {
+        for (file, heading) in [("README.zh-CN.md", "许可与版权说明"), ("README.ja.md", "ライセンスと著作権"), ("README.ko.md", "라이선스 및 저작권"), ("README.es.md", "Licencia y derechos de autor")] {
             if let readme = read(repoRoot.appendingPathComponent(file)) {
                 expectEqual(readme.contains("\n## \(heading)\n"), true,
                             "版权说明: \(file) 要有「## \(heading)」—— 锚点由它生成")
