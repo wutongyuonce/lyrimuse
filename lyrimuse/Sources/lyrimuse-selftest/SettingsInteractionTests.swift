@@ -8,6 +8,18 @@ import Foundation
 @MainActor
 func runSettingsInteractionTests() {
     runPermissionGuideContracts()
+    // ---- EditorToolbarWidths:编辑台工具栏一行按内容分宽(04 章决策 80) ----
+    do {
+        func fill(_ ideals: [CGFloat], _ floors: [CGFloat], _ room: CGFloat) -> [CGFloat] {
+            EditorToolbarWidths.fill(ideals: ideals, floors: floors, room: room).map { ($0 * 100).rounded() / 100 }
+        }
+        expectEqual(fill([50, 60], [40, 40], 200), [50, 60], "工具栏分宽: 放得下就各拿理想宽度")
+        expectEqual(fill([50, 100, 120], [40, 50, 50], 230), [50, 90, 90], "工具栏分宽: 短的拿满,亏空摊给最长的几颗")
+        expectEqual(fill([50, 150, 150], [40, 120, 60], 250), [50, 120, 80], "工具栏分宽: 压到底线就不再压,剩下的亏空给别的")
+        expectEqual(fill([100, 100], [80, 120], 90), [40, 50], "工具栏分宽: 底线都放不下按底线比例缩(底线超过理想宽度按理想宽度算)")
+        expectEqual(fill([100, 60], [80], 150), [90, 60], "工具栏分宽: 没给底线的那颗不压")
+        expectEqual(fill([100, 60], [0, 0], -5), [0, 0], "工具栏分宽: 没有空间时都是 0")
+    }
     // ---- RelayPushStatus:网页推送健康度(样例与引擎 relaystatus_test.go 共用) ----
     do {
         typealias R = RelayPushStatus

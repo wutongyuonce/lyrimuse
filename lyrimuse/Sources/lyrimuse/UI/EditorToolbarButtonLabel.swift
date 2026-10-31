@@ -1,3 +1,5 @@
+import AppKit
+import LyrimuseCore
 import SwiftUI
 
 /// 三段编辑台(悬浮歌词 / 灵动岛 / 菜单栏)工具栏入口按钮的**标签**:图标 + 标题 + 间隔点 + 当前值摘要。
@@ -67,6 +69,11 @@ struct EditorToolbarButtonLabel: View {
 /// 一行工具栏胶囊按内容分宽(水位法):放得下时每颗按自己的理想宽度,放不下时摘要短的照旧拿满,亏空摊给最长的那几颗
 /// (它们一样宽,先压摘要)。等分的话,摘要本来读得完的那颗也会陪着最长那颗被截。按钮的标签要传 `fitsContent: true`,
 /// 否则理想宽度恒带着 140 的摘要,分不出长短。这一行不跟上一行逐列对齐。
+///
+/// 每颗压到「理想宽度 − 摘要可让的宽度」(`editorToolbarSummarySlack`)就不再压:再往下压截的是标题。
+/// 所有按钮都到了这条底线还放不下(最窄卡片列下灵动岛第一行的英文、日文),才按底线的比例一起缩:亏空仍由摘要先吃,
+/// 摘要窄过「…」时只露半个字。别给摘要加最小宽度去避开它:那样亏空转给标题,标题会被截到只剩「…」。
+/// 按钮上没挂这个值的按 0 算,即不压。
 struct EditorToolbarContentWidthRow: Layout {
     var spacing: CGFloat = 8
 
@@ -91,17 +98,34 @@ struct EditorToolbarContentWidthRow: Layout {
         spacing * CGFloat(max(subviews.count - 1, 0))
     }
 
-    /// 从理想宽度最小的那颗起,每颗拿 min(理想宽度, 剩余宽度 / 剩下的颗数)。
     private func widths(available: CGFloat?, subviews: Subviews) -> [CGFloat] {
         let ideals = subviews.map { $0.sizeThatFits(.unspecified).width }
         guard let available else { return ideals }
-        var remaining = max(available - gaps(subviews), 0)
-        var result = ideals
-        for (rank, index) in ideals.indices.sorted(by: { ideals[$0] < ideals[$1] }).enumerated() {
-            let width = min(ideals[index], remaining / CGFloat(ideals.count - rank))
-            result[index] = width
-            remaining -= width
-        }
-        return result
+        let floors = zip(subviews, ideals).map { $1 - max($0[EditorToolbarSummarySlack.self], 0) }
+        return EditorToolbarWidths.fill(ideals: ideals, floors: floors, room: available - gaps(subviews))
+    }
+}
+
+/// 摘要最多能让出多少宽度:文字本身的宽(封顶 `summaryWidth`)减去压到底还留着的那一截。
+struct EditorToolbarSummarySlack: LayoutValueKey {
+    static let defaultValue: CGFloat = 0
+}
+
+extension EditorToolbarButtonLabel {
+    /// 压到底时摘要还留的宽度,够放下一个省略号(12pt 下约 10pt)。再窄 SwiftUI 不画省略号,只露半个字。
+    static let summaryFloor: CGFloat = 14
+
+    /// 按工具栏的字号量摘要的宽,估出它能让出多少。字号跟各工具栏外层的 `.font(.system(size: 12))` 一致,改一处要一起改。
+    static func summarySlack(_ summary: String) -> CGFloat {
+        let font = NSFont.systemFont(ofSize: 12)
+        let width = (summary as NSString).size(withAttributes: [.font: font]).width.rounded(.up)
+        return max(min(width, summaryWidth) - summaryFloor, 0)
+    }
+}
+
+extension View {
+    /// 挂在 `EditorToolbarContentWidthRow` 里每颗按钮的最外层:告诉那一行这颗的摘要能让多少宽。
+    func editorToolbarSummarySlack(_ summary: String) -> some View {
+        layoutValue(key: EditorToolbarSummarySlack.self, value: EditorToolbarButtonLabel.summarySlack(summary))
     }
 }

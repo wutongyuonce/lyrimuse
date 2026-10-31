@@ -3242,12 +3242,13 @@ private struct AppearanceSettingsTab: View {
     /// 浮层挂在按钮上往上弹(`arrowEdge: .top`),不往下压在预览上;高度封顶在按钮那一行上方的空间里,放不下时在浮层里滚,
     /// 不让系统翻下来(同另外几段编辑台,04 章决策 34、61)。
     private func lyricsWindowToolbarButton(_ item: LyricsWindowToolbarItem) -> some View {
-        Button {
+        let label = lyricsWindowToolbarLabel(item)
+        return Button {
             let probe = Self.lyricsWindowToolbarFirstRow.contains(item) ? lyricsWindowRow1Probe : lyricsWindowRow2Probe
             lyricsWindowPopoverMaxHeight = probe.popoverHeightLimit()
             lyricsWindowPopover = item
         } label: {
-            lyricsWindowToolbarLabel(item)
+            label
         }
         .editorToolbarButtonStyle()
         .popover(isPresented: Binding(
@@ -3258,6 +3259,7 @@ private struct AppearanceSettingsTab: View {
             lyricsWindowPopoverContent(item)
                 .environment(\.settingsPopoverMaxHeight, lyricsWindowPopoverMaxHeight)
         }
+        .editorToolbarSummarySlack(label.summary)
     }
 
     /// 浮层宽度按内容估、宁宽勿窄(`SettingsPopoverShell.width` 那条:窄了尾部控件 fixedSize

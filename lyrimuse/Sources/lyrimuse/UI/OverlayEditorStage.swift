@@ -427,28 +427,34 @@ struct OverlayEditorStage: View {
     ///
     /// **这一行是三颗,不是四颗**:右边还有「重置 ▾」,第四颗会把摘要压成「…」甚至挤掉标题。「排版」跟着「行为」
     /// 在第二行,见 `toolbarRow2`。
+    ///
+    /// 三颗按内容分宽(`EditorToolbarContentWidthRow`),摘要短的那颗不陪长的被截;这一组的布局优先级高于中间的空白,
+    /// 先拿到「重置 ▾」以外的全部宽度。见 04 章决策 80。
     private var toolbar: some View {
         HStack(spacing: 8) {
-            // 图标沿用原「配色」那颗的 `circle.lefthalf.filled`:拆分之后"选配色主题"这件事
-            // 归它,视觉上接得住用户对旧按钮的记忆。
-            toolbarButton(
-                icon: "circle.lefthalf.filled",
-                title: L10n.t("主题"),
-                summary: OverlayStyleSummary.theme,
-                target: .theme
-            )
-            toolbarButton(
-                icon: "textformat",
-                title: L10n.t("字体"),
-                summary: OverlayStyleSummary.text,
-                target: .type
-            )
-            toolbarButton(
-                icon: "paintpalette",
-                title: L10n.t("颜色"),
-                summary: OverlayStyleSummary.color,
-                target: .color
-            )
+            EditorToolbarContentWidthRow(spacing: 8) {
+                // 图标沿用原「配色」那颗的 `circle.lefthalf.filled`:拆分之后"选配色主题"这件事
+                // 归它,视觉上接得住用户对旧按钮的记忆。
+                toolbarButton(
+                    icon: "circle.lefthalf.filled",
+                    title: L10n.t("主题"),
+                    summary: OverlayStyleSummary.theme,
+                    target: .theme
+                )
+                toolbarButton(
+                    icon: "textformat",
+                    title: L10n.t("字体"),
+                    summary: OverlayStyleSummary.text,
+                    target: .type
+                )
+                toolbarButton(
+                    icon: "paintpalette",
+                    title: L10n.t("颜色"),
+                    summary: OverlayStyleSummary.color,
+                    target: .color
+                )
+            }
+            .layoutPriority(1)
             Spacer(minLength: 8)
             // 作用范围那句跟抽屉里那份(`OverlayAllSettingsDrawer.resetRow` 头注)**两个入口必须一字不差**。
             EditorToolbarResetMenu(scope: L10n.t("仅恢复主题、字体和颜色")) {
@@ -478,7 +484,7 @@ struct OverlayEditorStage: View {
     /// 「第二行 = 看不见的项」这个已经不成立的印象去重排。真要恢复那条语义,得先解决第一行
     /// 装不下四颗的问题(比如把摘要限宽从 140 收窄再离屏重量一遍),那是另一次改动。
     private var toolbarRow2: some View {
-        HStack(spacing: 8) {
+        EditorToolbarContentWidthRow(spacing: 8) {
             // 「内容」:主行下面画哪几行(读音 / 译文 / 下一句),见 OverlayContentSettingsRows。
             toolbarButton(
                 icon: "checklist",
@@ -517,8 +523,7 @@ struct OverlayEditorStage: View {
                 summary: settings.obsLyricsEnabled ? L10n.t("已开启") : L10n.t("未开启"),
                 target: .obs
             )
-            // 不放跟第一行「重置 ▾」等宽的隐藏占位(另外几个编辑台有):这一行五颗、第一行三颗,本来就对不成列,
-            // 那块占位只会把五颗的摘要一起压成「…」。
+            // 不放跟第一行「重置 ▾」等宽的隐藏占位:这一行五颗、第一行三颗,本来就对不成列,那块占位只会把摘要压成「…」。
         }
         .font(.system(size: 12))
         .padding(.horizontal, 2)
@@ -561,7 +566,8 @@ struct OverlayEditorStage: View {
             popoverAnchor = .toolbar
             popover = target
         } label: {
-            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail)
+            // 两行都按内容分宽,标签报文字本身的宽(`EditorToolbarContentWidthRow`)。
+            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail, fitsContent: true)
         }
         .editorToolbarButtonStyle()
         .popover(isPresented: popoverBinding(target), arrowEdge: .top) {
@@ -569,6 +575,7 @@ struct OverlayEditorStage: View {
                 popoverRows(for: target)
             }
         }
+        .editorToolbarSummarySlack(summary)
     }
 
     /// 按钮所在那一行的上沿比舞台上沿高多少:第一行(主题 / 字形 / 颜色)隔着两行,其余在第二行。

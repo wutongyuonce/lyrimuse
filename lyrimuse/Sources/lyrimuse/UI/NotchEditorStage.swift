@@ -266,47 +266,44 @@ struct NotchEditorStage: View {
     ///
     /// 横向够不够:这一条的可用宽度就是卡片列宽(窗口按默认宽度打开时 600pt,窗口拖到最窄时约 535pt,侧栏再拉到最宽约 499pt,见
     /// SettingsSidebarWidth.windowMinWidth)。「屏幕」那截报短名(`NotchScreenSummary`:内建屏报「内建屏幕」、跟随窗口报「跟随窗口」),
-    /// 外接显示器名长度不受控,摘要那截跟悬浮歌词那边一样限宽 140 + 单行 + 尾部省略 + `.layoutPriority(-1)`
-    /// (见 `EditorToolbarButtonLabel`):挤不下时先压摘要、标题始终完整。「重置 ▾」本身是固定宽度的 `Menu`,不参与这套压缩逻辑。
+    /// 外接显示器名长度不受控,摘要那截限宽 140 + 单行 + 尾部省略(见 `EditorToolbarButtonLabel`)。
     ///
-    /// 这一行的横向预算已经到底(离屏 `NSHostingView.fittingSize` 量的):「重置 ▾」本体 + 前后间距中文 88.0pt、英文 97.0pt,摘要压到
-    /// 零时四个标题(含"重置")在 499pt 下中英文都完整,英文摘要在 600pt 下仍会被压短。加第五个入口、把哪个标题改长之前,
-    /// 先重新离屏量一遍,不要凭感觉现改。
+    /// 四颗按内容分宽(`EditorToolbarContentWidthRow`,同悬浮歌词第一行):摘要短的那颗不陪长的被截,挤不下时先压摘要、
+    /// 标题始终完整;这一组的布局优先级高于中间的空白,先拿到「重置 ▾」以外的全部宽度。「重置 ▾」本身是固定宽度的 `Menu`,
+    /// 不参与压缩。英文、日文摘要在 600pt 下仍会被压短。加第五个入口、把哪个标题改长之前,先重新离屏量一遍。见 04 章决策 80。
     private var toolbar: some View {
         HStack(spacing: 8) {
-            toolbarButton(
-                icon: "paintbrush.pointed",
-                title: L10n.t("风格"),
-                summary: settings.notchCardStyle.displayName,
-                target: .style
-            )
-            toolbarButton(
-                icon: "display",
-                title: L10n.t("屏幕"),
-                summary: NotchScreenSummary.current,
-                target: .screen
-            )
-            // 左右耳各一个入口。图标用带方向的 `arrow.left.to.line` / `arrow.right.to.line`,跟浮层里那两行是同一对记号。
-            //
-            // 别给这两颗钉一个固定宽度去凑"等宽":
-            //   ① 等宽做不到。离屏量过(600/530/499/700/900 五档 × 中英):容器宽裕时四颗按钮本来就各自贴着自己的文字,容器不够时
-            //      HStack 均分、四颗一起变等宽,两种情形下"等宽与否"都跟定宽无关。
-            //   ② 代价是标题被截。刚性 frame 的 min/ideal/max 全是同一个数,对任何提议都返回它,`.layoutPriority(-1)` 只决定谁先拿到
-            //      提议、决定不了谁能被压缩,亏空全部摊到标题上(英文 @600 标题会被截成「Left…」「Righ…」)。
-            //   ③ 最长的模块名 "Remaining" 渲染出来才 55.0pt,定宽 60 的上限也碰不到。
-            // 四颗一律走同一条默认路径(摘要上限 140、`.layoutPriority(-1)` 先被压),中英在 499~900 全区间标题都不截。
-            toolbarButton(
-                icon: "arrow.left.to.line",
-                title: L10n.t("左耳"),
-                summary: earSummary(.left),
-                target: .leftEar
-            )
-            toolbarButton(
-                icon: "arrow.right.to.line",
-                title: L10n.t("右耳"),
-                summary: earSummary(.right),
-                target: .rightEar
-            )
+            EditorToolbarContentWidthRow(spacing: 8) {
+                toolbarButton(
+                    icon: "paintbrush.pointed",
+                    title: L10n.t("风格"),
+                    summary: settings.notchCardStyle.displayName,
+                    target: .style
+                )
+                toolbarButton(
+                    icon: "display",
+                    title: L10n.t("屏幕"),
+                    summary: NotchScreenSummary.current,
+                    target: .screen
+                )
+                // 左右耳各一个入口。图标用带方向的 `arrow.left.to.line` / `arrow.right.to.line`,跟浮层里那两行是同一对记号。
+                //
+                // 别给这两颗钉一个固定宽度去凑"等宽":刚性 frame 对任何提议都返回同一个数,亏空全摊到标题上。
+                // 宽度一律交给外面那层按内容分宽。
+                toolbarButton(
+                    icon: "arrow.left.to.line",
+                    title: L10n.t("左耳"),
+                    summary: earSummary(.left),
+                    target: .leftEar
+                )
+                toolbarButton(
+                    icon: "arrow.right.to.line",
+                    title: L10n.t("右耳"),
+                    summary: earSummary(.right),
+                    target: .rightEar
+                )
+            }
+            .layoutPriority(1)
             Spacer(minLength: 8)
             // 作用范围是安全边界,必须写在界面上(见 EditorToolbarResetMenu);跟抽屉 `resetRow` 一字不差。
             EditorToolbarResetMenu(scope: L10n.t("不含宽度和「灵动岛歌词」开关")) { NotchStyleDefaults.restoreDefaults() }
@@ -477,23 +474,15 @@ struct NotchEditorStage: View {
             popoverAnchor = .toolbar
             popover = target
         } label: {
-            // 第二行按内容分宽,那一行的标签报文字本身的宽(`EditorToolbarContentWidthRow`)。
-            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail,
-                                     fitsContent: Self.isSecondRow(target))
+            // 两行都按内容分宽,标签报文字本身的宽(`EditorToolbarContentWidthRow`)。
+            EditorToolbarButtonLabel(icon: icon, title: title, summary: summary, detail: detail, fitsContent: true)
         }
         .editorToolbarButtonStyle()
         .popover(isPresented: popoverBinding(target), arrowEdge: .top) {
             popoverContent(for: target)
                 .environment(\.settingsPopoverMaxHeight, popoverMaxHeight)
         }
-    }
-
-    /// 第二行的四颗(歌词行 / 字体 / 展开时 / 行为)。跟 `rowOffsetAboveStage` 的分行一致。
-    private static func isSecondRow(_ target: StagePopover) -> Bool {
-        switch target {
-        case .style, .screen, .leftEar, .rightEar: return false
-        case .lyricRow, .font, .expanded, .behavior: return true
-        }
+        .editorToolbarSummarySlack(summary)
     }
 
     /// 按钮所在那一行的上沿比舞台上沿高多少:第一行(风格 / 屏幕 / 左耳 / 右耳)隔着两行,其余在第二行。

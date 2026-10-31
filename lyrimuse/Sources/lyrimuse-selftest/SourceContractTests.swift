@@ -3771,19 +3771,25 @@ func runSourceContractSettingsTests() {
     // (机制、代价与离屏实测见 `EditorToolbarResetReserve` 头注)。占位漏掉既不报错也不影响功能,
     // 只会让两行按钮重新错开一截 —— 正是那种下次重排工具栏时会被顺手删掉、且没人看得出来的东西。
     // 悬浮歌词不在这里:它第二行五颗、第一行三颗,本来对不成列,放了占位只会把五颗的摘要一起压成「…」(19 章决策 19)。
-    // 菜单栏第二行两颗、第一行三颗,第二行再补一颗隐藏副本凑成同列数。灵动岛第二行按内容分宽,不对列。
+    // 菜单栏第二行两颗、第一行三颗,第二行再补一颗隐藏副本凑成同列数。悬浮歌词、灵动岛两行都按内容分宽,不对列(04 章决策 80)。
     do {
         let sourcesDir = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
         let notch = try? String(contentsOfFile: sourcesDir.appendingPathComponent("lyrimuse/UI/NotchEditorStage.swift").path, encoding: .utf8)
         let menuBar = try? String(contentsOfFile: sourcesDir.appendingPathComponent("lyrimuse/UI/MenuBarEditorStage.swift").path, encoding: .utf8)
-        expectEqual(notch != nil && menuBar != nil, true, "工具栏对齐闸: 两段编辑台的文件都读得到(读不到 = 路径挪了)")
-        // 灵动岛第二行按内容分宽(「歌词行」摘要常比另外三颗长得多,等分时短的也陪着被截),不放占位、不跟第一行对列。
-        expectEqual(notch.map { sourceHas($0, "private var toolbarRow2: some View {\nEditorToolbarContentWidthRow(spacing: 8) {")
-                                && sourceHas($0, "fitsContent: Self.isSecondRow(target))")
-                                && !$0.contains("EditorToolbarResetReserve()") }, true,
-                    "工具栏分宽: 灵动岛第二行按内容分宽,标签报文字本身的宽,不放「重置 ▾」占位")
+        let overlay = try? String(contentsOfFile: sourcesDir.appendingPathComponent("lyrimuse/UI/OverlayEditorStage.swift").path, encoding: .utf8)
+        expectEqual(notch != nil && menuBar != nil && overlay != nil, true, "工具栏对齐闸: 三段编辑台的文件都读得到(读不到 = 路径挪了)")
+        // 两行按内容分宽(摘要长短差得多,等分时短的也陪着被截),不放占位、不跟上一行对列;每颗按钮挂上摘要能让多少宽,
+        // 漏了那颗就不压、亏空全给别的。
+        for (name, file) in [("灵动岛", notch), ("悬浮歌词", overlay)] {
+            expectEqual(file.map { sourceHas($0, "private var toolbar: some View {\nHStack(spacing: 8) {\nEditorToolbarContentWidthRow(spacing: 8) {")
+                                    && sourceHas($0, "private var toolbarRow2: some View {\nEditorToolbarContentWidthRow(spacing: 8) {")
+                                    && sourceHas($0, "fitsContent: true)")
+                                    && sourceHas($0, ".editorToolbarSummarySlack(summary)")
+                                    && !$0.contains("EditorToolbarResetReserve()") }, true,
+                        "工具栏分宽: \(name)两行按内容分宽,标签报文字本身的宽,按钮挂摘要可让宽度,不放「重置 ▾」占位")
+        }
         expectEqual(menuBar.map { $0.contains("EditorToolbarResetReserve()") && $0.contains("toolbarGhostButton(icon:") }, true,
                     "工具栏对齐闸: 菜单栏工具栏第二行末尾要有第一行第三颗的隐藏副本和 EditorToolbarResetReserve(),否则两颗比上面宽一截")
     }
