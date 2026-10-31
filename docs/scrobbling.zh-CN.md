@@ -1,6 +1,6 @@
 # Lyrimuse 往 Last.fm 打卡（scrobble）的规则
 
-*[English](scrobbling.md)*
+*[English](scrobbling.md) · **简体中文** · [日本語](scrobbling.ja.md) · [한국어](scrobbling.ko.md)*
 
 ## 1. 什么时候算一次收听
 
@@ -19,7 +19,7 @@
 
 ### 1a. 短于 30 秒的曲目
 
-设置 → 账号 → Last.fm → *Scrobble* → **短于 30 秒的曲目**（`scrobble_short_tracks`，默认**关**）。
+设置 → 关联平台 → Last.fm → *Scrobble* → **短于 30 秒的曲目**（`scrobble_short_tracks`，默认**关**）。
 Last.fm 的规则 *"The track must be longer than 30 seconds"* 是给客户端的——服务端不拒收短曲目、也没有
 「太短」这一个 ignore 码——但所有主流 scrobbler 都照做，所以 Lyrimuse 默认也照做。打开后，短曲目只要
 过了「听过一半」这条就记一次（20 秒的歌要听满 10 秒）。这是一个**只管 Last.fm** 的开关：短曲目会
@@ -28,7 +28,7 @@ scrobble 到 Last.fm（也会记进给 Last.fm 回填兜底的本地收听记录
 
 ### 1b. Scrobble 时机
 
-设置 → 账号 → Last.fm → *Scrobble* → **Scrobble 时机**（`lastfm_scrobble_point`，默认 **50%**）。决定一次收听
+设置 → 关联平台 → Last.fm → *Scrobble* → **Scrobble 时机**（`lastfm_scrobble_point`，默认 **50%**）。决定一次收听
 要听到哪里才记到 Last.fm：
 
 | 档位 | 值 | 什么时候记 |
@@ -86,7 +86,7 @@ ListenBrainz 那一路、以及 Last.fm 的「全部」和「只发第一位」�
 
 ## 4. 匹配模式
 
-设置 → 账号 → Last.fm → *Scrobble* → **匹配模式**
+设置 → 关联平台 → Last.fm → *Scrobble* → **匹配模式**
 （`~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-features.json` 里的 `lastfm_match_mode`）：
 
 | 档位 | 值 | 效果 |
@@ -184,7 +184,7 @@ Last.fm 上就会显示两个艺人。
 ## 7. 常见问题
 
 **能不打卡、只用 Lyrimuse 吗？**
-能，这就是默认状态——在「设置 → 附加功能」里连上 Last.fm 账号之前，不会打卡任何东西。解析歌词
+能，这就是默认状态——在「设置 → 关联平台」里连上 Last.fm 账号之前，不会打卡任何东西。解析歌词
 和封面是另一回事：不管有没有连账号，歌名和歌手名都会被发给公开歌词源（网易云、QQ、酷狗、
 LRCLIB、Musixmatch、AMLL）。这些来源可以在设置里收窄或关掉。
 

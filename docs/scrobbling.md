@@ -1,6 +1,6 @@
 # How Lyrimuse scrobbles to Last.fm
 
-*[中文版](scrobbling.zh-CN.md)*
+***English** · [简体中文](scrobbling.zh-CN.md) · [日本語](scrobbling.ja.md) · [한국어](scrobbling.ko.md)*
 
 ## 1. When a play counts
 
@@ -20,7 +20,7 @@ These thresholds match [Last.fm's scrobbling guidelines](https://www.last.fm/api
 
 ### 1a. Tracks under 30 seconds
 
-Settings → Accounts → Last.fm → *Scrobble* → **Tracks under 30 seconds** (`scrobble_short_tracks`,
+Settings → Linked Platforms → Last.fm → *Scrobble* → **Tracks under 30 seconds** (`scrobble_short_tracks`,
 default **off**). Last.fm's rule *"The track must be longer than 30 seconds"* is a client-side rule —
 the server does not reject short tracks and has no "too short" ignore code — and every mainstream
 scrobbler honours it, so Lyrimuse does too by default. Turning it on lets short tracks count once
@@ -30,7 +30,7 @@ are never submitted to ListenBrainz, whose behaviour is unchanged either way.
 
 ### 1b. Scrobble point
 
-Settings → Accounts → Last.fm → *Scrobble* → **Scrobble Point** (`lastfm_scrobble_point`, default
+Settings → Linked Platforms → Last.fm → *Scrobble* → **Scrobble Point** (`lastfm_scrobble_point`, default
 **50%**). How far into a track a play must get before it is scrobbled to Last.fm:
 
 | Setting | Value | Scrobbled when |
@@ -96,7 +96,7 @@ Why there is no external lookup to "canonicalise" names by default:
 
 ## 4. Matching mode
 
-Settings → Accounts → Last.fm → *Scrobble* → **Matching Mode**
+Settings → Linked Platforms → Last.fm → *Scrobble* → **Matching Mode**
 (`lastfm_match_mode` in `~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-features.json`):
 
 | Mode | Value | Effect |
@@ -215,7 +215,7 @@ wrong scrobble is a permanent edit to a public page.
 
 **Can I use Lyrimuse without scrobbling?**
 Yes, that's the default — nothing is scrobbled until you connect a Last.fm account in
-Settings → Add-on Features. Resolving lyrics and artwork is separate: it sends the artist and track
+Settings → Linked Platforms. Resolving lyrics and artwork is separate: it sends the artist and track
 name to the public lyrics providers (Netease, QQ, Kugou, LRCLIB, Musixmatch, AMLL) regardless of
 whether an account is connected. Those sources can be narrowed or disabled in Settings.
 

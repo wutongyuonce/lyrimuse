@@ -1,6 +1,6 @@
 # Lyrimuse URL Scheme
 
-*[中文版](url-scheme.zh-CN.md)*
+***English** · [简体中文](url-scheme.zh-CN.md) · [日本語](url-scheme.ja.md) · [한국어](url-scheme.ko.md)*
 
 Links that start with `lyrimuse://` let you control Lyrimuse from Shortcuts, Raycast, Alfred, Stream Deck, the terminal (`open 'lyrimuse://…'`) and similar tools: open windows and settings pages, show or hide lyrics, control playback, nudge the timing, or get what's playing.
 
@@ -34,7 +34,7 @@ The common ones can be copied from **Deep Links** at the bottom of Settings › 
 | Path | Page | Sections |
 |---|---|---|
 | `/lyrics` | Lyrics | `/fetch` or `/sources` Source, `/translation` or `/language` Language, `/display` or `/timing` Timing, `/manage` or `/library` Lyrics Library |
-| `/player` | Player | `/players` Player, `/linkage` Linkage, `/permissions` Permissions & Services |
+| `/player` | Player | `/players` Player, `/linkage` Launch & Quit, `/permissions` Permissions & Services |
 | `/appearance` | Lyrics Display | `/overlay` Floating Lyrics, `/notch` Notch, `/menu-bar` Menu Bar, `/touch-bar` Touch Bar, `/lyrics-window` Lyrics Window |
 | `/shortcuts` | Keyboard Shortcuts | — |
 | `/general` | General | — |

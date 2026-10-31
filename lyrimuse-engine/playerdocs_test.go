@@ -128,6 +128,36 @@ func TestDocsListEveryPlayer(t *testing.T) {
 		}
 	}
 
+	// 日文、韩文 README 只核两个数量(播放器总数、不用「自动化」权限的个数);向导那一句的名单以英文、中文 README 为准。
+	// 日文的「残りの10のプレーヤー」是后一个数,总数的正则不收前面紧挨「の」的数字。
+	for _, r := range []struct {
+		path          string
+		count, others *regexp.Regexp
+	}{
+		{"../README.ja.md", regexp.MustCompile(`(?:^|[^の\d])(\d+)のプレーヤー`), regexp.MustCompile(`残りの(\d+)の`)},
+		{"../README.ko.md", regexp.MustCompile(`(\d+)개 플레이어`), regexp.MustCompile(`나머지 (\d+)개`)},
+	} {
+		text := readText(t, r.path)
+		for _, check := range []struct {
+			re   *regexp.Regexp
+			want int
+			what string
+		}{
+			{r.count, n, "播放器数量"},
+			{r.others, n - automation, "不用「自动化」权限的播放器数量"},
+		} {
+			matches := check.re.FindAllStringSubmatch(text, -1)
+			if len(matches) == 0 {
+				t.Errorf("%s 里认不出写着%s的地方——措辞改了就调这里的正则", r.path, check.what)
+			}
+			for _, m := range matches {
+				if m[1] != strconv.Itoa(check.want) {
+					t.Errorf("%s 里的 %q 写的是 %s,%s是 %d——这处的数字要跟着改", r.path, m[0], m[1], check.what, check.want)
+				}
+			}
+		}
+	}
+
 	// 功能清单:三种语言写在 shared/feature-list.json 一份里(docs/feature-list*.md 由它生成),每种写法各核一遍数量。
 	featureList := readText(t, "../shared/feature-list.json")
 	for _, r := range readmes {

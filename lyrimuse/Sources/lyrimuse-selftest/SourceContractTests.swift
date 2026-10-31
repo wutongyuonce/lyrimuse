@@ -3318,6 +3318,12 @@ func runSourceContractSurfaceTests() {
                     "版权说明: 简体界面开中文 README 的「许可与版权说明」,锚点百分号编码")
         expectEqual(LegalNoticeLinks.usageNoticeURL(language: "zh-hant"), hans, "版权说明: 繁体界面跟简体开同一份中文 README")
         expectEqual(LegalNoticeLinks.usageNoticeURL(language: "system"), en, "版权说明: 认不出的取值当英文")
+        expectEqual(LegalNoticeLinks.usageNoticeURL(language: "ja").absoluteString,
+                    "https://github.com/Yudaotor/lyrimuse/blob/main/README.ja.md#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9%E3%81%A8%E8%91%97%E4%BD%9C%E6%A8%A9",
+                    "版权说明: 日文界面开日文 README 的「ライセンスと著作権」")
+        expectEqual(LegalNoticeLinks.usageNoticeURL(language: "ko").absoluteString,
+                    "https://github.com/Yudaotor/lyrimuse/blob/main/README.ko.md#%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4-%EB%B0%8F-%EC%A0%80%EC%9E%91%EA%B6%8C",
+                    "版权说明: 韩文界面开韩文 README 的「라이선스 및 저작권」,空格在锚点里是连字符")
         expectEqual(LegalNoticeLinks.thirdPartyLicensesOnGitHub.absoluteString,
                     "https://github.com/Yudaotor/lyrimuse/blob/main/THIRD_PARTY_LICENSES", "版权说明: 第三方许可的 GitHub 兜底指向仓库根那份")
 
@@ -3336,11 +3342,13 @@ func runSourceContractSurfaceTests() {
         } else {
             expectEqual(true, false, "版权说明: 读不到 README.md(路径挪了?)")
         }
-        if let readme = read(repoRoot.appendingPathComponent("README.zh-CN.md")) {
-            expectEqual(readme.contains("\n## 许可与版权说明\n"), true,
-                        "版权说明: README.zh-CN.md 要有「## 许可与版权说明」—— 中文锚点由它生成")
-        } else {
-            expectEqual(true, false, "版权说明: 读不到 README.zh-CN.md(路径挪了?)")
+        for (file, heading) in [("README.zh-CN.md", "许可与版权说明"), ("README.ja.md", "ライセンスと著作権"), ("README.ko.md", "라이선스 및 저작권")] {
+            if let readme = read(repoRoot.appendingPathComponent(file)) {
+                expectEqual(readme.contains("\n## \(heading)\n"), true,
+                            "版权说明: \(file) 要有「## \(heading)」—— 锚点由它生成")
+            } else {
+                expectEqual(true, false, "版权说明: 读不到 \(file)(路径挪了?)")
+            }
         }
         let appSources = packageDir.appendingPathComponent("Sources/lyrimuse")
         if let settings = read(appSources.appendingPathComponent("SettingsView.swift")) {
