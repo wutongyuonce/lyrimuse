@@ -302,3 +302,19 @@ func TestBorrowedTranslationSameStampLines(t *testing.T) {
 		t.Fatalf("同一时刻的两行应各配各的译文,得到:\n%s", got)
 	}
 }
+
+// 对唱歌每句带「男：」「女：」:这种标签本身就是「短汉字 + 冒号」,先按署名判会把整句摘掉、借不到译文。
+// 先认演唱者标签,标签后面那段照常配对(同 timelineBodyText)。
+func TestBorrowedTranslationKeepsSpeakerLabelledLines(t *testing.T) {
+	var own, donor, donorTr strings.Builder
+	for i := 0; i < 10; i++ {
+		label := []string{"男", "女"}[i%2]
+		own.WriteString(fmt.Sprintf("%s%s：我们一起走过第%d个春天\n", formatLRCTime(10000+i*4000), label, i))
+		donor.WriteString(fmt.Sprintf("%s我们一起走过第%d个春天\n", formatLRCTime(10200+i*4000), i))
+		donorTr.WriteString(fmt.Sprintf("%sWe walked through spring number %d\n", formatLRCTime(10200+i*4000), i))
+	}
+	got, ok := borrowedTranslation(own.String(), donor.String(), donorTr.String())
+	if !ok || !strings.HasPrefix(got, formatLRCTime(10000)+"We walked through spring number 0") {
+		t.Fatalf("对唱标签不该让整句被当成署名摘掉: ok=%v\n%s", ok, got)
+	}
+}

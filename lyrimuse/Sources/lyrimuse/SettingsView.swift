@@ -2961,7 +2961,7 @@ private struct AppearanceSettingsTab: View {
                 // 别复制两份 —— 复制出来的那份迟早只改一边。
                 //
                 // 自定义颜色这两档会**反过来决定文字颜色**:歌词窗口的正文默认是白的,那是因为
-                // 封面背景必然够暗(烘焙压过 EV −1.9 + 0.15 黑遮罩)。用户填一个浅色背景时白字会直接
+                // 封面背景按 AM 的配方压暗(AMBackdrop)。用户填一个浅色背景时白字会直接
                 // 消失,所以 LyricsWindowView.hasArtworkBackground 改成了真的算背景亮度 —— 判据在
                 // LyricsWindowBackgroundLuma,selftest 钉着边界值。这里只管收集配置。
                 // 工具栏浮层之外的全量兜底:默认折叠,展开后一组一张卡,顺序和组名跟工具栏一致。

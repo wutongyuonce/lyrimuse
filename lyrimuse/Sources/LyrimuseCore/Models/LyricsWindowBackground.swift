@@ -55,7 +55,7 @@ public enum LyricsWindowGradientDirection: String, CaseIterable, Codable, Sendab
 ///
 /// 为什么非要算:`hasArtworkBackground` 原来就是 `artworkData != nil`,而全窗十几处配色
 /// (主文字/副行/时间/进度/图标/面板)都读它决定"白字还是 .primary"。那条捷径之所以一直成立,
-/// 是因为封面背景**必然**是暗的(烘焙压过 EV −1.9,视图层还盖了 0.15 黑遮罩)。用户能自己填
+/// 是因为封面背景按 AM 的配方压暗(`AMBackdrop` 逐份压到约 0.65 倍再混 10% 白,近白封面的均色亮度也在 0.7 上下)。用户能自己填
 /// 颜色之后这个前提就没了 —— 填一个浅黄背景,白字直接消失。
 ///
 /// 放在 LyrimuseCore 而不是 AppSettings 边上,是为了 selftest 够得到:这里面有 sRGB 线性化、
@@ -66,7 +66,7 @@ public enum LyricsWindowBackgroundLuma {
     ///
     /// 取 0.3 的依据是 WCAG 相对亮度下**大号文本**的 3:1 对比度线 —— 白字要 `L ≤ 0.3`,
     /// 黑字要 `L ≥ 0.1`,中间那段两者都勉强。歌词窗口的正文是大号粗体,落在大文本档;
-    /// 取区间的上沿而不是中点,是因为这扇窗的整套设计语言(vibrancy 次级染色、0.15 遮罩)
+    /// 取区间的上沿而不是中点,是因为这扇窗的整套设计语言(vibrancy 次级染色、封面背景压暗)
     /// 都是为深底配的,能维持白字就维持。
     public static let lightTextThreshold = 0.3
 

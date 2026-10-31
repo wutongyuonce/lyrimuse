@@ -40,7 +40,8 @@ type borrowLine struct {
 	text  string
 }
 
-// borrowLRCLines 把 LRC 展开成逐戳的行,按时刻排序;署名行和归一后为空的行不要。
+// borrowLRCLines 把 LRC 展开成逐戳的行,按时刻排序;署名行和归一后为空的行不要。演唱者标签先认(isCreditLineWithSpeakers):
+// 「男：」这种标签本身就是「短汉字 + 冒号」,先判署名会把整句对唱摘掉。
 func borrowLRCLines(lrc string) []borrowLine {
 	speakers := lyricSpeakerLabels(lrc)
 	var out []borrowLine
@@ -50,7 +51,7 @@ func borrowLRCLines(lrc string) []borrowLine {
 			continue
 		}
 		text := strings.TrimSpace(lrcTimestampRe.ReplaceAllString(line, ""))
-		if text == "" || isCreditLine(text) {
+		if text == "" || isCreditLineWithSpeakers(text, speakers) {
 			continue
 		}
 		n := normTimelineText(timelineSungText(text, speakers))

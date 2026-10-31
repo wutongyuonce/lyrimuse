@@ -59,6 +59,7 @@ struct LyricsPreviewScrollView<Content: View>: NSViewRepresentable {
         coordinator.host = host
         scrollView.onUserScroll = { [weak coordinator] in
             coordinator?.cancelAnimation()
+            coordinator?.settle = nil
             coordinator?.onUserScroll()
         }
         scrollView.onLayout = { [weak coordinator] in coordinator?.relayout() }
@@ -79,6 +80,7 @@ struct LyricsPreviewScrollView<Content: View>: NSViewRepresentable {
         if let request = scrollRequest, request.serial != coordinator.handledSerial {
             coordinator.handledSerial = request.serial
             coordinator.pending = request
+            coordinator.settle = request.animated ? nil : request
             coordinator.applyPending()
         }
     }
@@ -96,6 +98,9 @@ struct LyricsPreviewScrollView<Content: View>: NSViewRepresentable {
         var onUserScroll: () -> Void = {}
         var handledSerial: Int?
         var pending: LyricsPreviewScrollRequest?
+        /// 最近一次不带动画的定位(换显示档、换歌):它跟新内容同一轮到,当时用的还是旧行的位置;新行的位置送到时按它再对一次。
+        /// 用户自己滚、或来了带动画的定位(换句)就作废。
+        var settle: LyricsPreviewScrollRequest?
         private var rowFrames: [Int: CGRect] = [:]
         private var laidOutWidth: CGFloat = -1
         private var laidOutHeight: CGFloat = -1
@@ -104,6 +109,7 @@ struct LyricsPreviewScrollView<Content: View>: NSViewRepresentable {
             rowFrames = frames
             // 行的高度变了(换显示模式、换歌),文档视图跟着长短。
             relayout(force: true)
+            if pending == nil, let settle { pending = settle }
             applyPending()
         }
 
@@ -225,7 +231,10 @@ final class LyricsPreviewNSScrollView: NSScrollView {
     }
 
     override func scrollWheel(with event: NSEvent) {
-        onUserScroll?()
+        // 只认用户手上在滚的那几下:触控板松手后的惯性(momentumPhase 非空)不算,老式滚轮 phase 为空也算。
+        if event.momentumPhase.isEmpty, event.phase.isEmpty || event.phase.contains(.began) || event.phase.contains(.changed) {
+            onUserScroll?()
+        }
         super.scrollWheel(with: event)
     }
 

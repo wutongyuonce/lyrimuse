@@ -4801,7 +4801,7 @@ struct LyricsWindowView: View {
     private var hasArtworkBackground: Bool {
         switch activeBackgroundMode {
         case .artwork:
-            // 封面背景必然是暗的(烘焙压过 EV −1.9 + 0.15 黑遮罩);拿不到封面时什么都不画、退回系统
+            // 封面背景按 AM 的配方压暗(AMBackdrop),按深底配白字;拿不到封面时什么都不画、退回系统
             // 窗口底色,那就该跟随系统深浅色。两份封面都要看:背景按「高清替代 ?? 系统那份」烘焙,
             // 而 Spotify 在系统那份还没有时会先挂原图档(见 PlaybackCoordinator.refreshSpotifyOriginalCover),
             // 只看系统那份的话暗背景上会配深色字。背景图层也要看:换歌的空档里封面先清空、上一首的

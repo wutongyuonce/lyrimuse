@@ -4607,8 +4607,12 @@ func runSourceContractSettingsTests() {
                     && previewScroll.contains("clip.animator().setBoundsOrigin(origin)")
                     && previewScroll.contains("static var scrollAnimationDuration: TimeInterval { 0.45 }")
                     && previewScroll.contains("host.safeAreaRegions = []")
-                    && previewScroll.contains("override func scrollWheel(with event: NSEvent) {\n        onUserScroll?()"),
-                    true, "歌词管理: 预览滚动用 NSScrollView、AppKit 动画滚到当前句,手动滚动暂停跟随")
+                    && previewScroll.contains("if event.momentumPhase.isEmpty, event.phase.isEmpty || event.phase.contains(.began) || event.phase.contains(.changed) {\n            onUserScroll?()"),
+                    true, "歌词管理: 预览滚动用 NSScrollView、AppKit 动画滚到当前句,手动滚动暂停跟随(惯性阶段不算)")
+        expectEqual([previewScroll.contains("coordinator.settle = request.animated ? nil : request"),
+                     previewScroll.contains("if pending == nil, let settle { pending = settle }"),
+                     previewScroll.contains("coordinator?.settle = nil")], [true, true, true],
+                    "歌词管理: 换显示档 / 换歌那次不带动画的定位,新行位置送到时按它再对一次;用户一滚就作废")
         // 标签和小标记的颜色都读 LyricsFeatureTint,跟搜索候选歌词面板同一份,不在调用点各写一份(11 章决策 79)。
         let headerTagsSource = (manager.components(separatedBy: "private func headerTags(").dropFirst().first ?? "")
             .components(separatedBy: "private func factsRow(").first ?? ""
