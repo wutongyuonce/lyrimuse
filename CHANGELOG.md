@@ -23,9 +23,11 @@ each version's git tag annotation and on its
 ## v1.12.0
 
 New / 新功能
-- Added VOX and Pine Player as built-in players, bringing the total to
-  thirteen
-  新增内置播放器 VOX 与 Pine Player，内置播放器增至 13 款
+- Added Japanese, Korean and Spanish as interface languages
+  新增日语、韩语与西班牙语界面
+- Added VOX, Pine Player and foobar2000 as built-in players, bringing the
+  total to fourteen
+  新增内置播放器 VOX、Pine Player 与 foobar2000，内置播放器增至 14 款
 - Added support for the iPad versions of NetEase Cloud Music and QQ Music
   on Apple silicon Macs
   支持在 Apple 芯片 Mac 上运行的 iPad 版网易云音乐与 QQ 音乐
@@ -51,6 +53,9 @@ New / 新功能
 - You can now show only the translation in the menu bar, or put it on
   the same line as the lyrics
   菜单栏可以只显示译文，或把译文接在原文后排成一行
+- Added a flowing rainbow lyric color for floating lyrics, the notch, menu
+  bar, Touch Bar and OBS
+  新增流动的「彩虹」歌词颜色，悬浮歌词、灵动岛、菜单栏、触控栏与 OBS 页都能用
 - Added multi-line lyrics to the expanded notch; click a line to jump to it
   灵动岛展开时可显示多行歌词，点一句即可跳到这一句
 - Added a progress line to the notch that traces the ear edges, on by
@@ -64,6 +69,15 @@ New / 新功能
   灵动岛两侧新增「收听次数」「播放器」模块，以及临时展开灵动岛的快捷键
 - Added an option for the notch to follow the display of the active window
   灵动岛可以显示在当前窗口所在的屏幕上
+- You can now show the notch on the Lock Screen, off by default
+  灵动岛可以在锁屏上显示，默认关闭
+- You can now pick a separate background for the expanded notch
+  灵动岛展开时可另选一种背景
+- Added Fade on Hover to the notch, letting clicks pass through the
+  lyric row
+  灵动岛新增「悬浮淡化」：指针压上歌词行时整行变淡，点击落到下层窗口
+- Added the last played song to the notch when nothing is playing
+  没有歌曲在放时，灵动岛空闲面板显示上次播放的歌曲
 - Added separate switches to hide floating lyrics and collapse the notch
   during ads
   悬浮歌词与灵动岛新增「广告时隐藏」「广告时收起」开关
@@ -82,6 +96,8 @@ New / 新功能
 - You can now use lyrics beside local files played in Apple Music,
   Spotify, QQ Music, NetEase, Kugou and LX Music
   这些播放器放本机文件时，可用文件旁的 .lrc 和文件里内嵌的歌词
+- You can now prefer lyrics from the song file over online lyric sources
+  可设为优先使用歌曲文件自带的歌词
 - You can now choose the word-timed lyric file format: TTML, YRC,
   Enhanced LRC, QRC or KRC
   歌词文件夹的逐字歌词可选存为 TTML、YRC、增强 LRC、QRC 或 KRC
@@ -100,6 +116,8 @@ New / 新功能
   It never includes song titles or accounts; turn it off in Settings ›
   About › Diagnostics & Data
   新增「发送匿名使用数据」（默认开启），用于改进 Lyrimuse，不含歌名和账号；可在 设置 › 关于 › 诊断与数据 中关闭
+- Added a QQ group link next to Discord and Telegram in About
+  「关于」页新增 QQ 群入口，与 Discord、Telegram 并列
 
 Improved / 改进
 - Moved data to ~/Library/Application Support, caches to ~/Library/Caches
@@ -114,6 +132,11 @@ Improved / 改进
 - Improved push settings: a push time in your time zone, per-report
   channels and a preview with real data
   推送提醒可设推送时间、按档选渠道，并用这一期的真实数据预览
+- Moved Push Alerts out of Labs and into the main Settings sections
+  推送提醒移出「实验室」，成为设置里的独立分类
+- Improved push alerts with real reports as tests, platform-native
+  buttons, and your interface language
+  推送测试改发这一期的真实报告，各平台用自带的按钮与副标题排版，报告随界面语言书写
 - Improved Japanese readings by borrowing kana annotations from other
   lyric sources
   日语读音会借用其他歌词源的假名标注，读音更准
@@ -129,15 +152,18 @@ Improved / 改进
 - Improved matching for Spotify, QQ Music and songs whose title notes
   the version after a dash
   改进 Spotify、QQ 音乐的歌词匹配，以及歌名在「 - 」后注明版本的歌曲
+- Improved timing by using a player's own lyrics when other sources run
+  offset from its recording
+  其他源的时间轴与播放器的录音整体错开时，改用该播放器自家平台的歌词
 - Improved local file matching using the NetEase song ID stored in
   downloaded files
   放网易云下载的文件时，按文件里记录的歌曲 ID 匹配歌词
-- Improved prefetching of upcoming songs for VOX, Pine Player, reAMP,
-  KKBOX and QQ Music
-  VOX、Pine Player、reAMP、KKBOX 与 QQ 音乐会按播放列表和循环模式预先解析接下来的歌
-- Extended the idle page's Resume button to Kugou, QQ Music, NetEase
-  Cloud Music, LX Music and Pine Player
-  停播页的「继续播放」新增支持酷狗、QQ 音乐、网易云音乐、洛雪音乐与 Pine Player
+- Improved prefetching of upcoming songs for VOX, Pine Player, foobar2000,
+  reAMP, KKBOX and QQ Music
+  VOX、Pine Player、foobar2000、reAMP、KKBOX 与 QQ 音乐会按播放列表和循环模式预先解析接下来的歌
+- Extended the idle page's Resume button to Kugou, QQ Music, NetEase,
+  LX Music, Pine Player and foobar2000
+  停播页的「继续播放」新增支持酷狗、QQ 音乐、网易云音乐、洛雪音乐、Pine Player 与 foobar2000
 - Improved Spotify Web playback position to millisecond precision
   Spotify 网页版的播放进度精确到毫秒
 - Improved control of Kugou and reAMP while another app holds media
@@ -158,6 +184,11 @@ Improved / 改进
 - Reorganized the Lyrics settings page by purpose and split Language
   into three cards
   歌词设置页按用途重新分组，「语言」拆成译文、简繁与读音三张卡片
+- Improved wording, grouping and layout across every Settings page
+  设置各页的文案、分组与排版全面梳理
+- Improved the lyrics window's album art background to match Apple
+  Music's Now Playing look
+  歌词窗口的封面背景改用 Apple Music 播放页的做法，层次更接近
 - Removed the lyric source health warnings from the sources grid
   歌词来源格上不再显示近况提醒
 - Improved the notch with smoother curved edges and better alignment in
@@ -196,6 +227,20 @@ Fixed / 修复
 - Fixed lyrics occasionally being swapped for a live or different
   version in the background
   修复歌词偶尔在后台被换成现场版等其他版本的问题
+- Fixed lyrics running slightly late when several sources had the same
+  text
+  修复几个源歌词内容相同时，偶尔选中时间稍慢那份的问题
+- Fixed Soda Music lyrics running about 0.4 seconds late in the first
+  songs
+  修复汽水音乐开头几首歌词整体晚约 0.4 秒的问题
+- Fixed music videos in Spotify and NetEase Cloud Music being treated as
+  songs
+  修复 Spotify 与网易云音乐播放 MV 时被当成歌曲匹配歌词的问题
+- Fixed QQ Music previews for non-members cutting the song length short
+  修复 QQ 音乐非会员试听时歌曲时长被截短的问题
+- Fixed right-aligned menu bar lyrics leaving a gap when lines get
+  shorter
+  修复菜单栏歌词靠右对齐时，句子变短后右侧空出一截的问题
 - Fixed title and artist header lines showing as the first lyric line
   修复「歌曲名」「歌手名」抬头行被显示成第一句歌词的问题
 - Fixed right-to-left lyrics running left to right in word-by-word mode
@@ -232,7 +277,7 @@ Fixed / 修复
 Not sure which one? Check your chip under **About This Mac**.
 不确定该下哪个？打开「关于本机」看芯片是 Apple M… 还是 Intel Core…
 
-338 commits since v1.11.0.
+442 commits since v1.11.0.
 
 **Full Changelog**: https://github.com/Yudaotor/lyrimuse/compare/v1.11.0...v1.12.0
 
