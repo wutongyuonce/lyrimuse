@@ -756,8 +756,10 @@ struct LastfmStatsSection: View {
                 Text("–").foregroundStyle(.tertiary)
                     .help(L10n.t("名次与上一期相同"))
             case .new?:
+                // 这一列固定 34pt 宽:译文较长时缩字号,别截断
                 Text(L10n.t("新"))
                     .font(.system(size: 9.5, weight: .medium))
+                    .minimumScaleFactor(0.7)
                     .foregroundStyle(Color.accentColor)
                     .padding(.horizontal, 4)
                     .background(Color.accentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: 4))

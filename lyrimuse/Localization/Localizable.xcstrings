@@ -12907,7 +12907,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivar «Siempre delante»"
+            "value" : "Desactivar «Siempre en primer plano»"
           }
         },
         "ja" : {
@@ -13885,7 +13885,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más escuchadas"
+            "value" : "Ranking"
           }
         },
         "ja" : {
@@ -15252,7 +15252,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tamaño de letra"
+            "value" : "Tamaño de fuente"
           }
         },
         "ja" : {
@@ -18837,7 +18837,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letra del notch oculta"
+            "value" : "Letra en el notch oculta"
           }
         },
         "ja" : {
@@ -18871,7 +18871,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letra de la barra de menús oculta"
+            "value" : "Letra en la barra de menús oculta"
           }
         },
         "ja" : {
@@ -23736,7 +23736,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar/ocultar letra del notch"
+            "value" : "Mostrar/ocultar letra en el notch"
           }
         },
         "ja" : {
@@ -23770,7 +23770,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar/ocultar letra de barra de menús"
+            "value" : "Alternar letra en la barra de menús"
           }
         },
         "ja" : {
@@ -25251,7 +25251,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Color por cantar"
+            "value" : "Color sin cantar"
           }
         },
         "ja" : {
@@ -27142,7 +27142,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tamaño de letra %@pt"
+            "value" : "Tamaño de fuente: %@ pt"
           }
         },
         "ja" : {
@@ -27751,7 +27751,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Línea de letra"
+            "value" : "Fila de letra"
           }
         },
         "ja" : {
@@ -30041,7 +30041,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letra del notch"
+            "value" : "Letra en el notch"
           }
         },
         "ja" : {
@@ -31242,7 +31242,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escucha n.º %@"
+            "value" : "Reproducción n.º %@"
           }
         },
         "ja" : {
@@ -38625,13 +38625,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Se eliminará %d registro local, incluida la letra que editaste o elegiste entre las candidatas, junto con su archivo de letra exportado. Antes se hace una copia de seguridad automática, que puedes restaurar con «Restaurar copia automática» en este menú. Al reproducirse, se volverá a buscar la letra de las canciones"
+                  "value" : "Se eliminará %d registro local, incluida la letra que editaste o elegiste entre las candidatas, junto con su archivo de letra exportado. Antes se hace una copia de seguridad automática, que puedes restaurar con «Restaurar desde copia automática» en este menú. Al reproducirse, se volverá a buscar la letra de las canciones"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Se eliminarán los %d registros locales, incluidas las letras que editaste o elegiste entre las candidatas, junto con sus archivos de letra exportados. Antes se hace una copia de seguridad automática, que puedes restaurar con «Restaurar copia automática» en este menú. Al reproducirse, se volverá a buscar la letra de las canciones"
+                  "value" : "Se eliminarán los %d registros locales, incluidas las letras que editaste o elegiste entre las candidatas, junto con sus archivos de letra exportados. Antes se hace una copia de seguridad automática, que puedes restaurar con «Restaurar desde copia automática» en este menú. Al reproducirse, se volverá a buscar la letra de las canciones"
                 }
               }
             }
@@ -38690,13 +38690,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Se borrará la calibración manual de tiempos de %d canción, y no se puede deshacer. La letra y el ajuste «Desfase de tiempos» no cambian. Después, la canción vuelve a actualizar su fuente de letras automáticamente"
+                  "value" : "Se borrará la calibración manual de tiempos de %d canción, y no se puede deshacer. La letra y el ajuste «Desfase de tiempo» no cambian. Después, la canción vuelve a actualizar su fuente de letras automáticamente"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Se borrará la calibración manual de tiempos de %d canciones, y no se puede deshacer. Las letras y el ajuste «Desfase de tiempos» no cambian. Después, estas canciones vuelven a actualizar su fuente de letras automáticamente"
+                  "value" : "Se borrará la calibración manual de tiempos de %d canciones, y no se puede deshacer. Las letras y el ajuste «Desfase de tiempo» no cambian. Después, estas canciones vuelven a actualizar su fuente de letras automáticamente"
                 }
               }
             }
@@ -41124,7 +41124,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fijar/liberar posición"
+            "value" : "(Des)bloquear posición"
           }
         },
         "ja" : {
@@ -41288,7 +41288,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic y mantén, o haz clic derecho, para abrir los ajustes"
+            "value" : "Haz clic y mantén, o haz clic secundario, para abrir los ajustes"
           }
         },
         "ja" : {
@@ -41329,7 +41329,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic y mantén para arrastrar"
+            "value" : "Mantener pulsado para arrastrar"
           }
         },
         "ja" : {
@@ -44176,13 +44176,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ reproducción"
+                  "value" : "%@ escucha"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ reproducciones"
+                  "value" : "%@ escuchas"
                 }
               }
             }
@@ -44981,7 +44981,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activado por defecto para japonés, coreano, chino y cantonés"
+            "value" : "Activado de forma predeterminada para japonés, coreano, chino y cantonés"
           }
         },
         "ja" : {
@@ -47267,7 +47267,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@–%@pt"
+            "value" : "%@–%@ pt"
           }
         },
         "ja" : {
@@ -47922,7 +47922,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restaurar valores por defecto"
+            "value" : "Restaurar valores predeterminados"
           }
         },
         "ja" : {
@@ -48209,7 +48209,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activado (por defecto): las entradas de una misma canción de distintos reproductores o ediciones de álbum que se confirman como la misma grabación usan la misma letra, y las ediciones manuales se aplican a todas\nDesactivado: cada entrada busca su letra por separado, y las que estaban sincronizadas vuelven a su letra original"
+            "value" : "Activado (predeterminado): las entradas de una misma canción de distintos reproductores o ediciones de álbum que se confirman como la misma grabación usan la misma letra, y las ediciones manuales se aplican a todas\nDesactivado: cada entrada busca su letra por separado, y las que estaban sincronizadas vuelven a su letra original"
           }
         },
         "ja" : {
@@ -49192,7 +49192,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño de letra» no tiene efecto"
+            "value" : "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño de fuente» no tiene efecto"
           }
         },
         "ja" : {
@@ -49315,7 +49315,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sigue por defecto el tamaño de la barra de menús del sistema"
+            "value" : "Sigue el tamaño de la barra de menús del sistema de forma predeterminada"
           }
         },
         "ja" : {
@@ -49356,7 +49356,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si está activado, estas canciones hacen scrobble al reproducirse la mitad. Las reglas oficiales de Last.fm las omiten"
+            "value" : "Si está activado, se hace scrobble de estas canciones al llegar a la mitad. Las reglas oficiales de Last.fm las omiten"
           }
         },
         "ja" : {
@@ -50627,7 +50627,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El reenvío no terminó. Inténtalo más tarde"
+            "value" : "El envío de pendientes no terminó. Inténtalo más tarde"
           }
         },
         "ja" : {
@@ -52085,7 +52085,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d puntos menos"
+            "value" : "Por detrás: %d pts"
           }
         },
         "ja" : {
@@ -56961,7 +56961,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cabecera"
+            "value" : "Encabezado"
           }
         },
         "ja" : {
@@ -61682,7 +61682,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se oculta cuando una app está a pantalla completa en su pantalla"
+            "value" : "Se oculta cuando una app ocupa toda la pantalla en la que está el notch"
           }
         },
         "ja" : {
@@ -64511,7 +64511,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desmarca Spotify en «Reproductores con scrobble». Lo que escuches en Spotify en otros dispositivos se sigue registrando"
+            "value" : "Desmarca Spotify en «Reproductores para scrobble». Lo que escuches en Spotify en otros dispositivos se sigue registrando"
           }
         },
         "ja" : {
@@ -70674,7 +70674,7 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Buscar solo la %@ canción filtrada"
+                  "value" : "Buscar solo %@ canción filtrada"
                 }
               },
               "other" : {
@@ -72798,7 +72798,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coincidencia automática terminada: %@ encontradas"
+            "value" : "Búsqueda automática terminada: %@ encontradas"
           }
         },
         "ja" : {
@@ -72833,7 +72833,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coincidencia automática en curso; consulta el progreso abajo a la izquierda"
+            "value" : "Búsqueda automática en curso; consulta el progreso abajo a la izquierda"
           }
         },
         "ja" : {
@@ -73043,7 +73043,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta canción solo tiene letra en texto plano, sin tiempos. Puedes buscar letra sincronizada"
+            "value" : "Esta canción solo tiene letra en texto sin formato, sin tiempos. Puedes buscar letra sincronizada"
           }
         },
         "ja" : {
@@ -75325,7 +75325,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En tamaño mini, se oculta cuando una app está a pantalla completa en su pantalla"
+            "value" : "En tamaño mini, se oculta cuando una app ocupa toda su pantalla"
           }
         },
         "ja" : {
@@ -75360,7 +75360,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clics a través al atenuarse"
+            "value" : "Dejar pasar clics al atenuarse"
           }
         },
         "ja" : {
@@ -75594,7 +75594,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Candidatas excluidas al puntuar (por ejemplo, sin marcas de tiempo o con idioma o duración incorrectos). La coincidencia automática no las elegirá, pero puedes previsualizarlas y usarlas"
+            "value" : "Candidatas excluidas al puntuar (por ejemplo, sin marcas de tiempo o con idioma o duración incorrectos). La búsqueda automática no las elegirá, pero puedes previsualizarlas y usarlas"
           }
         },
         "ja" : {
@@ -78086,7 +78086,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El “××” de “Escuchando ××” en tu perfil. Discord en iOS y en la web lo ignora y sigue mostrando el reproductor\nCon «Título» o «Artista» aquí, «Bajo tu nombre» no puede mostrar el reproductor"
+            "value" : "El “××” de “Escuchando ××” en tu perfil. Discord en iOS y en la web lo ignora y sigue mostrando el reproductor\nCon «Título» o «Artista» aquí, «Debajo de tu nombre» no puede mostrar el reproductor"
           }
         },
         "ja" : {
@@ -79070,7 +79070,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coincidencia por lotes"
+            "value" : "Búsqueda por lotes"
           }
         },
         "ja" : {
@@ -79152,7 +79152,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo canciones sin letra o con letra en texto plano"
+            "value" : "Solo canciones sin letra o con letra en texto sin formato"
           }
         },
         "ja" : {
@@ -79832,7 +79832,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los anuncios que se pueden saltar se saltan en cuanto aparecen"
+            "value" : "Los anuncios que se pueden omitir se omiten en cuanto aparecen"
           }
         },
         "ja" : {
@@ -81140,7 +81140,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La línea de letra cambia como mucho cada 4 segundos y muestra el álbum cuando no hay letra"
+            "value" : "La fila de letra espera al menos 4 segundos entre cambios y muestra el álbum cuando no hay letra"
           }
         },
         "ja" : {
@@ -81210,7 +81210,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reducir tamaño de letra"
+            "value" : "Reducir tamaño de fuente"
           }
         },
         "ja" : {
@@ -81251,7 +81251,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aumentar tamaño de letra"
+            "value" : "Aumentar tamaño de fuente"
           }
         },
         "ja" : {
@@ -89486,7 +89486,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se oculta cuando una app está a pantalla completa en su pantalla"
+            "value" : "Se oculta cuando una app ocupa toda su pantalla"
           }
         },
         "ja" : {
@@ -99024,7 +99024,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ guarda su cola de reproducción en una carpeta protegida. Con acceso, las próximas canciones se resuelven por adelantado; sin él, se resuelven otras canciones del mismo álbum"
+            "value" : "%@ guarda su cola de reproducción en una carpeta protegida. Con acceso, se prepara por adelantado la letra de las próximas canciones; sin él, la de otras canciones del mismo álbum"
           }
         },
         "ja" : {
@@ -99065,7 +99065,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El acceso total al disco permite resolver por adelantado las próximas canciones de %@; solo lee su cola de reproducción"
+            "value" : "El acceso total al disco permite a %@ preparar por adelantado la letra de las próximas canciones; solo lee su cola de reproducción"
           }
         },
         "ja" : {
@@ -105625,7 +105625,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La traducción sigue al original en la misma línea y «Tamaño de letra» se sigue aplicando"
+            "value" : "La traducción sigue al original en la misma línea y «Tamaño de fuente» se sigue aplicando"
           }
         },
         "ja" : {
@@ -107511,7 +107511,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@pt"
+            "value" : "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@ pt"
           }
         },
         "ja" : {

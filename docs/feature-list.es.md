@@ -33,7 +33,7 @@ Estas funciones siguen desactivadas después de instalar. Actívalas primero en 
 | [Bloquear letra elegida a mano](#feature-lock-hand-picked) | Ajustes › Letra › Fuente › Bloquear letra elegida a mano |
 | [Traducir si no hay traducción](#feature-machine-translation) | Ajustes › Letra › Idioma › Traducir si no hay traducción |
 | [Dividir líneas largas, unir líneas cortas](#feature-split-join-lines) | Ajustes › Letra › Tiempos y cortes › Dividir líneas largas |
-| [Letra del notch](#feature-notch-lyrics) | Ajustes › Mostrar letra › Notch › Letra del notch |
+| [Letra del notch](#feature-notch-lyrics) | Ajustes › Mostrar letra › Notch › Letra en el notch |
 | [Letra en la barra de menús](#feature-menu-bar-lyrics) | Ajustes › Mostrar letra › Barra de menús › Letra en la barra de menús |
 | [Letra en la Touch Bar](#feature-touch-bar-lyrics) | Ajustes › Mostrar letra › Touch Bar › Letra en la Touch Bar |
 | [Resaltado HDR en la ventana de letra](#feature-lyrics-window-hdr) | Ajustes › Mostrar letra › Ventana de letra › Color › Resaltado HDR |
@@ -47,7 +47,7 @@ Estas funciones siguen desactivadas después de instalar. Actívalas primero en 
 | [Ocultar o contraer durante anuncios](#feature-hide-during-ads) | Ajustes › Mostrar letra › Letra flotante › Comportamiento › Ocultar durante anuncios |
 | [Notch en la pantalla bloqueada](#feature-notch-show-on-lock-screen) | Ajustes › Mostrar letra › Notch › Comportamiento › Mostrar en pantalla bloqueada |
 | [Ocultar la letra flotante en pantalla completa](#feature-overlay-hide-in-full-screen) | Ajustes › Mostrar letra › Letra flotante › Comportamiento › Ocultar en pantalla completa |
-| [Atenuar la fila de letra del notch al pasar el puntero](#feature-notch-lyric-row-fade) | Ajustes › Mostrar letra › Notch › Línea de letra › Atenuar al pasar el puntero |
+| [Atenuar la fila de letra del notch al pasar el puntero](#feature-notch-lyric-row-fade) | Ajustes › Mostrar letra › Notch › Fila de letra › Atenuar al pasar el puntero |
 | [Letra web: teléfono o tableta como segunda pantalla, o fuente de navegador de OBS](#feature-web-lyrics) | Ajustes › Mostrar letra › Ventana de letra › Letra web |
 | [YouTube Music y Spotify Web en el navegador](#feature-web-players) | Ajustes › Reproductor › Web |
 | [Omitir anuncios de YouTube Music automáticamente](#feature-skip-youtube-ads) | Ajustes › Reproductor › Web › Omitir anuncios de YouTube Music |
@@ -273,11 +273,11 @@ Letra sobre todas las ventanas, siempre visible, iluminada palabra por palabra. 
 Una cápsula pegada al notch, arriba en la pantalla; también funciona en Mac sin notch y en pantallas externas. Cada lado puede mostrar título, artista, álbum, ilustración, controles de reproducción, o tiempo transcurrido o restante, junto a una onda de audio que se mueve con la música. Al pasar el puntero se expande con controles, barra de progreso, calibración de la letra y botones rápidos como favorito o buscar letra. Durante los anuncios muestra el tiempo restante.
 
 - Desactivada por omisión
-- Ajustes: Mostrar letra › Notch › Letra del notch
+- Ajustes: Mostrar letra › Notch › Letra en el notch
 - Ajustes: Mostrar letra › Notch › Estilo
 - Ajustes: Mostrar letra › Notch › Pantalla
 - Ajustes: Mostrar letra › Notch › Izquierda
-- Ajustes: Atajos de teclado › Mostrar/ocultar letra del notch
+- Ajustes: Atajos de teclado › Mostrar/ocultar letra en el notch
 - Ajustes: Atajos de teclado › Echar un vistazo al notch
 - Ajustes: Mostrar letra › Notch › Expandido › Acciones rápidas
 
@@ -292,7 +292,7 @@ La línea actual aparece en la barra de menús y se desplaza si es demasiado lar
 - Ajustes: Mostrar letra › Barra de menús › Diseño › Posición de la letra
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Qué se muestra
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Segunda línea
-- Ajustes: Atajos de teclado › Mostrar/ocultar letra de barra de menús
+- Ajustes: Atajos de teclado › Alternar letra en la barra de menús
 
 <a id="feature-touch-bar-lyrics"></a>
 
@@ -379,7 +379,7 @@ Fuente (la del sistema, o una .ttf / .otf importada), tamaño, grosor, color del
 
 - Ajustes: Mostrar letra › Letra flotante › Tema
 - Ajustes: Mostrar letra › Letra flotante › Tema › Mis temas
-- Ajustes: Mostrar letra › Notch › Línea de letra › Color de la letra
+- Ajustes: Mostrar letra › Notch › Fila de letra › Color de la letra
 - Ajustes: Mostrar letra › Barra de menús › Color › Arcoíris
 - Ajustes: Mostrar letra › Letra flotante › Fuente › Fuente
 - Ajustes: Mostrar letra › Letra flotante › Color › Fondo esmerilado
@@ -394,7 +394,7 @@ Cada palabra se ilumina a medida que se canta. La letra flotante, el notch, la b
 
 - Activada por omisión
 - Ajustes: Mostrar letra › Letra flotante › Color › Efecto karaoke
-- Ajustes: Mostrar letra › Notch › Línea de letra › Efecto karaoke
+- Ajustes: Mostrar letra › Notch › Fila de letra › Efecto karaoke
 - Ajustes: Mostrar letra › Barra de menús › Color › Efecto karaoke
 - Ajustes: Mostrar letra › Touch Bar › Color › Efecto karaoke
 - Ajustes: Mostrar letra › Ventana de letra › Color › Efecto karaoke
@@ -417,7 +417,7 @@ Con el puntero encima, la letra flotante se vuelve semitransparente y no tapa lo
 - Desactivada por omisión
 - Ajustes: Mostrar letra › Letra flotante › Comportamiento › Atenuar al pasar el puntero
 - Ajustes: Mostrar letra › Ventana de letra › Comportamiento › Atenuar al pasar el puntero
-- Ajustes: Mostrar letra › Ventana de letra › Comportamiento › Clics a través al atenuarse
+- Ajustes: Mostrar letra › Ventana de letra › Comportamiento › Dejar pasar clics al atenuarse
 
 <a id="feature-lock-position"></a>
 
@@ -427,8 +427,8 @@ Bloqueada, la letra flotante no se puede arrastrar; o bien exige mantener pulsad
 
 - Desactivada por omisión
 - Ajustes: Mostrar letra › Letra flotante › Comportamiento › Bloquear posición
-- Ajustes: Mostrar letra › Letra flotante › Comportamiento › Haz clic y mantén para arrastrar
-- Ajustes: Atajos de teclado › Fijar/liberar posición
+- Ajustes: Mostrar letra › Letra flotante › Comportamiento › Mantener pulsado para arrastrar
+- Ajustes: Atajos de teclado › (Des)bloquear posición
 
 <a id="feature-hover-controls"></a>
 
@@ -543,7 +543,7 @@ Con el puntero sobre el notch, desliza dos dedos a izquierda o derecha para camb
 Con el puntero sobre la fila de letra del notch, este no se expande: la fila se atenúa y los clics pasan a la ventana de abajo; solo se expande desde el propio notch o sus lados.
 
 - Desactivada por omisión
-- Ajustes: Mostrar letra › Notch › Línea de letra › Atenuar al pasar el puntero
+- Ajustes: Mostrar letra › Notch › Fila de letra › Atenuar al pasar el puntero
 
 <a id="feature-notch-multiline-lyrics"></a>
 
@@ -905,7 +905,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Letra › Biblioteca de letras
 
 - **Biblioteca de letras**
-- **Buscar letras que faltan**: Solo canciones sin letra o con letra en texto plano
+- **Buscar letras que faltan**: Solo canciones sin letra o con letra en texto sin formato
 - **Volver a buscar en toda la biblioteca**: Incluye canciones que ya tienen letra, salvo las editadas, calibradas e instrumentales
 - **Intervalo de escaneo**: Segundos entre canciones; se recomiendan al menos 2 segundos para evitar límites de solicitudes
 - **Carpeta de letras**: Los archivos existentes no se mueven al cambiar la ubicación
@@ -921,7 +921,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Reproductor › Web
 
-- **Omitir anuncios de YouTube Music**: Los anuncios que se pueden saltar se saltan en cuanto aparecen
+- **Omitir anuncios de YouTube Music**: Los anuncios que se pueden omitir se omiten en cuanto aparecen
 
 ### Reproductor › Permisos y servicios
 
@@ -945,7 +945,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Tema**
 - **Ancho**
 - **Posición**
-- **Restaurar valores por defecto**: Solo restablece el tema, la fuente y los colores
+- **Restaurar valores predeterminados**: Solo restablece el tema, la fuente y los colores
 
 ### Mostrar letra › Letra flotante › OBS
 
@@ -966,7 +966,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de letra**
+- **Tamaño de fuente**
 
 ### Mostrar letra › Letra flotante › Color
 
@@ -974,7 +974,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Color del texto**
 - **Contorno del texto**
 - **Color del contorno**
-- **Color por cantar**
+- **Color sin cantar**
 - **Color de fondo**
 - **Fondo esmerilado**
 - **Densidad del cristal**
@@ -997,7 +997,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Letra flotante › Comportamiento
 
 - **Bloquear posición**
-- **Haz clic y mantén para arrastrar**
+- **Mantener pulsado para arrastrar**
 - **Atenuar al pasar el puntero**
 - **Mostrar controles al pasar el puntero**
 - **Ocultar en capturas**
@@ -1012,14 +1012,14 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Mostrar letra › Notch
 
-- **Letra del notch**
+- **Letra en el notch**
 - **Estilo**
 - **Pantalla**
 - **Izquierda**
 - **Derecha**
 - **Ancho**
 - **Ancho expandido**
-- **Restaurar valores por defecto**: No cambia el ancho ni el interruptor «Letra en el notch»
+- **Restaurar valores predeterminados**: No cambia el ancho ni el interruptor «Letra en el notch»
 
 ### Mostrar letra › Notch › Estilo
 
@@ -1032,7 +1032,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Onda de audio**: Se muestra en un solo lado a la vez
 
-### Mostrar letra › Notch › Línea de letra
+### Mostrar letra › Notch › Fila de letra
 
 - **Mostrar letra al contraer**: Si se desactiva, solo queda la franja a la altura del notch hasta que pases el puntero para expandir
 - **Alineación**
@@ -1049,7 +1049,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de letra**
+- **Tamaño de fuente**
 
 ### Mostrar letra › Notch › Expandido
 
@@ -1076,7 +1076,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Barra de menús
 
 - **Letra en la barra de menús**
-- **Restaurar valores por defecto**: El ancho y el interruptor «Letra en la barra de menús» no cambian
+- **Restaurar valores predeterminados**: El ancho y el interruptor «Letra en la barra de menús» no cambian
 
 ### Mostrar letra › Barra de menús › Contenido
 
@@ -1102,7 +1102,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de letra**
+- **Tamaño de fuente**
 
 ### Mostrar letra › Barra de menús › Ancho
 
@@ -1116,12 +1116,12 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Touch Bar
 
 - **Letra en la Touch Bar**
-- **Restaurar valores por defecto**: El interruptor «Letra en la Touch Bar» no cambia
+- **Restaurar valores predeterminados**: El interruptor «Letra en la Touch Bar» no cambia
 
 ### Mostrar letra › Touch Bar › Contenido
 
 - **Segunda línea**
-- **Tamaño de letra**
+- **Tamaño de fuente**
 
 ### Mostrar letra › Touch Bar › Diseño
 
@@ -1150,7 +1150,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Ventana de letra**
 - **Letra web**: Mostrar la ventana de letra en un navegador web
-- **Restaurar valores por defecto**
+- **Restaurar valores predeterminados**
 
 ### Mostrar letra › Ventana de letra › Letra web
 
@@ -1172,7 +1172,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Mostrar letra › Ventana de letra › Fuente
 
-- **Tamaño de letra** (solo tamaño mini): Tamaño máximo del texto de la letra en tamaño mini
+- **Tamaño de fuente** (solo tamaño mini): Tamaño máximo del texto de la letra en tamaño mini
 - **Fuente**: Fuente de la ventana de letra (texto, traducción y romanización)
 - **Grosor**
 
@@ -1185,7 +1185,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Ventana de letra › Comportamiento
 
 - **Atenuar al pasar el puntero** (solo tamaño mini)
-- **Clics a través al atenuarse** (solo tamaño mini): Al atenuarse, los clics pasan a la ventana de abajo. Mantén pulsada ⌥ para volverla opaca e interactuar
+- **Dejar pasar clics al atenuarse** (solo tamaño mini): Al atenuarse, los clics pasan a la ventana de abajo. Mantén pulsada ⌥ para volverla opaca e interactuar
 - **Ocultar en pausa** (solo tamaño mini)
 - **Ocultar en pantalla completa** (solo tamaño mini)
 
@@ -1203,7 +1203,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Traducción**
 - **Barra de progreso** (solo tamaño mini): Si se desactiva, solo aparece cuando se muestran los controles al pasar el puntero
 
-### Mostrar letra › Ventana de letra › Cabecera
+### Mostrar letra › Ventana de letra › Encabezado
 
 - **Título** (solo tamaño mini): Muestra el título, el artista y el álbum arriba en el tamaño mini
 - **Artista** (solo tamaño mini)
@@ -1222,12 +1222,12 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Enlaces profundos**: Ábrelos desde Atajos, Raycast, Alfred y herramientas similares. Pasa el puntero sobre un atajo de arriba para copiar el enlace de esa acción
 - **Mostrar/ocultar letra flotante**
-- **Mostrar/ocultar letra del notch**
+- **Mostrar/ocultar letra en el notch**
 - **Echar un vistazo al notch**
-- **Mostrar/ocultar letra de barra de menús**
+- **Alternar letra en la barra de menús**
 - **Expandir/contraer letra de la Touch Bar**
 - **Ocultar/restaurar todas las letras**
-- **Fijar/liberar posición**
+- **(Des)bloquear posición**
 - **Mostrar/ocultar traducción**
 - **Mostrar/ocultar romanización**
 - **Aumentar tamaño de la letra flotante**
@@ -1320,7 +1320,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Título**
 - **Artista**
 - **Momento del scrobble**
-- **Hacer scrobble de canciones de menos de 30 s**: Si está activado, estas canciones hacen scrobble al reproducirse la mitad. Las reglas oficiales de Last.fm las omiten
+- **Hacer scrobble de canciones de menos de 30 s**: Si está activado, se hace scrobble de estas canciones al llegar a la mitad. Las reglas oficiales de Last.fm las omiten
 - **Reproductores para scrobble**
 
 ### Laboratorio › Push web
@@ -1344,7 +1344,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Mostrar en Discord**: Si está activado, la canción que escuchas se muestra en tu perfil de Discord y en la lista de amigos. Si tus amigos no la ven, ve a Ajustes de usuario › Privacidad de actividad en Discord y activa compartir la actividad
 - **Qué se muestra**
-- **Tras “Escuchando”**: El “××” de “Escuchando ××” en tu perfil. Discord en iOS y en la web lo ignora y sigue mostrando el reproductor Con «Título» o «Artista» aquí, «Bajo tu nombre» no puede mostrar el reproductor
+- **Tras “Escuchando”**: El “××” de “Escuchando ××” en tu perfil. Discord en iOS y en la web lo ignora y sigue mostrando el reproductor Con «Título» o «Artista» aquí, «Debajo de tu nombre» no puede mostrar el reproductor
 - **Debajo de tu nombre**: Discord solo puede mostrar bajo tu nombre la primera línea, la segunda o lo que sigue a “Escuchando”. Si ni el título ni el artista están en uno de esos sitios, esa opción no está disponible
 - **Insignia en la ilustración**
 - **Al pausar**
