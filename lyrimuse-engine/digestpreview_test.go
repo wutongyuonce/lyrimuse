@@ -116,6 +116,30 @@ func TestDigestPreviewCarriesHansKey(t *testing.T) {
 	}
 }
 
+// 刚切成英文、引擎还没重读配置时点「测一下」:标题和正文都按英文,不会标题是旧语言、正文是新语言。
+func TestNotifyTestMessageReadsLanguageSwitchFirst(t *testing.T) {
+	useDigestFeatures(t, featureFlags{})
+	path := filepath.Join(t.TempDir(), "features.json")
+	if err := os.WriteFile(path, []byte(`{"report_language":"en"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	setFeaturesPathAt(path, nil)
+	featuresCheckedAt.Store(0)
+	cfgPath := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(cfgPath, []byte("{}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	setLiveConfig(cfgPath, previewCfg)
+	t.Cleanup(func() { setLiveConfig("", nil) })
+	clearDigestPreviewCache(t)
+	now := time.Date(2026, 10, 21, 23, 5, 0, 0, time.Local)
+	useRangeLastfm(t, func(int64) []string { return []string{sampleTrackChart, sampleArtistChart, sampleAlbumChart} }, nil)
+	msg, sample := notifyTestMessage(now, 5*time.Second)
+	if sample || msg.Title != "🎧 Today's Listening Report (Oct 21)" || !strings.Contains(msg.Body, " plays") {
+		t.Fatalf("sample=%v title=%q body=%q", sample, msg.Title, msg.Body)
+	}
+}
+
 // 推送时间在中午以前(推前一天一整天):今天、昨天都听了,预览也先取昨天,跟真推送那一期一样。
 func TestDigestPreviewDailyMorningPushShowsYesterday(t *testing.T) {
 	useDigestFeatures(t, featureFlags{DigestTopN: 3, DigestPushTime: digestClock{minutes: 8 * 60, set: true}})

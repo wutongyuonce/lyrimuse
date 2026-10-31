@@ -141,6 +141,9 @@ func runNotifyTest(req notifyTestRequest) {
 
 // notifyTestMessage:测一下要推的那份报告(默认标题、完整正文,推前按渠道改写),sample 为 true 是示例。
 func notifyTestMessage(now time.Time, budget time.Duration) (notifyMessage, bool) {
+	// 先在这里读一次报告语言:刚切过界面语言时由这一次把新配置读进来,下面算标题的 goroutine 和排正文的这边才是
+	// 同一种语言。features() 每秒只让一个调用方探盘,同时到的其余调用方拿旧快照。见 15 章决策 100。
+	reportLang()
 	done := make(chan digestPreviewResult, 1)
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), digestPreviewTimeout)
