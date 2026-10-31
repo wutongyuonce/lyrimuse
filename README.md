@@ -91,7 +91,7 @@ brew install --cask lyrimuse
 - **Hides itself when you pause**, so it isn't sitting on your desktop doing nothing. It can also step aside for instrumentals, songs without lyrics and full-screen apps, and the overlay can follow you to the screen of the window you're using.
 
 ### Everyday details
-- **Simplified Chinese, Traditional Chinese and English**, and switching takes effect right away, no restart.
+- **English, Simplified Chinese, Traditional Chinese, Japanese and Korean**, and switching takes effect right away, no restart. Spotted a clumsy translation? Pull requests are welcome; each language has a style guide in `lyrimuse/Localization/`.
 - **Liquid Glass on macOS 26.** Settings, the menu bar panel, the Lyrics Window, Lyrics Manager and the setup guide are built with it, and most of them can stay light or dark instead of following the system.
 - **Keyboard shortcuts** for every action, from hiding all lyrics to liking the song. None are set out of the box, so you pick the keys. Every action also has a `lyrimuse://` link you can call from Shortcuts, Raycast or Alfred, and from Shortcuts a link can hand back the song that's playing ([URL Scheme](docs/url-scheme.md)).
 - **Search in Settings.** Type in the sidebar and it scrolls to the matching row and highlights it, opening a collapsed group if it needs to.

@@ -12,7 +12,7 @@ import Foundation
 public enum UILanguage {
     /// 界面有的语言包,顺序就是语言下拉里的顺序。加一种语言:这里加一项,`localeIdentifier(for:)`、`nativeName(of:)` 加映射,
     /// generate-strings.py 的 TARGETS 登记 catalog 语言码 → 目录名(目录名一律小写,SwiftPM 打包会把它转小写)。
-    public static let packs = ["zh-hans", "zh-hant", "en"]
+    public static let packs = ["zh-hans", "zh-hant", "en", "ja", "ko"]
 
     public static let traditionalRegions = ["-tw", "-hk", "-mo"]
 

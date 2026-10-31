@@ -421,6 +421,11 @@ func runSourceContractTests() {
             expectEqual(resolve("fr-FR", "zh-Hans-CN", "en"), "zh-hans", "本地化: 按首选列表顺序取第一个有语言包的")
             expectEqual(resolve("de", "en-US", "zh-Hans"), "en", "本地化: 前面的语言没有包就看下一项")
             expectEqual(resolve("zhx-Latn", "en"), "en", "本地化: 只认 zh 和 zh- 开头的标签是中文")
+            expectEqual(resolve("ja-JP"), "ja", "本地化: ja-JP → 日语包")
+            expectEqual(resolve("ko-KR"), "ko", "本地化: ko-KR → 韩语包")
+            expectEqual(resolve("fr-FR", "ko", "en"), "ko", "本地化: 列表里先出现的韩语优先于英文")
+            expectEqual(["ja", "Japanese", "ja_JP", "ko", "Korean", "ko_KR"].map { UILanguage.pack(forLocalization: $0) ?? "-" },
+                        ["ja", "ja", "ja", "ko", "ko", "ko"], "本地化: 别的 App 的日语、韩语本地化目录归日语、韩语包")
             expectEqual(UILanguage.packs.allSatisfy { resolve($0) == $0 && UILanguage.nativeName(of: $0) != $0 }, true,
                         "本地化: 每个语言包认得自己的标签、有自己写法的语言名")
             expectEqual(UILanguage.isTraditionalChineseTag("ja-JP"), false, "本地化: isTraditionalChineseTag 只管 zh 家族")

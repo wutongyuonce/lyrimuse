@@ -3,7 +3,7 @@ import Foundation
 /// 听歌报告用哪种语言写:App 的界面语言(`L10n.current`:zh-hans / zh-hant / en),写进 features.json 的
 /// `report_language` 给引擎(digestlang.go)。认不得的按简体。
 public enum ReportLanguage: String, CaseIterable, Sendable {
-    case zhHans = "zh-hans", zhHant = "zh-hant", en
+    case zhHans = "zh-hans", zhHant = "zh-hant", en, ja, ko
 
     /// features.json 里的键名,同引擎 featureFlagsFile.ReportLanguage 的 json 标签。
     public static let featuresKey = "report_language"
@@ -50,7 +50,7 @@ public struct ReportWords: Sendable {
     public func date(_ date: Date, _ calendar: Calendar) -> String {
         let c = calendar.dateComponents([.month, .day], from: date)
         let month = c.month ?? 1, day = c.day ?? 1
-        return f("date", [("mm", String(format: "%02d", month)), ("dd", String(format: "%02d", day)),
+        return f("date", [("mm", String(format: "%02d", month)), ("dd", String(format: "%02d", day)), ("m", String(month)),
                           ("mon", String(Self.monthNames[month - 1].prefix(3))), ("d", String(day))])
     }
 
@@ -63,7 +63,7 @@ public struct ReportWords: Sendable {
     static let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
                              "October", "November", "December"]
 
-    /// 三种语言的用语。简体那份就是引擎一直推出去的原文。
+    /// 各种语言的用语。简体那份就是引擎一直推出去的原文。
     public static let table: [ReportLanguage: [String: String]] = [
         .zhHans: [
             "brief_line": "{label}：{name} · {n}",
@@ -207,6 +207,100 @@ public struct ReportWords: Sendable {
             "value_m": "{m} min",
             "plays_one": "{n} play",
             "new_artists_one": "{n} new artist",
+        ],
+        .ja: [
+            "brief_line": "{label}：{name} · {n}",
+            "col_albums": "アルバム",
+            "col_artists": "アーティスト",
+            "col_tracks": "曲",
+            "colon": "：",
+            "compare": "（{label}：{prev}、{change}）",
+            "cover": "アートワーク",
+            "date": "{m}月{d}日",
+            "duration_hm": " · 約{h}時間{m}分",
+            "duration_m": " · 約{m}分",
+            "flat": "変化なし",
+            "footer": "Lyrimuse · データ提供：{source}",
+            "head_albums": "トップアルバム",
+            "head_artists": "トップアーティスト",
+            "head_tracks": "トップ曲",
+            "item": "{i}. {name}（{n}）",
+            "keyword": "リスニング",
+            "label_album": "アルバム",
+            "label_artist": "アーティスト",
+            "label_track": "曲",
+            "link": "{source}でランキング全体を見る",
+            "more": " など",
+            "most_played": "最も多く再生",
+            "name_sep": "、",
+            "names_lead": "：",
+            "new_artists": "新しく聴いたアーティスト{n}組",
+            "pair": "{artist} - {name}",
+            "plays": "合計{n}回再生",
+            "plays_truncated": "{n}回以上再生（記録が多いため、直近の分のみ集計）",
+            "preset_brief": "{summary}\n最も多く再生したアーティスト：{top_artist}\n最も多く再生したアルバム：{top_album}\n最も多く再生した曲：{top_track}\n新しく聴いたアーティスト（{new_artists}）：{new_artist_names}",
+            "preset_full": "{summary}\n\nトップアーティスト：\n{top_artists}\n\nトップアルバム：\n{top_albums}\n\nトップ曲：\n{top_tracks}\n\n新しく聴いたアーティスト（{new_artists}）：{new_artist_names}",
+            "preset_overview": "{summary}\n新しく聴いたアーティスト：{new_artists}",
+            "prev_month": "{month}月",
+            "prev_month_year": "{year}年{month}月",
+            "prev_week": "前週",
+            "prev_year": "{year}年",
+            "title_day": "🎧 リスニングレポート（{date}）",
+            "title_month": "📅 {year}年{month}月のリスニングまとめ",
+            "title_sample": "🎧 リスニングレポートのサンプル",
+            "title_today": "🎧 今日のリスニングレポート（{date}）",
+            "title_week": "🎵 先週のリスニングまとめ（{from}〜{to}）",
+            "title_year": "🏆 {year}年のリスニングまとめ",
+            "title_yesterday": "🎧 昨日のリスニングレポート（{date}）",
+            "value_hm": "{h}時間{m}分",
+            "value_m": "{m}分",
+        ],
+        .ko: [
+            "brief_line": "{label}: {name} · {n}",
+            "col_albums": "앨범",
+            "col_artists": "아티스트",
+            "col_tracks": "노래",
+            "colon": ":",
+            "compare": " ({label} {prev}, {change})",
+            "cover": "아트워크",
+            "date": "{m}월 {d}일",
+            "duration_hm": " · 약 {h}시간 {m}분",
+            "duration_m": " · 약 {m}분",
+            "flat": "변동 없음",
+            "footer": "Lyrimuse · 데이터 출처: {source}",
+            "head_albums": "Top 앨범",
+            "head_artists": "Top 아티스트",
+            "head_tracks": "Top 노래",
+            "item": "{i}. {name} ({n})",
+            "keyword": "청취",
+            "label_album": "앨범",
+            "label_artist": "아티스트",
+            "label_track": "노래",
+            "link": "{source}에서 전체 차트 보기",
+            "more": " 등",
+            "most_played": "가장 많이 들음",
+            "name_sep": ", ",
+            "names_lead": ": ",
+            "new_artists": "새로 들은 아티스트 {n}명",
+            "pair": "{artist} - {name}",
+            "plays": "총 {n}회 재생",
+            "plays_truncated": "{n}회 이상 재생 (기록이 많아 최근 기록만 집계)",
+            "preset_brief": "{summary}\n가장 많이 들은 아티스트: {top_artist}\n가장 많이 들은 앨범: {top_album}\n가장 많이 들은 노래: {top_track}\n새로 들은 아티스트 ({new_artists}): {new_artist_names}",
+            "preset_full": "{summary}\n\nTop 아티스트:\n{top_artists}\n\nTop 앨범:\n{top_albums}\n\nTop 노래:\n{top_tracks}\n\n새로 들은 아티스트 ({new_artists}): {new_artist_names}",
+            "preset_overview": "{summary}\n새로 들은 아티스트: {new_artists}",
+            "prev_month": "{month}월",
+            "prev_month_year": "{year}년 {month}월",
+            "prev_week": "지난주",
+            "prev_year": "{year}년",
+            "title_day": "🎧 청취 리포트 ({date})",
+            "title_month": "📅 {year}년 {month}월 청취 요약",
+            "title_sample": "🎧 청취 리포트 샘플",
+            "title_today": "🎧 오늘의 청취 리포트 ({date})",
+            "title_week": "🎵 지난주 청취 요약 ({from}~{to})",
+            "title_year": "🏆 {year}년 청취 요약",
+            "title_yesterday": "🎧 어제의 청취 리포트 ({date})",
+            "value_hm": "{h}시간 {m}분",
+            "value_m": "{m}분",
         ],
     ]
 }

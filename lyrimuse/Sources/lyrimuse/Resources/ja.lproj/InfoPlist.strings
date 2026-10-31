@@ -1,0 +1,3 @@
+/* 由 Localization/Localizable.xcstrings 生成(键表见 generate-strings.py 的 INFO_PLIST_KEYS)—— 不要手改这个文件。 */
+
+"NSAppleEventsUsageDescription" = "Lyrimuseは、同期した歌詞を表示するために、プレーヤーやブラウザで再生中の曲を読み取る必要があります";
