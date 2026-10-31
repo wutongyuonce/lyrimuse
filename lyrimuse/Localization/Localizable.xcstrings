@@ -1250,7 +1250,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies to the lyrics, header, and playback controls. Automatic switches between light and dark based on the background’s brightness"
+            "value" : "Applies to the lyrics, header, and playback controls. Auto switches between light and dark based on the background’s brightness"
           }
         },
         "ja" : {
@@ -1337,7 +1337,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness"
+            "value" : "The lyrics window’s text color. Auto switches between light and dark based on the background’s brightness"
           }
         },
         "ja" : {
@@ -1801,7 +1801,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies to lyrics only; Automatic switches between light and dark based on background brightness"
+            "value" : "Applies to lyrics only; Auto switches between light and dark based on background brightness"
           }
         },
         "ja" : {
@@ -2097,7 +2097,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies only to lines that fit. Automatic follows the duet parts: choruses are centered, and lines without duet info stay left"
+            "value" : "Applies only to lines that fit. Auto follows the duet parts: choruses are centered, and lines without duet info stay left"
           }
         },
         "ja" : {
@@ -5812,7 +5812,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic picks the display with the notch; All Displays shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
+            "value" : "Auto picks the display with the notch; All Displays shows one on every display; while the chosen display is unplugged it follows Auto and moves back when it’s plugged in again"
           }
         },
         "ja" : {
@@ -28321,7 +28321,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic"
+            "value" : "Auto"
           }
         },
         "ja" : {
@@ -28677,7 +28677,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アダプティブ"
+            "value" : "自動調整"
           }
         },
         "ko" : {
@@ -41657,7 +41657,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic follows the duet parts: choruses and lines without duet info are centered"
+            "value" : "Auto follows the duet parts: choruses and lines without duet info are centered"
           }
         },
         "ja" : {
@@ -75417,7 +75417,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic follows the duet parts: choruses are centered, and lines without duet info stay left"
+            "value" : "Auto follows the duet parts: choruses are centered, and lines without duet info stay left"
           }
         },
         "ja" : {
@@ -75446,7 +75446,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics alignment in the full size; Automatic follows the duet parts"
+            "value" : "Lyrics alignment in the full size; Auto follows the duet parts"
           }
         },
         "ja" : {
@@ -81791,7 +81791,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic prefers the display with the notch. If the chosen display is disconnected, Automatic is used until it’s back"
+            "value" : "Auto prefers the display with the notch. If the chosen display is disconnected, Auto is used until it’s back"
           }
         },
         "ja" : {
@@ -81826,7 +81826,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All Displays shows a copy in the menu bar of every display; Automatic prefers the main display; a chosen display that is disconnected falls back to Automatic"
+            "value" : "All Displays shows a copy in the menu bar of every display; Auto prefers the main display; a chosen display that is disconnected falls back to Auto"
           }
         },
         "ja" : {

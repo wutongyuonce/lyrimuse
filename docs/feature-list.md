@@ -1172,7 +1172,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **Long Lines** (mini size only): Whether long lines wrap or scroll in the mini size
 - **Lyrics Layout** (mini size only): One Line: only the current line Two Lines: the current line and the next one Multi-Line: a scrolling page of lyrics, like the full size
-- **Alignment** (full size only): Lyrics alignment in the full size; Automatic follows the duet parts
+- **Alignment** (full size only): Lyrics alignment in the full size; Auto follows the duet parts
 
 ### Lyrics Display › Lyrics Window › Behavior
 
@@ -1184,7 +1184,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### Lyrics Display › Lyrics Window › Color
 
 - **Karaoke Effect**
-- **Text Color**: The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness
+- **Text Color**: The lyrics window’s text color. Auto switches between light and dark based on the background’s brightness
 - **Custom Color**
 - **Sung Color**
 - **HDR Highlight** (full size only): Brightens the sung part on HDR displays. Uses more power when on
