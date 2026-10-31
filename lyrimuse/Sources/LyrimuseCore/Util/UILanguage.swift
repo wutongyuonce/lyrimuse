@@ -12,7 +12,7 @@ import Foundation
 public enum UILanguage {
     /// 界面有的语言包,顺序就是语言下拉里的顺序。加一种语言:这里加一项,`localeIdentifier(for:)`、`nativeName(of:)` 加映射,
     /// generate-strings.py 的 TARGETS 登记 catalog 语言码 → 目录名(目录名一律小写,SwiftPM 打包会把它转小写)。
-    public static let packs = ["zh-hans", "zh-hant", "en", "ja", "ko"]
+    public static let packs = ["zh-hans", "zh-hant", "en", "ja", "ko", "es"]
 
     public static let traditionalRegions = ["-tw", "-hk", "-mo"]
 
@@ -59,6 +59,7 @@ public enum UILanguage {
         case "en": return "English"
         case "ja": return "日本語"
         case "ko": return "한국어"
+        case "es": return "Español"
         default: return pack
         }
     }
@@ -66,7 +67,7 @@ public enum UILanguage {
     /// 别的 App 的本地化目录名(「zh_CN」「zh-Hant」「English」「Japanese」这类)归哪个语言包,界面没有这种语言时为 nil。
     /// 老式的英文全称目录名先换成语言码,其余同 `pack(forTag:)`。
     public static func pack(forLocalization name: String) -> String? {
-        let legacyNames = ["english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko"]
+        let legacyNames = ["english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko", "spanish": "es"]
         return pack(forTag: legacyNames[name.lowercased()] ?? name)
     }
 }

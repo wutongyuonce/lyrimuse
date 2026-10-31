@@ -21,11 +21,12 @@ const (
 	digestLangEn   digestLang = "en"
 	digestLangJa   digestLang = "ja"
 	digestLangKo   digestLang = "ko"
+	digestLangEs   digestLang = "es"
 )
 
 func parseDigestLang(s string) digestLang {
 	switch l := digestLang(strings.ToLower(strings.TrimSpace(s))); l {
-	case digestLangHant, digestLangEn, digestLangJa, digestLangKo:
+	case digestLangHant, digestLangEn, digestLangJa, digestLangKo, digestLangEs:
 		return l
 	}
 	return digestLangHans
@@ -78,9 +79,17 @@ func (w digestWords) date(t time.Time) string {
 		"d", strconv.Itoa(t.Day()))
 }
 
-// month:带年、月的那一句,月份既有数字 {month} 也有英文名 {month_name}。
+// month:带年、月的那一句,月份既有数字 {month} 也有月名 {month_name}(monthName)。
 func (w digestWords) month(key string, year int, month time.Month) string {
-	return w.f(key, "year", strconv.Itoa(year), "month", strconv.Itoa(int(month)), "month_name", month.String())
+	return w.f(key, "year", strconv.Itoa(year), "month", strconv.Itoa(int(month)), "month_name", w.monthName(month))
+}
+
+// monthName:表里有 month_names(逗号隔开的十二个月名)时取它,没有用英文月名。
+func (w digestWords) monthName(month time.Month) string {
+	if names := strings.Split(w["month_names"], ","); len(names) == 12 {
+		return names[month-1]
+	}
+	return month.String()
 }
 
 // digestHansTitle:简体的标题,推送记录里认「同一期」用(notifyMessage.Key)。title 是按某种语言算标题的函数。
@@ -331,5 +340,55 @@ var digestWordTable = map[digestLang]digestWords{
 		"title_yesterday": "🎧 어제의 청취 리포트 ({date})",
 		"value_hm":        "{h}시간 {m}분",
 		"value_m":         "{m}분",
+	},
+	digestLangEs: {
+		"brief_line":      "{label}: {name} · {n}",
+		"col_albums":      "Álbumes",
+		"col_artists":     "Artistas",
+		"col_tracks":      "Canciones",
+		"colon":           ":",
+		"compare":         " (frente a {prev} {label}, {change})",
+		"cover":           "Portada",
+		"date":            "{d}/{m}",
+		"duration_hm":     " · unas {h} h {m} min",
+		"duration_m":      " · unos {m} min",
+		"flat":            "sin cambios",
+		"footer":          "Lyrimuse · Datos de {source}",
+		"head_albums":     "Álbumes más escuchados",
+		"head_artists":    "Artistas más escuchados",
+		"head_tracks":     "Canciones más escuchadas",
+		"item":            "{i}. {name} ({n})",
+		"keyword":         "escucha",
+		"label_album":     "Álbum",
+		"label_artist":    "Artista",
+		"label_track":     "Canción",
+		"link":            "Ver la clasificación completa en {source}",
+		"month_names":     "enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre",
+		"more":            " y más",
+		"most_played":     "Lo más escuchado",
+		"name_sep":        ", ",
+		"names_lead":      ": ",
+		"new_artists":     "{n} artistas nuevos",
+		"new_artists_one": "{n} artista nuevo",
+		"pair":            "{artist} - {name}",
+		"plays":           "{n} reproducciones",
+		"plays_one":       "{n} reproducción",
+		"plays_truncated": "Más de {n} reproducciones (demasiadas escuchas; solo se contaron las más recientes)",
+		"preset_brief":    "{summary}\nArtista principal: {top_artist}\nÁlbum principal: {top_album}\nCanción principal: {top_track}\nArtistas nuevos ({new_artists}): {new_artist_names}",
+		"preset_full":     "{summary}\n\nArtistas más escuchados:\n{top_artists}\n\nÁlbumes más escuchados:\n{top_albums}\n\nCanciones más escuchadas:\n{top_tracks}\n\nArtistas nuevos ({new_artists}): {new_artist_names}",
+		"preset_overview": "{summary}\nArtistas nuevos: {new_artists}",
+		"prev_month":      "en {month_name}",
+		"prev_month_year": "en {month_name} de {year}",
+		"prev_week":       "la semana anterior",
+		"prev_year":       "en {year}",
+		"title_day":       "🎧 Informe de escucha ({date})",
+		"title_month":     "📅 Resumen de escucha de {month_name} de {year}",
+		"title_sample":    "🎧 Ejemplo de informe de escucha",
+		"title_today":     "🎧 Informe de escucha de hoy ({date})",
+		"title_week":      "🎵 Resumen de escucha de la semana pasada ({from} – {to})",
+		"title_year":      "🏆 Resumen de escucha de {year}",
+		"title_yesterday": "🎧 Informe de escucha de ayer ({date})",
+		"value_hm":        "{h} h {m} min",
+		"value_m":         "{m} min",
 	},
 }

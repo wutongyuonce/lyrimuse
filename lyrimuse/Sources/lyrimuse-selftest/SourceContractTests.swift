@@ -424,12 +424,14 @@ func runSourceContractTests() {
             expectEqual(resolve("ja-JP"), "ja", "本地化: ja-JP → 日语包")
             expectEqual(resolve("ko-KR"), "ko", "本地化: ko-KR → 韩语包")
             expectEqual(resolve("fr-FR", "ko", "en"), "ko", "本地化: 列表里先出现的韩语优先于英文")
-            expectEqual(["ja", "Japanese", "ja_JP", "ko", "Korean", "ko_KR"].map { UILanguage.pack(forLocalization: $0) ?? "-" },
-                        ["ja", "ja", "ja", "ko", "ko", "ko"], "本地化: 别的 App 的日语、韩语本地化目录归日语、韩语包")
+            expectEqual([resolve("es-ES"), resolve("es-419"), resolve("es-MX"), resolve("fr-FR", "es-AR", "en")], ["es", "es", "es", "es"],
+                        "本地化: 各地区的西班牙语都归西语包")
+            expectEqual(["ja", "Japanese", "ja_JP", "ko", "Korean", "ko_KR", "es", "Spanish", "es_419"].map { UILanguage.pack(forLocalization: $0) ?? "-" },
+                        ["ja", "ja", "ja", "ko", "ko", "ko", "es", "es", "es"], "本地化: 别的 App 的日语、韩语、西语本地化目录归对应的包")
             expectEqual(UILanguage.packs.allSatisfy { resolve($0) == $0 && UILanguage.nativeName(of: $0) != $0 }, true,
                         "本地化: 每个语言包认得自己的标签、有自己写法的语言名")
             expectEqual(UILanguage.isTraditionalChineseTag("ja-JP"), false, "本地化: isTraditionalChineseTag 只管 zh 家族")
-            expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko"].map(UILanguage.localeIdentifier(for:)), ["en", "zh-Hans", "zh-Hant", "ja", "ko"],
+            expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko", "es"].map(UILanguage.localeIdentifier(for:)), ["en", "zh-Hans", "zh-Hant", "ja", "ko", "es"],
                         "本地化: 语言包目录名 → locale 标识")
             expectEqual(["zh_CN", "zh-Hans", "zh", "Chinese", "zh_TW", "zh_HK", "zh-Hant", "en", "en_GB", "English", "Base", "fr_CA"]
                             .map { UILanguage.pack(forLocalization: $0) ?? "-" },

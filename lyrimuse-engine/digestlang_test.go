@@ -42,7 +42,7 @@ func TestDigestWordsMatchShared(t *testing.T) {
 }
 
 func TestParseDigestLang(t *testing.T) {
-	for in, want := range map[string]digestLang{"": digestLangHans, "zh-hans": digestLangHans, " ZH-HANT ": digestLangHant, "en": digestLangEn, "ja": digestLangJa, "ko": digestLangKo, "fr": digestLangHans} {
+	for in, want := range map[string]digestLang{"": digestLangHans, "zh-hans": digestLangHans, " ZH-HANT ": digestLangHant, "en": digestLangEn, "ja": digestLangJa, "ko": digestLangKo, "es": digestLangEs, "fr": digestLangHans} {
 		if got := parseDigestLang(in); got != want {
 			t.Errorf("parseDigestLang(%q) = %q, want %q", in, got, want)
 		}
@@ -103,6 +103,19 @@ func TestDigestReportInOtherLanguages(t *testing.T) {
 	}
 	if got := richFooter(d); got != "Lyrimuse · 資料來自 Last.fm" {
 		t.Errorf("繁体来源: %q", got)
+	}
+
+	// 西语的月名取表里的 month_names,数量是 1 用单数。
+	useDigestFeatures(t, featureFlags{DigestTopN: 2, ReportLanguage: digestLangEs})
+	w = dw()
+	if got := calendarDigestTitle(w, calendarDigestMonthly, now); got != "📅 Resumen de escucha de octubre de 2026" {
+		t.Errorf("西语月报标题: %q", got)
+	}
+	if got := calendarDigestPeriod(calendarDigestMonthly, now, now, false).prevLabel; got != "en septiembre" {
+		t.Errorf("西语上一期: %q", got)
+	}
+	if got := digestSummaryLine(digestStats{TotalPlays: 1}); got != "1 reproducción" {
+		t.Errorf("西语单数: %q", got)
 	}
 }
 
@@ -188,7 +201,7 @@ func TestDigestReportLangSample(t *testing.T) {
 	s := loadNotifyPreviewSample(t)
 	path := filepath.Join("..", "shared", "testdata", "notify", "report-lang.json")
 	var got []reportLangCase
-	for _, lang := range []digestLang{digestLangHans, digestLangHant, digestLangEn, digestLangJa, digestLangKo} {
+	for _, lang := range []digestLang{digestLangHans, digestLangHant, digestLangEn, digestLangJa, digestLangKo, digestLangEs} {
 		for _, kind := range []string{"daily", "weekly"} {
 			for _, style := range []string{digestStyleFull, digestStyleBrief, digestStyleOverview} {
 				got = append(got, reportLangCaseFor(t, s, lang, kind, style, 3))

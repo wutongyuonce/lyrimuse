@@ -563,8 +563,9 @@ func runSettingsInteractionTests() {
         for lang in ReportLanguage.allCases {
             expectEqual(ReportWords.table[lang] ?? [:], wordsJSON[lang.rawValue] ?? ["": "缺"], "报告语言: \(lang.rawValue) 用语表同引擎")
         }
-        expectEqual([ReportLanguage(""), ReportLanguage(" ZH-HANT "), ReportLanguage("en"), ReportLanguage("ja"), ReportLanguage("ko"), ReportLanguage("fr")],
-                    [.zhHans, .zhHant, .en, .ja, .ko, .zhHans],
+        expectEqual([ReportLanguage(""), ReportLanguage(" ZH-HANT "), ReportLanguage("en"), ReportLanguage("ja"), ReportLanguage("ko"), ReportLanguage("es"),
+                     ReportLanguage("fr")],
+                    [.zhHans, .zhHant, .en, .ja, .ko, .es, .zhHans],
                     "报告语言: 认得的几种,其余按简体")
         expectEqual(ReportLanguage.featuresKey, "report_language", "报告语言: 键名同引擎 features.go 的 json 标签")
         expectEqual(ReportLanguage.zhHans.words.f("item", [("i", "1"), ("name", "Song {n} {name}"), ("n", "4")]), "1. Song {n} {name}（4）",
@@ -590,6 +591,10 @@ func runSettingsInteractionTests() {
             expectEqual(P.richSections(st, topN: n, style: style, lang: lang), wantSections, "\(label) 排版各段同引擎")
             expectEqual(P.newArtistsLine(st, style: style, lang: lang), c["new_line"] as? String ?? "", "\(label) 新歌手那句同引擎")
         }
+        expectEqual(ReportLanguage.es.words.month("title_month", year: 2026, month: 10), "📅 Resumen de escucha de octubre de 2026",
+                    "报告语言: 表里有 month_names 的语言用自己的月名(同引擎 digestWords.monthName)")
+        expectEqual(ReportLanguage.en.words.month("title_month", year: 2026, month: 10), "📅 October 2026 Listening Digest",
+                    "报告语言: 没有 month_names 的用英文月名")
         expectEqual(DigestStyle.matching(DigestTemplate.preset(.brief, lang: .en) ?? DigestTemplate(), lang: .en), .brief,
                     "报告语言: 英文的精简预设认得出是精简")
         let langRoot = samples.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()

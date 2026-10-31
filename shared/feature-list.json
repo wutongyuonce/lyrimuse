@@ -1,10 +1,10 @@
 {
   "about": {
-    "zh-Hans": "Lyrimuse 是一款开源（GPL-3.0）的 macOS 逐字歌词 App，支持 macOS 14 及以上版本，兼容 Apple Silicon 和 Intel 芯片。它为 Apple Music、Spotify、QQ 音乐、网易云音乐、酷狗音乐、汽水音乐、KKBOX、Amazon Music、洛雪音乐、Kaset、reAMP、VOX、Pine Player、foobar2000，以及浏览器中的 YouTube Music 和 Spotify 网页版显示逐字同步的歌词：可显示在桌面悬浮歌词、灵动岛、菜单栏、触控栏和歌词窗口中，并提供译文和读音标注（拼音、粤拼、日语罗马音、韩语罗马字），还可将收听记录打卡到 Last.fm 和 ListenBrainz，并在 Discord 上显示正在收听的歌曲。界面支持简体中文、繁体中文、英文、日文和韩文。",
-    "en": "Lyrimuse is an open-source (GPL-3.0) Mac app for word-by-word synced lyrics, for macOS 14 or later on Apple Silicon and Intel. It shows lyrics for Apple Music, Spotify, QQ Music, NetEase Cloud Music, Kugou, Soda Music, KKBOX, Amazon Music, LX Music, Kaset, reAMP, VOX, Pine Player, foobar2000, and YouTube Music or Spotify Web playing in a browser: floating on the desktop, beside the notch, in the menu bar, on the Touch Bar or in a full lyrics window, with translations and romanization (pinyin, Cantonese Jyutping, Japanese romaji, Korean romanization). It scrobbles to Last.fm and ListenBrainz and can show what you play on Discord. The interface is in English, Simplified Chinese, Traditional Chinese, Japanese and Korean.",
-    "zh-Hant": "Lyrimuse 是一款開源（GPL-3.0）的 macOS 逐字歌詞 App，支援 macOS 14 及以上版本，相容 Apple Silicon 和 Intel 晶片。它為 Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、KKBOX、Amazon Music、洛雪音樂、Kaset、reAMP、VOX、Pine Player、foobar2000，以及瀏覽器中的 YouTube Music 和 Spotify 網頁版顯示逐字同步的歌詞：可顯示在桌面浮動歌詞、動態島、選單列、觸控列和歌詞視窗中，並提供譯文和讀音標註（拼音、粵拼、日文羅馬拼音、韓文羅馬字），還可將聆聽記錄打卡到 Last.fm 和 ListenBrainz，並在 Discord 上顯示正在聆聽的歌曲。介面支援簡體中文、繁體中文、英文、日文和韓文。",
-    "ja": "Lyrimuseは、オープンソース（GPL-3.0）のmacOS用の単語ごとの歌詞Appです。macOS 14以降に対応し、Apple SiliconとIntelのどちらでも動作します。Apple Music、Spotify、QQ Music、NetEase Cloud Music、Kugou、Soda Music、KKBOX、Amazon Music、LX Music、Kaset、reAMP、VOX、Pine Player、foobar2000、そしてブラウザで再生するYouTube MusicとSpotify Web版の歌詞を単語ごとに同期して、デスクトップのフローティング歌詞、ノッチ、メニューバー、Touch Bar、歌詞ウインドウに表示します。翻訳とローマ字表記（ピンイン、粤拼、日本語のローマ字、韓国語のローマ字）にも対応し、再生履歴をLast.fmとListenBrainzにScrobbleしたり、再生中の曲をDiscordに表示したりできます。インターフェイスは簡体字中国語、繁体字中国語、英語、日本語、韓国語に対応しています。",
-    "ko": "Lyrimuse는 macOS 14 이상을 지원하고 Apple Silicon과 Intel 칩 모두와 호환되는 오픈 소스(GPL-3.0) macOS 단어별 가사 앱입니다. Apple Music, Spotify, QQ Music, NetEase Cloud Music, Kugou, Soda Music, KKBOX, Amazon Music, LX Music, Kaset, reAMP, VOX, Pine Player, foobar2000, 그리고 브라우저에서 재생하는 YouTube Music과 Spotify 웹 플레이어의 가사를 단어 단위로 동기화해 표시합니다. 데스크탑 플로팅 가사, 노치, 메뉴 막대, Touch Bar, 가사 윈도우에 표시할 수 있고, 번역과 로마자 표기(병음, 광둥어 Jyutping, 일본어 로마자, 한국어 로마자)를 제공하며, 재생 기록을 Last.fm과 ListenBrainz에 스크로블하고 Discord에 지금 듣고 있는 노래를 표시할 수도 있습니다. 인터페이스는 중국어 간체, 중국어 번체, 영어, 일본어, 한국어를 지원합니다."
+    "zh-Hans": "Lyrimuse 是一款开源（GPL-3.0）的 macOS 逐字歌词 App，支持 macOS 14 及以上版本，兼容 Apple Silicon 和 Intel 芯片。它为 Apple Music、Spotify、QQ 音乐、网易云音乐、酷狗音乐、汽水音乐、KKBOX、Amazon Music、洛雪音乐、Kaset、reAMP、VOX、Pine Player、foobar2000，以及浏览器中的 YouTube Music 和 Spotify 网页版显示逐字同步的歌词：可显示在桌面悬浮歌词、灵动岛、菜单栏、触控栏和歌词窗口中，并提供译文和读音标注（拼音、粤拼、日语罗马音、韩语罗马字），还可将收听记录打卡到 Last.fm 和 ListenBrainz，并在 Discord 上显示正在收听的歌曲。界面支持简体中文、繁体中文、英文、日文、韩文和西班牙文。",
+    "en": "Lyrimuse is an open-source (GPL-3.0) Mac app for word-by-word synced lyrics, for macOS 14 or later on Apple Silicon and Intel. It shows lyrics for Apple Music, Spotify, QQ Music, NetEase Cloud Music, Kugou, Soda Music, KKBOX, Amazon Music, LX Music, Kaset, reAMP, VOX, Pine Player, foobar2000, and YouTube Music or Spotify Web playing in a browser: floating on the desktop, beside the notch, in the menu bar, on the Touch Bar or in a full lyrics window, with translations and romanization (pinyin, Cantonese Jyutping, Japanese romaji, Korean romanization). It scrobbles to Last.fm and ListenBrainz and can show what you play on Discord. The interface is in English, Simplified Chinese, Traditional Chinese, Japanese, Korean and Spanish.",
+    "zh-Hant": "Lyrimuse 是一款開源（GPL-3.0）的 macOS 逐字歌詞 App，支援 macOS 14 及以上版本，相容 Apple Silicon 和 Intel 晶片。它為 Apple Music、Spotify、QQ 音樂、網易雲音樂、酷狗音樂、汽水音樂、KKBOX、Amazon Music、洛雪音樂、Kaset、reAMP、VOX、Pine Player、foobar2000，以及瀏覽器中的 YouTube Music 和 Spotify 網頁版顯示逐字同步的歌詞：可顯示在桌面浮動歌詞、動態島、選單列、觸控列和歌詞視窗中，並提供譯文和讀音標註（拼音、粵拼、日文羅馬拼音、韓文羅馬字），還可將聆聽記錄打卡到 Last.fm 和 ListenBrainz，並在 Discord 上顯示正在聆聽的歌曲。介面支援簡體中文、繁體中文、英文、日文、韓文和西班牙文。",
+    "ja": "Lyrimuseは、オープンソース（GPL-3.0）のmacOS用の単語ごとの歌詞Appです。macOS 14以降に対応し、Apple SiliconとIntelのどちらでも動作します。Apple Music、Spotify、QQ Music、NetEase Cloud Music、Kugou、Soda Music、KKBOX、Amazon Music、LX Music、Kaset、reAMP、VOX、Pine Player、foobar2000、そしてブラウザで再生するYouTube MusicとSpotify Web版の歌詞を単語ごとに同期して、デスクトップのフローティング歌詞、ノッチ、メニューバー、Touch Bar、歌詞ウインドウに表示します。翻訳とローマ字表記（ピンイン、粤拼、日本語のローマ字、韓国語のローマ字）にも対応し、再生履歴をLast.fmとListenBrainzにScrobbleしたり、再生中の曲をDiscordに表示したりできます。インターフェイスは簡体字中国語、繁体字中国語、英語、日本語、韓国語、スペイン語に対応しています。",
+    "ko": "Lyrimuse는 macOS 14 이상을 지원하고 Apple Silicon과 Intel 칩 모두와 호환되는 오픈 소스(GPL-3.0) macOS 단어별 가사 앱입니다. Apple Music, Spotify, QQ Music, NetEase Cloud Music, Kugou, Soda Music, KKBOX, Amazon Music, LX Music, Kaset, reAMP, VOX, Pine Player, foobar2000, 그리고 브라우저에서 재생하는 YouTube Music과 Spotify 웹 플레이어의 가사를 단어 단위로 동기화해 표시합니다. 데스크탑 플로팅 가사, 노치, 메뉴 막대, Touch Bar, 가사 윈도우에 표시할 수 있고, 번역과 로마자 표기(병음, 광둥어 Jyutping, 일본어 로마자, 한국어 로마자)를 제공하며, 재생 기록을 Last.fm과 ListenBrainz에 스크로블하고 Discord에 지금 듣고 있는 노래를 표시할 수도 있습니다. 인터페이스는 중국어 간체, 중국어 번체, 영어, 일본어, 한국어, 스페인어를 지원합니다."
   },
   "sections": [
     {
@@ -2287,11 +2287,11 @@
         {
           "id": "language",
           "title": {
-            "zh-Hans": "简体中文、繁体中文、英文、日文、韩文界面",
-            "en": "English, Simplified and Traditional Chinese, Japanese and Korean",
-            "zh-Hant": "簡體中文、繁體中文、英文、日文、韓文介面",
-            "ja": "簡体字中国語、繁体字中国語、英語、日本語、韓国語のインターフェイス",
-            "ko": "중국어 간체, 중국어 번체, 영어, 일본어, 한국어 인터페이스"
+            "zh-Hans": "简体中文、繁体中文、英文、日文、韩文、西班牙文界面",
+            "en": "English, Simplified and Traditional Chinese, Japanese, Korean and Spanish",
+            "zh-Hant": "簡體中文、繁體中文、英文、日文、韓文、西班牙文介面",
+            "ja": "簡体字中国語、繁体字中国語、英語、日本語、韓国語、スペイン語のインターフェイス",
+            "ko": "중국어 간체, 중국어 번체, 영어, 일본어, 한국어, 스페인어 인터페이스"
           },
           "desc": {
             "zh-Hans": "默认跟随系统，系统语言不在其中时用英文；切换后立即生效，无需重启。",
