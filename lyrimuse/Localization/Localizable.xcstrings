@@ -4869,7 +4869,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ pt"
+            "value" : "%@pt"
           }
         },
         "ja" : {
@@ -15252,7 +15252,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tamaño de fuente"
+            "value" : "Tamaño"
           }
         },
         "ja" : {
@@ -27142,7 +27142,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tamaño de fuente: %@ pt"
+            "value" : "Tamaño: %@pt"
           }
         },
         "ja" : {
@@ -28776,7 +28776,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vidrio esmerilado"
+            "value" : "Esmerilado"
           }
         },
         "ja" : {
@@ -36274,7 +36274,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Según la ilustración"
+            "value" : "Ilustración"
           }
         },
         "ja" : {
@@ -47267,7 +47267,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@–%@ pt"
+            "value" : "%@–%@pt"
           }
         },
         "ja" : {
@@ -49192,7 +49192,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño de fuente» no tiene efecto"
+            "value" : "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño» no tiene efecto"
           }
         },
         "ja" : {
@@ -60061,7 +60061,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activado por omisión para japonés, coreano y cantonés"
+            "value" : "Activado de forma predeterminada para japonés, coreano y cantonés"
           }
         },
         "ja" : {
@@ -73838,7 +73838,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Igual que el color no cantado"
+            "value" : "Como sin cantar"
           }
         },
         "ja" : {
@@ -87231,7 +87231,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seguir ventana activa"
+            "value" : "Ventana activa"
           }
         },
         "ja" : {
@@ -105625,7 +105625,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La traducción sigue al original en la misma línea y «Tamaño de fuente» se sigue aplicando"
+            "value" : "La traducción sigue al original en la misma línea y «Tamaño» se sigue aplicando"
           }
         },
         "ja" : {
@@ -107511,7 +107511,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@ pt"
+            "value" : "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@pt"
           }
         },
         "ja" : {

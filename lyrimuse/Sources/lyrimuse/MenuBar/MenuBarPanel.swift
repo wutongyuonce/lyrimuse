@@ -1151,9 +1151,11 @@ private struct MenuBarPanelView: View {
                 VStack(spacing: 1) {
                     // 缩字保留但门槛提到 0.85:正常语言都放得下,它只兜"某种翻译特别长"的
                     // 意外,不是常态依赖。
+                    // 没有副标题的格子(三个展示形态)纵向有两行的余量:译文长的语言折成两行,别截断
                     Text(title).font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(subtitle == nil ? 2 : 1)
                         .minimumScaleFactor(0.85)
                     // 副标题可选:三个开关的「已开启/已关闭」去掉了 —— 开关状态
                     // 本来就由图标那个高亮圆底表达(开=白字+强调色底,关=次要色+浅灰底),

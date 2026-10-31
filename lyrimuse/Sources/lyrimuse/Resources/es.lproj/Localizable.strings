@@ -87,8 +87,8 @@
 "%@ 首本次无法判断，扫描结束后将重试" = "%@ no se pudieron comprobar esta vez; se reintentará al final";
 "%@ 首歌" = "%@ canciones";
 "%@ 首歌#one" = "%@ canción";
-"%@pt" = "%@ pt";
-"%@–%@pt" = "%@–%@ pt";
+"%@pt" = "%@pt";
+"%@–%@pt" = "%@–%@pt";
 "%@内容" = "Contenido: %@";
 "%@更新" = "Actualizado %@";
 "%@解析时无任何歌词源应答，可能是当时网络不可用，并不代表这首歌曲无歌词。重新自动匹配通常可找到歌词" = "Ninguna fuente de letras respondió cuando se buscó esta canción el %@, quizá porque no había red; no significa que la canción no tenga letra. Volver a buscar suele encontrarla";
@@ -428,7 +428,7 @@
 "仅自动匹配筛选出的 %@ 首#one" = "Buscar solo %@ canción filtrada";
 "仅计数" = "Solo recuento";
 "仅识别勾选的播放器；未勾选的播放器不显示歌词，也不计入收听记录" = "Solo se detectan los reproductores marcados. Los demás no muestran letra ni cuentan en tu historial de escucha";
-"仅调整主行；副行和下一句预览固定为 %@pt" = "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@ pt";
+"仅调整主行；副行和下一句预览固定为 %@pt" = "Solo la línea principal; la segunda línea y la vista previa de la siguiente quedan en %@pt";
 "仅部分专辑提供；低电量或「减弱动态效果」时自动暂停" = "Solo en algunos álbumes; se pausa en modo de bajo consumo o con «Reducir movimiento» activado";
 "仅限完整尺寸，不含读音、译文、网页歌词和窗口大小" = "Solo tamaño completo. La romanización, la traducción, la letra web y el tamaño de la ventana no cambian";
 "仅限迷你尺寸，不含读音、译文、网页歌词和窗口大小" = "Solo tamaño mini. La romanización, la traducción, la letra web y el tamaño de la ventana no cambian";
@@ -861,7 +861,7 @@
 "在播放器中播放任意歌曲，歌词将自动显示" = "Reproduce algo en tu reproductor y la letra aparecerá aquí";
 "在支持 HDR 的屏幕上提亮已唱部分，开启后更耗电" = "Ilumina la parte cantada en pantallas HDR. Consume más energía al activarlo";
 "在歌手前添加「演唱：」，在专辑前添加「专辑：」。歌名和歌手位于同一行时不添加" = "Añade “de” antes del artista y “en” antes del álbum. No se añade si el título y el artista comparten línea";
-"在歌词下方增加一行；开启后两行字号固定，「字号」不生效" = "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño de fuente» no tiene efecto";
+"在歌词下方增加一行；开启后两行字号固定，「字号」不生效" = "Añade una línea bajo la letra. Si está activado, ambas líneas usan un tamaño fijo y «Tamaño» no tiene efecto";
 "在洛雪音乐的设置中开启开放 API 后可调节音量" = "Activa Open API en los ajustes de LX Music para ajustar su volumen";
 "在浏览器中打开" = "Abrir en el navegador";
 "在浏览器中授权" = "Autorizar en el navegador";
@@ -911,8 +911,8 @@
 "始终停留在所放置的屏幕" = "Se queda en la pantalla donde la colocaste";
 "始终直连" = "Conectar siempre directamente";
 "字体" = "Fuente";
-"字号" = "Tamaño de fuente";
-"字号 %@pt" = "Tamaño de fuente: %@ pt";
+"字号" = "Tamaño";
+"字号 %@pt" = "Tamaño: %@pt";
 "字号快捷键仅对悬浮歌词有效" = "Los atajos de tamaño solo afectan a la letra flotante";
 "字节跳动旗下的音乐 App" = "La app de música de ByteDance";
 "字节跳动旗下的音乐平台" = "Servicio de música de ByteDance";
@@ -1986,7 +1986,7 @@
 "比胜者多 %@" = "%@ más que la ganadora";
 "比胜者少 %1$@；多 %2$@" = "%1$@ menos que la ganadora; %2$@ más";
 "比胜者少 %@" = "%@ menos que la ganadora";
-"毛玻璃" = "Vidrio esmerilado";
+"毛玻璃" = "Esmerilado";
 "毛玻璃效果折射窗口后方的桌面，因此在此模式下窗口本身为透明" = "El cristal esmerilado refracta lo que hay detrás de la ventana, así que en este modo la ventana es transparente";
 "毛玻璃的材质浓淡（五档）" = "Densidad del material de cristal esmerilado (cinco niveles)";
 "毛玻璃背景" = "Fondo esmerilado";
@@ -2393,7 +2393,7 @@
 "诊断信息导出失败，请选择其他位置后重试" = "No se pudo exportar el diagnóstico. Prueba a guardarlo en otro lugar";
 "译文" = "Traducción";
 "译文与读音" = "Traducción y romanización";
-"译文接在原文后面，排成一行，「字号」照常生效" = "La traducción sigue al original en la misma línea y «Tamaño de fuente» se sigue aplicando";
+"译文接在原文后面，排成一行，「字号」照常生效" = "La traducción sigue al original en la misma línea y «Tamaño» se sigue aplicando";
 "译文语言" = "Idioma de traducción";
 "译文间距" = "Espaciado de traducción";
 "译文（同一行）" = "Traducción (misma línea)";
@@ -2473,13 +2473,13 @@
 "跟随「全部播放器」" = "Según «Todos los reproductores»";
 "跟随「全部播放器」：%@" = "Según «Todos los reproductores»: %@";
 "跟随刘海" = "Ajustar al notch";
-"跟随封面" = "Según la ilustración";
+"跟随封面" = "Ilustración";
 "跟随强调色" = "Color de acentuación";
-"跟随当前窗口" = "Seguir ventana activa";
+"跟随当前窗口" = "Ventana activa";
 "跟随播放" = "Seguir reproducción";
 "跟随播放器启动" = "Abrir con el reproductor";
 "跟随播放器退出" = "Salir con el reproductor";
-"跟随未唱颜色" = "Igual que el color no cantado";
+"跟随未唱颜色" = "Como sin cantar";
 "跟随窗口" = "Seguir ventana";
 "跟随系统" = "Según el sistema";
 "跟随系统语言" = "Según el idioma del sistema";
@@ -2790,7 +2790,7 @@
 "默认" = "Predeterminado";
 "默认内容推送时按各平台的格式排版，这里只显示文字" = "El contenido predeterminado se adapta al formato de cada plataforma al enviarse; aquí solo se muestra el texto";
 "默认标注日文、韩文、中文和粤语" = "Activado de forma predeterminada para japonés, coreano, chino y cantonés";
-"默认标注日文、韩文和粤语" = "Activado por omisión para japonés, coreano y cantonés";
+"默认标注日文、韩文和粤语" = "Activado de forma predeterminada para japonés, coreano y cantonés";
 "默认标题" = "Título predeterminado";
 "默认正文" = "Cuerpo predeterminado";
 "默认正文的第一行：次数、跟上一期比、时长" = "Primera línea del cuerpo predeterminado: reproducciones, variación respecto al periodo anterior y tiempo de escucha";

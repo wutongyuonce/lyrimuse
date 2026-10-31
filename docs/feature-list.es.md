@@ -966,7 +966,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de fuente**
+- **Tamaño**
 
 ### Mostrar letra › Letra flotante › Color
 
@@ -1049,7 +1049,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de fuente**
+- **Tamaño**
 
 ### Mostrar letra › Notch › Expandido
 
@@ -1102,7 +1102,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 - **Fuente**
 - **Grosor**
-- **Tamaño de fuente**
+- **Tamaño**
 
 ### Mostrar letra › Barra de menús › Ancho
 
@@ -1121,7 +1121,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Touch Bar › Contenido
 
 - **Segunda línea**
-- **Tamaño de fuente**
+- **Tamaño**
 
 ### Mostrar letra › Touch Bar › Diseño
 
@@ -1172,7 +1172,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Mostrar letra › Ventana de letra › Fuente
 
-- **Tamaño de fuente** (solo tamaño mini): Tamaño máximo del texto de la letra en tamaño mini
+- **Tamaño** (solo tamaño mini): Tamaño máximo del texto de la letra en tamaño mini
 - **Fuente**: Fuente de la ventana de letra (texto, traducción y romanización)
 - **Grosor**
 

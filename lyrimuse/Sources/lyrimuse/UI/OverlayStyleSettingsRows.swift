@@ -168,6 +168,7 @@ struct OverlayColorSettingsRows: View {
                         if !AppSettings.backgroundVisible(hex: settings.backgroundColorHex, glass: false) {
                             Text(L10n.t("透明"))
                                 .foregroundStyle(.secondary)
+                                .fixedSize()
                         }
                         AppColorPicker(selection: Binding(
                             get: { settings.backgroundColor },

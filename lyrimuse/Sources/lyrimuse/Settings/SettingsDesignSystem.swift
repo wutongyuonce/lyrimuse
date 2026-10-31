@@ -707,6 +707,28 @@ enum SettingsRowMetrics {
 }
 
 /// 设置行的纵向内边距:在浮层里(`SettingsPopoverShell` 发下来的 `settingsInPopover`)用紧凑的一档。
+/// 标题是一个拉丁字母单词(不含空白、不含中日韩字)时只排一行,放不下就缩字号:放不下的单个单词
+/// SwiftUI 会从中间拆开折行。多个单词照常在词间折行,中日韩文字本来就能在任意字间折行。
+struct SettingsTitleFit: ViewModifier {
+    let title: String
+
+    static func isSingleLatinWord(_ title: String) -> Bool {
+        !title.isEmpty && !title.contains(where: \.isWhitespace) && title.unicodeScalars.allSatisfy { $0.value < 0x2E80 }
+    }
+
+    func body(content: Content) -> some View {
+        if Self.isSingleLatinWord(title) {
+            content.lineLimit(1).minimumScaleFactor(0.7)
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func settingsTitleFit(_ title: String) -> some View { modifier(SettingsTitleFit(title: title)) }
+}
+
 struct SettingsRowVerticalPadding: ViewModifier {
     @Environment(\.settingsInPopover) private var inPopover
 
@@ -904,6 +926,7 @@ struct SettingsToggleTile<Accessory: View>: View {
                 Text(title)
                     .font(.system(size: 12.5))
                     .foregroundStyle(isEnabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+                    .settingsTitleFit(title)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let detail {
@@ -1248,6 +1271,7 @@ struct SettingsRow<Trailing: View>: View {
                 HStack(spacing: 4) {
                     Text(title)
                         .font(.system(size: 13))
+                        .settingsTitleFit(title)
                     if beta { SettingsBetaBadge() }
                     if unseenDot { SettingsUnseenDot() }
                     if let help { HelpButton(text: help) }
@@ -1420,6 +1444,7 @@ struct SettingsSubRow<Trailing: View>: View {
                     HStack(spacing: 4) {
                         Text(title)
                             .font(.system(size: 13))
+                            .settingsTitleFit(title)
                         if let help { HelpButton(text: help) }
                     }
                 }
