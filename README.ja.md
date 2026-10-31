@@ -16,6 +16,7 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/Yudaotor)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/N7gVy66Gp3)
 [![Telegram](https://img.shields.io/badge/Telegram-Join-26A5E4?logo=telegram&logoColor=white)](https://t.me/lyrimuse)
+[![QQ](https://img.shields.io/badge/QQ-Join-1EBAFC?logo=qq&logoColor=white)](https://qm.qq.com/q/Nb4TlwfnQy)
 
 </div>
 
@@ -320,7 +321,7 @@ LyricsXの最後のリリースは、2022年4月のv1.6.3です。macOS 10.11以
 - **問題やアイデア**：アプリで設定 › 情報 › **問題を報告**を開くか、メニューバーのアイコンを右クリックして**ヘルプ › 問題を報告…** を選びます。バージョン、macOS、現在のプレーヤーが入力済みの新しいGitHub Issueが開くので、報告の種類を選んでください：バグ、歌詞がない・間違っている、プレーヤーの追加リクエスト、機能リクエスト。
 - **1曲だけ歌詞が間違っている**：**歌詞マネージャ**でその曲の**歌詞の候補を検索**を開き、左下の**正しい歌詞が見つかりませんか？GitHubで報告できます**をクリックします。曲の情報、使用中の歌詞ソース、結果を返したソースが一緒に送られます。
 - **質問**：Discussionsの[Q&Aカテゴリ](https://github.com/Yudaotor/lyrimuse/discussions/categories/q-a)で質問してください。
-- **ほかのユーザーと交流**：[Discordサーバ](https://discord.gg/N7gVy66Gp3)や[Telegramグループ](https://t.me/lyrimuse)に参加してください。そこでも質問、問題の報告、機能の提案ができます。Discordには中国語専用のチャットチャンネルとフィードバックフォーラムもあります。
+- **ほかのユーザーと交流**：[Discordサーバ](https://discord.gg/N7gVy66Gp3)、[Telegramグループ](https://t.me/lyrimuse)、[QQグループ](https://qm.qq.com/q/Nb4TlwfnQy)（グループ番号 791558369、中国語）に参加してください。そこでも質問、問題の報告、機能の提案ができます。Discordには中国語専用のチャットチャンネルとフィードバックフォーラムもあります。
 - **GitHubアカウントがない場合**：yudaotor@qq.comにメールしてください。設定 › 情報の**問題を報告**の行にある封筒ボタンを使うと、バージョンとmacOSが入力されます。右クリックするとアドレスをコピーできます。
 - **セキュリティの問題**：公開のIssueではなく、[SECURITY.md](SECURITY.md)に記載の方法で非公開で報告してください。
 

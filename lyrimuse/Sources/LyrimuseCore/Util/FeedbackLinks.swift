@@ -48,6 +48,8 @@ public enum FeedbackLinks {
     public static let discordInviteURL = URL(string: "https://discord.gg/N7gVy66Gp3")!
     /// 「Telegram 群组」:公开群 @lyrimuse 的链接。三语 README 的徽章和「反馈」一节用的是同一条,换链接时一起改。
     public static let telegramInviteURL = URL(string: "https://t.me/lyrimuse")!
+    /// 「QQ 群」:群 791558369 的入群链接(群里「分享」生成的那条)。三语 README 的徽章和「反馈」一节用的是同一条,换链接时一起改。
+    public static let qqGroupURL = URL(string: "https://qm.qq.com/q/Nb4TlwfnQy")!
 
     /// 「功能清单」:落地页的 features/ 页,按界面语言(`L10n.current` 的取值)开对应的那一份,认不出的值当英文。
     /// 页面由 `scripts/gen-feature-list.py` 的数据生成,跟 GitHub 上的 docs/feature-list*.md 是同一份,见 14 章决策 68。

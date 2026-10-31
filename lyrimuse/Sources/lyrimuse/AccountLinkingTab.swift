@@ -254,6 +254,15 @@ let telegramBadgeImage: NSImage = {
     return AppIconResolver.prerendered(image)
 }()
 
+// QQ 品牌图(蓝底 + 白色企鹅),标志矢量取自 Simple Icons(CC0)。整张不透明,圆角由调用方裁。「关于」页头的 QQ 群按钮用它。
+let qqGroupBadgeImage: NSImage = {
+    guard let path = Bundle.main.path(forResource: "QQIcon", ofType: "png"),
+          let image = NSImage(contentsOfFile: path) else {
+        return NSImage(systemSymbolName: "person.3.fill", accessibilityDescription: nil) ?? NSImage()
+    }
+    return AppIconResolver.prerendered(image)
+}()
+
 // ListenBrainz 官方 logo(左紫右橙的六边形)。跟 lastfmBadgeImage 同一套路:矢量描摹官方素材而不是
 // 截图抠像素 —— 原始 SVG 取自 MetaBrainz 自己的 design-system 仓库(brand/logos/ListenBrainz/.../logo_icon.svg),
 // 那边原文就是两个多边形(#353070 / #EB743B),照它的坐标重画成 PNG。

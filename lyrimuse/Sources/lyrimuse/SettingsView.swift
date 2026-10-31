@@ -8068,8 +8068,8 @@ private struct AboutSettingsTab: View {
                     }
                 }
                 .settingsGlassButtons()
-                // Discord、Telegram 两颗只放标志、不带字,去向写在悬停提示和读屏标签里。品牌图本身铺满整颗圆,
-                // 别套玻璃圆框(框里再放一块圆角方图是两层形状)。见 14 章决策 80、110、111。
+                // Discord、Telegram、QQ 群三颗只放标志、不带字,去向写在悬停提示和读屏标签里。品牌图本身铺满整颗圆,
+                // 别套玻璃圆框(框里再放一块圆角方图是两层形状)。见 14 章决策 80、110、111、151。
                 Button {
                     NSWorkspace.shared.open(FeedbackLinks.discordInviteURL)
                 } label: {
@@ -8094,6 +8094,19 @@ private struct AboutSettingsTab: View {
                 .accessibilityLabel(L10n.t("Telegram 群组"))
                 .accessibilityHint(L10n.t("与其他用户交流，也可在此提问或提出建议"))
                 .settingsSearchHighlight(title: L10n.t("Telegram 群组"))
+                Button {
+                    NSWorkspace.shared.open(FeedbackLinks.qqGroupURL)
+                } label: {
+                    Image(nsImage: qqGroupBadgeImage)
+                        .resizable()
+                        .frame(width: AboutBrandCircleButtonStyle.diameter, height: AboutBrandCircleButtonStyle.diameter)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(AboutBrandCircleButtonStyle())
+                .help(L10n.t("QQ 群"))
+                .accessibilityLabel(L10n.t("QQ 群"))
+                .accessibilityHint(L10n.t("与其他用户交流，也可在此提问或提出建议"))
+                .settingsSearchHighlight(title: L10n.t("QQ 群"))
             }
             .padding(.top, 8)
             // 这一行是唯一一处"求 star"的地方,所以常显而不是收进 help 气泡 —— 藏进悬停提示就没人

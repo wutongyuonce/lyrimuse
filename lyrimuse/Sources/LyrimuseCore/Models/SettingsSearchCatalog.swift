@@ -658,6 +658,7 @@ public enum SettingsSearchCatalog {
         about("功能清单", sub: "全部功能、所在位置及默认状态", kw: ["全部功能", "功能列表", "功能介绍", "默认", "设置项", "features"], group: "更新与帮助"),
         about("Discord 社区", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["discord", "社区", "社群", "交流", "聊天", "community"], group: nil),
         about("Telegram 群组", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["telegram", "电报", "群组", "社群", "交流", "聊天", "community"], group: nil),
+        about("QQ 群", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["qq", "QQ群", "群聊", "社群", "交流", "聊天", "community"], group: nil),
         about("版权说明", kw: ["版权", "歌词版权"], group: nil),
         about("第三方许可", sub: "开源组件与词典", kw: ["许可证", "开源", "license"], group: nil),
         about("开源许可证", sub: "GPL-3.0", kw: ["GPL", "许可证", "license"], group: nil),

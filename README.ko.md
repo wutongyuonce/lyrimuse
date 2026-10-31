@@ -16,6 +16,7 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/Yudaotor)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/N7gVy66Gp3)
 [![Telegram](https://img.shields.io/badge/Telegram-Join-26A5E4?logo=telegram&logoColor=white)](https://t.me/lyrimuse)
+[![QQ](https://img.shields.io/badge/QQ-Join-1EBAFC?logo=qq&logoColor=white)](https://qm.qq.com/q/Nb4TlwfnQy)
 
 </div>
 
@@ -320,7 +321,7 @@ LyricsX의 마지막 릴리스는 2022년 4월의 v1.6.3입니다. macOS 10.11 �
 - **문제와 아이디어**: 앱에서 설정 › 정보 › **문제 신고**를 열거나, 메뉴 막대 아이콘을 오른쪽 클릭하고 **도움말 › 문제 신고…** 항목을 선택하십시오. 버전, macOS, 현재 플레이어가 미리 채워진 새 GitHub 이슈가 열립니다. 버그, 가사 없음 또는 틀림, 플레이어 지원 요청, 기능 요청 중에서 신고 종류를 고르십시오.
 - **특정 노래의 가사가 틀렸을 때**: **가사 관리자**에서 그 노래의 **가사 후보 검색**을 열고 왼쪽 아래의 **올바른 가사를 찾을 수 없습니까? GitHub에서 신고하십시오**를 클릭하십시오. 노래 정보, 사용 중인 가사 소스, 결과를 반환한 소스가 함께 전달됩니다.
 - **질문**: Discussions의 [Q&A 카테고리](https://github.com/Yudaotor/lyrimuse/discussions/categories/q-a)에 질문하십시오.
-- **다른 사용자와 대화**: [Discord 서버](https://discord.gg/N7gVy66Gp3)나 [Telegram 그룹](https://t.me/lyrimuse)에 참여하십시오. 그곳에서도 질문, 문제 신고, 기능 제안을 할 수 있으며, Discord에는 중국어 전용 채팅 채널과 피드백 포럼이 있습니다.
+- **다른 사용자와 대화**: [Discord 서버](https://discord.gg/N7gVy66Gp3), [Telegram 그룹](https://t.me/lyrimuse), [QQ 그룹](https://qm.qq.com/q/Nb4TlwfnQy)(그룹 번호 791558369, 중국어)에 참여하십시오. 그곳에서도 질문, 문제 신고, 기능 제안을 할 수 있으며, Discord에는 중국어 전용 채팅 채널과 피드백 포럼이 있습니다.
 - **GitHub 계정이 없을 때**: yudaotor@qq.com으로 이메일을 보내십시오. 설정 › 정보의 **문제 신고** 행에 있는 봉투 버튼을 누르면 버전과 macOS가 채워지며, 오른쪽 클릭하면 주소를 복사할 수 있습니다.
 - **보안 문제**: 공개 이슈가 아니라 [SECURITY.md](SECURITY.md)에 설명된 방법으로 비공개로 신고하십시오.
 
