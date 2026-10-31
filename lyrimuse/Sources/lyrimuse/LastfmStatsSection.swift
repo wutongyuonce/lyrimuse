@@ -245,42 +245,57 @@ struct LastfmStatsSection: View {
 
     // MARK: - 榜单
 
+    private enum ChartKindPickerStyle { case tabs, compactTabs, menu }
+
+    private func chartFilters(kindStyle: ChartKindPickerStyle) -> some View {
+        let kindBinding = Binding(
+            get: { kind },
+            set: {
+                kindRaw = $0.rawValue
+                resetChartExpansion()
+                stats.refreshChart(kind: kind, period: period)
+            }
+        )
+        return HStack(spacing: 8) {
+            SettingsGlassMenuPicker(
+                selection: Binding(
+                    get: { period },
+                    set: {
+                        periodRaw = $0.rawValue
+                        resetChartExpansion()
+                        stats.refreshChart(kind: kind, period: period)
+                    }
+                ),
+                options: LastfmStatsService.Period.allCases,
+                label: \.displayName
+            )
+            switch kindStyle {
+            case .tabs, .compactTabs:
+                SettingsGlassTabPicker(selection: kindBinding, options: LastfmStatsService.ChartKind.allCases,
+                                       label: \.displayName, compact: kindStyle == .compactTabs)
+            case .menu:
+                SettingsGlassMenuPicker(selection: kindBinding, options: LastfmStatsService.ChartKind.allCases,
+                                        label: \.displayName)
+            }
+            SettingsGlassMenuPicker(
+                selection: chartRowsBinding,
+                options: ChartVisibleRows.choices,
+                label: { "Top \($0)" }
+            )
+        }
+    }
+
     private var chartCard: some View {
         SettingsCard(cornerRadius: 18) {
             // 标题和三颗玻璃胶囊同一排。收起后筛选控件既看不到内容也改不了什么,一起藏起来。
             collapsibleHeader(icon: "chart.bar", title: L10n.t("收听最多"),
                               collapsed: $chartCollapsed, centered: true) {
                 if !chartCollapsed {
-                    HStack(spacing: 8) {
-                        SettingsGlassMenuPicker(
-                            selection: Binding(
-                                get: { period },
-                                set: {
-                                    periodRaw = $0.rawValue
-                                    resetChartExpansion()
-                                    stats.refreshChart(kind: kind, period: period)
-                                }
-                            ),
-                            options: LastfmStatsService.Period.allCases,
-                            label: \.displayName
-                        )
-                        SettingsGlassTabPicker(
-                            selection: Binding(
-                                get: { kind },
-                                set: {
-                                    kindRaw = $0.rawValue
-                                    resetChartExpansion()
-                                    stats.refreshChart(kind: kind, period: period)
-                                }
-                            ),
-                            options: LastfmStatsService.ChartKind.allCases,
-                            label: \.displayName
-                        )
-                        SettingsGlassMenuPicker(
-                            selection: chartRowsBinding,
-                            options: ChartVisibleRows.choices,
-                            label: { "Top \($0)" }
-                        )
+                    // 三颗都是自己定宽的,放不下(档名长的语言、窗口拖窄)时逐档换窄:种类换紧凑档,再换下拉;硬排会把整个分栏撑出窗口。
+                    ViewThatFits(in: .horizontal) {
+                        chartFilters(kindStyle: .tabs)
+                        chartFilters(kindStyle: .compactTabs)
+                        chartFilters(kindStyle: .menu)
                     }
                 }
             }

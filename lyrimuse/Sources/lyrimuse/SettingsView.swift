@@ -7910,12 +7910,13 @@ private struct HotkeyCell<Recorder: View>: View {
             }
             .frame(width: 18)
             // 名字先拿宽度(layoutPriority),放得下就不折行;最小宽度防录制框键帽多时把名字挤成一列竖字。
+            // 理想宽度写成下限:`HotkeyGrid` 按格子的理想宽度判两列放不放得下。
             Text(title)
                 .font(.system(size: 13))
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(minWidth: 104, alignment: .leading)
+                .frame(minWidth: 104, idealWidth: 104, maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(1)
                 .help(title)
             if let help { HelpButton(text: help) }
@@ -7959,21 +7960,32 @@ struct CopyLinkButton: View {
 }
 
 /// 两列排的格子,行与行之间一条贯穿的发丝线,两列之间一条竖线;单数时最后一行右边空着。
+/// 两列放不下(名字长的语言、窗口拖窄)时整张卡改成一列:格子压不到比名字下限 + 尾部控件更窄,硬排两列会把整个分栏撑出窗口。
+/// 判据靠 `HotkeyCell` 的理想宽度等于它的最小宽度(名字列 `idealWidth` = 下限),别把那个 idealWidth 去掉。
 private struct HotkeyGrid: View {
     let cells: [AnyView]
 
     var body: some View {
-        let rows = (cells.count + 1) / 2
-        VStack(spacing: 0) {
+        ViewThatFits(in: .horizontal) {
+            grid(columns: 2)
+            grid(columns: 1)
+        }
+    }
+
+    private func grid(columns: Int) -> some View {
+        let rows = (cells.count + columns - 1) / columns
+        return VStack(spacing: 0) {
             ForEach(0..<rows, id: \.self) { row in
                 if row > 0 { Divider() }
                 HStack(spacing: 0) {
-                    cells[row * 2]
-                    Divider()
-                    if row * 2 + 1 < cells.count {
-                        cells[row * 2 + 1]
-                    } else {
-                        Color.clear.frame(maxWidth: .infinity)
+                    cells[row * columns]
+                    if columns == 2 {
+                        Divider()
+                        if row * 2 + 1 < cells.count {
+                            cells[row * 2 + 1]
+                        } else {
+                            Color.clear.frame(maxWidth: .infinity)
+                        }
                     }
                 }
                 .fixedSize(horizontal: false, vertical: true)

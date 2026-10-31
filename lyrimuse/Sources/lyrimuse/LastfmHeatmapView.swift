@@ -78,12 +78,13 @@ struct LastfmHeatmapView: View {
                 Text(L10n.t("多")).font(.caption2).foregroundStyle(.tertiary)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Self.horizontalPadding)
         .padding(.vertical, 12)
         // 量的是**卡身给出来的**宽度,不是内容自己撑开的宽度 —— 所以 GeometryReader 挂在
-        // `.frame(maxWidth: .infinity)` 之后的 background 里。挂在里层会绕成一个环:格子边长
-        // 由宽度算、宽度又由格子撑出来,量到多少就锁死在多少。
+        // `.frame(minWidth: 0, maxWidth: .infinity)` 之后的 background 里。挂在里层会绕成一个环:格子边长
+        // 由宽度算、宽度又由格子撑出来,量到多少就锁死在多少。`minWidth: 0` 也不能省:不写时这层框的下限是内容的宽,
+        // 格子比卡身宽时框跟着变宽,量到的又是撑开的宽度,同一个环。
         .background(
             GeometryReader { proxy in
                 Color.clear.preference(key: HeatmapWidthKey.self, value: proxy.size.width)

@@ -2698,6 +2698,17 @@ func runSourceContractSurfaceTests() {
                             "歌词窗口预览: 完整尺寸跟着列宽缩放、不钉死宽度(07 章决策 189)")
                 expectEqual(sourceHas(sourceBody("private var sectionPicker: some View {", in: settings), "SettingsPageTabPicker("), true,
                             "设置页头 tab: 放不下时换紧凑档 / 下拉,不把分栏撑出窗口(07 章决策 189)")
+                // 设置页里自己定宽的几块在内容列窄于它时会把整个分栏撑出窗口(14 章决策 154)。
+                expectEqual(sourceHas(sourceBody("private struct HotkeyGrid: View {", in: settings), "ViewThatFits(in: .horizontal) {\n            grid(columns: 2)\n            grid(columns: 1)")
+                                && sourceHas(sourceBody("private struct HotkeyCell<Recorder: View>: View {", in: settings),
+                                             ".frame(minWidth: 104, idealWidth: 104, maxWidth: .infinity, alignment: .leading)"), true,
+                            "快捷键格子: 两列放不下改一列,判据靠名字列理想宽度 = 下限(14 章决策 154)")
+                if let heatmap = read("LastfmHeatmapView.swift"), let lastfm = read("LastfmStatsSection.swift") {
+                    expectEqual(heatmap.contains(".frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)\n        .padding(.horizontal, Self.horizontalPadding)"), true,
+                                "热力图: 量宽度那层下限写 0,不然格子比卡身宽时量到的是撑开的宽度(14 章决策 154)")
+                    expectEqual(sourceHas(lastfm, "ViewThatFits(in: .horizontal) {\n                        chartFilters(kindStyle: .tabs)\n                        chartFilters(kindStyle: .compactTabs)\n                        chartFilters(kindStyle: .menu)"), true,
+                                "榜单卡头: 筛选控件放不下逐档换窄(14 章决策 154)")
+                }
                 expectEqual(view.components(separatedBy: "anchorPreference(key: LyricsWindowPreviewHeaderAnchorKey.self").count - 1, 2,
                             "歌词窗口预览: 迷你顶部信息两种形态(有文字 / 只有封面)都报出范围")
                 // 迷你窗的停播页(07 章决策 64、67):跟完整布局同一个判据、同一层柔光底,停播时不出控制条。
