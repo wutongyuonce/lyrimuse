@@ -2157,7 +2157,6 @@
 "签名密钥（可选）" = "Signature Secret (Optional)";
 "签名有误" = "Incorrect signature";
 "简体" = "Simplified";
-"简体中文" = "简体中文";
 "算法更新后重新选择" = "Re-Pick After Algorithm Updates";
 "管理" = "Library";
 "管理…" = "Manage…";
@@ -2188,7 +2187,6 @@
 "繁简" = "Chinese Script";
 "繁简写法不同" = "written in the other Chinese script";
 "繁简转换" = "Chinese Script";
-"繁體中文" = "繁體中文";
 "约 %@ 分钟" = "about %@ minutes";
 "约 %@ 分钟#one" = "about %@ minute";
 "约 %@ 小时" = "about %@ hours";

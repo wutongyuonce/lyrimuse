@@ -257,15 +257,17 @@ func runSourceContractTests() {
         let resources = sourcesDir.appendingPathComponent("lyrimuse/Resources")
 
         struct CatalogPairs {
-            var zh: [String: String] = [:]; var en: [String: String] = [:]; var hant: [String: String] = [:]
-            /// 缺 zh-Hant 译文的键。新加文案必须把当前支持的语言都写全,所以这里
-            /// 不再回退简体后放行,而是记下来让下面那条断言红(生成脚本对同一情况也是直接失败)。
-            var missingHant: [String] = []
+            var zh: [String: String] = [:]
+            /// 简体以外每种语言的表(catalog 语言码 → 键 → 值)。
+            var translations: [String: [String: String]] = [:]
+            /// 缺译的「语言 键」。新加文案必须把当前支持的语言都写全,所以这里不回退简体放行,
+            /// 而是记下来让下面那条断言红(生成脚本对同一情况也是直接失败)。
+            var missing: [String] = []
             /// 显式 zh-Hans 值和键不一致的键。简体就是键本身,值不等于键时界面显示的是值,
             /// 改了键(源码字面量)界面照旧显示旧文案。
             var staleHans: [String] = []
         }
-        func catalogPairs(_ path: String) -> CatalogPairs? {
+        func catalogPairs(_ path: String, languages: [String]) -> CatalogPairs? {
             guard let data = FileManager.default.contents(atPath: path),
                   let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   obj["sourceLanguage"] as? String == "zh-Hans",
@@ -286,31 +288,29 @@ func runSourceContractTests() {
                     return unit(localizations?[lang])
                 }
                 func one(_ lang: String) -> String? { plural(lang).flatMap { unit($0["one"]) } }
-                // 源语言允许省略(值即键,跟 generate-strings.py 同一条规则);英文缺翻译
+                // 源语言允许省略(值即键,跟 generate-strings.py 同一条规则);别的语言缺翻译
                 // 必须红 —— 静默回退成中文正是这套守卫要消灭的事故。
                 out.zh[key] = value("zh-Hans") ?? key
                 if let hans = value("zh-Hans"), hans != key { out.staleHans.append(key) }
-                if let hant = value("zh-Hant"), !hant.isEmpty {
-                    out.hant[key] = hant
-                    if let o = one("zh-Hant") { out.hant[key + "#one"] = o }
-                } else {
-                    out.missingHant.append(key)
-                    out.hant[key] = out.zh[key]!
+                for lang in languages {
+                    guard let translated = value(lang), !translated.isEmpty else {
+                        out.missing.append("\(lang) \(key.prefix(60))")
+                        continue
+                    }
+                    out.translations[lang, default: [:]][key] = translated
+                    if let o = one(lang) { out.translations[lang, default: [:]][key + "#one"] = o }
                 }
-                guard let en = value("en"), !en.isEmpty else { return nil }
-                out.en[key] = en
-                if let o = one("en") { out.en[key + "#one"] = o }
             }
             return out
         }
 
-        if let catalog = catalogPairs(catalogPath),
-           let zhGen = stringsPairs(resources.appendingPathComponent("zh-hans.lproj/Localizable.strings").path),
-           let hantGen = stringsPairs(resources.appendingPathComponent("zh-hant.lproj/Localizable.strings").path),
-           let enGen = stringsPairs(resources.appendingPathComponent("en.lproj/Localizable.strings").path) {
+        // 简体以外的语言:语言包目录名 → catalog 语言码(同 generate-strings.py 的 TARGETS)。
+        let packLanguages = UILanguage.packs.filter { $0 != "zh-hans" }.map { (pack: $0, lang: UILanguage.localeIdentifier(for: $0)) }
+        if let catalog = catalogPairs(catalogPath, languages: packLanguages.map(\.lang)),
+           let zhGen = stringsPairs(resources.appendingPathComponent("zh-hans.lproj/Localizable.strings").path) {
             expectEqual(catalog.zh.isEmpty, false, "本地化: catalog 解析出键")
-            expectEqual(catalog.missingHant.sorted(), [],
-                        "本地化: 每个键都要有 zh-Hant 译文(新加文案必须三语齐全,见 AGENTS.md「本地化」与 Localization/zh-Hant-STYLE.md)")
+            expectEqual(catalog.missing.sorted(), [],
+                        "本地化: 每个键都要有每种语言的译文(新加文案必须把支持的语言写全,见 AGENTS.md「本地化」与 Localization/<语言>-STYLE.md)")
             expectEqual(catalog.staleHans.sorted(), [],
                         "本地化: 显式 zh-Hans 值必须等于键(简体就是键本身;改简体文案要连键一起改,否则界面照旧显示旧值)")
             // 逐键逐值一致。两个方向的差集分别报,谁多谁少一目了然;值不同单独报。
@@ -323,8 +323,10 @@ func runSourceContractTests() {
                 expectEqual(valueDiff, [], "本地化: \(tag) 生成物与 catalog 值不一致(跑 generate-strings.py)")
             }
             diff(catalog.zh, zhGen, "zh-hans")
-            diff(catalog.hant, hantGen, "zh-hant")
-            diff(catalog.en, enGen, "en")
+            for (pack, lang) in packLanguages {
+                let generated = stringsPairs(resources.appendingPathComponent("\(pack).lproj/Localizable.strings").path) ?? [:]
+                diff(catalog.translations[lang] ?? [:], generated, pack)
+            }
 
             // 格式参数:各语言的值(含单数变体「键#one」)要跟键用同一组参数 —— 第几个参数、什么类型。调用方按键的参数表
             // 传值,String(format:) 却按译文里的格式符取:译文把 %d 写成 %@ 会把整数当对象指针解引用(崩溃)。规则跟
@@ -370,26 +372,30 @@ func runSourceContractTests() {
             }
             expectEqual(catalog.zh.keys.filter { !(argSignature($0) ?? [:]).isEmpty }.isEmpty, false,
                         "本地化: catalog 里有带格式参数的键(格式参数比对没跑空)")
-            expectEqual(argMismatches(catalog.en, "en") + argMismatches(catalog.hant, "zh-Hant"), [],
+            expectEqual(packLanguages.flatMap { argMismatches(catalog.translations[$0.lang] ?? [:], $0.lang) }, [],
                         "本地化: 译文的格式参数跟键对不上(String(format:) 按译文取参数,类型错会崩溃或乱码)")
 
             // Info.plist 的用途说明:各语言包的 InfoPlist.strings 由 generate-strings.py 按 INFO_PLIST_KEYS 生成,
             // 简体那份的值就是 catalog 键,另两份是那一条的译文。英文原文另写在 build.sh 的 Info.plist 里
             // (没有对应语言包时系统用它),必须跟 catalog 的英文一致。
             let infoZh = stringsPairs(resources.appendingPathComponent("zh-hans.lproj/InfoPlist.strings").path) ?? [:]
-            let infoHant = stringsPairs(resources.appendingPathComponent("zh-hant.lproj/InfoPlist.strings").path) ?? [:]
-            let infoEn = stringsPairs(resources.appendingPathComponent("en.lproj/InfoPlist.strings").path) ?? [:]
+            let infoPacks = packLanguages.map {
+                (pack: $0.pack, lang: $0.lang,
+                 pairs: stringsPairs(resources.appendingPathComponent("\($0.pack).lproj/InfoPlist.strings").path) ?? [:])
+            }
             expectEqual(infoZh["NSAppleEventsUsageDescription"] != nil, true,
                         "本地化: 语言包里有 InfoPlist.strings,含自动化权限的用途说明(跑 generate-strings.py)")
-            expectEqual(Set(infoHant.keys) == Set(infoZh.keys) && Set(infoEn.keys) == Set(infoZh.keys), true,
-                        "本地化: 三份 InfoPlist.strings 的键一致")
+            expectEqual(infoPacks.filter { Set($0.pairs.keys) != Set(infoZh.keys) }.map(\.pack), [],
+                        "本地化: 各语言包 InfoPlist.strings 的键跟简体那份一致")
             let buildScript = (try? String(contentsOf: sourcesDir.deletingLastPathComponent()
                 .appendingPathComponent("build.sh"), encoding: .utf8)) ?? ""
             for (plistKey, catalogKey) in infoZh.sorted(by: { $0.key < $1.key }) {
                 expectEqual(catalog.zh[catalogKey] != nil, true, "本地化: InfoPlist.strings 的 \(plistKey) 是 catalog 里的键")
-                expectEqual(infoHant[plistKey], catalog.hant[catalogKey], "本地化: zh-hant InfoPlist.strings 的 \(plistKey) 跟 catalog 一致")
-                expectEqual(infoEn[plistKey], catalog.en[catalogKey], "本地化: en InfoPlist.strings 的 \(plistKey) 跟 catalog 一致")
-                let english = (catalog.en[catalogKey] ?? "\u{0}")
+                for info in infoPacks {
+                    expectEqual(info.pairs[plistKey], catalog.translations[info.lang]?[catalogKey],
+                                "本地化: \(info.pack) InfoPlist.strings 的 \(plistKey) 跟 catalog 一致")
+                }
+                let english = (catalog.translations["en"]?[catalogKey] ?? "\u{0}")
                     .replacingOccurrences(of: "&", with: "&amp;")
                     .replacingOccurrences(of: "<", with: "&lt;")
                     .replacingOccurrences(of: ">", with: "&gt;")
@@ -397,26 +403,33 @@ func runSourceContractTests() {
                             "本地化: build.sh 写进 Info.plist 的 \(plistKey) 英文原文跟 catalog 的英文一致")
             }
 
-            // ---- 语言协商(加繁体):系统语言标签 → 语言包目录名,规则见 UILanguage ----
-            expectEqual(UILanguage.resolve(preferred: "zh-Hans-CN"), "zh-hans", "本地化: zh-Hans-CN → 简体包")
-            expectEqual(UILanguage.resolve(preferred: "zh"), "zh-hans", "本地化: 裸 zh → 简体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-SG"), "zh-hans", "本地化: zh-SG → 简体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-Hant-TW"), "zh-hant", "本地化: zh-Hant-TW → 繁体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-TW"), "zh-hant", "本地化: zh-TW → 繁体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-HK"), "zh-hant", "本地化: zh-HK → 繁体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-MO"), "zh-hant", "本地化: zh-MO → 繁体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-Hans-HK"), "zh-hans", "本地化: zh-Hans-HK 显式 Hans 优先于地区码 → 简体包")
-            expectEqual(UILanguage.resolve(preferred: "zh-Hant-CN"), "zh-hant", "本地化: zh-Hant-CN 显式 Hant 优先于地区码 → 繁体包")
-            expectEqual(UILanguage.resolve(preferred: "en-GB"), "en", "本地化: en-GB → 英文包")
-            expectEqual(UILanguage.resolve(preferred: "EN"), "en", "本地化: 大小写不敏感")
-            expectEqual(UILanguage.resolve(preferred: "ja-JP"), "zh-hans", "本地化: 没有对应语言包的系统语言退回开发语言(简体)")
+            // ---- 语言协商:系统首选语言列表 → 语言包目录名,规则见 UILanguage ----
+            func resolve(_ tags: String...) -> String { UILanguage.resolve(preferredLanguages: tags) }
+            expectEqual(resolve("zh-Hans-CN"), "zh-hans", "本地化: zh-Hans-CN → 简体包")
+            expectEqual(resolve("zh"), "zh-hans", "本地化: 裸 zh → 简体包")
+            expectEqual(resolve("zh-SG"), "zh-hans", "本地化: zh-SG → 简体包")
+            expectEqual(resolve("zh-Hant-TW"), "zh-hant", "本地化: zh-Hant-TW → 繁体包")
+            expectEqual(resolve("zh-TW"), "zh-hant", "本地化: zh-TW → 繁体包")
+            expectEqual(resolve("zh-HK"), "zh-hant", "本地化: zh-HK → 繁体包")
+            expectEqual(resolve("zh-MO"), "zh-hant", "本地化: zh-MO → 繁体包")
+            expectEqual(resolve("zh-Hans-HK"), "zh-hans", "本地化: zh-Hans-HK 显式 Hans 优先于地区码 → 简体包")
+            expectEqual(resolve("zh-Hant-CN"), "zh-hant", "本地化: zh-Hant-CN 显式 Hant 优先于地区码 → 繁体包")
+            expectEqual(resolve("en-GB"), "en", "本地化: en-GB → 英文包")
+            expectEqual(resolve("EN"), "en", "本地化: 大小写不敏感")
+            expectEqual(resolve("fr-FR"), "en", "本地化: 没有语言包的系统语言用英文")
+            expectEqual(resolve(), "en", "本地化: 首选语言列表为空用英文")
+            expectEqual(resolve("fr-FR", "zh-Hans-CN", "en"), "zh-hans", "本地化: 按首选列表顺序取第一个有语言包的")
+            expectEqual(resolve("de", "en-US", "zh-Hans"), "en", "本地化: 前面的语言没有包就看下一项")
+            expectEqual(resolve("zhx-Latn", "en"), "en", "本地化: 只认 zh 和 zh- 开头的标签是中文")
+            expectEqual(UILanguage.packs.allSatisfy { resolve($0) == $0 && UILanguage.nativeName(of: $0) != $0 }, true,
+                        "本地化: 每个语言包认得自己的标签、有自己写法的语言名")
             expectEqual(UILanguage.isTraditionalChineseTag("ja-JP"), false, "本地化: isTraditionalChineseTag 只管 zh 家族")
-            expectEqual(["en", "zh-hans", "zh-hant"].map(UILanguage.localeIdentifier(for:)), ["en", "zh-Hans", "zh-Hant"],
+            expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko"].map(UILanguage.localeIdentifier(for:)), ["en", "zh-Hans", "zh-Hant", "ja", "ko"],
                         "本地化: 语言包目录名 → locale 标识")
-            expectEqual(["zh_CN", "zh-Hans", "zh", "Chinese", "zh_TW", "zh_HK", "zh-Hant", "en", "en_GB", "English", "Base", "ja", "fr_CA"]
+            expectEqual(["zh_CN", "zh-Hans", "zh", "Chinese", "zh_TW", "zh_HK", "zh-Hant", "en", "en_GB", "English", "Base", "fr_CA"]
                             .map { UILanguage.pack(forLocalization: $0) ?? "-" },
-                        ["zh-hans", "zh-hans", "zh-hans", "zh-hans", "zh-hant", "zh-hant", "zh-hant", "en", "en", "en", "-", "-", "-"],
-                        "本地化: 别的 App 的本地化目录名归哪个语言包,别的语言不归")
+                        ["zh-hans", "zh-hans", "zh-hans", "zh-hans", "zh-hant", "zh-hant", "zh-hant", "en", "en", "en", "-", "-"],
+                        "本地化: 别的 App 的本地化目录名归哪个语言包,界面没有的语言不归")
 
             // ---- 第三条:源码里每一个 L10n.t("字面量") 都必须在 catalog 里 ----
             //
@@ -473,14 +486,15 @@ func runSourceContractTests() {
             expectEqual(!pluralKeys.isEmpty, true, "本地化: 源码扫描到了 L10n.plural 调用点(\(pluralKeys.count) 个键)")
             expectEqual(pluralKeys.subtracting(catalog.zh.keys).sorted(), [],
                         "本地化: L10n.plural 用了但 catalog 里没有的键")
-            expectEqual(pluralKeys.filter { catalog.en[$0 + "#one"] == nil }.sorted(), [],
+            let english = catalog.translations["en"] ?? [:]
+            expectEqual(pluralKeys.filter { english[$0 + "#one"] == nil }.sorted(), [],
                         "本地化: L10n.plural 的键英文要写 plural 变体(one / other)")
-            let catalogPluralKeys = Set(catalog.en.keys.filter { $0.hasSuffix("#one") }.map { String($0.dropLast(4)) })
+            let catalogPluralKeys = Set(english.keys.filter { $0.hasSuffix("#one") }.map { String($0.dropLast(4)) })
             expectEqual(catalogPluralKeys.subtracting(pluralKeys).sorted(), [],
                         "本地化: 写了 plural 变体的键要用 L10n.plural 取(用 L10n.t 取不到单数那条)")
         } else {
             expectEqual(true, false,
-                        "本地化: catalog/生成物读不出来 —— 文件缺失、en 缺翻译、或生成物有重复键")
+                        "本地化: catalog/生成物读不出来 —— 文件缺失,或生成物有重复键")
         }
     }
 

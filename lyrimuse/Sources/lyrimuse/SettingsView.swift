@@ -6936,15 +6936,10 @@ private struct GeneralSettingsTab: View {
             SettingsRow(icon: "globe", title: L10n.t("语言")) {
                 SettingsGlassMenuPicker(
                     selection: $settings.appLanguage,
-                    options: ["system", "zh-hans", "zh-hant", "en"],
+                    options: ["system"] + UILanguage.packs,
                     label: { code in
-                        switch code {
-                        case "zh-hans": return L10n.t("简体中文")
-                        // 语言名一律用该语言自己的写法(简体中文 / 繁體中文 / English),三档下都不翻译。
-                        case "zh-hant": return L10n.t("繁體中文")
-                        case "en": return "English"
-                        default: return L10n.t("跟随系统")
-                        }
+                        // 语言名一律用该语言自己的写法(简体中文 / English / 日本語),哪种界面语言下都不翻译。
+                        code == "system" ? L10n.t("跟随系统") : UILanguage.nativeName(of: code)
                     },
                     compact: true
                 )

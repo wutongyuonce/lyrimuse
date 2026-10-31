@@ -2704,9 +2704,9 @@ final class AppSettings: ObservableObject {
             ?? Self.defaultNotchShowsProgressLine
         notchProgressLineStyle = defaults.string(forKey: Keys.notchProgressLineStyle)
             .flatMap(NotchProgressLineStyle.init(rawValue:)) ?? Self.defaultNotchProgressLineStyle
-        // 只认这四个值,别的(手改 / 导入的)按跟随系统:不然语言下拉一个都勾不上。
+        // 只认「跟随系统」和有语言包的几种,别的(手改 / 导入的)按跟随系统:不然语言下拉一个都勾不上。
         appLanguage = defaults.string(forKey: Keys.appLanguage)
-            .flatMap { ["system", "zh-hans", "zh-hant", "en"].contains($0) ? $0 : nil } ?? "system"
+            .flatMap { $0 == "system" || UILanguage.packs.contains($0) ? $0 : nil } ?? "system"
         appearanceMode = defaults.string(forKey: Keys.appearanceMode)
             .flatMap(AppAppearanceMode.init(rawValue:)) ?? .system
         hasCompletedOnboarding = (defaults.object(forKey: Keys.hasCompletedOnboarding) as? Bool)

@@ -17342,29 +17342,6 @@
         }
       }
     },
-    "简体中文" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "简体中文"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "简体中文"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "简体中文"
-          }
-        }
-      }
-    },
     "管理" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -25058,23 +25035,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "歌詞庫"
-          }
-        }
-      }
-    },
-    "繁體中文" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繁體中文"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繁體中文"
           }
         }
       }

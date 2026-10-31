@@ -521,15 +521,8 @@ struct OnboardingView: View {
                 // 选项和写法同 设置 › 通用 › 语言(语言名一律用该语言自己的写法)。
                 SettingsGlassMenuPicker(
                     selection: $settings.appLanguage,
-                    options: ["system", "zh-hans", "zh-hant", "en"],
-                    label: { code in
-                        switch code {
-                        case "zh-hans": return L10n.t("简体中文")
-                        case "zh-hant": return L10n.t("繁體中文")
-                        case "en": return "English"
-                        default: return L10n.t("跟随系统")
-                        }
-                    },
+                    options: ["system"] + UILanguage.packs,
+                    label: { code in code == "system" ? L10n.t("跟随系统") : UILanguage.nativeName(of: code) },
                     compact: true
                 )
                 .accessibilityLabel(L10n.t("界面语言"))

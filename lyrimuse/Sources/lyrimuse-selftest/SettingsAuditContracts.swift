@@ -45,8 +45,8 @@ func runSettingsAuditContracts() {
                 "未唱色跟随封面: 推出来的默认值当场落盘")
     expectEqual(sourceHas(settings, "lyricsOffsetStepMs = min(max((defaults.object(forKey: Keys.lyricsOffsetStepMs) as? Int) ?? 200, 50), 2000)"), true,
                 "偏移步长: 读盘夹进 0.05~2 秒")
-    expectEqual(sourceHas(settings, ".flatMap { [\"system\", \"zh-hans\", \"zh-hant\", \"en\"].contains($0) ? $0 : nil } ?? \"system\""), true,
-                "界面语言: 读盘只认四个值")
+    expectEqual(sourceHas(settings, ".flatMap { $0 == \"system\" || UILanguage.packs.contains($0) ? $0 : nil } ?? \"system\""), true,
+                "界面语言: 读盘只认「跟随系统」和有语言包的几种")
     let delegate = app("AppDelegate.swift")
     expectEqual(sourceHas(delegate, "if launchAtLoginStored { AppSettings.shared.syncLaunchAtLoginFromSystem() }\nLoginItemManager.shared.syncAtLaunch(enabled: AppSettings.shared.launchAtLoginEnabled)"), true,
                 "开机启动: 存过时先按系统实际状态对账,再注册(系统设置里移除了不会被注册回去)")

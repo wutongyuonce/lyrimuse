@@ -331,7 +331,7 @@ def add_keys(catalog, path) -> int:
     return 0
 
 
-RENAME_LANGS = ("en", "zh-Hant")
+RENAME_LANGS = tuple(lang for lang in TARGETS if lang != "zh-Hans")
 
 
 def renamed_strings(catalog, mapping):
@@ -672,7 +672,7 @@ def main() -> int:
         with open(out, "w", encoding="utf-8") as f:
             f.writelines(lines)
         if missing:
-            print(f"\u2717 {lang} 缺 {len(missing)} 条翻译(新加文案必须把 en / zh-Hant 都写全,繁体规范见 Localization/zh-Hant-STYLE.md):", file=sys.stderr)
+            print(f"\u2717 {lang} 缺 {len(missing)} 条翻译(新加文案必须把 TARGETS 里每种语言都写全,各语言的翻译规范见 Localization/<语言>-STYLE.md):", file=sys.stderr)
             for key in missing[:20]:
                 print(f"    {key[:80]}", file=sys.stderr)
             if len(missing) > 20:

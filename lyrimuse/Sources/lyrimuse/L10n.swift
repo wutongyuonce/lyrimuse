@@ -17,15 +17,8 @@ import LyrimuseCore
 // `Bundle.main` 后,`.lproj` 目录直接放在 `Contents/Resources/` 下(build.sh 里的拷贝
 // 步骤)——这是 Apple 原生支持、不依赖任何机器的标准位置。
 //
-// 三档:简体 / 繁体 / 英文(繁体加)。preferredLanguages 第一项以 "zh"
-// 开头就是中文,其中带 hant / -tw / -hk / -mo 任一标记的走繁体包(判据跟
-// AppSettings.userReadsSimplifiedChinese 同一套,别各写一份),其余中文走简体;以 "en" 开头走
-// 英文;都不是就退回简体(这是开发语言,至少是能读懂的原文)。繁体包缺译的键由
-// generate-strings.py 在生成时回退成简体,运行时不需要再兜一层。
-// 要支持更多语言:①在 Resources/ 下加 `<lang>.lproj/Localizable.strings`(文件名小写,
-// 跟打包出来的实际目录名一致),并在 generate-strings.py 的 TARGETS 和 build.sh 的拷贝那两行
-// 登记;②在 `current` 里加一条判断分支返回对应目录名;③LyrimuseCore `UILanguage` 的 `localeIdentifier(for:)`、`pack(forLocalization:)` 加映射。
-// 查找/兜底逻辑(bundle/t(_:))不用改。
+// 有哪些语言、系统首选语言怎么归到语言包,都在 LyrimuseCore 的 `UILanguage`:按系统首选语言列表的顺序取第一个有
+// 语言包的,一个都没有用英文。要支持一种新语言,照 `UILanguage.packs` 的说明加;这里的查找 / 兜底逻辑不用改。
 extension ReportLanguage {
     /// 听歌报告的语言 = 当前界面语言(features.json 的 report_language 也是写它)。
     static var ui: ReportLanguage { ReportLanguage(L10n.current) }
@@ -40,23 +33,13 @@ enum L10n {
     // Picker,这里只读),字符串必须保持一致但没有编译期耦合。
     private static let languageOverrideKey = "np:appLanguage"
 
-    // "system"(跟随系统,默认)/"zh-hans"/"zh-hant"/"en"。zh-hans.lproj 是这个项目的开发语言
-    // (源码里所有字符串字面量本来就是简体中文),所以系统语言没匹配到已知前缀时,兜底
-    // 也应该退回中文而不是英文——保证在没有对应语言包的系统语言下,至少还是能读懂的
-    // 原文,不会突然冒出一句读不懂的英文兜底。
-    /// 用户在设置里选的界面语言,原样返回("system" / "zh-hans" / "zh-hant" / "en",没设过是 nil)。
+    /// 用户在设置里选的界面语言,原样返回("system" 或 `UILanguage.packs` 里的一项,没设过是 nil)。
     static var languageOverride: String? { UserDefaults.standard.string(forKey: languageOverrideKey) }
 
+    /// 「跟随系统」(默认)时按系统首选语言列表协商,规则在 LyrimuseCore 的 `UILanguage`(selftest 钉着各种标签的分流)。
     static var current: String {
-        let override = languageOverride ?? "system"
-        if override == "en" || override == "zh-hans" || override == "zh-hant" { return override }
-        return resolveSystem(Locale.preferredLanguages.first ?? "zh-hans")
-    }
-
-    /// 系统首选语言标签 → 语言包目录名。规则本体在 LyrimuseCore 的 `UILanguage`(selftest 钉着
-    /// zh-Hant-TW / zh-HK / zh-Hans-HK / 裸 zh / en-GB / ja 这些标签的分流),这里只是转发。
-    static func resolveSystem(_ preferred: String) -> String {
-        UILanguage.resolve(preferred: preferred)
+        if let override = languageOverride, UILanguage.packs.contains(override) { return override }
+        return UILanguage.resolve(preferredLanguages: Locale.preferredLanguages)
     }
 
     /// 界面语言对应的 `Locale` —— 给那些**不走 .strings 表、但仍该跟着界面语言变**的系统

@@ -772,10 +772,12 @@ echo "    Sparkle.framework embedded + signed"
 # 时的旧文案——新加的翻译永远生效不了,且不会有任何报错(App 里表现成"这个字符串一直
 # 显示中文原文",很容易被误判成 L10n 查找逻辑或者 SwiftUI 刷新的问题,实际上是这里)。
 # 先删再拷贝,保证每次都是干净覆盖,不会残留/嵌套旧内容。
-rm -rf "$APP_DIR/Contents/Resources/zh-hans.lproj" "$APP_DIR/Contents/Resources/zh-hant.lproj" "$APP_DIR/Contents/Resources/en.lproj"
-cp -R Sources/lyrimuse/Resources/zh-hans.lproj "$APP_DIR/Contents/Resources/zh-hans.lproj"
-cp -R Sources/lyrimuse/Resources/zh-hant.lproj "$APP_DIR/Contents/Resources/zh-hant.lproj"
-cp -R Sources/lyrimuse/Resources/en.lproj "$APP_DIR/Contents/Resources/en.lproj"
+# 语言包按目录遍历,加语言不用改这里(漏拷的表现是那种语言整个退回简体原文,不报错)。
+for lproj in Sources/lyrimuse/Resources/*.lproj; do
+  name="$(basename "$lproj")"
+  rm -rf "$APP_DIR/Contents/Resources/$name"
+  cp -R "$lproj" "$APP_DIR/Contents/Resources/$name"
+done
 # **遍历,不要再逐个文件写 cp**。这里原来是一行一个图标的 cp 清单,
 # 而 `Bundle.main.path(forResource:)` 找不到资源时各调用点都有 SF Symbol 兜底 —— 于是
 # "加了一张图 → 忘了往这个清单里补一行"的表现是**图标悄悄变成一个通用符号**,不报错、

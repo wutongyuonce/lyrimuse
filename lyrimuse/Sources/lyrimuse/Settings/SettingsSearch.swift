@@ -85,8 +85,8 @@ final class SettingsSearchIndex {
         secondary.append(contentsOf: entry.alternateTitleKeys)
         secondary.append(contentsOf: entry.pathKeys)
         if let subtitle { secondary.append(subtitle) }
-        // 其它两种语言的译文:界面是中文时也能打英文搜到,反过来也成立。
-        for language in ["en", "zh-hant", "zh-hans"] where language != L10n.current {
+        // 其它语言的译文:界面是中文时也能打英文搜到,反过来也成立。
+        for language in UILanguage.packs where language != L10n.current {
             let table = stringsTable(language)
             for key in [entry.titleKey] + entry.alternateTitleKeys {
                 if let translated = table[key] { secondary.append(translated) }
