@@ -1258,7 +1258,7 @@ private struct LyricsCompareOtherLine: View {
     }
 
     private var textColor: Color {
-        if shownKaraoke != nil { return Color.accentColor.opacity(WordKaraokeGradient.dimOpacity) }
+        if shownKaraoke != nil { return Color.primary.opacity(0.78) }
         return isCurrent ? Color.accentColor : Color.primary.opacity(0.78)
     }
 }
@@ -1420,8 +1420,8 @@ private struct LyricsManagerPreviewRow: View {
 
     private var plainColumn: some View {
         VStack(alignment: .leading, spacing: 3) {
-            // 逐字染色时这一层整句画成淡的强调色,唱过的部分由 overlay 那层盖上实色;两层同一段字、同一个字号、同一个字重。
-            // 对照时对不上的字标色(当前句照旧整句强调色,不标)。换句时颜色按 `LyricsManagerPreviewMotion.line` 过渡;那一层
+            // 逐字染色时这一层保持正文色,唱过的部分由 overlay 那层盖上强调色;两层同一段字、同一个字号、同一个字重。
+            // 对照时对不上的字标色(当前句不标)。换句时颜色按 `LyricsManagerPreviewMotion.line` 过渡;那一层
             // 进场直接出现、退场淡出(`karaokeLayer`):唱完的那句从实色淡回正文色,不是一下子跳回去。
             Text(LyricsCompareLayout.marked(row.text, marks: isCurrent ? [] : (compare?.candidateMarks ?? [])))
                 .font(.system(size: 16))
@@ -1462,7 +1462,7 @@ private struct LyricsManagerPreviewRow: View {
     }
 
     private var textColor: Color {
-        if shownKaraoke != nil { return Color.accentColor.opacity(WordKaraokeGradient.dimOpacity) }
+        if shownKaraoke != nil { return Color.primary }
         return isCurrent ? Color.accentColor : Color.primary
     }
 
@@ -1497,7 +1497,7 @@ private struct LyricsManagerPreviewRow: View {
 }
 
 /// 当前句逐字染色的上面那层:跟着播放时钟每秒重画六十次(`refreshInterval`,同歌词窗口;降到 20 次软边会一步一跳),只画唱过的
-/// 部分,没唱到的透出底下那层淡色。这一层装在自己的 NSHostingView 里(`LyricsManagerKaraokeHost`):每帧换时刻只让这
+/// 部分,没唱到的透出底下那层正文色。这一层装在自己的 NSHostingView 里(`LyricsManagerKaraokeHost`):每帧换时刻只让这
 /// 一小块重新排版、提交,不牵动整扇窗的 SwiftUI 树。画法要 `TextRenderer`,macOS 15 起才有。见 11 章决策 110、124。
 private struct LyricsManagerKaraokeOverlay: View {
     let segments: [LyricsKaraokeSegment]
