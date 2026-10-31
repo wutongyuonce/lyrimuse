@@ -8013,7 +8013,6 @@ private struct AboutSettingsTab: View {
             .background { LastfmGlassGlow() }
             legalFooter
         }
-        .onDisappear { telemetryNotice.leftAbout() }
         // SwiftUI 有时不会在语言切换后重新执行某些嵌套内容的 body(取决于该内容自己的
         // 存储属性有没有变,而非父视图是否重新渲染,详见 AccountLinkingTab.swift 里
         // DestinationStatus.label 的注释)。用 .id(L10n.current) 把整页的身份跟当前语言

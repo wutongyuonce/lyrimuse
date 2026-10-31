@@ -2,12 +2,12 @@ import Combine
 import Foundation
 import LyrimuseCore
 import OSLog
+import SwiftUI
 
 private let logger = Logger(subsystem: LyrimuseIdentity.logSubsystem, category: "telemetry")
 
 /// 升级上来的用户怎么知道遥测开着:设置侧栏「关于」和那一行标题后面各挂一个小蓝点(`Telemetry.noticePending`)。
-/// 那一行滚进屏幕就记为已告知(机器专属键),蓝点留到离开关于页再一起消失,免得刚看到就没了。引导欢迎页出现时直接记为
-/// 已告知。见 14 章决策 149。
+/// 那一行滚进屏幕就记为已告知(机器专属键),两个蓝点同时淡出。引导欢迎页出现时直接记为已告知。见 14 章决策 149。
 @MainActor
 final class TelemetryNotice: ObservableObject {
     static let shared = TelemetryNotice()
@@ -22,13 +22,9 @@ final class TelemetryNotice: ObservableObject {
 
     /// 关于页那一行滚进了屏幕。
     func rowShown() {
-        guard pending, !UserDefaults.standard.bool(forKey: Self.seenKey) else { return }
+        guard pending else { return }
         UserDefaults.standard.set(true, forKey: Self.seenKey)
-    }
-
-    /// 离开关于页:看过那一行就撤掉蓝点。
-    func leftAbout() {
-        if pending, UserDefaults.standard.bool(forKey: Self.seenKey) { pending = false }
+        withAnimation(.easeOut(duration: 0.25)) { pending = false }
     }
 
     /// 引导欢迎页出现(那里有同一个开关)。

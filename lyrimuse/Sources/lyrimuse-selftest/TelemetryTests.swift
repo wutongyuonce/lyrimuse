@@ -197,12 +197,10 @@ func runTelemetryTests() {
         expectEqual(sourceHas(settingsView, "unseenDot: telemetryNotice.pending")
                     && sourceHas(settingsView, ".onScrolledIntoView { telemetryNotice.rowShown() }"), true,
                     "告知接线: 那一行挂蓝点,滚进屏幕记为已告知")
-        expectEqual(sourceHas(settingsView, ".onDisappear { telemetryNotice.leftAbout() }"), true,
-                    "告知接线: 离开关于页撤掉蓝点")
         expectEqual(sourceHas(sourceText("lyrimuse/OnboardingView.swift"), ".onAppear { TelemetryNotice.shared.seenInOnboarding() }"),
                     true, "告知接线: 欢迎页出现即记为已告知")
         let notice = sourceBody("final class TelemetryNotice", in: service)
-        expectEqual(sourceHas(sourceBody("func rowShown()", in: notice), "pending = false"), false,
-                    "告知接线: 刚滚进屏幕不撤蓝点,留到离开关于页")
+        expectEqual(sourceHas(sourceBody("func rowShown()", in: notice), "pending = false"), true,
+                    "告知接线: 那一行滚进屏幕蓝点就撤")
     }
 }
