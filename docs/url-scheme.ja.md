@@ -39,7 +39,7 @@
 | `/shortcuts` | キーボードショートカット | — |
 | `/general` | 一般 | — |
 | `/about` | 情報 | — |
-| `/account/lastfm` | Last.fm | `/stats` 統計、`/chart` ランキング、`/on-this-day` 足跡、`/settings` 設定 |
+| `/account/lastfm` | Last.fm | `/stats` 統計、`/chart` ランキング、`/on-this-day` 足跡、`/settings` ルール |
 | `/account/listenbrainz` | ListenBrainz | — |
 | `/account/discord` | Discord | `/display` 表示内容、`/buttons` ボタン、`/privacy` プライバシー |
 | `/account/relay` | Webプッシュ | — |

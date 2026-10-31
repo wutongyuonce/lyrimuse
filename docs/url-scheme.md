@@ -39,7 +39,7 @@ The common ones can be copied from **Deep Links** at the bottom of Settings › 
 | `/shortcuts` | Keyboard Shortcuts | — |
 | `/general` | General | — |
 | `/about` | About | — |
-| `/account/lastfm` | Last.fm | `/stats` Stats, `/chart` Charts, `/on-this-day` Footprint, `/settings` Settings |
+| `/account/lastfm` | Last.fm | `/stats` Stats, `/chart` Charts, `/on-this-day` Footprint, `/settings` Rules |
 | `/account/listenbrainz` | ListenBrainz | — |
 | `/account/discord` | Discord | `/display` What's Shown, `/buttons` Buttons, `/privacy` Privacy |
 | `/account/relay` | Web Push | — |

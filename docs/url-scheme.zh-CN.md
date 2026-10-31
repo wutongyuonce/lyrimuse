@@ -39,7 +39,7 @@
 | `/shortcuts` | 快捷键 | — |
 | `/general` | 通用 | — |
 | `/about` | 关于 | — |
-| `/account/lastfm` | Last.fm | `/stats` 统计、`/chart` 榜单、`/on-this-day` 足迹、`/settings` 设置 |
+| `/account/lastfm` | Last.fm | `/stats` 统计、`/chart` 榜单、`/on-this-day` 足迹、`/settings` 规则 |
 | `/account/listenbrainz` | ListenBrainz | — |
 | `/account/discord` | Discord | `/display` 显示内容、`/buttons` 按钮、`/privacy` 隐私 |
 | `/account/relay` | 网页推送 | — |

@@ -20,7 +20,7 @@ These thresholds match [Last.fm's scrobbling guidelines](https://www.last.fm/api
 
 ### 1a. Tracks under 30 seconds
 
-Settings → Linked Platforms → Last.fm → *Scrobble* → **Tracks under 30 seconds** (`scrobble_short_tracks`,
+Settings → Linked Platforms → Last.fm → *Rules* → **Scrobble Tracks Under 30 Seconds** (`scrobble_short_tracks`,
 default **off**). Last.fm's rule *"The track must be longer than 30 seconds"* is a client-side rule —
 the server does not reject short tracks and has no "too short" ignore code — and every mainstream
 scrobbler honours it, so Lyrimuse does too by default. Turning it on lets short tracks count once
@@ -30,7 +30,7 @@ are never submitted to ListenBrainz, whose behaviour is unchanged either way.
 
 ### 1b. Scrobble point
 
-Settings → Linked Platforms → Last.fm → *Scrobble* → **Scrobble Point** (`lastfm_scrobble_point`, default
+Settings → Linked Platforms → Last.fm → *Rules* → **Scrobble At** (`lastfm_scrobble_point`, default
 **50%**). How far into a track a play must get before it is scrobbled to Last.fm:
 
 | Setting | Value | Scrobbled when |
@@ -96,7 +96,7 @@ Why there is no external lookup to "canonicalise" names by default:
 
 ## 4. Matching mode
 
-Settings → Linked Platforms → Last.fm → *Scrobble* → **Matching Mode**
+Settings → Linked Platforms → Last.fm → *Rules* → **Matching Mode**
 (`lastfm_match_mode` in `~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-features.json`):
 
 | Mode | Value | Effect |
@@ -105,22 +105,24 @@ Settings → Linked Platforms → Last.fm → *Scrobble* → **Matching Mode**
 | Custom | `custom` | Pick which parts may change — see below |
 | **Raw** (default on existing installs) | `raw` | Exactly what the player reports, no network call |
 
-*Custom* expands into three switches:
+*Custom* adds two rows, one for each field:
 
-| Switch | Value | Effect |
+| Row | Option | Effect |
 |---|---|---|
-| Rewrite artist | `lastfm_match_artist` | The artist may be replaced with the catalogue entry's spelling |
-| Rewrite track name | `lastfm_match_track` | The title may be replaced with the catalogue entry's spelling |
-| Collaborations: first artist only | `lastfm_match_first_artist_only` | Truncates a joint credit to its first artist (`Khalil Fong & Fiona Sit` → `Khalil Fong`) — pure string handling, no network call |
+| **Title** | Match | The title may be replaced with the catalogue entry's spelling, and ` - Single` / ` - EP` is dropped from the album (`lastfm_match_track`) |
+| | Raw | The title is sent as reported |
+| **Artist** | Match | The artist may be replaced with the catalogue entry's spelling (`lastfm_match_artist`) |
+| | First Only | Truncates a joint credit to its first artist (`Khalil Fong & Fiona Sit` → `Khalil Fong`) — pure string handling, no network call (`lastfm_match_first_artist_only`) |
+| | Raw | The artist is sent as reported |
 
-With only one rewrite dimension enabled, **a candidate is only accepted if the other field already
+With *Match* chosen on only one of the two rows, **a candidate is only accepted if the other field already
 matches** — otherwise the result would be a combination that does not exist in the catalogue, which
 lands back on a ghost entry with one listener: you.
 
-"First artist only" differs from the other two: it applies **only when nothing was matched**. A
+*First Only* differs from *Match*: it applies **only when nothing was matched**. A
 matched spelling is already the entry Last.fm recognises, and truncating it would turn it into an
-entry that does not exist — `Hall & Oates / Maneater` (800k listeners) would become `Hall`. So
-"truncate only, no matching" is byte-for-byte the old *First only* mode, still without a network call.
+entry that does not exist — `Hall & Oates / Maneater` (800k listeners) would become `Hall`. So Title
+*Raw* with Artist *First Only* is byte-for-byte the old *First only* mode, still without a network call.
 
 *Raw* stays the default wherever a `lyrimuse-features.json` already exists, because truncating a
 credit is irreversible — it removes Fiona Sit from your history. Navidrome's option of the same name
@@ -175,15 +177,15 @@ reported and caches nothing, so a hiccup never becomes a permanent decision. Dec
 file to re-decide everything.
 
 The legacy keys are still read but no longer written, and migrate without changing behaviour:
-`lastfm_scrobble_artist_mode` maps `smart` → Smart, `all` → Raw, and `first` → Custom with only
-"first artist only" enabled; the older boolean `lastfm_scrobble_first_artist_only=true` is
+`lastfm_scrobble_artist_mode` maps `smart` → Smart, `all` → Raw, and `first` → Custom with Title
+set to Raw and Artist to First Only; the older boolean `lastfm_scrobble_first_artist_only=true` is
 equivalent to `first`.
 
 ## 5. If a scrobble fails
 
 Failures are classified, because the correct response differs. "Record it" below means the play is
-written to a local log, which a **backfill** — started manually from the "pending listens" row next
-to your recent plays — can submit later.
+written to a local log, which a **backfill** — started manually with **Backfill** beside the "plays to submit"
+count under your recent plays — can submit later.
 
 | What happened | What we do |
 |---|---|

@@ -19,7 +19,7 @@
 
 ### 1a. 短于 30 秒的曲目
 
-设置 → 关联平台 → Last.fm → *Scrobble* → **短于 30 秒的曲目**（`scrobble_short_tracks`，默认**关**）。
+设置 → 关联平台 → Last.fm → *规则* → **Scrobble 短于 30 秒的曲目**（`scrobble_short_tracks`，默认**关**）。
 Last.fm 的规则 *"The track must be longer than 30 seconds"* 是给客户端的——服务端不拒收短曲目、也没有
 「太短」这一个 ignore 码——但所有主流 scrobbler 都照做，所以 Lyrimuse 默认也照做。打开后，短曲目只要
 过了「听过一半」这条就记一次（20 秒的歌要听满 10 秒）。这是一个**只管 Last.fm** 的开关：短曲目会
@@ -28,7 +28,7 @@ scrobble 到 Last.fm（也会记进给 Last.fm 回填兜底的本地收听记录
 
 ### 1b. Scrobble 时机
 
-设置 → 关联平台 → Last.fm → *Scrobble* → **Scrobble 时机**（`lastfm_scrobble_point`，默认 **50%**）。决定一次收听
+设置 → 关联平台 → Last.fm → *规则* → **Scrobble 时机**（`lastfm_scrobble_point`，默认 **50%**）。决定一次收听
 要听到哪里才记到 Last.fm：
 
 | 档位 | 值 | 什么时候记 |
@@ -86,7 +86,7 @@ ListenBrainz 那一路、以及 Last.fm 的「全部」和「只发第一位」�
 
 ## 4. 匹配模式
 
-设置 → 关联平台 → Last.fm → *Scrobble* → **匹配模式**
+设置 → 关联平台 → Last.fm → *规则* → **匹配模式**
 （`~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-features.json` 里的 `lastfm_match_mode`）：
 
 | 档位 | 值 | 效果 |
@@ -95,20 +95,22 @@ ListenBrainz 那一路、以及 Last.fm 的「全部」和「只发第一位」�
 | 自定义 | `custom` | 自己选改哪些部分，见下表 |
 | **原始**（老机器默认） | `raw` | 原样发播放器报的标签，一个字都不动，不联网 |
 
-选了**自定义**才展开三个开关：
+选了**自定义**才多出两行，歌名、歌手各一行：
 
-| 开关 | 值 | 效果 |
+| 行 | 选项 | 效果 |
 |---|---|---|
-| 改写歌手 | `lastfm_match_artist` | 允许把歌手换成编目条目的写法 |
-| 改写曲名 | `lastfm_match_track` | 允许把曲名换成编目条目的写法 |
-| 合唱只发第一位 | `lastfm_match_first_artist_only` | 合唱串截成第一位歌手（`Khalil Fong & Fiona Sit` → `Khalil Fong`）——纯字符串处理，不联网 |
+| **歌名** | 匹配条目 | 曲名换成编目条目的写法，专辑名去掉「 - Single」「 - EP」（`lastfm_match_track`） |
+| | 原始 | 曲名原样发 |
+| **歌手** | 匹配条目 | 歌手换成编目条目的写法（`lastfm_match_artist`） |
+| | 仅第一位 | 合唱串截成第一位歌手（`Khalil Fong & Fiona Sit` → `Khalil Fong`）——纯字符串处理，不联网（`lastfm_match_first_artist_only`） |
+| | 原始 | 歌手原样发 |
 
-只开一个改写维度时，**另一个字段必须与原样一致才会采纳候选**——否则会拼出一个编目里根本
+两行里只有一行选「匹配条目」时，**另一个字段必须与原样一致才会采纳候选**——否则会拼出一个编目里根本
 不存在的组合，又落回只有你一个听众的影子条目。
 
-「合唱只发第一位」跟另两个不同：它**只在没匹配到编目条目时才生效**。匹配到的写法已经是
+「仅第一位」跟「匹配条目」不同：它**只在没匹配到编目条目时才生效**。匹配到的写法已经是
 编目认的那一条，再截一刀就把它变成一个不存在的条目——`Hall & Oates / Maneater`（80 万听众）
-会被截成 `Hall`。所以「只开截断、不开匹配」跟旧版的「只发第一位」逐字等价，照旧不联网。
+会被截成 `Hall`。所以歌名「原始」、歌手「仅第一位」跟旧版的「只发第一位」逐字等价，照旧不联网。
 
 老机器默认「原始」，因为无条件截断不可逆——截了，Fiona Sit（薛凯琪）就从你的历史里消失了。
 Navidrome 同名的开关（`Lastfm.ScrobbleFirstArtistOnly`）默认同样是关。
@@ -150,13 +152,13 @@ MBID、没有专辑、时长 0、听众只有你一个。实测陶喆《那个�
 判定结果连同依据存在 `~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-lastfm-catalog.json`，删掉这个文件就全部重判。
 
 旧的键仍然会读、但不再写，迁移后行为逐字不变：`lastfm_scrobble_artist_mode` 的
-`smart`→智能、`all`→原始、`first`→自定义且只开「合唱只发第一位」；更早的布尔开关
+`smart`→智能、`all`→原始、`first`→自定义、歌名「原始」、歌手「仅第一位」；更早的布尔开关
 `lastfm_scrobble_first_artist_only=true` 等同于 `first`。
 
 ## 5. 提交失败了怎么办
 
 失败会分类处理，因为正确的应对方式本来就不同。下表里的"留痕"指写进本地日志，之后可以靠
-**回填**补上——回填要在「待推送的收听」那一行手动发起，不会自动跑。
+**回填**补上——回填要点「最近播放」下面「N 首待补交」旁的「补交」手动发起，不会自动跑。
 
 | 发生了什么 | 我们怎么做 |
 |---|---|

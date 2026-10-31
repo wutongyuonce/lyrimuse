@@ -39,7 +39,7 @@
 | `/shortcuts` | 키보드 단축키 | — |
 | `/general` | 일반 | — |
 | `/about` | 정보 | — |
-| `/account/lastfm` | Last.fm | `/stats` 통계, `/chart` 차트, `/on-this-day` 발자취, `/settings` 설정 |
+| `/account/lastfm` | Last.fm | `/stats` 통계, `/chart` 차트, `/on-this-day` 발자취, `/settings` 규칙 |
 | `/account/listenbrainz` | ListenBrainz | — |
 | `/account/discord` | Discord | `/display` 표시 내용, `/buttons` 버튼, `/privacy` 개인정보 보호 |
 | `/account/relay` | 웹 푸시 | — |

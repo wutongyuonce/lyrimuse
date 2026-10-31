@@ -18,7 +18,7 @@ Estos umbrales coinciden con las [pautas de scrobbling de Last.fm](https://www.l
 
 ### 1a. Canciones de menos de 30 segundos
 
-Ajustes → Plataformas vinculadas → Last.fm → *Reglas de scrobble* → **Hacer scrobble de canciones de menos de 30 s** (`scrobble_short_tracks`,
+Ajustes → Plataformas vinculadas → Last.fm → *Reglas* → **Hacer scrobble de canciones de menos de 30 s** (`scrobble_short_tracks`,
 **desactivado** por omisión). La regla de Last.fm *"The track must be longer than 30 seconds"* (la canción debe durar más de 30 segundos) es una regla del lado del cliente:
 el servidor no rechaza las canciones cortas ni tiene un código de descarte por «demasiado corta». Aun así, todos los clientes de scrobble
 habituales la respetan, así que Lyrimuse también lo hace por omisión. Al activarlo, las canciones cortas cuentan en cuanto
@@ -28,7 +28,7 @@ nunca se envían a ListenBrainz, cuyo comportamiento no cambia en ningún caso.
 
 ### 1b. Momento del scrobble
 
-Ajustes → Plataformas vinculadas → Last.fm → *Reglas de scrobble* → **Momento del scrobble** (`lastfm_scrobble_point`,
+Ajustes → Plataformas vinculadas → Last.fm → *Reglas* → **Momento del scrobble** (`lastfm_scrobble_point`,
 **50%** por omisión). Hasta dónde debe reproducirse una canción para que se haga scrobble en Last.fm:
 
 | Ajuste | Valor | Se hace scrobble cuando |
@@ -94,7 +94,7 @@ Por qué no hay, por omisión, una búsqueda externa para «normalizar» los nom
 
 ## 4. Modo de coincidencia
 
-Ajustes → Plataformas vinculadas → Last.fm → *Reglas de scrobble* → **Modo de coincidencia**
+Ajustes → Plataformas vinculadas → Last.fm → *Reglas* → **Modo de coincidencia**
 (`lastfm_match_mode` en `~/Library/Application Support/me.yudaotor.lyrimuse/lyrimuse-features.json`):
 
 | Modo | Valor | Efecto |
@@ -103,22 +103,24 @@ Ajustes → Plataformas vinculadas → Last.fm → *Reglas de scrobble* → **Mo
 | Personalizado | `custom` | Elige qué partes pueden cambiar: ver abajo |
 | **Sin procesar** (por omisión en instalaciones existentes) | `raw` | Exactamente lo que informa el reproductor, sin conectarse a la red |
 
-*Personalizado* despliega tres interruptores:
+*Personalizado* añade dos filas, una para el título y otra para el artista:
 
-| Interruptor | Valor | Efecto |
+| Fila | Opción | Efecto |
 |---|---|---|
-| Reescribir artista | `lastfm_match_artist` | El artista puede sustituirse por la grafía de la entrada del catálogo |
-| Reescribir nombre de la canción | `lastfm_match_track` | El título puede sustituirse por la grafía de la entrada del catálogo |
-| Colaboraciones: solo el primer artista | `lastfm_match_first_artist_only` | Recorta un crédito conjunto a su primer artista (`Khalil Fong & Fiona Sit` → `Khalil Fong`): solo manipula texto, sin conectarse a la red |
+| **Título** | Coincidencia | El título puede sustituirse por la grafía de la entrada del catálogo, y se quita « - Single» / « - EP» del álbum (`lastfm_match_track`) |
+| | Sin procesar | El título se envía tal cual |
+| **Artista** | Coincidencia | El artista puede sustituirse por la grafía de la entrada del catálogo (`lastfm_match_artist`) |
+| | Solo el primero | Recorta un crédito conjunto a su primer artista (`Khalil Fong & Fiona Sit` → `Khalil Fong`): solo manipula texto, sin conectarse a la red (`lastfm_match_first_artist_only`) |
+| | Sin procesar | El artista se envía tal cual |
 
-Con una sola dimensión de reescritura activada, **un candidato solo se acepta si el otro campo ya
+Si solo una de las dos filas está en «Coincidencia», **un candidato solo se acepta si el otro campo ya
 coincide**; si no, el resultado sería una combinación que no existe en el catálogo, que acaba de nuevo
 en una entrada fantasma con un solo oyente: tú.
 
-«Solo el primer artista» es distinto de los otros dos: se aplica **solo cuando no se ha encontrado ninguna coincidencia**. Una
+«Solo el primero» es distinto de «Coincidencia»: se aplica **solo cuando no se ha encontrado ninguna coincidencia**. Una
 grafía encontrada ya es la entrada que Last.fm reconoce, y recortarla la convertiría en una
 entrada que no existe: `Hall & Oates / Maneater` (800 000 oyentes) se quedaría en `Hall`. Así que
-«solo recortar, sin buscar coincidencia» es, byte a byte, el antiguo modo *Solo el primero*, todavía sin conectarse a la red.
+título «Sin procesar» con artista «Solo el primero» es, byte a byte, el antiguo modo *Solo el primero*, todavía sin conectarse a la red.
 
 *Sin procesar* sigue siendo el predeterminado allí donde ya existe un `lyrimuse-features.json`, porque recortar un
 crédito es irreversible: borra a Fiona Sit de tu historial. La opción homónima de Navidrome
@@ -173,15 +175,15 @@ tal como se informaron y no guarda nada en caché, así que un tropiezo nunca se
 archivo para que todo se vuelva a decidir.
 
 Las claves antiguas se siguen leyendo pero ya no se escriben, y se migran sin cambiar el comportamiento:
-`lastfm_scrobble_artist_mode` pasa `smart` → Inteligente, `all` → Sin procesar y `first` → Personalizado con solo
-«Solo el primer artista» activado; el booleano anterior `lastfm_scrobble_first_artist_only=true` es
+`lastfm_scrobble_artist_mode` pasa `smart` → Inteligente, `all` → Sin procesar y `first` → Personalizado con título
+«Sin procesar» y artista «Solo el primero»; el booleano anterior `lastfm_scrobble_first_artist_only=true` es
 equivalente a `first`.
 
 ## 5. Si falla un scrobble
 
 Los fallos se clasifican, porque la respuesta correcta es distinta en cada caso. Abajo, «anotarlo» significa que la reproducción se
-escribe en un registro local, que un **envío diferido** (que se inicia a mano desde la fila «Scrobbles pendientes», junto
-a tus reproducciones recientes) puede enviar más tarde.
+escribe en un registro local, que un **envío diferido** (que se inicia a mano con «Enviar pendientes», junto al recuento
+«N reproducciones por enviar» bajo tus reproducciones recientes) puede enviar más tarde.
 
 | Qué ocurrió | Qué hacemos |
 |---|---|
