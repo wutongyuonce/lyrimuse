@@ -3093,7 +3093,8 @@ private struct AppearanceSettingsTab: View {
                 }
             }
             .overlay(alignment: .top) { lyricsWindowProbeAnchor(lyricsWindowRow1Probe) }
-            HStack(spacing: 8) {
+            // 第二行按内容分宽(同灵动岛第二行):「网页歌词」带 Beta 角标,等分时它那颗的摘要先被截成「…」。
+            EditorToolbarContentWidthRow(spacing: 8) {
                 if lyricsWindowPreviewShowsMini {
                     lyricsWindowToolbarButton(.behavior)
                 }
@@ -3101,7 +3102,6 @@ private struct AppearanceSettingsTab: View {
                 lyricsWindowToolbarButton(.layout)
                 lyricsWindowToolbarButton(.info)
                 lyricsWindowToolbarButton(.web)
-                Spacer(minLength: 8)
             }
             .overlay(alignment: .top) { lyricsWindowProbeAnchor(lyricsWindowRow2Probe) }
         }
@@ -3149,7 +3149,16 @@ private struct AppearanceSettingsTab: View {
         }
     }
 
+    private static let lyricsWindowToolbarFirstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]
+
+    /// 第二行按内容分宽,那一行的标签报文字本身的宽(`EditorToolbarContentWidthRow`)。
     private func lyricsWindowToolbarLabel(_ item: LyricsWindowToolbarItem) -> EditorToolbarButtonLabel {
+        var label = lyricsWindowToolbarBaseLabel(item)
+        label.fitsContent = !Self.lyricsWindowToolbarFirstRow.contains(item)
+        return label
+    }
+
+    private func lyricsWindowToolbarBaseLabel(_ item: LyricsWindowToolbarItem) -> EditorToolbarButtonLabel {
         let mini = lyricsWindowPreviewShowsMini
         switch item {
         case .background:
@@ -3234,8 +3243,7 @@ private struct AppearanceSettingsTab: View {
     /// 不让系统翻下来(同另外几段编辑台,04 章决策 34、61)。
     private func lyricsWindowToolbarButton(_ item: LyricsWindowToolbarItem) -> some View {
         Button {
-            let firstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]
-            let probe = firstRow.contains(item) ? lyricsWindowRow1Probe : lyricsWindowRow2Probe
+            let probe = Self.lyricsWindowToolbarFirstRow.contains(item) ? lyricsWindowRow1Probe : lyricsWindowRow2Probe
             lyricsWindowPopoverMaxHeight = probe.popoverHeightLimit()
             lyricsWindowPopover = item
         } label: {

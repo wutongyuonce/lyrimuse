@@ -1082,7 +1082,8 @@ func runLyricsWindowTests() {
         }
         expectEqual(webHits.count == 3 && webHits.allSatisfy { $0.pathKeys.last == "网页歌词" && $0.lyricsWindowMini == nil }, true,
                     "网页歌词: 搜索里那几行归「网页歌词」组,两种尺寸都有")
-        expectEqual(sourceBytes(settingsView, contain: "let firstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]"),
+        expectEqual(sourceBytes(settingsView, contain: "static let lyricsWindowToolbarFirstRow: [LyricsWindowToolbarItem] = [.background, .font, .color]")
+                    && sourceBytes(settingsView, contain: "Self.lyricsWindowToolbarFirstRow.contains(item) ? lyricsWindowRow1Probe : lyricsWindowRow2Probe"),
                     true, "设置分组: 浮层按第一行(背景、字体、颜色)量高度")
         expectEqual(sourceHas(settingsView, "SettingsGroupCard(title: L10n.t(\"背景\")) { lyricsWindowAppearanceRows(.background) }\n"
                                 + "SettingsGroupCard(title: L10n.t(\"字体\")) { lyricsWindowAppearanceRows(.font) }\n"
