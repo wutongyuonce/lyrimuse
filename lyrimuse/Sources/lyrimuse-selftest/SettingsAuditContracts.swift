@@ -67,6 +67,23 @@ func runSettingsAuditContracts() {
     expectEqual(sourceHas(view, "lyricsRestoreFailed = restored == nil || (restored?.failed ?? 0) > 0")
                 && sourceHas(view, "let failed = ConfigPortability.lastImportFailures + (lyricsRestoreFailed ? [L10n.t(\"歌词\")] : [])"), true,
                 "导入: 歌词恢复失败也算没导全、不重启")
+    let sidebarGet = sourceBody("private var sidebarSelection: Binding<SettingsSidebarItem?>", in: view)
+    expectEqual(sourceHas(sidebarGet, "case .softwareUpdate? where !updateBadge.isVisible: return .tab(.about)")
+                && sourceHas(sidebarGet, "case .lastfmSuggestions? where suggestions.items.isEmpty: return .account(.lastfm)")
+                && sourceHas(sidebarGet, "case .account(let destination)? where destination.livesInLabs: return .labs"), true,
+                "侧栏: 停在没有自己那一行的页面时亮上一级(实验室子页 / 软件更新 / 账号建议)")
+    expectEqual(sourceHas(view, "Button { selection = .tab(.about) } label: {")
+                && sourceHas(view, "Button { selection = .account(.lastfm) } label: {")
+                && sourceHas(view, "Button { selection = .labs } label: {"), true,
+                "侧栏: 会被当成上一级亮着的三行包在按钮里,亮着时点它照样回到它自己那一页")
+    let deleteCopies = sourceBody("private func confirmDeleteLyricsWordFormatCopies()", in: view)
+    expectEqual(sourceHas(deleteCopies, "guard alert.runModal() == .alertFirstButtonReturn else { return }")
+                && (deleteCopies.range(of: "runModal")?.lowerBound ?? deleteCopies.endIndex)
+                    < (deleteCopies.range(of: "applyLyricsWordFormats(")?.lowerBound ?? deleteCopies.startIndex)
+                && sourceHas(view, "Button(L10n.t(\"删除副本…\")) { confirmDeleteLyricsWordFormatCopies() }"), true,
+                "逐字歌词副本: 删除副本先确认再删")
+    expectEqual(sourceHas(view, "help: automation.unauthorizedHelp([player])"), true,
+                "自动化权限: 每一行的「?」只说这一家")
     let iCloud = sourceBody("private func importFromICloud()", in: view)
     expectEqual(sourceHas(iCloud, "} else {\npendingImportLyrics = nil\n}")
                 && sourceHas(iCloud, "guard iCloudSnapshot?.url == snap.url else { return }"), true,

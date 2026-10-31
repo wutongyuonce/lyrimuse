@@ -24,7 +24,7 @@ import SwiftUI
 /// 三种处境:
 ///  - 已连接、拿到头像:圆形头像 + 用户名 + 「Last.fm 账户」;
 ///  - 已连接、没头像(Last.fm 默认头像是占位星,过滤成 nil):Last.fm 品牌图裁成圆 + 用户名;
-///  - 未连接:灰底白人像的占位圆 + 「连接 Last.fm」+ 「同步收听记录」。副标题必须够短:这一列只有
+///  - 未连接:灰底白人像的占位圆 + 「连接 Last.fm」+ 「同步播放记录」。副标题必须够短:这一列只有
 ///    130pt 左右给文字:Last.fm 页头那句「把你播放的歌记录到 Last.fm」在这里尾巴会被截成省略号、
 ///    很难看;系统设置未登录时那行也是一句极短的话(「设置 iCloud、App Store 等」)。
 /// 账户出问题(授权失效 / 连接失败)不在头像上挂标记,在身份区下面那一行「Last.fm 账号建议」里计数(仿系统设置
@@ -38,7 +38,7 @@ struct LastfmIdentityRow: View {
     static let avatarSize: CGFloat = 36
     /// 这一行的几种文字。侧栏宽度按它们算(SettingsSidebarWidth),跟下面 body 用的是同一处;用户名是用户自己的数据,不算。
     static var connectTitle: String { L10n.t("连接 Last.fm") }
-    static var connectSubtitle: String { L10n.t("同步收听记录") }
+    static var connectSubtitle: String { L10n.t("同步播放记录") }
     static var connectedSubtitle: String { L10n.t("Last.fm 账号") }
 
     private var connected: Bool { !config.lastfmScrobbleSessionKey.isEmpty }

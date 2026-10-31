@@ -929,7 +929,7 @@ func runLyricsWindowTests() {
                     true, "迷你卡拉OK: 设置搜索搜得到,落在歌词窗口的「文字」")
     }
 
-    // MARK: - 迷你的粗细、已唱颜色,切换迷你 / 完整尺寸的快捷键(07 章决策 117)
+    // MARK: - 迷你的粗细、已唱颜色,切换迷你/完整尺寸的快捷键(07 章决策 117)
     do {
         typealias W = OverlayFontWeight
         expectEqual(W.bold.lighter(by: W.lyricsWindowRomanizationSteps), .medium, "迷你粗细: 默认档推出的读音还是原来的稍粗")
@@ -1039,7 +1039,7 @@ func runLyricsWindowTests() {
                     "迷你粗细 / 已唱颜色: 设置页迷你那一套绑迷你的两颗")
         expectEqual(sourceHas(settingsView, "s.lyricsWindowMiniFontWeight = .bold\n            s.lyricsWindowMiniKaraokeFill = .text\n"),
                     true, "迷你粗细 / 已唱颜色: 「重置」恢复默认")
-        expectEqual(LyrimuseAction.toggleLyricsWindowMiniHotkey.titleKey == "切换迷你 / 完整尺寸"
+        expectEqual(LyrimuseAction.toggleLyricsWindowMiniHotkey.titleKey == "切换迷你/完整尺寸"
                     && LyrimuseAction.shortcutLayout.first { $0.group == .window }?.actions.contains(.toggleLyricsWindowMiniHotkey) == true
                     && sourceBytes(source("lyrimuse/Settings/LyrimuseActionRunner.swift"),
                                    contain: "let mini = on ?? LyricsWindowMiniToggle.targetIsMini("),
@@ -1052,7 +1052,7 @@ func runLyricsWindowTests() {
                     "迷你粗细: 设置搜索搜得到歌词窗口那一条")
         expectEqual(hits("已唱颜色").contains { $0.sectionValue == SettingsSearchCatalog.lyricsWindowSectionValue }, true,
                     "已唱颜色: 设置搜索搜得到")
-        expectEqual(hits("切换迷你").contains { $0.titleKey == "切换迷你 / 完整尺寸" }, true, "切换迷你快捷键: 设置搜索搜得到")
+        expectEqual(hits("切换迷你").contains { $0.titleKey == "切换迷你/完整尺寸" }, true, "切换迷你快捷键: 设置搜索搜得到")
     }
 
     // MARK: - 「歌词窗口」设置的分组:工具栏、抽屉、设置搜索同名(07 章决策 119)

@@ -196,7 +196,7 @@ struct LanguagePackSection: View {
             SettingsRow(
                 icon: "arrow.down.circle",
                 title: L10n.t("翻译语言包"),
-                subtitle: L10n.t("本机翻译要用到的系统语言包")
+                subtitle: L10n.t("本机翻译所需的系统语言包")
             ) {
                 HStack(spacing: 8) {
                     // 首次读取有可见延迟(进程刚起时 translationd 冷启动还会先误报全零、

@@ -487,8 +487,13 @@ struct SettingsView: View {
     ///      看不出能点,而且每次开窗都是收起的,里面的功能不翻就不知道有。见 14 章决策 106。
     @ViewBuilder private var sidebarSections: some View {
         Section {
-            LastfmIdentityRow()
-                .tag(SettingsSidebarItem.account(.lastfm))
+            Button { selection = .account(.lastfm) } label: {
+                LastfmIdentityRow()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .tag(SettingsSidebarItem.account(.lastfm))
             // 「关联平台」固定排在 Last.fm 下面、两行提示前面:提示行有事才出现,排在它们后面它就会跟着上下跳。
             LinkedPlatformsRow()
                 .tag(SettingsSidebarItem.account(.discord))
@@ -510,7 +515,13 @@ struct SettingsView: View {
             sidebarLabel(.appearance)
             sidebarLabel(.shortcuts)
             sidebarLabel(.general)
-            sidebarLabel(.about)
+            Button { selection = .tab(.about) } label: {
+                sidebarLabel(.about)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .tag(SettingsSidebarItem.tab(.about))
         }
 
         Section {
@@ -526,13 +537,19 @@ struct SettingsView: View {
         }
     }
 
-    /// 交给侧栏 List 的选中:住在实验室的几页显示成「实验室」那一行亮着(同系统设置进到子页面时侧栏亮着上一级),
-    /// 其余原样。写回时原样写进 `selection`。
+    /// 交给侧栏 List 的选中:停在某一页而侧栏没有它自己那一行时,亮它的上一级(同系统设置进到子页面时侧栏亮着上一级):
+    /// 实验室的几页亮「实验室」;「软件更新」页在「有软件更新可用」那一行不在时亮「关于」;「Last.fm 账号建议」页在
+    /// 建议处理完、那一行消失后亮 Last.fm 身份行。其余原样。写回时原样写进 `selection`。
+    /// 亮着上一级时 List 不会再写一次选中,所以「实验室」「关于」、身份行这三行都包在按钮里,点了直接写 `selection`。
     private var sidebarSelection: Binding<SettingsSidebarItem?> {
         Binding(
             get: {
-                if case .account(let destination)? = selection, destination.livesInLabs { return .labs }
-                return selection
+                switch selection {
+                case .account(let destination)? where destination.livesInLabs: return .labs
+                case .softwareUpdate? where !updateBadge.isVisible: return .tab(.about)
+                case .lastfmSuggestions? where suggestions.items.isEmpty: return .account(.lastfm)
+                default: return selection
+                }
             },
             set: { selection = $0 }
         )
@@ -1007,7 +1024,9 @@ private struct LyricsSettingsTab: View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(title: L10n.t("歌词来源")) {
                 HStack(spacing: 10) {
-                    Text(String(format: L10n.t("已开启 %@ 项"), "\(features.lyricsSources.count)"))
+                    Text(String(format: L10n.t("已开启 %@ / %@"),
+                                "\(LyricsSource.settingsDisplayOrder.filter { features.lyricsSources.contains($0) }.count)",
+                                "\(LyricsSource.settingsDisplayOrder.count)"))
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
@@ -1317,8 +1336,8 @@ private struct LyricsSettingsTab: View {
             // 闸门在引擎的 needsLyricsRescore / needsLyricsRetry(features.go LyricsAutoUpgrade),副标题照那两处的行为写。
             SettingsRow(
                 icon: "arrow.triangle.2.circlepath",
-                title: L10n.t("随匹配算法更新重新选择"),
-                subtitle: L10n.t("算法更新后在后台重新评估，可能换成更合适的版本")
+                title: L10n.t("算法更新后重新选择"),
+                subtitle: L10n.t("在后台重新评估，可能换用更合适的版本")
             ) {
                 Toggle("", isOn: Binding(
                     get: { features.lyricsAutoUpgrade },
@@ -1346,7 +1365,7 @@ private struct LyricsSettingsTab: View {
             SettingsRow(
                 icon: "lock.circle",
                 title: L10n.t("锁定手选歌词"),
-                subtitle: L10n.t("手动选定的歌词不再被自动匹配换掉")
+                subtitle: L10n.t("手动选定的歌词不会被自动匹配替换")
             ) {
                 Toggle("", isOn: Binding(
                     get: { settings.manualPickLocksLyrics },
@@ -1415,7 +1434,7 @@ private struct LyricsSettingsTab: View {
             SettingsRow(
                 icon: "square.stack",
                 title: L10n.t("预解析待播曲目"),
-                subtitle: L10n.t("提前为接下来要播的歌找好歌词")
+                subtitle: L10n.t("提前获取待播歌曲的歌词")
             ) {
                 Toggle("", isOn: Binding(
                     get: { features.albumPrefetch },
@@ -2166,7 +2185,7 @@ private struct LyricsSettingsTab: View {
     /// 不藏在下拉菜单里 —— 看不见的非零偏移正是这一项要避免的事。
     private var offsetCard: some View {
         SettingsCard(cornerRadius: 18) {
-            SettingsCardHeader(title: L10n.t("时间轴偏移"), subtitle: L10n.t("正值歌词提前，负值延后；可按播放器单独设置"))
+            SettingsCardHeader(title: L10n.t("时间轴偏移"), subtitle: L10n.t("正值使歌词提前，负值使歌词延后"))
             SettingsRow(icon: "timer", title: L10n.t("全部播放器")) {
                 HStack(spacing: 8) {
                     if offsets.globalOffsetMs != 0 {
@@ -2251,7 +2270,7 @@ private struct LyricsSettingsTab: View {
             }
             .disabled(base <= -limit)
             .accessibilityLabel(L10n.t("延后"))
-            Text("\(AppSettings.signedSeconds(ms: base))\(L10n.t("秒"))")
+            Text(String(format: L10n.t("%@ 秒"), AppSettings.signedSeconds(ms: base)))
                 .font(.system(size: 12, weight: .medium))
                 .monospacedDigit()
                 .foregroundStyle(base == 0 || follows ? Color.secondary : Color.primary)
@@ -2327,10 +2346,8 @@ private struct LyricsSettingsTab: View {
                 CardDivider()
                 SettingsSubRow(title: String(format: L10n.t("同时存为：%@"),
                                              L10n.list(features.lyricsWordFormats.dropFirst().map(Self.lyricsWordFormatName)))) {
-                    Button(L10n.t("删除副本")) {
-                        applyLyricsWordFormats(Array(features.lyricsWordFormats.prefix(1)), backup: true)
-                    }
-                    .buttonStyle(.link)
+                    Button(L10n.t("删除副本…")) { confirmDeleteLyricsWordFormatCopies() }
+                        .buttonStyle(.link)
                 }
             }
             // 只在偏离默认位置时多出一条从属行:既说明了状态(你现在不在默认位置),又给出退路。
@@ -2353,12 +2370,12 @@ private struct LyricsSettingsTab: View {
 
     /// 「歌词文件夹」行:标题 + 路径胶囊(点了在访达中打开)+「更改…」,全部在同一行。
     ///
-    /// 路径用 `~` 缩写(默认路径从 38 个字符缩到 26 个)、中间省略,完整路径放 tooltip。
+    /// 路径用 `~` 缩写,放不下时按整段省略(`folderPathCandidates`),完整路径放 tooltip。
     ///
     /// `SettingsRow` 的 HStack 里"标题列 / Spacer / 尾部"是三个可伸缩成员,SwiftUI **均分**亏空(见 04 章
     /// 「设计决策」第 15 条)。这个仓库为此踩过两种坑:按钮被压成没有文字的空圆角矩形(「我的配色主题」命名行)、
     /// 标题被压成换行。所以尾部**只有路径文字可压**:「更改…」`.fixedSize()` 一分不让,路径 `.layoutPriority(-1)`
-    /// 最后拿空间、拿不够就中间省略(`~/…/lyrics` 仍看得出首尾)。
+    /// 最后拿空间、拿不够就换更短的写法。
     private var lyricsFolderRow: some View {
         let url = features.effectiveLyricsDir
         return SettingsRow(
@@ -2387,9 +2404,11 @@ private struct LyricsSettingsTab: View {
                     HStack(spacing: 5) {
                         Image(systemName: "folder")
                             .font(.system(size: 10))
-                        Text((url.path as NSString).abbreviatingWithTildeInPath)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+                        let candidates = Self.folderPathCandidates((url.path as NSString).abbreviatingWithTildeInPath)
+                        ViewThatFits(in: .horizontal) {
+                            ForEach(candidates.dropLast(), id: \.self) { Text($0).lineLimit(1).fixedSize() }
+                            Text(candidates.last ?? "").lineLimit(1).truncationMode(.middle)
+                        }
                         Image(systemName: "arrow.up.forward")
                             .font(.system(size: 9, weight: .semibold))
                     }
@@ -2420,6 +2439,17 @@ private struct LyricsSettingsTab: View {
             .settingsGlassButtons()
             .buttonBorderShape(.capsule)
         }
+    }
+
+    /// 路径胶囊的几种写法,从长到短:完整路径、首段 + 末两段、首段 + 末段(`~/…/lyrics`)。按整段省略,
+    /// 别按字符从中间截:截在词中间时前后两截都是半个单词,看不出是哪个文件夹。
+    static func folderPathCandidates(_ path: String) -> [String] {
+        let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count > 3 else { return [path] }
+        var out = [path]
+        if parts.count > 4 { out.append(([parts[0], "…"] + parts.suffix(2)).joined(separator: "/")) }
+        out.append(([parts[0], "…"] + parts.suffix(1)).joined(separator: "/"))
+        return out
     }
 
     /// 「逐字歌词格式」行:歌词文件夹里逐字歌词写成哪种格式。副标题只说当前选中的那种。
@@ -2480,6 +2510,19 @@ private struct LyricsSettingsTab: View {
         default:
             return
         }
+    }
+
+    /// 「同时存为」那行的「删除副本…」:会删文件,先确认,跟换主格式时那张确认框同一套说法(删前自动备份)。
+    private func confirmDeleteLyricsWordFormatCopies() {
+        let copies = Array(features.lyricsWordFormats.dropFirst())
+        guard !copies.isEmpty else { return }
+        let alert = NSAlert()
+        alert.messageText = String(format: L10n.t("删除 %@ 副本？"), L10n.list(copies.map(Self.lyricsWordFormatName)))
+        alert.informativeText = L10n.t("删除前会先自动备份")
+        alert.addButton(withTitle: L10n.t("删除副本"))
+        alert.addButton(withTitle: L10n.t("取消"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        applyLyricsWordFormats(Array(features.lyricsWordFormats.prefix(1)), backup: true)
     }
 
     /// 写进 features.json,引擎热重读后先按旧格式导入、再整份按新格式导出(lyricsdirswitch.go 的 switchLyricsWordFormats)。
@@ -5255,7 +5298,7 @@ private struct PlayerSettingsTab: View {
                 .controlSize(.mini)
                 .labelsHidden()
                 .accessibilityLabel(PlaybackPlayer.auto.displayName)
-            HelpButton(text: L10n.t("开启时识别所有已知和已信任的播放器；关闭后仅识别勾选的播放器"))
+            HelpButton(text: L10n.t("开启后识别所有内置播放器和「其他 App」中的 App"))
         }
     }
 
@@ -5297,9 +5340,9 @@ private struct PlayerSettingsTab: View {
                     iconImage: AppIconResolver.icon(forBundleID: seen.bundleID),
                     title: FeatureSettingsStore.appDisplayName(forBundleID: seen.bundleID) ?? seen.bundleID,
                     subtitle: unknownPlayerSubtitle(seen),
-                    help: L10n.t("信任后与内置播放器相同：显示歌词，并计入收听记录")
+                    help: L10n.t("添加后与内置播放器相同：显示歌词，并计入收听记录")
                 ) {
-                    Button(L10n.t("加入信任列表")) {
+                    Button(L10n.t("添加到其他 App")) {
                         Task { await UnknownPlayerNotifier.trust(seen.bundleID) }
                     }
                 }
@@ -5349,7 +5392,7 @@ private struct PlayerSettingsTab: View {
     /// 细节放进点开的气泡里(跟浏览器头像同一个套路),格子面上只留图标+名字。
     private var trustedPlayersCard: some View {
         SettingsCard(cornerRadius: 18) {
-            SettingsCardHeader(title: L10n.t("其他 App"), help: L10n.t("未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录。点按图标即可移除"))
+            SettingsCardHeader(title: L10n.t("其他 App"), help: L10n.t("未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录"))
             SettingsRawRow {
                 VStack(alignment: .leading, spacing: 8) {
                     LazyVGrid(columns: PlayerPicker<EmptyView>.compactColumns, spacing: 8) {
@@ -5362,7 +5405,7 @@ private struct PlayerSettingsTab: View {
                     .frame(maxWidth: .infinity)
                     // 空列表时只剩一个「添加」格,得有一句话交代"加进来会怎样";有信任项时那几格本身就说明了。
                     if stores.trustedPlayers.isEmpty {
-                        Text(L10n.t("添加的应用与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除"))
+                        Text(L10n.t("添加的 App 与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除"))
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -5532,7 +5575,7 @@ private struct PlayerSettingsTab: View {
             trustedPlayerPickerError = L10n.t("这是 Lyrimuse 本身")
         case .builtin(let player):
             trustedPlayerPickerError = String(
-                format: L10n.t("「%@」已是内置播放器，在上方「播放器」卡片中勾选即可"),
+                format: L10n.t("「%@」已是内置播放器，在上方「音乐 App」中勾选即可"),
                 player.displayName)
         case .alreadyTrusted:
             trustedPlayerPickerError = String(format: L10n.t("「%@」已在列表中"), name)
@@ -5705,7 +5748,7 @@ private struct PlayerSettingsTab: View {
     private func addBrowserMenuLabel(_ bundleID: String) -> String {
         let name = FeatureSettingsStore.appDisplayName(forBundleID: bundleID) ?? bundleID
         guard stores.trustedPlayers[bundleID] == nil else { return name }
-        return name + L10n.t("（未信任，选择后自动信任）")
+        return name + L10n.t("（选择后同时添加到「其他 App」）")
     }
 
     // 配对/取消配对都走同一套"改 AppSettings(持久化)+ 同步进
@@ -6395,11 +6438,12 @@ private struct PlayerSettingsTab: View {
                 title: String(format: L10n.t("%@ 自动化权限"), player.displayName),
                 // 副标题只留状态本身,"为什么需要它"进「?」:状态每次扫一眼都要读,理由只在犹豫时才看。
                 subtitle: automation.caption(player),
-                help: automation.unauthorizedHelp(targets)
+                help: automation.unauthorizedHelp([player])
             ) {
+                // 已授权的行不放按钮,同完全磁盘访问、辅助功能两行。
                 if automation.isRequesting(player) {
                     ProgressView().controlSize(.small)
-                } else {
+                } else if automation.status(player) != .authorized {
                     Button(automation.actionTitle(player)) { automation.handleAction(player) }
                 }
             }
@@ -6580,7 +6624,7 @@ private struct PlayerSettingsTab: View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(
                 title: L10n.t("播放器联动"),
-                help: L10n.t("每项均按播放器分别勾选，仅列出已选择的播放器；选择「自动识别」时，还会列出本机已安装的播放器"))
+                help: L10n.t("仅列出已勾选的播放器；开启「自动识别」时，还会列出本机已安装的播放器"))
             PlayerLinkageRow(
                 icon: "arrow.up.forward.app",
                 title: L10n.t("启动时打开播放器"),
@@ -6747,10 +6791,7 @@ private struct GeneralSettingsTab: View {
     @State private var showClearConfigWarning = false
 
     var body: some View {
-        SettingsPage(
-            title: L10n.t("通用"),
-            subtitle: L10n.t("菜单栏图标、外观与语言、启动与通知、网络，以及备份与迁移")
-        ) {
+        SettingsPage(title: L10n.t("通用")) {
             // 五张卡:菜单栏与 Dock / 外观与语言 / 启动与通知 / 网络 / 备份与迁移(含清除全部设置)。各行说明一律写成常显副标题,
             // 这一页不放「?」。
             //
@@ -7317,7 +7358,7 @@ private struct GeneralSettingsTab: View {
                 }
             }
         } message: {
-            Text(L10n.t("将删除本机的全部账号凭证、密钥与个人设置，恢复为初始安装状态，下次启动时重新显示设置引导。此操作无法撤销。iCloud 中的备份与已导出的文件不受影响；如两者均无，建议先备份"))
+            Text(L10n.t("将删除本机的全部账号凭证、密钥与设置，下次启动时重新显示设置引导。备份与导出的文件不受影响，没有备份时请先备份"))
         }
     }
 
@@ -7605,7 +7646,7 @@ private struct ShortcutsSettingsTab: View {
             subtitle: L10n.t("每按一次调整的幅度")
         ) {
             HStack(spacing: 8) {
-                Text("\(AppSettings.formattedSeconds(ms: settings.lyricsOffsetStepMs))\(L10n.t("秒"))")
+                Text(String(format: L10n.t("%@ 秒"), AppSettings.formattedSeconds(ms: settings.lyricsOffsetStepMs)))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
                 Stepper("", value: Binding(
@@ -7640,7 +7681,7 @@ private struct ShortcutsSettingsTab: View {
              L10n.t("mode 可选 list、shuffle、repeat-all、repeat-one")),
             ("rectangle.3.group", L10n.t("指定显示哪些歌词"), .setSurfaces(overlay: true, notch: false, menuBar: true),
              L10n.t("overlay、notch、menubar 设为 1 表示显示、0 表示隐藏，仅需包含要更改的参数")),
-            ("timer", L10n.t("设定歌词偏移"), .setLyricsOffset(ms: -300),
+            ("timer", L10n.t("设置歌词偏移"), .setLyricsOffset(ms: -300),
              L10n.t("ms 单位为毫秒，正值提前、负值延后，范围为 ±10000")),
         ]
         let cells = links.compactMap { item in
@@ -7752,11 +7793,13 @@ private struct HotkeyCell<Recorder: View>: View {
                 }
             }
             .frame(width: 18)
+            // 名字列有最小宽度:录制框里键帽多时会变宽,别把名字挤成一列竖字。
             Text(title)
                 .font(.system(size: 13))
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(minWidth: 104, alignment: .leading)
                 .help(title)
             if let help { HelpButton(text: help) }
             Spacer(minLength: 6)
@@ -8170,7 +8213,7 @@ private struct AboutSettingsTab: View {
             SettingsRow(
                 icon: "doc.text.magnifyingglass",
                 title: L10n.t("导出诊断"),
-                subtitle: L10n.t("打包日志、崩溃记录与运行状态，已移除账号凭据；含曲目名与本机路径，公开前请检查")
+                subtitle: L10n.t("打包日志、崩溃记录与运行状态，已移除账号凭证；含曲目名与本机路径，公开前请检查")
             ) {
                 DiagnosticsExportButton(title: L10n.t("导出…"))
                     .buttonBorderShape(.capsule)
@@ -8205,7 +8248,7 @@ private struct AboutSettingsTab: View {
                 title: L10n.t("数据文件夹"),
                 // 路径按实际用的那个显示(还没搬走、或用户把旧目录做成了软链接时是 ~/.config/lyrimuse)。
                 subtitle: (LyrimusePaths.configDir.path as NSString).abbreviatingWithTildeInPath + " · "
-                    + L10n.t("纯文本格式，不含账号凭据、外观与快捷键；完整迁移请使用「备份与迁移」")
+                    + L10n.t("纯文本格式，不含账号凭证、外观与快捷键；完整迁移请使用「备份与迁移」")
             ) {
                 Button(L10n.t("在访达中显示")) {
                     NSWorkspace.shared.activateFileViewerSelecting([ConfigPortability.configFolderURL])

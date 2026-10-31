@@ -177,9 +177,9 @@ final class PlayerAutomationPermissions: ObservableObject {
         let tracks = players.filter { $0.automationUse == .readsTrack }
         guard !tracks.isEmpty else { return L10n.t("未授权时无法准确读取播放进度，也无法控制播放") }
         if tracks.count == players.count {
-            return String(format: L10n.t("未授权时无法准确识别%@正在播放的歌曲，也无法控制播放"), playerNames(tracks))
+            return String(format: L10n.t("未授权时无法准确识别 %@ 正在播放的歌曲，也无法控制播放"), playerNames(tracks))
         }
-        return String(format: L10n.t("未授权时无法准确读取播放进度，也无法控制播放；%@正在播放的歌曲也可能识别不准"),
+        return String(format: L10n.t("未授权时无法准确读取播放进度，也无法控制播放；%@ 正在播放的歌曲也可能识别不准"),
                       playerNames(tracks))
     }
 

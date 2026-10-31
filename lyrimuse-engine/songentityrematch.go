@@ -10,7 +10,7 @@ import (
 // shareFollowWriting:歌词同步开着时,一条写法刚由「重新自动匹配」或后台重评、升级重试、补空、全量扫库定下歌词之后,它所在
 // 共享组的其余写法跟着用这一条现在那份(18 章决策 33、34)。规则同跟着校准换词(sharePinnedGroup):对方钉着、标了纯音乐、手改或采纳的、歌词正是同一首歌一份校准
 // 对着的(读穿着那个偏移)不动,不变式 6 前四条照样护着(songPlanKeep);换之前写留底,出处记 song-entity-share、reused_from
-// 记这一条。组里有手改原件时不跟:那时这一组按手改同步。关着「随匹配算法更新重新选择」时已经有词的不换,只补没词的。
+// 记这一条。组里有手改原件时不跟:那时这一组按手改同步。关着「算法更新后重新选择」时已经有词的不换,只补没词的。
 // 返回跟着换了的写法。
 func shareFollowWriting(key string, now time.Time) []string {
 	if !songEntitySharing() {

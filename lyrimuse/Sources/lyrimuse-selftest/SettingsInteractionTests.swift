@@ -1082,7 +1082,7 @@ func runSettingsInteractionTests() {
         let zh: [W.Row] = [.label("歌词"), .labelWithBadge("播放器"), .label("歌词显示"), .label("快捷键"), .label("通用"),
                            .label("关于"), .label("关联平台"), .account("ListenBrainz"), .account("网页推送"),
                            .account("推送提醒"), .badge("有软件更新可用"), .badge("Last.fm 账号建议"),
-                           .identityTitle("连接 Last.fm"), .identitySubtitle("同步收听记录"),
+                           .identityTitle("连接 Last.fm"), .identitySubtitle("同步播放记录"),
                            .identitySubtitle("Last.fm 账号")]
         let en: [W.Row] = [.label("Lyrics"), .labelWithBadge("Player"), .label("Lyrics Display"),
                            .label("Keyboard Shortcuts"), .label("General"), .label("About"), .label("Linked Platforms"),

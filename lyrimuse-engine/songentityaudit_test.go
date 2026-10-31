@@ -267,7 +267,7 @@ func TestShareManualPassRescoresRestoredCopies(t *testing.T) {
 	}
 }
 
-// 关着「随匹配算法更新重新选择」留下的组,这个开关打开之后到期。
+// 关着「算法更新后重新选择」留下的组,这个开关打开之后到期。
 func TestSongShareStateDueAfterUpgradeTurnsOn(t *testing.T) {
 	setUpSongShareTest(t, map[string]enrichEntry{}, true)
 	fps := map[string]string{"A|Song|One": "x"}

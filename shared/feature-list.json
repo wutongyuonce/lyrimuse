@@ -116,7 +116,7 @@
             [
               "歌词",
               "来源",
-              "随匹配算法更新重新选择"
+              "算法更新后重新选择"
             ]
           ]
         },
@@ -792,7 +792,7 @@
             ],
             [
               "快捷键",
-              "切换迷你 / 完整尺寸"
+              "切换迷你/完整尺寸"
             ]
           ]
         },
@@ -2308,7 +2308,7 @@
             "zh-Hant": "一鍵匯出診斷、回報問題"
           },
           "desc": {
-            "zh-Hans": "将日志、崩溃记录和运行状态打包为一个文件，已移除账号凭据和本机用户名。「反馈问题」会在 GitHub 新建 issue，并自动附带版本、系统和播放器信息。",
+            "zh-Hans": "将日志、崩溃记录和运行状态打包为一个文件，已移除账号凭证和本机用户名。「反馈问题」会在 GitHub 新建 issue，并自动附带版本、系统和播放器信息。",
             "en": "Bundles logs, crash reports and app state into one file with credentials and your user name removed. Report an Issue opens a GitHub issue with your version, macOS and player filled in.",
             "zh-Hant": "將記錄檔、當機報告和執行狀態打包為一個檔案，已移除帳號憑證和本機使用者名稱。「回報問題」會在 GitHub 新增 issue，並自動附上版本、系統和播放器資訊。"
           },

@@ -653,7 +653,7 @@ struct LyricsLibraryStatsPanel: View {
             SettingsRow(
                 icon: "arrow.clockwise",
                 title: L10n.t("重新匹配整个歌词库"),
-                subtitle: L10n.t("已有歌词的歌曲也重新选择；手动修改、已校准和纯音乐的歌曲保持不变")
+                subtitle: L10n.t("包括已有歌词的歌曲，手动修改、已校准和纯音乐除外")
             ) {
                 HStack(spacing: 10) {
                     if fullRunning, let status {

@@ -211,7 +211,7 @@ private struct PlayerChip<Icon: View>: View {
         Button(action: toggle) {
             icon()
                 .saturation(selected ? 1 : 0)
-                .opacity(selected ? 1 : 0.4)
+                .opacity(selected ? 1 : 0.6)
                 .padding(3)
                 .background(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)

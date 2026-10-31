@@ -144,7 +144,7 @@ public enum LyricsWindowDepth {
     }
 }
 
-/// 「切换迷你 / 完整尺寸」那个全局快捷键要切成哪种形态:窗口开着就换成另一种,没开就直接开成迷你(07 章决策 117)。
+/// 「切换迷你/完整尺寸」那个全局快捷键要切成哪种形态:窗口开着就换成另一种,没开就直接开成迷你(07 章决策 117)。
 public enum LyricsWindowMiniToggle {
     public static func targetIsMini(windowOpen: Bool, isMini: Bool) -> Bool {
         windowOpen ? !isMini : true

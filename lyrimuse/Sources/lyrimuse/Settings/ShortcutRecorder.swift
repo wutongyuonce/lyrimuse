@@ -63,9 +63,9 @@ final class ShortcutRecorderButton: NSButton {
     }
 
     // 宽度有下限——不同状态下的文案(「未设置」/「请按下快捷键…」/一串键帽)长度差异很大,
-    // 不给下限的话一列录制框会随录制状态跳来跳去。快捷键页是两列排,下限不能再大,
-    // 再大一列放不下「显示/隐藏灵动岛歌词」这类标题。
-    static let minimumWidth: CGFloat = 112
+    // 不给下限的话一列录制框会随录制状态跳来跳去。下限只要放得下最长的那句「Type Shortcut…」(11.5pt 约 86pt);
+    // 快捷键页是两列排,再大名字列就放不下「显示/隐藏灵动岛歌词」,折成两行。
+    static let minimumWidth: CGFloat = 96
     static let height: CGFloat = 24
     /// 已设时胶囊右端留给清除「×」的位置(「×」是容器里另一颗按钮,叠在这里)。
     static let clearSlot: CGFloat = 20

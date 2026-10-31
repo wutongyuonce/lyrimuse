@@ -95,7 +95,7 @@ public enum LyrimuseAction: String, CaseIterable, Sendable {
         /// 卡标题(简体就是 L10n 的键)。
         public var titleKey: String {
             switch self {
-            case .display: return "显示开关"
+            case .display: return "显示控制"
             case .window: return "打开窗口"
             case .timing: return "歌词时间轴"
             case .playback: return "播放控制"
@@ -131,7 +131,7 @@ public enum LyrimuseAction: String, CaseIterable, Sendable {
         case .overlayFontSmallerHotkey: return "缩小悬浮歌词字号"
         case .openLyricsManagerHotkey: return "打开歌词管理"
         case .openLyricsWindowHotkey: return "打开歌词窗口"
-        case .toggleLyricsWindowMiniHotkey: return "切换迷你 / 完整尺寸"
+        case .toggleLyricsWindowMiniHotkey: return "切换迷你/完整尺寸"
         case .lyricsQuickSearchHotkey: return "搜索歌词"
         case .openSettingsHotkey: return "打开设置"
         case .openPlayerHotkey: return "切换到播放器"
@@ -156,7 +156,7 @@ public enum LyrimuseAction: String, CaseIterable, Sendable {
         case .toggleAllLyricsHotkey: return "eye.slash"
         case .toggleLockPosition: return "lock"
         case .toggleTranslationHotkey: return "character.book.closed"
-        case .toggleRomanizationHotkey: return "textformat.abc"
+        case .toggleRomanizationHotkey: return "character.phonetic"
         case .overlayFontLargerHotkey: return "textformat.size.larger"
         case .overlayFontSmallerHotkey: return "textformat.size.smaller"
         case .openLyricsManagerHotkey: return "list.bullet.rectangle"
@@ -169,8 +169,8 @@ public enum LyrimuseAction: String, CaseIterable, Sendable {
         case .lyricsDelayHotkey: return "forward.end"
         case .lyricsOffsetResetHotkey: return "arrow.counterclockwise"
         case .playPauseHotkey: return "playpause"
-        case .nextTrackHotkey: return "forward.fill"
-        case .previousTrackHotkey: return "backward.fill"
+        case .nextTrackHotkey: return "forward"
+        case .previousTrackHotkey: return "backward"
         case .toggleFavoriteHotkey: return "heart"
         }
     }

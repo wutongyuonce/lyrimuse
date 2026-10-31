@@ -32,7 +32,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Prefer lyrics from the song file](#feature-prefer-local-file-lyrics) | Settings › Lyrics › Source › Prefer Lyrics from the Song File |
 | [Lock hand-picked lyrics](#feature-lock-hand-picked) | Settings › Lyrics › Source › Lock Hand-Picked Lyrics |
 | [Translate when none is provided](#feature-machine-translation) | Settings › Lyrics › Language › Translate When None Is Provided |
-| [Split long lines, join short ones](#feature-split-join-lines) | Settings › Lyrics › Timing › Split Long Lines |
+| [Split long lines, join short ones](#feature-split-join-lines) | Settings › Lyrics › Timing & Breaks › Split Long Lines |
 | [Notch lyrics](#feature-notch-lyrics) | Settings › Lyrics Display › Notch › Notch Lyrics |
 | [Menu bar lyrics](#feature-menu-bar-lyrics) | Settings › Lyrics Display › Menu Bar › Menu Bar Lyrics |
 | [Touch Bar lyrics](#feature-touch-bar-lyrics) | Settings › Lyrics Display › Touch Bar › Touch Bar Lyrics |
@@ -51,7 +51,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Web lyrics: a phone or tablet as a second screen, or an OBS browser source](#feature-web-lyrics) | Settings › Lyrics Display › Lyrics Window › Web Lyrics |
 | [YouTube Music and Spotify Web in your browser](#feature-web-players) | Settings › Player › Web |
 | [Skip YouTube Music ads automatically](#feature-skip-youtube-ads) | Settings › Player › Web › Skip YouTube Music Ads Automatically |
-| [Start and quit together with your player](#feature-player-linkage) | Settings › Player › Linkage › Open Players at Launch |
+| [Start and quit together with your player](#feature-player-linkage) | Settings › Player › Launch & Quit › Open Players at Launch |
 | [Last.fm scrobbling and listening profile](#feature-lastfm) | Settings › Last.fm › Settings › Scrobble Rules |
 | [Scrobble to ListenBrainz too](#feature-listenbrainz) | Settings › Labs › ListenBrainz › Account Info |
 | [Show what you're playing on Discord](#feature-discord) | Settings › Discord › Show on Discord |
@@ -235,8 +235,8 @@ Shows all Chinese lyrics in Simplified or Traditional characters, whatever langu
 Floating lyrics, the notch, the menu bar and the Touch Bar split lines too long for their width and join lines that flash by too quickly, each by its own width. The lyrics window keeps one line per line. Two separate switches.
 
 - Off by default
-- Settings: Lyrics › Timing › Split Long Lines
-- Settings: Lyrics › Timing › Join Short Lines
+- Settings: Lyrics › Timing & Breaks › Split Long Lines
+- Settings: Lyrics › Timing & Breaks › Join Short Lines
 
 <a id="feature-timing-offset"></a>
 
@@ -244,7 +244,7 @@ Floating lyrics, the notch, the menu bar and the Touch Bar split lines too long 
 
 Move all lyrics earlier or later, optionally for one player only. Single songs get their own offset in the Lyrics Manager, and shortcuts can advance, delay or reset it on the fly.
 
-- Settings: Lyrics › Timing › Timing Offset
+- Settings: Lyrics › Timing & Breaks › Timing Offset
 - Settings: Keyboard Shortcuts › Advance Lyrics
 - Settings: Keyboard Shortcuts › Delay Lyrics
 - Settings: Keyboard Shortcuts › Reset Lyrics Offset
@@ -334,7 +334,7 @@ On an HDR display, the sung part of the current line in the lyrics window is bri
 The lyrics window shrunk to a small card: just the current line, the current and next line, or a full scrolling page. Background, text colour, font, weight, sung colour and the title, artwork and time at the top are all set separately.
 
 - Settings: Lyrics Display › Lyrics Window › Layout › Lyrics Layout
-- Settings: Keyboard Shortcuts › Switch Mini / Full Size
+- Settings: Keyboard Shortcuts › Toggle Mini/Full Size
 
 <a id="feature-mini-window-auto-hide"></a>
 
@@ -651,9 +651,9 @@ Click the title, artist or album in the lyrics window or the expanded notch to r
 Per player: open the player when Lyrimuse opens, open Lyrimuse when the player opens, or quit Lyrimuse once every player it follows has quit.
 
 - Off by default
-- Settings: Player › Linkage › Open Players at Launch
-- Settings: Player › Linkage › Launch When Your Player Opens
-- Settings: Player › Linkage › Quit With Player
+- Settings: Player › Launch & Quit › Open Players at Launch
+- Settings: Player › Launch & Quit › Launch With Player
+- Settings: Player › Launch & Quit › Quit With Player
 
 <a id="section-listening"></a>
 
@@ -874,10 +874,10 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Lyrics Sources**
 - **Matching Algorithm**
 - **Prefer Lyrics from the Song File**: When playing a local file, use its same-name .lrc or embedded lyrics first
-- **Re-Pick After Algorithm Updates**: Re-evaluated in the background after updates; may switch to a better version
+- **Re-Pick After Algorithm Updates**: Re-evaluated in the background; may switch to a better version
 - **Share Lyrics Across Entries of a Song**: One copy for the same recording across players and album versions; edits sync too
-- **Lock Hand-Picked Lyrics**: Auto-matching never replaces lyrics you picked
-- **Pre-Resolve Upcoming Tracks**: Finds lyrics for upcoming tracks ahead of time
+- **Lock Hand-Picked Lyrics**: Lyrics you pick manually are never replaced by auto-matching
+- **Pre-Resolve Upcoming Tracks**: Fetches lyrics for upcoming songs in advance
 
 ### Lyrics › Language
 
@@ -888,17 +888,17 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Romanization Languages**
 - **Japanese Reading**: Romaji, or hiragana for kanji only
 
-### Lyrics › Timing
+### Lyrics › Timing & Breaks
 
 - **Split Long Lines**: Lines too long to fit are split and shown in parts
 - **Join Short Lines**: Adjacent short lines are merged when they fit on one line
-- **Timing Offset**: Positive shows lyrics earlier, negative later; each player can have its own
+- **Timing Offset**: Positive values show lyrics earlier, negative values later
 
 ### Lyrics › Lyrics Library
 
 - **Lyrics Library**
 - **Auto-Match Missing Lyrics**: Only songs with no lyrics or plain-text lyrics
-- **Re-Match Whole Library**: Songs that already have lyrics are re-matched too; manually edited, calibrated and instrumental songs are left unchanged
+- **Re-Match Whole Library**: Includes songs that already have lyrics, except edited, calibrated and instrumental ones
 - **Scan Interval**: Seconds between songs; at least 2 seconds is recommended to avoid rate limits
 - **Lyrics Folder**: Existing files stay where they are when you change the location
 - **Word-by-Word Lyrics Format**
@@ -907,7 +907,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **Music Apps**
 - **Web**: Lyrics also work for music playing in a browser. Click + to pair the browser you use; the position is read directly from the page, so lyrics sync immediately after a song change
-- **Other Apps**: Apps not listed above can be used as players too: once added, their songs show lyrics and count toward your listening history. Click a tile to remove it
+- **Other Apps**: Apps not listed above can be used as players too: once added, their songs show lyrics and count toward your listening history
 - **Add App…**: Pick one from Applications — no need to wait until it’s playing
 - **New Player Alerts**
 
@@ -923,11 +923,11 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **LX Music Open API**: Lyrimuse reads LX Music’s playback position and adjusts its volume through this API
 - **Lyrics Engine**: Reads playback state and fetches lyrics and artwork
 
-### Player › Linkage
+### Player › Launch & Quit
 
-- **Player Linkage**: Each item is checked per player. Only the selected players are listed; with Auto-detect selected, the ones installed on this Mac are added
+- **Launch & Quit**: Only the players you’ve selected are listed. With Auto-detect on, players installed on this Mac are listed too
 - **Open Players at Launch**
-- **Launch When Your Player Opens**
+- **Launch With Player**
 - **Quit With Player**
 
 ### Lyrics Display › Floating Lyrics
@@ -1217,7 +1217,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Decrease Floating Lyrics Font Size**
 - **Open Lyrics Manager**
 - **Open Lyrics Window**
-- **Switch Mini / Full Size**
+- **Toggle Mini/Full Size**
 - **Search Lyrics**
 - **Open Settings**
 - **Switch to Player**
@@ -1256,7 +1256,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### General › Backup & Migration
 
 - **iCloud Backup**
-- **Settings File**: Contains credentials in plain text; exports two files, settings and lyrics library; importing replaces all settings
+- **Settings File**: Includes plain-text credentials. Exports settings and the lyrics library as two files; importing replaces all settings
 - **Erase All Settings**: Erases settings on this Mac only; backups and exported files are kept. Can’t be undone
 
 ### Software Update

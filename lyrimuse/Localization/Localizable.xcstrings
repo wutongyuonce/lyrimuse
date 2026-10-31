@@ -5168,25 +5168,25 @@
         }
       }
     },
-    "信任后与内置播放器相同：显示歌词，并计入收听记录" : {
+    "添加后与内置播放器相同：显示歌词，并计入收听记录" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Once trusted, it works exactly like a built-in player: lyrics show up, and plays are recorded to your listening history"
+            "value" : "Once added, it works like a built-in player: lyrics show up and plays count toward your listening history"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "信任后与内置播放器相同：显示歌词，并计入收听记录"
+            "value" : "添加后与内置播放器相同：显示歌词，并计入收听记录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "信任後與內建播放器相同：顯示歌詞，並計入聆聽記錄"
+            "value" : "新增後與內建播放器相同：顯示歌詞，並計入聆聽記錄"
           }
         }
       }
@@ -5404,7 +5404,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All players"
+            "value" : "All Players"
           }
         },
         "zh-Hans" : {
@@ -7639,7 +7639,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contains credentials in plain text; exports two files, settings and lyrics library; importing replaces all settings"
+            "value" : "Includes plain-text credentials. Exports settings and the lyrics library as two files; importing replaces all settings"
           }
         },
         "zh-Hans" : {
@@ -16795,7 +16795,7 @@
         }
       }
     },
-    "用于将当前播放状态推送到网页小组件和状态徽章" : {
+    "将当前播放状态推送到网页小组件和状态徽章" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -16807,13 +16807,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用于将当前播放状态推送到网页小组件和状态徽章"
+            "value" : "将当前播放状态推送到网页小组件和状态徽章"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用於將目前播放狀態推送到網頁小工具和狀態徽章"
+            "value" : "將目前播放狀態推送到網頁小工具和狀態徽章"
           }
         }
       }
@@ -20249,7 +20249,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Launch When Your Player Opens"
+            "value" : "Launch With Player"
           }
         },
         "zh-Hans" : {
@@ -21444,25 +21444,25 @@
         }
       }
     },
-    "将删除本机的全部账号凭证、密钥与个人设置，恢复为初始安装状态，下次启动时重新显示设置引导。此操作无法撤销。iCloud 中的备份与已导出的文件不受影响；如两者均无，建议先备份" : {
+    "将删除本机的全部账号凭证、密钥与设置，下次启动时重新显示设置引导。备份与导出的文件不受影响，没有备份时请先备份" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This erases every account credential, key and personal setting on this Mac and returns Lyrimuse to a fresh install; the setup guide runs again on next launch. This can’t be undone. Backups in iCloud and exported files are kept; if you have neither, back up first"
+            "value" : "Erases every account credential, key and setting on this Mac; the setup guide runs again on next launch. Backups and exported files are kept. If you have no backup, make one first"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将删除本机的全部账号凭证、密钥与个人设置，恢复为初始安装状态，下次启动时重新显示设置引导。此操作无法撤销。iCloud 中的备份与已导出的文件不受影响；如两者均无，建议先备份"
+            "value" : "将删除本机的全部账号凭证、密钥与设置，下次启动时重新显示设置引导。备份与导出的文件不受影响，没有备份时请先备份"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "將刪除本機的全部帳號憑證、金鑰與個人設定，回復為初始安裝狀態，下次啟動時重新顯示設定引導。此操作無法復原。iCloud 中的備份與已匯出的檔案不受影響；如兩者均無，建議先備份"
+            "value" : "將刪除本機的全部帳號憑證、金鑰與設定，下次啟動時重新顯示設定引導。備份與匯出的檔案不受影響，沒有備份時請先備份"
           }
         }
       }
@@ -22065,7 +22065,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Word-timed"
+            "value" : "Word-by-Word"
           }
         },
         "zh-Hans" : {
@@ -23571,25 +23571,25 @@
         }
       }
     },
-    "（未信任，选择后自动信任）" : {
+    "（选择后同时添加到「其他 App」）" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " (not trusted — choosing it trusts it)"
+            "value" : " (also adds it to Other Apps)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "（未信任，选择后自动信任）"
+            "value" : "（选择后同时添加到「其他 App」）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "（未信任，選擇後自動信任）"
+            "value" : "（選擇後同時新增到「其他 App」）"
           }
         }
       }
@@ -23952,7 +23952,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "勾選後需退出並重新打開瀏覽器才能生效，此選項僅在瀏覽器啟動時讀取"
+            "value" : "勾選後需結束並重新打開瀏覽器才能生效，此選項僅在瀏覽器啟動時讀取"
           }
         }
       }
@@ -25033,7 +25033,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Line-by-line"
+            "value" : "Line-by-Line"
           }
         },
         "zh-Hans" : {
@@ -25386,25 +25386,25 @@
         }
       }
     },
-    "每项均按播放器分别勾选，仅列出已选择的播放器；选择「自动识别」时，还会列出本机已安装的播放器" : {
+    "仅列出已勾选的播放器；开启「自动识别」时，还会列出本机已安装的播放器" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Each item is checked per player. Only the selected players are listed; with Auto-detect selected, the ones installed on this Mac are added"
+            "value" : "Only the players you’ve selected are listed. With Auto-detect on, players installed on this Mac are listed too"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每项均按播放器分别勾选，仅列出已选择的播放器；选择「自动识别」时，还会列出本机已安装的播放器"
+            "value" : "仅列出已勾选的播放器；开启「自动识别」时，还会列出本机已安装的播放器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每項均按播放器分別勾選，僅列出已選擇的播放器；選擇「自動識別」時，還會列出本機已安裝的播放器"
+            "value" : "僅列出已勾選的播放器；開啟「自動識別」時，還會列出本機已安裝的播放器"
           }
         }
       }
@@ -25608,29 +25608,6 @@
         }
       }
     },
-    "菜单栏图标、外观与语言、启动与通知，以及备份与迁移" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "菜单栏图标、外观与语言、启动与通知，以及备份与迁移"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Menu bar icon, appearance & language, startup & notifications, and backups"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選單列圖像、外觀與語言、啟動與通知，以及備份與遷移"
-          }
-        }
-      }
-    },
     "推荐。为每个歌词源评分，选用最高分的结果" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -25650,29 +25627,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "推薦。為每個歌詞來源評分，選用最高分的結果"
-          }
-        }
-      }
-    },
-    "已开启 %@ 项" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ on"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已开启 %@ 项"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已開啟 %@ 項"
           }
         }
       }
@@ -26575,7 +26529,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Player Linkage"
+            "value" : "Launch & Quit"
           }
         },
         "zh-Hans" : {
@@ -26638,7 +26592,7 @@
         }
       }
     },
-    "随匹配算法更新重新选择" : {
+    "算法更新后重新选择" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -26650,13 +26604,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "随匹配算法更新重新选择"
+            "value" : "算法更新后重新选择"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隨比對演算法更新重新選擇"
+            "value" : "演算法更新後重新選擇"
           }
         }
       }
@@ -28277,19 +28231,19 @@
         }
       }
     },
-    "同步收听记录" : {
+    "同步播放记录" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scrobble your listens"
+            "value" : "Sync your plays"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同步聆聽記錄"
+            "value" : "同步播放記錄"
           }
         }
       }
@@ -30473,7 +30427,7 @@
         }
       }
     },
-    "添加的应用与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除" : {
+    "添加的 App 与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -30485,7 +30439,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加的应用与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除"
+            "value" : "添加的 App 与内置播放器相同：显示其正在播放的内容，并计入收听记录。可随时移除"
           }
         },
         "zh-Hant" : {
@@ -30587,25 +30541,25 @@
         }
       }
     },
-    "「%@」已是内置播放器，在上方「播放器」卡片中勾选即可" : {
+    "「%@」已是内置播放器，在上方「音乐 App」中勾选即可" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“%@” is already a built-in player — just tick it in the Players card above"
+            "value" : "“%@” is already built in. Select it under Music Apps above"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「%@」已是内置播放器，在上方「播放器」卡片中勾选即可"
+            "value" : "「%@」已是内置播放器，在上方「音乐 App」中勾选即可"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「%@」已是內建播放器，在上方「播放器」卡片中勾選即可"
+            "value" : "「%@」已是內建播放器，在上方「音樂 App」中勾選即可"
           }
         }
       }
@@ -31462,7 +31416,7 @@
         }
       }
     },
-    "未授权时无法准确识别%@正在播放的歌曲，也无法控制播放" : {
+    "未授权时无法准确识别 %@ 正在播放的歌曲，也无法控制播放" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -31474,18 +31428,18 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未授权时无法准确识别%@正在播放的歌曲，也无法控制播放"
+            "value" : "未授权时无法准确识别 %@ 正在播放的歌曲，也无法控制播放"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未授權時無法準確識別%@正在播放的歌曲，也無法控制播放"
+            "value" : "未授權時無法準確識別 %@ 正在播放的歌曲，也無法控制播放"
           }
         }
       }
     },
-    "未授权时无法准确读取播放进度，也无法控制播放；%@正在播放的歌曲也可能识别不准" : {
+    "未授权时无法准确读取播放进度，也无法控制播放；%@ 正在播放的歌曲也可能识别不准" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -31497,13 +31451,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未授权时无法准确读取播放进度，也无法控制播放；%@正在播放的歌曲也可能识别不准"
+            "value" : "未授权时无法准确读取播放进度，也无法控制播放；%@ 正在播放的歌曲也可能识别不准"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未授權時無法準確讀取播放進度，也無法控制播放；%@正在播放的歌曲也可能識別不準"
+            "value" : "未授權時無法準確讀取播放進度，也無法控制播放；%@ 正在播放的歌曲也可能識別不準"
           }
         }
       }
@@ -33914,7 +33868,7 @@
         }
       }
     },
-    "纯文本格式，不含账号凭据、外观与快捷键；完整迁移请使用「备份与迁移」" : {
+    "纯文本格式，不含账号凭证、外观与快捷键；完整迁移请使用「备份与迁移」" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33926,7 +33880,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "纯文本格式，不含账号凭据、外观与快捷键；完整迁移请使用「备份与迁移」"
+            "value" : "纯文本格式，不含账号凭证、外观与快捷键；完整迁移请使用「备份与迁移」"
           }
         },
         "zh-Hant" : {
@@ -34393,7 +34347,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Following “All players”: %@"
+            "value" : "Following “All Players”: %@"
           }
         },
         "zh-Hant" : {
@@ -34756,7 +34710,7 @@
         }
       }
     },
-    "打包日志、崩溃记录与运行状态，已移除账号凭据；含曲目名与本机路径，公开前请检查" : {
+    "打包日志、崩溃记录与运行状态，已移除账号凭证；含曲目名与本机路径，公开前请检查" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -37515,7 +37469,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Let your Discord friends see what you're listening to"
+            "value" : "Shows your Discord friends what you’re listening to"
           }
         },
         "zh-Hans" : {
@@ -40026,25 +39980,25 @@
         }
       }
     },
-    "切换迷你 / 完整尺寸" : {
+    "切换迷你/完整尺寸" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Switch Mini / Full Size"
+            "value" : "Toggle Mini/Full Size"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切换迷你 / 完整尺寸"
+            "value" : "切换迷你/完整尺寸"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切換迷你 / 完整尺寸"
+            "value" : "切換迷你/完整尺寸"
           }
         }
       }
@@ -42951,7 +42905,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "連網逐首搜尋，可隨時停止"
+            "value" : "連線逐首搜尋，可隨時停止"
           }
         }
       }
@@ -42979,25 +42933,25 @@
         }
       }
     },
-    "已有歌词的歌曲也重新选择；手动修改、已校准和纯音乐的歌曲保持不变" : {
+    "包括已有歌词的歌曲，手动修改、已校准和纯音乐除外" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Songs that already have lyrics are re-matched too; manually edited, calibrated and instrumental songs are left unchanged"
+            "value" : "Includes songs that already have lyrics, except edited, calibrated and instrumental ones"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已有歌词的歌曲也重新选择；手动修改、已校准和纯音乐的歌曲保持不变"
+            "value" : "包括已有歌词的歌曲，手动修改、已校准和纯音乐除外"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已有歌詞的歌曲也重新選擇；手動修改、已校正和純音樂的歌曲保持不變"
+            "value" : "包括已有歌詞的歌曲，手動修改、已校正和純音樂除外"
           }
         }
       }
@@ -43158,7 +43112,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Linkage"
+            "value" : "Launch & Quit"
           }
         },
         "zh-Hans" : {
@@ -43290,25 +43244,25 @@
         }
       }
     },
-    "开启时识别所有已知和已信任的播放器；关闭后仅识别勾选的播放器" : {
+    "开启后识别所有内置播放器和「其他 App」中的 App" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When on, every known and trusted player is detected. When off, only the ones you check"
+            "value" : "When on, every built-in player and app under Other Apps is detected"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启时识别所有已知和已信任的播放器；关闭后仅识别勾选的播放器"
+            "value" : "开启后识别所有内置播放器和「其他 App」中的 App"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟時識別所有已知和已信任的播放器；關閉後僅識別勾選的播放器"
+            "value" : "開啟後識別所有內建播放器和「其他 App」中的 App"
           }
         }
       }
@@ -43382,25 +43336,25 @@
         }
       }
     },
-    "未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录。点按图标即可移除" : {
+    "未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apps not listed above can be used as players too: once added, their songs show lyrics and count toward your listening history. Click a tile to remove it"
+            "value" : "Apps not listed above can be used as players too: once added, their songs show lyrics and count toward your listening history"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录。点按图标即可移除"
+            "value" : "未在上方列出的 App 也可作为播放器：添加后将显示其正在播放的歌曲，并计入收听记录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未在上方列出的 App 也可作為播放器：新增後將顯示其正在播放的歌曲，並計入聆聽記錄。按一下圖像即可移除"
+            "value" : "未在上方列出的 App 也可作為播放器：新增後將顯示其正在播放的歌曲，並計入聆聽記錄"
           }
         }
       }
@@ -43582,25 +43536,25 @@
         }
       }
     },
-    "显示开关" : {
+    "显示控制" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show & Hide"
+            "value" : "Display"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示开关"
+            "value" : "显示控制"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顯示開關"
+            "value" : "顯示控制"
           }
         }
       }
@@ -46581,7 +46535,7 @@
         }
       }
     },
-    "设定歌词偏移" : {
+    "设置歌词偏移" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -46593,7 +46547,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设定歌词偏移"
+            "value" : "设置歌词偏移"
           }
         },
         "zh-Hant" : {
@@ -51521,19 +51475,19 @@
         }
       }
     },
-    "把听歌报告推到手机、群聊或你自己的服务" : {
+    "将听歌报告推送到手机、群聊或自建服务" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send listening reports to your phone, group chats or your own service"
+            "value" : "Sends listening reports to your phone, group chats or your own service"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "把聽歌報告推播到手機、群組或你自己的服務"
+            "value" : "將聽歌報告推播到手機、群組或自架服務"
           }
         }
       }
@@ -52263,29 +52217,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "格式應為 主機:連接埠，可加 http:// 或 socks5:// 前綴"
-          }
-        }
-      }
-    },
-    "菜单栏图标、外观与语言、启动与通知、网络，以及备份与迁移" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Menu bar icon, appearance & language, startup & notifications, network, and backups"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "菜单栏图标、外观与语言、启动与通知、网络，以及备份与迁移"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選單列圖像、外觀與語言、啟動與通知、網路，以及備份與遷移"
           }
         }
       }
@@ -55217,7 +55148,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Timing"
+            "value" : "Timing & Breaks"
           }
         },
         "zh-Hans" : {
@@ -55240,7 +55171,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Once Picked"
+            "value" : "After Lyrics Are Picked"
           }
         },
         "zh-Hans" : {
@@ -55280,25 +55211,25 @@
         }
       }
     },
-    "算法更新后在后台重新评估，可能换成更合适的版本" : {
+    "在后台重新评估，可能换用更合适的版本" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Re-evaluated in the background after updates; may switch to a better version"
+            "value" : "Re-evaluated in the background; may switch to a better version"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "算法更新后在后台重新评估，可能换成更合适的版本"
+            "value" : "在后台重新评估，可能换用更合适的版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "演算法更新後在背景重新評估，可能換成更合適的版本"
+            "value" : "在背景重新評估，可能改用更合適的版本"
           }
         }
       }
@@ -55326,48 +55257,48 @@
         }
       }
     },
-    "手动选定的歌词不再被自动匹配换掉" : {
+    "手动选定的歌词不会被自动匹配替换" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auto-matching never replaces lyrics you picked"
+            "value" : "Lyrics you pick manually are never replaced by auto-matching"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手动选定的歌词不再被自动匹配换掉"
+            "value" : "手动选定的歌词不会被自动匹配替换"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手動選定的歌詞不再被自動比對換掉"
+            "value" : "手動選定的歌詞不會被自動比對取代"
           }
         }
       }
     },
-    "提前为接下来要播的歌找好歌词" : {
+    "提前获取待播歌曲的歌词" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finds lyrics for upcoming tracks ahead of time"
+            "value" : "Fetches lyrics for upcoming songs in advance"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提前为接下来要播的歌找好歌词"
+            "value" : "提前获取待播歌曲的歌词"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "提前為接下來要播的歌找好歌詞"
+            "value" : "提前取得待播歌曲的歌詞"
           }
         }
       }
@@ -55378,7 +55309,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sources that are off"
+            "value" : "Sources That Are Off"
           }
         },
         "zh-Hans" : {
@@ -55579,7 +55510,7 @@
         }
       }
     },
-    "本机翻译要用到的系统语言包" : {
+    "本机翻译所需的系统语言包" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -55591,36 +55522,36 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本机翻译要用到的系统语言包"
+            "value" : "本机翻译所需的系统语言包"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本機翻譯要用到的系統語言包"
+            "value" : "本機翻譯所需的系統語言包"
           }
         }
       }
     },
-    "正值歌词提前，负值延后；可按播放器单独设置" : {
+    "正值使歌词提前，负值使歌词延后" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Positive shows lyrics earlier, negative later; each player can have its own"
+            "value" : "Positive values show lyrics earlier, negative values later"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正值歌词提前，负值延后；可按播放器单独设置"
+            "value" : "正值使歌词提前，负值使歌词延后"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正值歌詞提前，負值延後；可按播放器單獨設定"
+            "value" : "正值使歌詞提前，負值使歌詞延後"
           }
         }
       }
@@ -55631,7 +55562,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Following “All players”"
+            "value" : "Following “All Players”"
           }
         },
         "zh-Hans" : {
@@ -55654,7 +55585,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Follow “All players” Again"
+            "value" : "Follow “All Players” Again"
           }
         },
         "zh-Hans" : {
@@ -57645,6 +57576,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這個播放器播放的是另一個母帶版本，改用它自家平台的歌詞才對得上"
+          }
+        }
+      }
+    },
+    "添加到其他 App" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to Other Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加到其他 App"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增到其他 App"
+          }
+        }
+      }
+    },
+    "删除副本…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Copies…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除副本…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除副本…"
+          }
+        }
+      }
+    },
+    "删除 %@ 副本？" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete the %@ copies?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除 %@ 副本？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除 %@ 副本？"
+          }
+        }
+      }
+    },
+    "删除前会先自动备份" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A backup is made before deleting"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除前会先自动备份"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除前會先自動備份"
           }
         }
       }

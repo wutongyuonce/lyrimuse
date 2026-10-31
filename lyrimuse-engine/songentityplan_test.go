@@ -110,7 +110,7 @@ func TestSongEntitySharePlan(t *testing.T) {
 	}
 }
 
-// 关着「随匹配算法更新重新选择」:没词的照补,已经有词的一律留(补逐字也不补),理由写明是开关。
+// 关着「算法更新后重新选择」:没词的照补,已经有词的一律留(补逐字也不补),理由写明是开关。
 func TestShareEvalPlanAutoUpgradeOff(t *testing.T) {
 	lrc := func(seed string) string { return songTestLRC(0, songTestWords(seed, 4)) }
 	keys := []string{"e0", "e1", "e2"}

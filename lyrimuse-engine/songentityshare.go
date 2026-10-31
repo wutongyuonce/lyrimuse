@@ -87,7 +87,7 @@ type songShareState struct {
 }
 
 // songShareGroupState:一个共享组上一次搜完的样子。Members 是写法键 → 那之后的歌词指纹(没词为空);RetryAfter 非零时
-// 到点再搜一次;HeldNoUpgrade:有写法因为关着「随匹配算法更新重新选择」留着,这个开关打开之后再搜一次。
+// 到点再搜一次;HeldNoUpgrade:有写法因为关着「算法更新后重新选择」留着,这个开关打开之后再搜一次。
 type songShareGroupState struct {
 	At            int64             `json:"at"`
 	Scoring       string            `json:"scoring"`
@@ -1155,7 +1155,7 @@ func (b *songEntityBuild) sharePinnedGroup(ms []int, own []*songPlanLyrics, pins
 		if fp == to.fp || (cur == nil) != (fp == "") || (cur != nil && cur.fp != fp) {
 			continue
 		}
-		// 关着「随匹配算法更新重新选择」时已经有词的不换,只补没词的(18 章决策 59)。
+		// 关着「算法更新后重新选择」时已经有词的不换,只补没词的(18 章决策 59)。
 		if cur != nil && (!upgrade || songPlanKeep(cur, to, false) != "") {
 			kept++
 			continue

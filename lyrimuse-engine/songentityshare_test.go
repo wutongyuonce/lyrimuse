@@ -1274,7 +1274,7 @@ func TestShareManualPassStopsFlappingVersion(t *testing.T) {
 	}
 }
 
-// 关着「随匹配算法更新重新选择」时,跟着校准、跟上重新匹配都只补没词的,已经有词的不换。
+// 关着「算法更新后重新选择」时,跟着校准、跟上重新匹配都只补没词的,已经有词的不换。
 func TestShareFollowRespectsAutoUpgradeOff(t *testing.T) {
 	keys := []string{"A|Song|One", "A|Song|Two", "A|Song|Three"}
 	entries := map[string]enrichEntry{

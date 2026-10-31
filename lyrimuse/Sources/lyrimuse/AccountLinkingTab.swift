@@ -2622,7 +2622,7 @@ extension AccountDestination {
             // 数据来源"那些是后果和别处的用法,不是这张卡要回答的问题,别堆在标题下面。
             return L10n.t("将播放记录同步到 ListenBrainz")
         case .stateRelay:
-            return L10n.t("用于将当前播放状态推送到网页小组件和状态徽章")
+            return L10n.t("将当前播放状态推送到网页小组件和状态徽章")
         case .lastfm:
             // "读取"方向(同步到 ListenBrainz)没有独立开关:这个判定要求"Last.fm 桥接
             // 凭据 + ListenBrainz 都配好"(toggleGuarded 的 sameCardHint/crossCard 两层
@@ -2630,7 +2630,7 @@ extension AccountDestination {
             // 就是唯一的开关"是同一个思路(见 stateRelayFields 的 footer 注释)。
             return L10n.t("将播放记录同步到 Last.fm")
         case .bark:
-            return L10n.t("把听歌报告推到手机、群聊或你自己的服务")
+            return L10n.t("将听歌报告推送到手机、群聊或自建服务")
         case .discord:
             return L10n.t("向 Discord 好友展示正在收听的歌曲")
         }

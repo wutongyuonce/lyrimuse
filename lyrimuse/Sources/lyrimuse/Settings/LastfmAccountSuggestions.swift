@@ -135,7 +135,7 @@ struct LastfmSuggestionsPage: View {
     var body: some View {
         // 窗口副标题已经写着「Last.fm 账号建议」,页内不再画大标题(同「软件更新」页)。
         SettingsPage(title: L10n.t("Last.fm 账号建议"), showsHeader: false) {
-            SettingsCard {
+            SettingsCard(cornerRadius: 18) {
                 if suggestions.items.isEmpty {
                     Text(L10n.t("暂无待处理的建议"))
                         .font(.callout)
@@ -149,6 +149,8 @@ struct LastfmSuggestionsPage: View {
                     }
                 }
             }
+            // 同「软件更新」页的玻璃卡片:背后要有光才看得出玻璃。
+            .background { LastfmGlassGlow() }
         }
         // 语言切换时整页重建,同「软件更新」页。
         .id(L10n.current)
