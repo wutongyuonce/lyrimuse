@@ -103,7 +103,7 @@ struct DigestTemplateEditor: View {
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(L10n.t("推送内容")).font(.system(size: 15, weight: .bold))
-                Text(L10n.t("四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"))
+                Text(L10n.t("所有报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"))
                     .font(.system(size: 11.5))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

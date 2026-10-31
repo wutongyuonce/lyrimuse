@@ -137,4 +137,30 @@ func runSettingsAuditContracts() {
                 "引导页: 上一次查询没回来不再叠一次")
     expectEqual(sourceHas(app("Settings/DiagnosticsExporter.swift"), "} else if let current = try? OSLogStore(scope: .currentProcessIdentifier) {"), true,
                 "诊断导出: 系统日志库打不开时退到本次启动的记录")
+
+    // ---- 名字填进中文句子时的中英文间距 ----
+    typealias Spacing = MixedScriptSpacing
+    expectEqual(Spacing.format("自动化权限可提高%@播放进度的准确性", ["Apple Music"]), "自动化权限可提高 Apple Music 播放进度的准确性",
+                "中英文间距: 拉丁名两侧挨着汉字都补空格")
+    expectEqual(Spacing.format("自动化权限可提高%@播放进度的准确性", ["网易云音乐"]), "自动化权限可提高网易云音乐播放进度的准确性",
+                "中英文间距: 中文名不补")
+    expectEqual(Spacing.format("提高%@播放", ["QQ音乐"]), "提高 QQ音乐播放", "中英文间距: 只看名字首尾那个字符")
+    expectEqual(Spacing.format("%1$@拒收：%2$@", ["Telegram", "HTTP 400"]), "Telegram 拒收：HTTP 400",
+                "中英文间距: 句首的名字只补后面;挨着标点的一侧不补")
+    expectEqual(Spacing.format("已识别为%@，平台已自动切换", ["Bark"]), "已识别为 Bark，平台已自动切换", "中英文间距: 后面是全角标点不补")
+    expectEqual(Spacing.format("以提高%@自动连播，并显示%@的按钮", ["Apple Music", "Spotify"]), "以提高 Apple Music 自动连播，并显示 Spotify 的按钮",
+                "中英文间距: 多个参数各自处理")
+    expectEqual(Spacing.format("%2$@ · %1$@", ["A", "B"]), "B · A", "中英文间距: 按位置取参数")
+    expectEqual(Spacing.format("Accessibility keeps %@’s position accurate", ["Apple Music"]), "Accessibility keeps Apple Music’s position accurate",
+                "中英文间距: 英文句子原样")
+    expectEqual(Spacing.format("让%@直接使用", [""]), "让直接使用", "中英文间距: 空名字不留空格")
+    let onboarding = app("OnboardingView.swift")
+    expectEqual(onboarding.components(separatedBy: "L10n.formatNames(L10n.t(\"").count - 1 >= 15
+                && !onboarding.contains("String(format: L10n.t(\"辅助功能权限可") && !onboarding.contains("String(format: L10n.t(\"请开启此权限，以"),
+                true, "中英文间距: 引导页权限说明里贴着汉字的播放器名都走 formatNames")
+    let channels = app("Settings/NotificationChannelsSection.swift")
+    expectEqual(sourceHas(channels, "return L10n.formatNames(L10n.t(\"%1$@拒收：%2$@\"), name, head)")
+                && sourceHas(channels, "L10n.formatNames(L10n.t(\"这个地址看起来是%@的。要换平台，请删除这个渠道后重新添加\"), mismatch.displayName)")
+                && sourceHas(channels, "L10n.formatNames(L10n.t(\"已识别为%@，平台已自动切换\"), detected.displayName)"), true,
+                "中英文间距: 推送渠道里贴着汉字的平台名走 formatNames")
 }

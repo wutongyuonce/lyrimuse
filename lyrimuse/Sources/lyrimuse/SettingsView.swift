@@ -3720,7 +3720,7 @@ private struct AppearanceSettingsTab: View {
                     SettingsRow(
                         icon: "rectangle.split.1x2",
                         title: L10n.t("歌词布局"),
-                        help: L10n.t("单行：仅显示当前句。\n双行：显示当前句和下一句。\n多行：与完整尺寸相同，整页滚动显示歌词")
+                        help: L10n.t("单行：仅显示当前句\n双行：显示当前句和下一句\n多行：与完整尺寸相同，整页滚动显示歌词")
                     ) {
                         SettingsPillSegmentedControl(
                             selection: miniLyricsLayout,
@@ -3735,7 +3735,7 @@ private struct AppearanceSettingsTab: View {
                         SettingsRow(
                             icon: "arrow.left.and.right.text.vertical",
                             title: L10n.t("长句处理"),
-                            help: L10n.t("换行（默认）：一行显示不下时折行显示。\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动")
+                            help: L10n.t("换行（默认）：一行显示不下时折行显示\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动")
                         ) {
                             SettingsPillSegmentedControl(
                                 selection: lineOverflow,
@@ -6287,13 +6287,13 @@ private struct PlayerSettingsTab: View {
         case "com.google.Chrome":
             // **别把"Chrome 自己的帮助文案写错了"那段考据加进用户文案里** —— 那是给维护者
             // 看的,写在 `browserManualEnableHint` 的头注里就够了;用户要的只是"点哪"。
-            return L10n.t("在 Chrome 菜单栏中依次选择「显示 → 开发者 → 允许 Apple 事件中的 JavaScript」")
+            return L10n.t("在 Chrome 菜单栏中依次选择「显示 › 开发者 › 允许 Apple 事件中的 JavaScript」")
         case "com.microsoft.edgemac":
-            return L10n.t("在 Edge 菜单栏中依次选择「查看 → 开发人员 → 允许 Apple 事件中的 JavaScript」")
+            return L10n.t("在 Edge 菜单栏中依次选择「查看 › 开发人员 › 允许 Apple 事件中的 JavaScript」")
         case "com.brave.Browser":
-            return L10n.t("在 Brave 菜单栏中依次选择「显示 → 开发者 → 允许 Apple 事件中的 JavaScript」")
+            return L10n.t("在 Brave 菜单栏中依次选择「显示 › 开发者 › 允许 Apple 事件中的 JavaScript」")
         case "company.thebrowser.Browser":
-            return L10n.t("在 Arc 菜单栏中依次选择「View → Developer → Allow JavaScript from Apple Events」。Arc 的这些菜单项在中文系统下也显示为英文")
+            return L10n.t("在 Arc 菜单栏中依次选择「View › Developer › Allow JavaScript from Apple Events」。Arc 的这些菜单项在中文系统下也显示为英文")
         case "com.apple.Safari":
             return L10n.t("Safari 的此选项位于设置中：先在「Safari 浏览器 › 设置 › 高级」中勾选「显示网页开发者功能」，设置中将出现「开发者」面板，再在其中勾选「允许Apple事件中的JavaScript」")
         default:

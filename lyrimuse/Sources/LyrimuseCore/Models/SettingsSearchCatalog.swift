@@ -149,7 +149,7 @@ public enum SettingsSearchCatalog {
         let overlay = ["歌词显示", "悬浮歌词"]
         let touchBar = ["歌词显示", "触控栏"]
         let window = ["歌词显示", "歌词窗口"]
-        let lastfm = ["Last.fm", "设置"]
+        let lastfm = ["Last.fm", "规则"]
         var gates: [RowGate] = [
             RowGate(menuBar, "屏幕", "menuBar.centerSelected", "歌词位置"),
             RowGate(menuBar, "宽度模式", "menuBar.centerIdle", "歌词位置"),
@@ -164,7 +164,7 @@ public enum SettingsSearchCatalog {
             gates.append(RowGate(notch, title, "notch.showLyrics", "收起时显示歌词"))
         }
         // Last.fm「Scrobble 规则」:上面的「Scrobble 到 Last.fm」关着时整组换成一句提示,落到组标题上。
-        for title in ["匹配模式", "歌名", "歌手", "Scrobble 时机", "短于 30 秒的曲目", "Scrobble 的播放器"] {
+        for title in ["匹配模式", "歌名", "歌手", "Scrobble 时机", "Scrobble 短于 30 秒的曲目", "Scrobble 的播放器"] {
             gates.append(RowGate(lastfm, title, "lastfm.mirror", "Scrobble 规则"))
         }
         gates += [
@@ -530,10 +530,10 @@ public enum SettingsSearchCatalog {
         touchBar("暗部亮度", sub: "未唱部分与副行的亮度", kw: ["亮度", "透明度", "未唱", "副行", "太暗", "brightness"], group: "样式"),
         touchBar("显示封面", kw: ["封面缩略图", "专辑图", "位置", "左边", "右边"], group: "布局"),
         touchBar("封面位置", kw: ["位置", "左边", "右边", "封面"], group: "布局"),
-        touchBar("显示播放控制", sub: "上一首、播放/暂停、下一首和设置键",
+        touchBar("显示播放控制", sub: "上一首、播放/暂停、下一首和设置按钮",
                  kw: ["播放", "暂停", "上一首", "下一首", "三键", "设置", "位置", "左边", "右边"], group: "布局"),
         touchBar("播放控制位置", kw: ["位置", "左边", "右边", "三键", "播放控制"], group: "布局"),
-        touchBar("显示「更多」键", sub: "点按后切换到播放进度、歌词校准、喜欢、随机/循环和音量；当前播放器不支持的项不显示",
+        touchBar("显示「更多」按钮", sub: "点按后切换到播放进度、歌词校准、喜欢、随机/循环和音量；当前播放器不支持的项不显示",
                  kw: ["更多", "⋯", "进度", "跳转", "校准", "偏移", "喜欢", "随机", "循环", "音量"], group: "布局"),
         touchBar("展开时隐藏功能栏", sub: "歌词占满整条触控栏；需要调节亮度、音量等时，请先点按左端的 ✕ 收起歌词",
                  kw: ["功能栏", "Control Strip", "全宽", "占满", "亮度", "音量"], group: "布局"),
@@ -666,16 +666,16 @@ public enum SettingsSearchCatalog {
 
         // ---- 账号 ----
         account("listenBrainz", path: ["ListenBrainz"], "账号信息", kw: ["ListenBrainz", "token", "令牌", "用户名", "连接"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "Scrobble 规则", kw: ["Last.fm", "scrobble", "记录", "规则"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "匹配模式", kw: ["Last.fm", "scrobble", "合唱", "歌手", "歌名", "曲名", "繁简", "匹配"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "Scrobble 规则", kw: ["Last.fm", "scrobble", "记录", "规则"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "匹配模式", kw: ["Last.fm", "scrobble", "合唱", "歌手", "歌名", "曲名", "繁简", "匹配"]),
         // 「匹配模式」选了「自定义」才出现的两个维度。照样登记:用户搜「繁简」「合唱」时
         // 该找得到它们,找到了再去把档位切到自定义 —— 搜不到才是坏体验。标题本身只剩字段名,
         // 所以关键词要把「改写 / 合唱 / 第一位」这些用户嘴里的说法都收进来。
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "歌名", kw: ["Last.fm", "scrobble", "歌名", "曲名", "繁简", "改写", "匹配", "编目", "自定义"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "歌手", kw: ["Last.fm", "scrobble", "歌手", "合唱", "第一位", "改写", "匹配", "编目", "自定义"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "Scrobble 时机", kw: ["Last.fm", "scrobble", "50%", "曲终"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "短于 30 秒的曲目", kw: ["Last.fm", "scrobble", "短曲"]),
-        account("lastfm", path: ["Last.fm", "设置"], sectionValue: "settings", "Scrobble 的播放器", kw: ["Last.fm", "scrobble", "播放器", "排除", "不上送", "浏览器"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "歌名", kw: ["Last.fm", "scrobble", "歌名", "曲名", "繁简", "改写", "匹配", "编目", "自定义"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "歌手", kw: ["Last.fm", "scrobble", "歌手", "合唱", "第一位", "改写", "匹配", "编目", "自定义"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "Scrobble 时机", kw: ["Last.fm", "scrobble", "50%", "曲终"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "Scrobble 短于 30 秒的曲目", kw: ["Last.fm", "scrobble", "短曲"]),
+        account("lastfm", path: ["Last.fm", "规则"], sectionValue: "settings", "Scrobble 的播放器", kw: ["Last.fm", "scrobble", "播放器", "排除", "不上送", "浏览器"]),
         account("stateRelay", path: ["网页推送"], "连接信息", kw: ["中继", "网页", "relay", "worker", "推送"]),
         account("bark", path: ["推送提醒"], "推送渠道", kw: ["推送", "渠道", "通知", "添加渠道", "发送测试", "webhook", "Bark", "Telegram", "钉钉", "飞书",
                                                         "企业微信", "Discord", "Slack", "Server酱", "ntfy", "通用 Webhook",

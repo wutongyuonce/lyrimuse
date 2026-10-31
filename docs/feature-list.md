@@ -52,7 +52,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [YouTube Music and Spotify Web in your browser](#feature-web-players) | Settings › Player › Web |
 | [Skip YouTube Music ads automatically](#feature-skip-youtube-ads) | Settings › Player › Web › Skip YouTube Music Ads Automatically |
 | [Start and quit together with your player](#feature-player-linkage) | Settings › Player › Launch & Quit › Open Players at Launch |
-| [Last.fm scrobbling and listening profile](#feature-lastfm) | Settings › Last.fm › Settings › Scrobble Rules |
+| [Last.fm scrobbling and listening profile](#feature-lastfm) | Settings › Last.fm › Rules › Scrobble Rules |
 | [Scrobble to ListenBrainz too](#feature-listenbrainz) | Settings › Labs › ListenBrainz › Account Info |
 | [Show what you're playing on Discord](#feature-discord) | Settings › Discord › Show on Discord |
 | [A shareable now-playing web page](#feature-now-playing-page) | Settings › Labs › Web Push › Connection Info |
@@ -216,7 +216,7 @@ Japanese romaji, Korean romanization, Mandarin pinyin and Cantonese Jyutping, wo
 
 - On by default
 - Settings: Lyrics › Language › Romanization Languages
-- Settings: Lyrics › Language › Japanese Reading
+- Settings: Lyrics › Language › Japanese Romanization Style
 - Settings: Lyrics Display › Floating Lyrics › Content › Romanization
 - Settings: Keyboard Shortcuts › Show/Hide Romanization
 
@@ -290,7 +290,7 @@ The current line right in the menu bar, scrolling when it is too long instead of
 - Off by default
 - Settings: Lyrics Display › Menu Bar › Menu Bar Lyrics
 - Settings: Lyrics Display › Menu Bar › Layout › Lyrics Position
-- Settings: Lyrics Display › Menu Bar › Content › What's Shown
+- Settings: Lyrics Display › Menu Bar › Content › What’s Shown
 - Settings: Lyrics Display › Menu Bar › Content › Second Line
 - Settings: Keyboard Shortcuts › Show/Hide Menu Bar Lyrics
 
@@ -437,7 +437,7 @@ Lock floating lyrics in place, or require a long press before dragging so they n
 Pointing at floating lyrics brings up a row of quick buttons. Menu bar lyrics can show playback controls on hover too.
 
 - On by default
-- Settings: Lyrics Display › Floating Lyrics › Behavior › Controls on Hover
+- Settings: Lyrics Display › Floating Lyrics › Behavior › Show Controls on Hover
 - Settings: Lyrics Display › Menu Bar › Behavior › Show Controls on Hover
 
 <a id="feature-hide-in-screenshots"></a>
@@ -652,8 +652,8 @@ Per player: open the player when Lyrimuse opens, open Lyrimuse when the player o
 
 - Off by default
 - Settings: Player › Launch & Quit › Open Players at Launch
-- Settings: Player › Launch & Quit › Launch With Player
-- Settings: Player › Launch & Quit › Quit With Player
+- Settings: Player › Launch & Quit › Launch with Player
+- Settings: Player › Launch & Quit › Quit with Player
 
 <a id="section-listening"></a>
 
@@ -666,7 +666,7 @@ Per player: open the player when Lyrimuse opens, open Lyrimuse when the player o
 Connect Last.fm in one click, no token to copy. See today's, this week's and all-time listening, artist, album and track charts with movement, and Footprints: a year heatmap where clicking a day lists its most played songs, listening hours, where your artists come from, and On This Day. Love any recent track with a click.
 
 - Off by default
-- Settings: Last.fm › Settings › Scrobble Rules
+- Settings: Last.fm › Rules › Scrobble Rules
 
 <a id="feature-scrobble-rules"></a>
 
@@ -674,10 +674,10 @@ Connect Last.fm in one click, no token to copy. See today's, this week's and all
 
 Count a play at 50%, 75%, 90% or only at the end; decide on tracks under 30 seconds; by default featured artists, Chinese script variants and suffixes like “- Single” are matched to Last.fm's catalogue entry, or send everything as is; leave any player out of Last.fm entirely.
 
-- Settings: Last.fm › Settings › Scrobble Point
-- Settings: Last.fm › Settings › Tracks Under 30 Seconds
-- Settings: Last.fm › Settings › Matching Mode
-- Settings: Last.fm › Settings › Players to Scrobble
+- Settings: Last.fm › Rules › Scrobble At
+- Settings: Last.fm › Rules › Scrobble Tracks Under 30 Seconds
+- Settings: Last.fm › Rules › Matching Mode
+- Settings: Last.fm › Rules › Players to Scrobble
 
 <a id="feature-local-log"></a>
 
@@ -705,7 +705,7 @@ Your profile and friends list show the player, title, artist, artwork and a prog
 - Settings: Discord › Players Shown
 - Settings: Discord › When Paused
 - Settings: Discord › Hide Temporarily
-- Settings: Discord › What's Shown
+- Settings: Discord › What’s Shown
 - Settings: Discord › Buttons
 - Settings: Discord › Hide Song Details
 
@@ -727,7 +727,7 @@ Pushed to the channels you set up, as many as you like: Bark, ntfy, ServerChan, 
 - Off by default
 - Settings: Push Alerts › Push Channels
 - Settings: Push Alerts › Push Time
-- Settings: Push Alerts › Listening Digests
+- Settings: Push Alerts › Listening Reports
 - Settings: Push Alerts › Data Source
 - Settings: Push Alerts › Items per List
 - Settings: Push Alerts › Daily Listening Report
@@ -794,7 +794,7 @@ Twelve icons in three sizes, moving with the music while it plays, or the album 
 
 - On by default
 - Settings: General › Menu Bar & Dock › Menu Bar Icon
-- Settings: General › Menu Bar & Dock › Use Album Art as Icon
+- Settings: General › Menu Bar & Dock › Use Artwork as Icon
 - Settings: General › Menu Bar & Dock › Icon Size
 - Settings: General › Menu Bar & Dock › Animate Icon
 
@@ -886,7 +886,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Translation Languages**: System languages used for on-device translation
 - **Chinese Script**
 - **Romanization Languages**
-- **Japanese Reading**: Romaji, or hiragana for kanji only
+- **Japanese Romanization Style**: Romaji, or hiragana for kanji only
 
 ### Lyrics › Timing & Breaks
 
@@ -927,8 +927,8 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **Launch & Quit**: Only the players you’ve selected are listed. With Auto-detect on, players installed on this Mac are listed too
 - **Open Players at Launch**
-- **Launch With Player**
-- **Quit With Player**
+- **Launch with Player**
+- **Quit with Player**
 
 ### Lyrics Display › Floating Lyrics
 
@@ -943,11 +943,11 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **OBS Output**: Overlay the lyrics on your stream as a browser source. Set its width and height to your OBS canvas size
 - **Browser Source URL**
-- **Title Card**: Shows the title, artist and cover in the top-left corner
+- **Title Card**: Shows the title, artist and artwork in the top-left corner
 - **Allow Local Network Access**: Devices on the same network can connect with a link that includes an access key
 - **Access Link**
 - **Fallback Link (IP Address)**
-- **Reset Access Key**: Links you've already shared will stop working
+- **Reset Access Key**: Links you’ve already shared will stop working
 - **Port**: After changing it, update the URL in OBS
 
 ### Lyrics Display › Floating Lyrics › Theme
@@ -966,7 +966,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Karaoke Effect**
 - **Text Color**
 - **Text Outline**
-- **Stroke Color**
+- **Outline Color**
 - **Unsung Color**
 - **Background Color**
 - **Frosted Glass Background**
@@ -992,7 +992,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Lock Position**
 - **Long-Press to Drag**
 - **Fade on Hover**
-- **Controls on Hover**
+- **Show Controls on Hover**
 - **Hide in Screenshots**
 - **Hide When Paused**
 - **Hide for Instrumentals & No Lyrics**
@@ -1070,7 +1070,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Menu Bar › Content
 
-- **What's Shown**
+- **What’s Shown**
 - **Second Line**
 - **Icon Beside Lyrics**: Shows the menu bar icon at the far left or right of the lyrics area, filling from the bottom up to show playback progress: the filled part uses Sung Color and the rest Unsung Color. Appears only while lyrics are shown
 
@@ -1078,13 +1078,13 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 - **Lyrics Position**: Menu Bar Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch
 - **Display**
-- **Width Mode**: Fixed: every song uses the set width. Adaptive: each song gets its own width from its lyrics, up to the set width
+- **Width Mode**: Fixed: every song uses the set width Adaptive: each song gets its own width from its lyrics, up to the set width
 - **Alignment**
 
 ### Lyrics Display › Menu Bar › Color
 
 - **Karaoke Effect**
-- **Rainbow**: Lyrics flow left to right in rainbow colours, darkened on a light menu bar; system colours return while the menu is open
+- **Rainbow**: Lyrics flow left to right in rainbow colors, darkened on a light menu bar; system colors return while the menu is open
 - **Text Color**
 - **Sung Color**
 
@@ -1096,7 +1096,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Lyrics Display › Menu Bar › Behavior
 
-- **Show Controls on Hover**: Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn't take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel
+- **Show Controls on Hover**: Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn’t take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel
 - **Show Title When No Lyrics**: While a song has no lyrics or is still being searched, keep the lyrics slot with the song title instead of collapsing to the icon; the line is swapped in as soon as lyrics arrive. Still collapses when paused, and never shows during ads
 
 ### Lyrics Display › Touch Bar
@@ -1113,7 +1113,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### Lyrics Display › Touch Bar › Style
 
 - **Karaoke Effect**
-- **Lyrics Color**: White, cover art color, a custom color or a rainbow
+- **Lyrics Color**: White, artwork color, a custom color or a rainbow
 - **Dimmed Text Brightness**: Brightness of unsung words and the second line
 
 ### Lyrics Display › Touch Bar › Layout
@@ -1122,13 +1122,13 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Artwork Position**
 - **Show Playback Controls**: Previous, Play/Pause and Next, plus a settings button
 - **Controls Position**
-- **Show More Button**: Tap it to switch to playback position, lyrics timing, Favorite, Shuffle/Repeat and Volume. Items the current player doesn't support are hidden
+- **Show More Button**: Tap it to switch to playback position, lyrics calibration, Favorite, Shuffle/Repeat and Volume. Items the current player doesn’t support are hidden
 - **Hide Control Strip While Expanded**: Lyrics fill the whole Touch Bar. To reach brightness, volume and other system buttons, tap ✕ on the left to collapse the lyrics first
 - **System Control Strip**: Add, remove or reorder the brightness, volume and other system buttons on the right of the Touch Bar in System Settings › Keyboard › Touch Bar Settings…
 
 ### Lyrics Display › Touch Bar › Behavior
 
-- **Expand When Playback Starts**: Shows the lyrics when playback resumes from pause. Switching songs during playback doesn't expand them, and lyrics you collapsed stay collapsed
+- **Expand When Playback Starts**: Shows the lyrics when playback resumes from pause. Switching songs during playback doesn’t expand them, and lyrics you collapsed stay collapsed
 - **Collapse When Paused**: Collapses to the Control Strip button after 10 seconds paused, and expands again when playback resumes
 - **Collapse for Instrumentals & No Lyrics**: Collapses only after confirming there are no lyrics, and expands again once lyrics are found. Stays shown while searching
 
@@ -1145,22 +1145,22 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Allow Remote Control**: Control playback and jump to lyrics from other devices
 - **Access Link**
 - **Fallback Link (IP Address)**
-- **Reset Access Key**: Links you've already shared will stop working
+- **Reset Access Key**: Links you’ve already shared will stop working
 - **Port**: After changing it, scan the QR code again to reconnect
 
 ### Lyrics Display › Lyrics Window › Background
 
-- **Background**: The lyrics window's background: follow artwork, solid, gradient, or frosted glass
+- **Background**: The lyrics window’s background: follow artwork, solid, gradient, or frosted glass
 - **Direction**
-- **Spotify Canvas** (full size only): Uses the song's looping Spotify video as the background; only for songs you've played in Spotify
+- **Spotify Canvas** (full size only): Uses the song’s looping Spotify video as the background; only for songs you’ve played in Spotify
 - **Glass Density**: Frosted glass material density (five levels)
 - **Bottom Color**
 
 ### Lyrics Display › Lyrics Window › Text
 
-- **Font Size** (mini size only): Ceiling for the mini size's lyrics font size
+- **Font Size** (mini size only): Ceiling for the mini size’s lyrics font size
 - **Karaoke Effect**
-- **Text Color**: The lyrics window's text color. Auto switches between light and dark based on the background's brightness
+- **Text Color**: The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness
 - **Custom Color**
 - **Font**: Lyrics font for the lyrics window (main text, translation, romanization)
 - **Weight**
@@ -1170,7 +1170,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### Lyrics Display › Lyrics Window › Layout
 
 - **Long Lines** (mini size only): Whether long lines wrap or scroll in the mini size
-- **Lyrics Layout** (mini size only): One Line: only the current line. Two Lines: the current line and the next one. Multi-Line: a scrolling page of lyrics, like the full size
+- **Lyrics Layout** (mini size only): One Line: only the current line Two Lines: the current line and the next one Multi-Line: a scrolling page of lyrics, like the full size
 - **Alignment** (full size only): Lyrics alignment in the full size; Automatic follows the duet parts
 
 ### Lyrics Display › Lyrics Window › Behavior
@@ -1191,15 +1191,15 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Title** (mini size only): Show the title, artist, and album at the top of the mini size
 - **Artist** (mini size only)
 - **Album** (mini size only)
-- **Artwork** (mini size only): The small artwork thumbnail beside the mini size's top info
+- **Artwork** (mini size only): The small artwork thumbnail beside the mini size’s top info
 - **Time** (mini size only): Shows elapsed time and track length at the top of the mini size
-- **Width** (mini size only): How much of the window's width the mini size's header takes up
-- **Height** (mini size only): How much of the window's height the mini size's header takes up; the text and artwork scale with it
+- **Width** (mini size only): How much of the window’s width the mini size’s header takes up
+- **Height** (mini size only): How much of the window’s height the mini size’s header takes up; the text and artwork scale with it
 
 ### Lyrics Display › Lyrics Window › Artwork
 
 - **Animated Artwork** (full size only): Available on some albums only; pauses in Low Power Mode or with Reduce Motion on
-- **Animated Artwork Cache** (full size only): Disk space used by downloaded animated artwork; anything cleared downloads again the next time it's shown
+- **Animated Artwork Cache** (full size only): Disk space used by downloaded animated artwork; anything cleared downloads again the next time it’s shown
 
 ### Keyboard Shortcuts
 
@@ -1233,7 +1233,7 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 ### General › Menu Bar & Dock
 
 - **Menu Bar Icon**
-- **Use Album Art as Icon**
+- **Use Artwork as Icon**
 - **Icon Size**
 - **Animate Icon**
 - **Show in Dock**
@@ -1288,31 +1288,31 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 - **Export Diagnostics**: Logs, crash reports and app state in one file, with account credentials removed. Track names and local paths stay in, so review it before posting publicly
 - **Activity Log**: The lyrics engine’s raw log, for your own troubleshooting
 - **Data Folder**: Plain text. Account credentials, appearance and shortcuts aren’t included; to migrate everything, use Backup & Migration
-- **Cache**: Covers and lookups that can be fetched again
+- **Cache**: Artwork and lookups that can be fetched again
 
 ### Labs › ListenBrainz
 
 - **Account Info**
 
-### Last.fm › Settings
+### Last.fm › Rules
 
 - **Scrobble Rules**
 - **Matching Mode**: The artist and title sent to Last.fm Smart: uses the most-listened spelling on Last.fm, or sends it as-is when there’s no match. Albums drop “ - Single” / “ - EP” Custom: set title and artist separately Raw: sends exactly what the player reports
 - **Title**
 - **Artist**
-- **Scrobble Point**
-- **Tracks Under 30 Seconds**: On: also scrobbled once half played Off: not scrobbled (Last.fm’s rule)
+- **Scrobble At**
+- **Scrobble Tracks Under 30 Seconds**: When on, these tracks are scrobbled once half played. Last.fm’s official rules skip them
 - **Players to Scrobble**
 
 ### Labs › Web Push
 
-- **Connection Info**: Deploy the web app first and get an access token. Setup steps are in the project README: https://github.com/Yudaotor/lyrimuse
+- **Connection Info**
 
 ### Push Alerts
 
 - **Push Channels**: Listening reports go to every enabled channel. With several channels, pick channels for each report under Listening Reports below. Click a row to edit or send a test; right-click to delete
 - **Push Time**
-- **Listening Digests**
+- **Listening Reports**
 - **Data Source**
 - **Items per List**: How many top artists, albums, and tracks to list
 - **Weekly Listening Digest**
@@ -1323,15 +1323,15 @@ Every setting in the Settings window, by where it lives: 297 in all. Type a name
 
 ### Discord
 
-- **Show on Discord**: When on, the song you're playing shows on your Discord profile and in your friends list. If friends can't see it, go to User Settings › Activity Privacy in Discord and turn on activity sharing
-- **What's Shown**
+- **Show on Discord**: When on, the song you’re playing shows on your Discord profile and in your friends list. If friends can’t see it, go to User Settings › Activity Privacy in Discord and turn on activity sharing
+- **What’s Shown**
 - **After “Listening to”**: The “××” in “Listening to ××” on your profile. Discord on iOS and the web ignores this and keeps showing the player With Title or Artist here, “Shown Under Your Name” can’t show the player
 - **Shown Under Your Name**: Discord can only show the first line, the second line, or what follows “Listening to” under your name. If neither the title nor the artist is in one of those, that option is unavailable
-- **Cover Badge**
+- **Artwork Badge**
 - **When Paused**
 - **Song Info**
 - **Status Text**
-- **Cover and Progress**
+- **Artwork and Progress**
 - **Label Artist and Album**: Adds “by” before the artist and “on” before the album. Not added when the title and artist share a line
 - **Buttons**
 - **Custom Button**

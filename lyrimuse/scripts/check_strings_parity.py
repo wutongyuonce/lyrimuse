@@ -12,6 +12,7 @@
    key 集合照样"完全一致"),得靠这一道。
 
 另查 catalog 里各语言值的格式参数跟键一致(规则在 generate-strings.py 的 format_arg_problems,这里导入它)。
+英文译文里单词内部的撇号必须是弯撇号 ’。
 
 反方向(表里有、源码没直接引用)刻意不查:那些 key 大多是经变量、String(format:) 或别处的 API 用掉的,还有改过
 文案后留下的旧 key —— 报出来几十条噪声,会把真正致命的第 2 道淹掉。多一条死 key 只是浪费几十字节,少一条翻译是
@@ -133,6 +134,22 @@ def main():
             print(f"    {p}")
         if len(arg_problems) > 20:
             print(f"    …还有 {len(arg_problems) - 20} 处")
+
+    # 英文撇号一律弯撇号 ’:单词内部(含 %@'s)出现直撇号就报。只查 en 的值,键是简体、不受影响。
+    straight = re.compile(r"[\w@]'\w")
+    apostrophes = []
+    for k, v in (catalog.get("strings") or {}).items():
+        loc = ((v or {}).get("localizations") or {}).get("en") or {}
+        nodes = list(((loc.get("variations") or {}).get("plural") or {}).values()) or [loc]
+        for node in nodes:
+            value = (node.get("stringUnit") or {}).get("value") or ""
+            if straight.search(value):
+                apostrophes.append((k, value))
+    if apostrophes:
+        ok = False
+        print(f"\n✗ {len(apostrophes)} 处英文译文用了直撇号 ',统一写弯撇号 ’:")
+        for k, value in apostrophes[:20]:
+            print(f"    {k[:40]} → {value[:70]}")
 
     # zh-hant 是跟 zh-hans 同一次生成的,key 集必须逐个相同;不同 = 有人手改了生成物。
     hant_mismatch = sorted(tables["zh-hant"] ^ tables["zh-hans"])

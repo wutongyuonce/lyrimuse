@@ -790,19 +790,19 @@
         }
       }
     },
-    "单行：仅显示当前句。\n双行：显示当前句和下一句。\n多行：与完整尺寸相同，整页滚动显示歌词" : {
+    "单行：仅显示当前句\n双行：显示当前句和下一句\n多行：与完整尺寸相同，整页滚动显示歌词" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "One Line: only the current line.\nTwo Lines: the current line and the next one.\nMulti-Line: a scrolling page of lyrics, like the full size"
+            "value" : "One Line: only the current line\nTwo Lines: the current line and the next one\nMulti-Line: a scrolling page of lyrics, like the full size"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "單行：僅顯示目前句。\n雙行：顯示目前句和下一句。\n多行：與完整尺寸相同，整頁捲動顯示歌詞"
+            "value" : "單行：僅顯示目前句\n雙行：顯示目前句和下一句\n多行：與完整尺寸相同，整頁捲動顯示歌詞"
           }
         }
       }
@@ -830,7 +830,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies to the lyrics, header, and controls. Auto switches between light and dark based on the background's brightness"
+            "value" : "Applies to the lyrics, header, and controls. Automatic switches between light and dark based on the background’s brightness"
           }
         },
         "zh-Hant" : {
@@ -864,7 +864,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics window's background: follow artwork, solid, gradient, or frosted glass"
+            "value" : "The lyrics window’s background: follow artwork, solid, gradient, or frosted glass"
           }
         },
         "zh-Hant" : {
@@ -881,7 +881,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics window's text color. Auto switches between light and dark based on the background's brightness"
+            "value" : "The lyrics window’s text color. Automatic switches between light and dark based on the background’s brightness"
           }
         },
         "zh-Hant" : {
@@ -915,7 +915,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resets only the Mini Size settings; the Full Size, Web Lyrics and the window's dimensions stay as they are"
+            "value" : "Resets only the Mini Size settings; the Full Size, Web Lyrics and the window’s dimensions stay as they are"
           }
         },
         "zh-Hant" : {
@@ -932,7 +932,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resets only the Full Size settings; the Mini Size, Web Lyrics and the window's dimensions stay as they are"
+            "value" : "Resets only the Full Size settings; the Mini Size, Web Lyrics and the window’s dimensions stay as they are"
           }
         },
         "zh-Hant" : {
@@ -943,19 +943,19 @@
         }
       }
     },
-    "换行（默认）：一行显示不下时折行显示。\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动" : {
+    "换行（默认）：一行显示不下时折行显示\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wrap (default): long lines fold onto the next line.\nScroll: every line stays one line tall and the overflow scrolls sideways — following the singing when the line has word-level timings"
+            "value" : "Wrap (default): long lines fold onto the next line\nScroll: every line stays one line tall and the overflow scrolls sideways — following the singing when the line has word-level timings"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "換行（預設）：一行顯示不下時折行顯示。\n捲動：每句只佔一行，超出部分橫向捲動；有逐字時間軸時隨演唱進度捲動"
+            "value" : "換行（預設）：一行顯示不下時折行顯示\n捲動：每句只佔一行，超出部分橫向捲動；有逐字時間軸時隨演唱進度捲動"
           }
         }
       }
@@ -983,7 +983,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The small artwork thumbnail beside the mini size's top info"
+            "value" : "The small artwork thumbnail beside the mini size’s top info"
           }
         },
         "zh-Hant" : {
@@ -1000,7 +1000,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How much of the window's width the header takes up; text that doesn't fit ends with an ellipsis"
+            "value" : "How much of the window’s width the header takes up; text that doesn’t fit ends with an ellipsis"
           }
         },
         "zh-Hant" : {
@@ -1017,7 +1017,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How much of the window's width the mini size's header takes up"
+            "value" : "How much of the window’s width the mini size’s header takes up"
           }
         },
         "zh-Hant" : {
@@ -1051,7 +1051,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How much of the window's height the header takes up (counting all three lines), with the text and artwork scaled to match"
+            "value" : "How much of the window’s height the header takes up (counting all three lines), with the text and artwork scaled to match"
           }
         },
         "zh-Hant" : {
@@ -1068,7 +1068,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How much of the window's height the mini size's header takes up; the text and artwork scale with it"
+            "value" : "How much of the window’s height the mini size’s header takes up; the text and artwork scale with it"
           }
         },
         "zh-Hant" : {
@@ -1255,7 +1255,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Font weight of the main line; the secondary line and the expanded next-line preview are one step lighter"
+            "value" : "Font weight of the main line; the second line and the expanded next-line preview are one step lighter"
           }
         },
         "zh-Hant" : {
@@ -1272,7 +1272,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Main line only, %@–%@pt; the lyric row grows if the text no longer fits. The secondary line and the expanded next-line preview stay at %@pt and only follow the font and weight"
+            "value" : "Main line only, %@–%@pt; the lyric row grows if the text no longer fits. The second line and the expanded next-line preview stay at %@pt and only follow the font and weight"
           }
         },
         "zh-Hant" : {
@@ -1346,7 +1346,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applies only to lines that fit; lines that scroll horizontally aren't affected. Automatic follows the duet parts: each singer's lines sit on their side, choruses are centered, and lines without duet info stay left"
+            "value" : "Applies only to lines that fit; lines that scroll horizontally aren’t affected. Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left"
           }
         },
         "zh-Hans" : {
@@ -1853,7 +1853,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traditional/Simplified"
+            "value" : "Chinese Script"
           }
         },
         "zh-Hans" : {
@@ -2037,7 +2037,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some spellings couldn't be loaded"
+            "value" : "Some spellings couldn’t be loaded"
           }
         },
         "zh-Hans" : {
@@ -2129,7 +2129,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Older plays aren't loaded yet, so those rows aren't numbered"
+            "value" : "Older plays aren’t loaded yet, so those rows aren’t numbered"
           }
         },
         "zh-Hans" : {
@@ -3039,7 +3039,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Musixmatch's API host is unreachable over a direct connection on this network (no TCP/TLS response), and no working system proxy is available — turning on a proxy usually fixes it"
+            "value" : "Musixmatch’s API host is unreachable over a direct connection on this network (no TCP/TLS response), and no working system proxy is available — turning on a proxy usually fixes it"
           }
         },
         "zh-Hans" : {
@@ -3624,7 +3624,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "YouTube Music is not available in this network's region (a regional restriction, not a network fault)"
+            "value" : "YouTube Music is not available in this network’s region (a regional restriction, not a network fault)"
           }
         },
         "zh-Hans" : {
@@ -3801,7 +3801,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Automatic” picks the display with the notch; “All Displays” shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
+            "value" : "Automatic picks the display with the notch; All Displays shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
           }
         },
         "zh-Hans" : {
@@ -4432,7 +4432,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Both are live versions, but this candidate's album points to a different performance (such as another tour), so its timing won't line up with this recording"
+            "value" : "Both are live versions, but this candidate’s album points to a different performance (such as another tour), so its timing won’t line up with this recording"
           }
         },
         "zh-Hans" : {
@@ -4709,7 +4709,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Manually edited lyrics can't be recovered once deleted"
+            "value" : "Manually edited lyrics can’t be recovered once deleted"
           }
         },
         "zh-Hans" : {
@@ -5600,7 +5600,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉後，平時僅保留瀏海高度，不顯示歌詞；將指標移到上方展開時，播放控制、進度條和下一句預覽仍照常顯示"
+            "value" : "關閉後，平時僅保留瀏海高度，不顯示歌詞；將指標移到上方展開時，播放控制、進度列和下一句預覽仍照常顯示"
           }
         }
       }
@@ -5680,7 +5680,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Their exported lyrics files are deleted too, and this can't be undone; %@ of these were edited manually. These songs are matched again the next time they play, and the results may differ"
+            "value" : "Their exported lyrics files are deleted too, and this can’t be undone; %@ of these were edited manually. These songs are matched again the next time they play, and the results may differ"
           }
         },
         "zh-Hans" : {
@@ -5784,7 +5784,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The data isn't valid JSON, so nothing was saved"
+            "value" : "The data isn’t valid JSON, so nothing was saved"
           }
         },
         "zh-Hans" : {
@@ -5807,7 +5807,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't write config.json: %@"
+            "value" : "Couldn’t write config.json: %@"
           }
         },
         "zh-Hans" : {
@@ -5853,7 +5853,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't write the feature flags file: %@"
+            "value" : "Couldn’t write the feature flags file: %@"
           }
         },
         "zh-Hans" : {
@@ -5876,7 +5876,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't write the local records file: %@"
+            "value" : "Couldn’t write the local records file: %@"
           }
         },
         "zh-Hans" : {
@@ -6163,7 +6163,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't Remove"
+            "value" : "Couldn’t Remove"
           }
         },
         "zh-Hans" : {
@@ -6221,7 +6221,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Screenshots, recordings and screen sharing can't capture it, but you still see it"
+            "value" : "Screenshots, recordings and screen sharing can’t capture it, but you still see it"
           }
         },
         "zh-Hans" : {
@@ -6414,7 +6414,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't load"
+            "value" : "Couldn’t load"
           }
         },
         "zh-Hans" : {
@@ -6909,7 +6909,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "If something goes wrong, right-click the menu bar icon and choose Help › “Report an Issue…”"
+            "value" : "If something goes wrong, right-click the menu bar icon and choose Help › Report an Issue…"
           }
         },
         "zh-Hans" : {
@@ -7024,7 +7024,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't find the right lyrics? Report it on GitHub"
+            "value" : "Can’t find the right lyrics? Report it on GitHub"
           }
         },
         "zh-Hans" : {
@@ -7248,25 +7248,25 @@
         }
       }
     },
-    "短于 30 秒的曲目" : {
+    "Scrobble 短于 30 秒的曲目" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tracks Under 30 Seconds"
+            "value" : "Scrobble Tracks Under 30 Seconds"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "短于 30 秒的曲目"
+            "value" : "Scrobble 短于 30 秒的曲目"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "短於 30 秒的曲目"
+            "value" : "Scrobble 短於 30 秒的曲目"
           }
         }
       }
@@ -7369,7 +7369,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Where lines that fit sit in the slot. Lines that don't fit scroll"
+            "value" : "Where lines that fit sit in the slot. Lines that don’t fit scroll"
           }
         },
         "zh-Hans" : {
@@ -7863,34 +7863,34 @@
         }
       }
     },
-    "在 Arc 菜单栏中依次选择「View → Developer → Allow JavaScript from Apple Events」。Arc 的这些菜单项在中文系统下也显示为英文" : {
+    "在 Arc 菜单栏中依次选择「View › Developer › Allow JavaScript from Apple Events」。Arc 的这些菜单项在中文系统下也显示为英文" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In Arc’s menu bar: View → Developer → Allow JavaScript from Apple Events"
+            "value" : "In Arc’s menu bar: View › Developer › Allow JavaScript from Apple Events"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Arc 的選單列中依序選擇「View → Developer → Allow JavaScript from Apple Events」。Arc 的這些選單項目在中文系統下也顯示為英文"
+            "value" : "在 Arc 的選單列中依序選擇「View › Developer › Allow JavaScript from Apple Events」。Arc 的這些選單項目在中文系統下也顯示為英文"
           }
         }
       }
     },
-    "在 Chrome 菜单栏中依次选择「显示 → 开发者 → 允许 Apple 事件中的 JavaScript」" : {
+    "在 Chrome 菜单栏中依次选择「显示 › 开发者 › 允许 Apple 事件中的 JavaScript」" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In Chrome’s menu bar: View → Developer → Allow JavaScript from Apple Events"
+            "value" : "In Chrome’s menu bar: View › Developer › Allow JavaScript from Apple Events"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Chrome 的選單列中依序選擇「顯示方式 → 開發人員選項 → 允許 Apple 事件的 JavaScript」"
+            "value" : "在 Chrome 的選單列中依序選擇「顯示方式 › 開發人員選項 › 允許 Apple 事件的 JavaScript」"
           }
         }
       }
@@ -7918,18 +7918,18 @@
         }
       }
     },
-    "在 Edge 菜单栏中依次选择「查看 → 开发人员 → 允许 Apple 事件中的 JavaScript」" : {
+    "在 Edge 菜单栏中依次选择「查看 › 开发人员 › 允许 Apple 事件中的 JavaScript」" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In Edge’s menu bar: View → Developer → Allow JavaScript from Apple Events"
+            "value" : "In Edge’s menu bar: View › Developer › Allow JavaScript from Apple Events"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Edge 的選單列中依序選擇「檢視 → 開發人員 → 從 Apple Events 允許 JavaScript」"
+            "value" : "在 Edge 的選單列中依序選擇「檢視 › 開發人員 › 從 Apple Events 允許 JavaScript」"
           }
         }
       }
@@ -8486,7 +8486,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These colors aren't saved yet. Click to save them as a theme"
+            "value" : "These colors aren’t saved yet. Click to save them as a theme"
           }
         },
         "zh-Hans" : {
@@ -9411,7 +9411,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last.fm's authorization page is open in your browser. Click “Yes, allow access” there to finish, and you'll be sent back to Lyrimuse automatically. If your browser doesn't come back on its own, use the button below"
+            "value" : "Last.fm’s authorization page is open in your browser. Click “Yes, allow access” there to finish, and you’ll be sent back to Lyrimuse automatically. If your browser doesn’t come back on its own, use the button below"
           }
         },
         "zh-Hans" : {
@@ -9526,7 +9526,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Their exported lyrics files are deleted too, and this can't be undone. These songs are matched again the next time they play, and the results may differ"
+            "value" : "Their exported lyrics files are deleted too, and this can’t be undone. These songs are matched again the next time they play, and the results may differ"
           }
         },
         "zh-Hans" : {
@@ -9572,7 +9572,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enabled"
+            "value" : "On"
           }
         },
         "zh-Hans" : {
@@ -9642,7 +9642,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已收合"
+            "value" : "已收起"
           }
         }
       }
@@ -9768,7 +9768,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disconnected display"
+            "value" : "Disconnected Display"
           }
         },
         "zh-Hans" : {
@@ -10103,25 +10103,25 @@
         }
       }
     },
-    "已连接：%@" : {
+    "已连接 · %@" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connected: %@"
+            "value" : "Connected · %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已连接：%@"
+            "value" : "已连接 · %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已連線：%@"
+            "value" : "已連線 · %@"
           }
         }
       }
@@ -10252,7 +10252,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Re-matched: still “%1$@”, but both the text and the word timing changed; updated to this round's result (%2$@ pts)"
+            "value" : "Re-matched: still “%1$@”, but both the text and the word timing changed; updated to this round’s result (%2$@ pts)"
           }
         },
         "zh-Hans" : {
@@ -10275,7 +10275,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Re-matched: still “%1$@”, but the text changed; updated to this round's result (%2$@ pts)"
+            "value" : "Re-matched: still “%1$@”, but the text changed; updated to this round’s result (%2$@ pts)"
           }
         },
         "zh-Hans" : {
@@ -10298,7 +10298,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Re-matched: still “%1$@”, but the word timing changed; updated to this round's result (%2$@ pts)"
+            "value" : "Re-matched: still “%1$@”, but the word timing changed; updated to this round’s result (%2$@ pts)"
           }
         },
         "zh-Hans" : {
@@ -10581,7 +10581,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Free and open source. A ⭐ means a lot — thank you!"
+            "value" : "Free and open source. A ⭐ means a lot — thank you"
           }
         },
         "zh-Hans" : {
@@ -10846,7 +10846,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Total scrobbles"
+            "value" : "Total Scrobbles"
           }
         },
         "zh-Hans" : {
@@ -11076,7 +11076,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I've Authorized"
+            "value" : "I’ve Authorized"
           }
         },
         "zh-Hans" : {
@@ -11569,7 +11569,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The version (Live / Remix / Demo / Club Mix …) in the title, album, or lyrics header doesn't match the local track"
+            "value" : "The version (Live / Remix / Demo / Club Mix …) in the title, album, or lyrics header doesn’t match the local track"
           }
         },
         "zh-Hans" : {
@@ -11809,7 +11809,7 @@
         }
       }
     },
-    "令牌已失效" : {
+    "Token 已失效" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -11821,18 +11821,18 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "令牌已失效"
+            "value" : "Token 已失效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "權杖已失效"
+            "value" : "Token 已失效"
           }
         }
       }
     },
-    "令牌已失效，收听提交已暂停" : {
+    "Token 已失效，收听提交已暂停" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -11844,13 +11844,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "令牌已失效，收听提交已暂停"
+            "value" : "Token 已失效，收听提交已暂停"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "權杖已失效，收聽提交已暫停"
+            "value" : "Token 已失效，聆聽提交已暫停"
           }
         }
       }
@@ -12038,7 +12038,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stroke Color"
+            "value" : "Outline Color"
           }
         },
         "zh-Hans" : {
@@ -12130,7 +12130,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't search for lyrics: %@"
+            "value" : "Couldn’t search for lyrics: %@"
           }
         },
         "zh-Hans" : {
@@ -12347,7 +12347,7 @@
         }
       }
     },
-    "播放热力图" : {
+    "收听热力图" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -12359,13 +12359,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放热力图"
+            "value" : "收听热力图"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播放熱力圖"
+            "value" : "聆聽熱力圖"
           }
         }
       }
@@ -12956,7 +12956,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The duration doesn't match, but other sources end at the same time, so it is trusted"
+            "value" : "The duration doesn’t match, but other sources end at the same time, so it is trusted"
           }
         },
         "zh-Hans" : {
@@ -13635,7 +13635,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The last line's time differs from the track length by more than 25%; likely a different version"
+            "value" : "The last line’s time differs from the track length by more than 25%; likely a different version"
           }
         },
         "zh-Hans" : {
@@ -13658,7 +13658,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The last line's time differs from the track length by more than 25%; still usable, but ranked below every candidate whose length matches"
+            "value" : "The last line’s time differs from the track length by more than 25%; still usable, but ranked below every candidate whose length matches"
           }
         },
         "zh-Hans" : {
@@ -13681,7 +13681,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The closer the last line's time is to the track length, the higher the score — up to 300"
+            "value" : "The closer the last line’s time is to the track length, the higher the score — up to 300"
           }
         },
         "zh-Hans" : {
@@ -13981,7 +13981,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未演唱部分的文字顏色。預設跟隨系統：自動適配淺色 / 深色選單列，開啟選單時自動反白"
+            "value" : "未演唱部分的文字顏色。預設跟隨系統：自動配合淺色 / 深色選單列，開啟選單時自動反白"
           }
         }
       }
@@ -13992,7 +13992,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disabled"
+            "value" : "Off"
           }
         },
         "zh-Hans" : {
@@ -14061,7 +14061,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not Running"
+            "value" : "Not running"
           }
         },
         "zh-Hans" : {
@@ -14246,7 +14246,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only needed if the bot's security settings have “Signature Verification” enabled — messages still arrive without it"
+            "value" : "Only needed if the bot’s security settings have “Signature Verification” enabled — messages still arrive without it"
           }
         },
         "zh-Hans" : {
@@ -14269,7 +14269,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only needed if the bot's security settings have “Signature” enabled; leave it blank to treat it as unsigned"
+            "value" : "Only needed if the bot’s security settings have “Signature” enabled; leave it blank to treat it as unsigned"
           }
         },
         "zh-Hans" : {
@@ -15002,7 +15002,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics text agrees with other sources (2+ sources 250 · 1 source 150); candidates of a different version don't qualify"
+            "value" : "Lyrics text agrees with other sources (2+ sources 250 · 1 source 150); candidates of a different version don’t qualify"
           }
         },
         "zh-Hans" : {
@@ -15922,7 +15922,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't load recent scrobbles"
+            "value" : "Couldn’t load recent scrobbles"
           }
         },
         "zh-Hans" : {
@@ -16014,7 +16014,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't load this day in past years — Last.fm didn't respond"
+            "value" : "Couldn’t load this day in past years — Last.fm didn’t respond"
           }
         },
         "zh-Hans" : {
@@ -16261,7 +16261,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't test lyrics sources: %@"
+            "value" : "Couldn’t test lyrics sources: %@"
           }
         },
         "zh-Hans" : {
@@ -16376,7 +16376,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't Add"
+            "value" : "Couldn’t Add"
           }
         },
         "zh-Hans" : {
@@ -18200,7 +18200,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NetEase Cloud Music's API is rate-limiting (too many requests in a short time, code 405) — not a network fault"
+            "value" : "NetEase Cloud Music’s API is rate-limiting (too many requests in a short time, code 405) — not a network fault"
           }
         },
         "zh-Hans" : {
@@ -18269,7 +18269,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't Reach Any Source"
+            "value" : "Couldn’t Reach Any Source"
           }
         },
         "zh-Hans" : {
@@ -18723,25 +18723,25 @@
         }
       }
     },
-    "使用 Cloudflare Worker + KV 自行搭建的 state-worker 服务（独立公开仓库 Yudaotor/nowplaying-workers）。也可不自建：配置「ListenBrainz」后，网页同样能显示「正在播放」，两者配置其一即可。效果截图与完整搭建步骤见该仓库的 README" : {
+    "需自行部署同步服务；只连接 ListenBrainz 时网页同样能显示正在播放" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A state-worker service you host yourself on Cloudflare Workers + KV (separate public repo: Yudaotor/nowplaying-workers). Self-hosting is optional: connecting “ListenBrainz” also lets the web page fall back to showing “Now Playing”, and either one alone is enough. That repo's own README has screenshots and full setup steps"
+            "value" : "Requires a sync server you deploy yourself. With ListenBrainz connected, the web page can still show what’s playing"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Cloudflare Worker + KV 自行搭建的 state-worker 服务（独立公开仓库 Yudaotor/nowplaying-workers）。也可不自建：配置「ListenBrainz」后，网页同样能显示「正在播放」，两者配置其一即可。效果截图与完整搭建步骤见该仓库的 README"
+            "value" : "需自行部署同步服务；只连接 ListenBrainz 时网页同样能显示正在播放"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Cloudflare Worker + KV 自行架設的 state-worker 服務（獨立公開儲存庫 Yudaotor/nowplaying-workers）。也可不自行架設：設定「ListenBrainz」後，網頁同樣能顯示「正在播放」，兩者設定其一即可。效果截圖與完整架設步驟見該儲存庫的 README"
+            "value" : "需自行部署同步伺服器；只連線至 ListenBrainz 時網頁同樣能顯示正在播放"
           }
         }
       }
@@ -18890,7 +18890,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Get a token →"
+            "value" : "Get a Token →"
           }
         },
         "zh-Hans" : {
@@ -19177,7 +19177,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read the response from Last.fm"
+            "value" : "Couldn’t read the response from Last.fm"
           }
         },
         "zh-Hans" : {
@@ -19223,7 +19223,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't parse the local records file"
+            "value" : "Couldn’t parse the local records file"
           }
         },
         "zh-Hans" : {
@@ -19979,7 +19979,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read the local records file"
+            "value" : "Couldn’t read the local records file"
           }
         },
         "zh-Hans" : {
@@ -20088,7 +20088,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Follow Cover Art"
+            "value" : "Match Artwork"
           }
         },
         "zh-Hans" : {
@@ -20226,7 +20226,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "White, cover art color, a custom color or a rainbow"
+            "value" : "White, artwork color, a custom color or a rainbow"
           }
         },
         "zh-Hans" : {
@@ -20249,7 +20249,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Launch With Player"
+            "value" : "Launch with Player"
           }
         },
         "zh-Hans" : {
@@ -20640,7 +20640,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You haven't picked any lyrics manually yet; from now on, your picks will be locked right away"
+            "value" : "You haven’t picked any lyrics manually yet; from now on, your picks will be locked right away"
           }
         },
         "zh-Hans" : {
@@ -20685,7 +20685,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not working yet: the browser refused to run JavaScript. Follow the path above and make sure the switch is ticked"
+            "value" : "Not working yet: the browser refused to run JavaScript. Follow the path above and make sure the switch is checked"
           }
         },
         "zh-Hant" : {
@@ -20701,7 +20701,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not working yet: the browser took the request but never answered — most likely that switch still isn't ticked (some browsers stay silent instead of reporting an error). Follow the path above and check again"
+            "value" : "Not working yet: the browser took the request but never answered — most likely that switch still isn’t checked (some browsers stay silent instead of reporting an error). Follow the path above and check again"
           }
         },
         "zh-Hant" : {
@@ -20718,7 +20718,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last.fm account isn't connected yet"
+            "value" : "Last.fm account isn’t connected yet"
           }
         },
         "zh-Hans" : {
@@ -20780,7 +20780,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Username missing — listening digests can't run"
+            "value" : "Username missing — listening digests can’t run"
           }
         },
         "zh-Hans" : {
@@ -20802,7 +20802,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This switch has been turned off — it still works right now only because the browser hasn't restarted yet, and it will stop working after a restart"
+            "value" : "This switch has been turned off — it still works right now only because the browser hasn’t restarted yet, and it will stop working after a restart"
           }
         },
         "zh-Hant" : {
@@ -20819,7 +20819,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“%@” didn't respond this round, so nothing was changed to avoid a downgrade. Try again later"
+            "value" : "“%@” didn’t respond this round, so nothing was changed to avoid a downgrade. Try again later"
           }
         },
         "zh-Hans" : {
@@ -20911,7 +20911,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some lyrics sources didn't respond this round, so nothing was changed to avoid a downgrade. Try again later"
+            "value" : "Some lyrics sources didn’t respond this round, so nothing was changed to avoid a downgrade. Try again later"
           }
         },
         "zh-Hans" : {
@@ -20957,7 +20957,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This song was edited while the search ran, so this round's result wasn't applied"
+            "value" : "This song was edited while the search ran, so this round’s result wasn’t applied"
           }
         },
         "zh-Hans" : {
@@ -21150,7 +21150,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This source is the platform you're actually playing on — its timing lines up with the exact same master (+250)"
+            "value" : "This source is the platform you’re actually playing on — its timing lines up with the exact same master (+250)"
           }
         },
         "zh-Hans" : {
@@ -21196,7 +21196,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This source's reported track length differs from the local one by more than 12%; likely a different recording"
+            "value" : "This source’s reported track length differs from the local one by more than 12%; likely a different recording"
           }
         },
         "zh-Hans" : {
@@ -21334,7 +21334,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These lyrics have no timing, so they can't highlight or auto-scroll along with playback"
+            "value" : "These lyrics have no timing, so they can’t highlight or auto-scroll along with playback"
           }
         },
         "zh-Hans" : {
@@ -21418,13 +21418,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "This clears the manual timing calibration for %d song and can't be undone. The lyrics and the Timing Offset setting are unaffected. Afterwards the song resumes automatic lyrics source updates"
+                  "value" : "This clears the manual timing calibration for %d song and can’t be undone. The lyrics and the Timing Offset setting are unaffected. Afterwards the song resumes automatic lyrics source updates"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "This clears the manual timing calibration for %d songs and can't be undone. The lyrics and the Timing Offset setting are unaffected. Afterwards these songs resume automatic lyrics source updates"
+                  "value" : "This clears the manual timing calibration for %d songs and can’t be undone. The lyrics and the Timing Offset setting are unaffected. Afterwards these songs resume automatic lyrics source updates"
                 }
               }
             }
@@ -21485,7 +21485,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "將覆蓋目前全部設定，包括已連線的帳號與播放紀錄的傳送位址。完成後 Lyrimuse 將立即重新啟動"
+            "value" : "將覆蓋目前全部設定，包括已連線的帳號與播放記錄的傳送位址。完成後 Lyrimuse 將立即重新啟動"
           }
         }
       }
@@ -21520,7 +21520,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "將覆蓋目前全部設定，包括已連線的帳號與播放紀錄的傳送位址，並回復備份中的 %@ 個歌詞檔案（同名檔案將被覆蓋）。完成後 Lyrimuse 將立即重新啟動"
+            "value" : "將覆蓋目前全部設定，包括已連線的帳號與播放記錄的傳送位址，並回復備份中的 %@ 個歌詞檔案（同名檔案將被覆蓋）。完成後 Lyrimuse 將立即重新啟動"
           }
         }
       }
@@ -21582,7 +21582,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This is taking longer than usual. If a system dialog appeared, respond to it there. If you don't see one, you can turn this on in System Settings instead"
+            "value" : "This is taking longer than usual. If a system dialog appeared, respond to it there. If you don’t see one, you can turn this on in System Settings instead"
           }
         },
         "zh-Hans" : {
@@ -21697,7 +21697,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "First play. Searching for lyrics online; they'll appear automatically when ready"
+            "value" : "First play. Searching for lyrics online; they’ll appear automatically when ready"
           }
         },
         "zh-Hans" : {
@@ -21743,7 +21743,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't reach ListenBrainz — will retry"
+            "value" : "Can’t reach ListenBrainz — will retry"
           }
         },
         "zh-Hans" : {
@@ -22134,7 +22134,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Word timing put this candidate ahead, but another candidate matches the query title better. This is likely the word-timed version of a different recording (such as another live take); fine-grained timing doesn't mean it lines up with what's playing"
+            "value" : "Word timing put this candidate ahead, but another candidate matches the query title better. This is likely the word-timed version of a different recording (such as another live take); fine-grained timing doesn’t mean it lines up with what’s playing"
           }
         },
         "zh-Hans" : {
@@ -22203,7 +22203,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reduce Motion is on, so Touch Bar lyrics don't scroll or light up word by word"
+            "value" : "Reduce Motion is on, so Touch Bar lyrics don’t scroll or light up word by word"
           }
         },
         "zh-Hans" : {
@@ -22715,7 +22715,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重置"
+            "value" : "重設"
           }
         }
       }
@@ -24517,7 +24517,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This year so far"
+            "value" : "This Year So Far"
           }
         },
         "zh-Hans" : {
@@ -24678,7 +24678,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Launch Lyrimuse at login"
+            "value" : "Launch Lyrimuse at Login"
           }
         },
         "zh-Hans" : {
@@ -24781,7 +24781,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Where lyrics appear"
+            "value" : "Where Lyrics Appear"
           }
         },
         "zh-Hans" : {
@@ -25171,7 +25171,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traditional Chinese"
+            "value" : "繁體中文"
           }
         },
         "zh-Hant" : {
@@ -25188,7 +25188,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Once every checked player has quit, Lyrimuse quits after a 5-second grace period; if any of them reopens in the meantime, the quit is cancelled. If Settings, Lyrics Manager or the lyrics window is open, it waits until they are closed"
+            "value" : "Once every checked player has quit, Lyrimuse quits after a 5-second grace period; if any of them reopens in the meantime, the quit is canceled. If Settings, Lyrics Manager or the lyrics window is open, it waits until they are closed"
           }
         },
         "zh-Hant" : {
@@ -25358,7 +25358,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't save. Try again"
+            "value" : "Couldn’t save. Try again"
           }
         },
         "zh-Hant" : {
@@ -25449,7 +25449,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quit With Player"
+            "value" : "Quit with Player"
           }
         },
         "zh-Hant" : {
@@ -25597,7 +25597,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Same words and line times (word timing and translations aren't compared). This candidate may still carry word timing or a translation the other source lacks"
+            "value" : "Same words and line times (word timing and translations aren’t compared). This candidate may still carry word timing or a translation the other source lacks"
           }
         },
         "zh-Hant" : {
@@ -25734,7 +25734,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The configuration file %@ can't be read. Saving is paused so it won't be overwritten"
+            "value" : "The configuration file %@ can’t be read. Saving is paused so it won’t be overwritten"
           }
         },
         "zh-Hant" : {
@@ -25751,7 +25751,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The configuration file can't be parsed; saving was skipped so it won't be overwritten"
+            "value" : "The configuration file can’t be parsed; saving was skipped so it won’t be overwritten"
           }
         },
         "zh-Hant" : {
@@ -26215,7 +26215,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DNS lookup failed, so no request was ever sent. Common when a VPN or corporate network takes over DNS; a browser loading pages doesn't mean this can get through"
+            "value" : "DNS lookup failed, so no request was ever sent. Common when a VPN or corporate network takes over DNS; a browser loading pages doesn’t mean this can get through"
           }
         },
         "zh-Hant" : {
@@ -26346,7 +26346,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Common when a VPN or corporate network takes over DNS; a browser loading pages doesn't mean this can get through"
+            "value" : "Common when a VPN or corporate network takes over DNS; a browser loading pages doesn’t mean this can get through"
           }
         },
         "zh-Hant" : {
@@ -26437,7 +26437,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scrobble Point"
+            "value" : "Scrobble At"
           }
         },
         "zh-Hans" : {
@@ -27200,7 +27200,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn't take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel"
+            "value" : "Hover over the menu bar lyrics to turn them into Previous / Play-Pause / Next; move away and the lyrics return. Doesn’t take over once the lyrics shrink back to the icon after pausing, or when the slot is too narrow for three buttons. Clicking outside the three buttons still opens the panel"
           }
         },
         "zh-Hans" : {
@@ -27217,25 +27217,25 @@
         }
       }
     },
-    "固定：所有歌曲使用设定的宽度。\n自适应：按每首歌曲的歌词确定宽度，不超过设定宽度" : {
+    "固定：所有歌曲使用设定的宽度\n自适应：按每首歌曲的歌词确定宽度，不超过设定宽度" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fixed: every song uses the set width.\nAdaptive: each song gets its own width from its lyrics, up to the set width"
+            "value" : "Fixed: every song uses the set width\nAdaptive: each song gets its own width from its lyrics, up to the set width"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "固定：所有歌曲使用设定的宽度。\n自适应：按每首歌曲的歌词确定宽度，不超过设定宽度"
+            "value" : "固定：所有歌曲使用设定的宽度\n自适应：按每首歌曲的歌词确定宽度，不超过设定宽度"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "固定：所有歌曲使用設定的寬度。\n自適應：按每首歌曲的歌詞確定寬度，不超過設定寬度"
+            "value" : "固定：所有歌曲使用設定的寬度\n自適應：按每首歌曲的歌詞確定寬度，不超過設定寬度"
           }
         }
       }
@@ -27263,48 +27263,48 @@
         }
       }
     },
-    "开：同样 Scrobble，播放过半即记录\n关：不记录（Last.fm 官方规则）" : {
+    "开启后播放过半即记录；Last.fm 官方规则不记录" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "On: also scrobbled once half played\nOff: not scrobbled (Last.fm’s rule)"
+            "value" : "When on, these tracks are scrobbled once half played. Last.fm’s official rules skip them"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开：同样 Scrobble，播放过半即记录\n关：不记录（Last.fm 官方规则）"
+            "value" : "开启后播放过半即记录；Last.fm 官方规则不记录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開：同樣 Scrobble，播放過半即記錄\n關：不記錄（Last.fm 官方規則）"
+            "value" : "開啟後播放過半即記錄；Last.fm 官方規則不記錄"
           }
         }
       }
     },
-    "自动（默认）：按对唱声部在左 / 右 / 居中之间切换。\n其他：忽略声部，固定在同一位置" : {
+    "自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic (default): switches between left / right / center by duet vocal part.\nOthers: ignore vocal parts and stay fixed in one position"
+            "value" : "Automatic (default): switches between left / right / center by duet vocal part\nOthers: ignore vocal parts and stay fixed in one position"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动（默认）：按对唱声部在左 / 右 / 居中之间切换。\n其他：忽略声部，固定在同一位置"
+            "value" : "自动（默认）：按对唱声部在左 / 右 / 居中之间切换\n其他：忽略声部，固定在同一位置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自動（預設）：按對唱聲部在左 / 右 / 置中之間切換。\n其他：忽略聲部，固定在同一位置"
+            "value" : "自動（預設）：按對唱聲部在左 / 右 / 置中之間切換\n其他：忽略聲部，固定在同一位置"
           }
         }
       }
@@ -27315,7 +27315,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Web players don't report precise position; this switch lets Lyrimuse recalibrate right after a track change."
+            "value" : "Web players don’t report precise position; this switch lets Lyrimuse recalibrate right after a track change."
           }
         },
         "zh-Hans" : {
@@ -27388,7 +27388,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Auto-detect” recognizes every known and trusted player, so the checkboxes above have no effect right now. Untick it to recognize only the ones you pick"
+            "value" : "“Auto-detect” recognizes every known and trusted player, so the checkboxes above have no effect right now. Uncheck it to recognize only the ones you pick"
           }
         },
         "zh-Hans" : {
@@ -27474,7 +27474,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alias round: re-queried sources that didn't respond"
+            "value" : "Alias round: re-queried sources that didn’t respond"
           }
         },
         "zh-Hant" : {
@@ -27825,7 +27825,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't skip this ad"
+            "value" : "Couldn’t skip this ad"
           }
         },
         "zh-Hant" : {
@@ -27916,7 +27916,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Backfill didn't finish. Try again later"
+            "value" : "Backfill didn’t finish. Try again later"
           }
         },
         "zh-Hans" : {
@@ -28087,13 +28087,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "This clears the radio timing calibration for %d song and can't be undone. The calibration applies only to radio playback, so normal playback is unaffected"
+                  "value" : "This clears the radio timing calibration for %d song and can’t be undone. The calibration applies only to radio playback, so normal playback is unaffected"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "This clears the radio timing calibration for %d songs and can't be undone. These calibrations apply only to radio playback, so normal playback is unaffected"
+                  "value" : "This clears the radio timing calibration for %d songs and can’t be undone. These calibrations apply only to radio playback, so normal playback is unaffected"
                 }
               }
             }
@@ -28129,7 +28129,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This ad can't be skipped yet"
+            "value" : "This ad can’t be skipped yet"
           }
         },
         "zh-Hant" : {
@@ -28698,7 +28698,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This round's inputs and process"
+            "value" : "This round’s inputs and process"
           }
         },
         "zh-Hant" : {
@@ -29045,7 +29045,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry Quit"
+            "value" : "Try Quitting Again"
           }
         },
         "zh-Hant" : {
@@ -29198,7 +29198,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title variant: re-queried sources that didn't respond"
+            "value" : "Title variant: re-queried sources that didn’t respond"
           }
         },
         "zh-Hant" : {
@@ -29876,7 +29876,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The previous run hasn't finished; it resumes automatically"
+            "value" : "The previous run hasn’t finished; it resumes automatically"
           }
         },
         "zh-Hant" : {
@@ -30088,7 +30088,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Controls on Hover"
+            "value" : "Show Controls on Hover"
           }
         },
         "zh-Hans" : {
@@ -30341,7 +30341,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connect to get Apple Music's official lyrics. Requires an Apple Music subscription"
+            "value" : "Connect to get Apple Music’s official lyrics. Requires an Apple Music subscription"
           }
         },
         "zh-Hans" : {
@@ -30455,7 +30455,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These apps aren't specifically supported, so compatibility isn't guaranteed and some features may be unavailable"
+            "value" : "These apps aren’t specifically supported, so compatibility isn’t guaranteed and some features may be unavailable"
           }
         },
         "zh-Hans" : {
@@ -30467,7 +30467,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此類 App 未經專門適配，無法保證相容性，部分功能可能無法使用"
+            "value" : "此類 App 未經專門最佳化，無法保證相容性，部分功能可能無法使用"
           }
         }
       }
@@ -30683,7 +30683,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't read %@'s lyrics cache"
+            "value" : "Can’t read %@’s lyrics cache"
           }
         },
         "zh-Hant" : {
@@ -30717,7 +30717,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't read %@'s lyrics cache — click to see what to do"
+            "value" : "Can’t read %@’s lyrics cache — click to see what to do"
           }
         },
         "zh-Hant" : {
@@ -31040,7 +31040,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disk space used by downloaded animated artwork; anything cleared downloads again the next time it's shown"
+            "value" : "Disk space used by downloaded animated artwork; anything cleared downloads again the next time it’s shown"
           }
         },
         "zh-Hant" : {
@@ -31227,7 +31227,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ceiling for the mini size's lyrics font size"
+            "value" : "Ceiling for the mini size’s lyrics font size"
           }
         },
         "zh-Hant" : {
@@ -31353,25 +31353,25 @@
         }
       }
     },
-    "换行（默认）：一行显示不下时折行显示，窗口随之增高。\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动" : {
+    "换行（默认）：一行显示不下时折行显示，窗口随之增高\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wrap (default): long lines fold onto the next line and the window grows taller.\nScroll: every line stays one line tall and the overflow scrolls sideways — following the singing when the line has word-level timings"
+            "value" : "Wrap (default): long lines fold onto the next line and the window grows taller\nScroll: every line stays one line tall and the overflow scrolls sideways — following the singing when the line has word-level timings"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "换行（默认）：一行显示不下时折行显示，窗口随之增高。\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动"
+            "value" : "换行（默认）：一行显示不下时折行显示，窗口随之增高\n滚动：每句只占一行，超出部分横向滚动；有逐字时间轴时随演唱进度滚动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "換行（預設）：一行顯示不下時折行顯示，視窗隨之增高。\n捲動：每句只佔一行，超出部分橫向捲動；有逐字時間軸時隨演唱進度捲動"
+            "value" : "換行（預設）：一行顯示不下時折行顯示，視窗隨之增高\n捲動：每句只佔一行，超出部分橫向捲動；有逐字時間軸時隨演唱進度捲動"
           }
         }
       }
@@ -31565,7 +31565,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "These players aren't installed yet. Select one now and it takes effect once installed"
+            "value" : "These players aren’t installed yet. Select one now and it takes effect once installed"
           }
         },
         "zh-Hant" : {
@@ -31616,7 +31616,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This player isn't installed on this Mac"
+            "value" : "This player isn’t installed on this Mac"
           }
         },
         "zh-Hant" : {
@@ -31730,7 +31730,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This round's candidate details are no longer available"
+            "value" : "This round’s candidate details are no longer available"
           }
         },
         "zh-Hans" : {
@@ -31747,25 +31747,25 @@
         }
       }
     },
-    "在 Brave 菜单栏中依次选择「显示 → 开发者 → 允许 Apple 事件中的 JavaScript」" : {
+    "在 Brave 菜单栏中依次选择「显示 › 开发者 › 允许 Apple 事件中的 JavaScript」" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In Brave’s menu bar: View → Developer → Allow JavaScript from Apple Events"
+            "value" : "In Brave’s menu bar: View › Developer › Allow JavaScript from Apple Events"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Brave 菜单栏中依次选择「显示 → 开发者 → 允许 Apple 事件中的 JavaScript」"
+            "value" : "在 Brave 菜单栏中依次选择「显示 › 开发者 › 允许 Apple 事件中的 JavaScript」"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Brave 的選單列中依序選擇「顯示方式 → 開發人員選項 → 允許 Apple 事件的 JavaScript」"
+            "value" : "在 Brave 的選單列中依序選擇「顯示方式 › 開發人員選項 › 允許 Apple 事件的 JavaScript」"
           }
         }
       }
@@ -32618,7 +32618,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't enable it — a permission or system restriction may have kept the lyrics engine from starting. Export Diagnostics shows the specific cause and makes it easier to report"
+            "value" : "Couldn’t enable it — a permission or system restriction may have kept the lyrics engine from starting. Export Diagnostics shows the specific cause and makes it easier to report"
           }
         },
         "zh-Hans" : {
@@ -32641,7 +32641,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This build shipped with a stale version number for the lyrics engine. Nothing is broken — the lyrics engine runs the same code as the app, and there's nothing you need to do"
+            "value" : "This build shipped with a stale version number for the lyrics engine. Nothing is broken — the lyrics engine runs the same code as the app, and there’s nothing you need to do"
           }
         },
         "zh-Hans" : {
@@ -32664,7 +32664,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics engine isn't enabled yet, so this doesn't count as finishing setup — you'll be asked again next launch"
+            "value" : "The lyrics engine isn’t enabled yet, so this doesn’t count as finishing setup — you’ll be asked again next launch"
           }
         },
         "zh-Hans" : {
@@ -32681,25 +32681,25 @@
         }
       }
     },
-    "启动失败（%@）。可先「暂时跳过」，之后在设置的「播放器 → 歌词引擎」中重试，该页面会显示更详细的状态" : {
+    "启动失败（%@）。可先「暂时跳过」，之后在「设置 › 播放器 › 权限与服务」中重试，该页面会显示更详细的状态" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't start (%@). You can skip this for now and retry later under Settings → Player → Lyrics Engine, which reports a more detailed status"
+            "value" : "Couldn’t start (%@). You can skip this for now and retry later in Settings › Player › Permissions & Services, which shows a more detailed status"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动失败（%@）。可先「暂时跳过」，之后在设置的「播放器 → 歌词引擎」中重试，该页面会显示更详细的状态"
+            "value" : "启动失败（%@）。可先「暂时跳过」，之后在「设置 › 播放器 › 权限与服务」中重试，该页面会显示更详细的状态"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟動失敗（%@）。可先「暫時略過」，之後在設定的「播放器 → 歌詞引擎」中重試，該頁面會顯示更詳細的狀態"
+            "value" : "啟動失敗（%@）。可先「暫時略過」，之後在「設定 › 播放器 › 權限與服務」中重試，該頁面會顯示更詳細的狀態"
           }
         }
       }
@@ -32779,7 +32779,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics engine didn't respond"
+            "value" : "The lyrics engine didn’t respond"
           }
         },
         "zh-Hans" : {
@@ -32934,7 +32934,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automation access keeps %@'s playback progress accurate and lets you control playback right from the lyrics"
+            "value" : "Automation access keeps %@’s playback progress accurate and lets you control playback right from the lyrics"
           }
         },
         "zh-Hans" : {
@@ -33440,7 +33440,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Import failed: couldn't read the selected file. It may not be downloaded to this Mac, or Lyrimuse can't read it"
+            "value" : "Import failed: couldn’t read the selected file. It may not be downloaded to this Mac, or Lyrimuse can’t read it"
           }
         },
         "zh-Hans" : {
@@ -33480,7 +33480,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Presses Skip as soon as it appears; ads that can't be skipped still play. Needs Accessibility permission. If YouTube Music is in a background tab, Lyrimuse briefly switches to it and back without touching the browser window you're using"
+            "value" : "Presses Skip as soon as it appears; ads that can’t be skipped still play. Needs Accessibility permission. If YouTube Music is in a background tab, Lyrimuse briefly switches to it and back without touching the browser window you’re using"
           }
         },
         "zh-Hant" : {
@@ -33811,7 +33811,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No songs by this artist in this period's track chart"
+            "value" : "No songs by this artist in this period’s track chart"
           }
         },
         "zh-Hant" : {
@@ -34074,7 +34074,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ couldn't be checked this time, will retry at the end"
+            "value" : "%@ couldn’t be checked this time, will retry at the end"
           }
         },
         "zh-Hans" : {
@@ -34330,7 +34330,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't export diagnostics. Try saving them somewhere else"
+            "value" : "Couldn’t export diagnostics. Try saving them somewhere else"
           }
         },
         "zh-Hant" : {
@@ -34364,7 +34364,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Don't see your player?"
+            "value" : "Don’t see your player?"
           }
         },
         "zh-Hans" : {
@@ -34410,7 +34410,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't open this folder: %@"
+            "value" : "Couldn’t open this folder: %@"
           }
         },
         "zh-Hant" : {
@@ -34427,7 +34427,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some settings couldn't be written (%@); the rest were imported. Try importing again, or check that the config folder is writable"
+            "value" : "Some settings couldn’t be written (%@); the rest were imported. Try importing again, or check that the config folder is writable"
           }
         },
         "zh-Hant" : {
@@ -34444,7 +34444,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't read this song's lyrics (the lyrics file is missing or damaged), so saving is disabled to avoid overwriting what's on disk. Use Search for Lyrics to adopt a new copy"
+            "value" : "Can’t read this song’s lyrics (the lyrics file is missing or damaged), so saving is disabled to avoid overwriting what’s on disk. Use Search for Lyrics to adopt a new copy"
           }
         },
         "zh-Hant" : {
@@ -34461,7 +34461,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The automatic backup couldn't be written, so nothing was deleted this time to keep it recoverable. Check your disk space and write access to the config folder, then try again"
+            "value" : "The automatic backup couldn’t be written, so nothing was deleted this time to keep it recoverable. Check your disk space and write access to the config folder, then try again"
           }
         },
         "zh-Hant" : {
@@ -34478,7 +34478,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d more couldn't be written to the lyrics folder. Check write access and disk space"
+            "value" : "%d more couldn’t be written to the lyrics folder. Check write access and disk space"
           }
         },
         "zh-Hant" : {
@@ -34495,7 +34495,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The lyrics engine couldn't add them to the cache this time, so they won't appear in the list yet. The files are already in the lyrics folder and will be imported the next time the lyrics engine starts"
+            "value" : "The lyrics engine couldn’t add them to the cache this time, so they won’t appear in the list yet. The files are already in the lyrics folder and will be imported the next time the lyrics engine starts"
           }
         },
         "zh-Hant" : {
@@ -34699,7 +34699,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't write the local records file; the lyrics engine couldn't apply this change"
+            "value" : "Couldn’t write the local records file; the lyrics engine couldn’t apply this change"
           }
         },
         "zh-Hant" : {
@@ -34819,7 +34819,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Previous custom"
+            "value" : "Previous Custom"
           }
         },
         "zh-Hans" : {
@@ -34905,7 +34905,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "By ISRC: re-queried sources that didn't respond"
+            "value" : "By ISRC: re-queried sources that didn’t respond"
           }
         },
         "zh-Hant" : {
@@ -34991,7 +34991,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The connection to Spotify has expired, so songs played on Spotify aren't being scrobbled"
+            "value" : "The connection to Spotify has expired, so songs played on Spotify aren’t being scrobbled"
           }
         },
         "zh-Hans" : {
@@ -35060,7 +35060,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Songs played on Spotify aren't being scrobbled"
+            "value" : "Songs played on Spotify aren’t being scrobbled"
           }
         },
         "zh-Hans" : {
@@ -35198,7 +35198,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last.fm's connection to Spotify expired on %@, and Spotify isn't checked in Lyrimuse either"
+            "value" : "Last.fm’s connection to Spotify expired on %@, and Spotify isn’t checked in Lyrimuse either"
           }
         },
         "zh-Hans" : {
@@ -35313,7 +35313,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't Connect to Last.fm"
+            "value" : "Couldn’t Connect to Last.fm"
           }
         },
         "zh-Hans" : {
@@ -35954,7 +35954,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The sync server keeps failing (%d), so the web page isn't updating"
+            "value" : "The sync server keeps failing (%d), so the web page isn’t updating"
           }
         },
         "zh-Hans" : {
@@ -35977,7 +35977,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't reach the sync server, so the web page isn't updating"
+            "value" : "Can’t reach the sync server, so the web page isn’t updating"
           }
         },
         "zh-Hans" : {
@@ -36034,7 +36034,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tencent's music app"
+            "value" : "Tencent’s music app"
           }
         },
         "zh-Hant" : {
@@ -36051,7 +36051,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NetEase's music app"
+            "value" : "NetEase’s music app"
           }
         },
         "zh-Hant" : {
@@ -36085,7 +36085,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ByteDance's music app"
+            "value" : "ByteDance’s music app"
           }
         },
         "zh-Hant" : {
@@ -36119,7 +36119,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The world's most popular music streaming app"
+            "value" : "The world’s most popular music streaming app"
           }
         },
         "zh-Hant" : {
@@ -36136,7 +36136,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amazon's music streaming app"
+            "value" : "Amazon’s music streaming app"
           }
         },
         "zh-Hant" : {
@@ -36170,7 +36170,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Google's music streaming site at music.youtube.com"
+            "value" : "Google’s music streaming site at music.youtube.com"
           }
         },
         "zh-Hant" : {
@@ -36187,7 +36187,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spotify's web player at open.spotify.com"
+            "value" : "Spotify’s web player at open.spotify.com"
           }
         },
         "zh-Hant" : {
@@ -36273,7 +36273,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This version of macOS doesn't provide the Touch Bar interfaces Lyrimuse needs, so turning this on has no effect"
+            "value" : "This version of macOS doesn’t provide the Touch Bar interfaces Lyrimuse needs, so turning this on has no effect"
           }
         },
         "zh-Hans" : {
@@ -36296,7 +36296,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics use the cover's main color, or white when none is available"
+            "value" : "Lyrics use the artwork’s main color, or white when none is available"
           }
         },
         "zh-Hans" : {
@@ -36319,7 +36319,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This Mac Doesn't Have a Touch Bar"
+            "value" : "This Mac Doesn’t Have a Touch Bar"
           }
         },
         "zh-Hans" : {
@@ -36365,7 +36365,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adds a second line under the main line: Translation and Romanization follow the current line, and Next Line shows the upcoming one. With it on, the two lines are fixed at 14pt / 11pt (Font Size has no effect) and the main line no longer switches early. A second line that doesn't fit scrolls across over the line's duration"
+            "value" : "Adds a second line under the main line: Translation and Romanization follow the current line, and Next Line shows the upcoming one. With it on, the two lines are fixed at 14pt / 11pt (Font Size has no effect) and the main line no longer switches early. A second line that doesn’t fit scrolls across over the line’s duration"
           }
         },
         "zh-Hans" : {
@@ -36457,7 +36457,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discord isn't open"
+            "value" : "Discord isn’t open"
           }
         },
         "zh-Hans" : {
@@ -36480,7 +36480,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discord isn't ready yet"
+            "value" : "Discord isn’t ready yet"
           }
         },
         "zh-Hans" : {
@@ -36595,7 +36595,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cover Badge"
+            "value" : "Artwork Badge"
           }
         },
         "zh-Hans" : {
@@ -36641,7 +36641,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When on, the song you're playing shows on your Discord profile and in your friends list. If friends can't see it, go to User Settings › Activity Privacy in Discord and turn on activity sharing"
+            "value" : "When on, the song you’re playing shows on your Discord profile and in your friends list. If friends can’t see it, go to User Settings › Activity Privacy in Discord and turn on activity sharing"
           }
         },
         "zh-Hans" : {
@@ -36710,7 +36710,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connects automatically once it's open and you're signed in"
+            "value" : "Connects automatically once it’s open and you’re signed in"
           }
         },
         "zh-Hans" : {
@@ -36802,7 +36802,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Make sure you're signed in to Discord. If it still won't connect, quit Discord and open it again"
+            "value" : "Make sure you’re signed in to Discord. If it still won’t connect, quit Discord and open it again"
           }
         },
         "zh-Hans" : {
@@ -36825,7 +36825,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connects automatically once it's installed and you're signed in. The web and mobile apps can't connect"
+            "value" : "Connects automatically once it’s installed and you’re signed in. The web and mobile apps can’t connect"
           }
         },
         "zh-Hans" : {
@@ -36848,7 +36848,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discord isn't installed on this Mac"
+            "value" : "Discord isn’t installed on this Mac"
           }
         },
         "zh-Hans" : {
@@ -36906,7 +36906,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請開啟 Discord"
+            "value" : "請打開 Discord"
           }
         }
       }
@@ -37101,7 +37101,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preview · The current track won't be shown on Discord"
+            "value" : "Preview · The current track won’t be shown on Discord"
           }
         },
         "zh-Hans" : {
@@ -37354,7 +37354,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What's Shown"
+            "value" : "What’s Shown"
           }
         },
         "zh-Hans" : {
@@ -37607,7 +37607,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Word-timed lyrics: edit the text only. Every word keeps its timing; new lines and lines with a changed timestamp get their time split evenly by length"
+            "value" : "Word-by-word lyrics: edit the text only. Every word keeps its timing; new lines and lines with a changed timestamp get their time split evenly by length"
           }
         },
         "zh-Hans" : {
@@ -37647,7 +37647,7 @@
         }
       }
     },
-    "上一首、播放/暂停、下一首和设置键" : {
+    "上一首、播放/暂停、下一首和设置按钮" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -37659,13 +37659,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上一首、播放/暂停、下一首和设置键"
+            "value" : "上一首、播放/暂停、下一首和设置按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上一首、播放/暫停、下一首和設定鍵"
+            "value" : "上一首、播放/暫停、下一首和設定按鈕"
           }
         }
       }
@@ -37870,7 +37870,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You've adjusted this song's lyrics timing (%@); with new lyrics that adjustment may no longer fit"
+            "value" : "You’ve adjusted this song’s lyrics timing (%@); with new lyrics that adjustment may no longer fit"
           }
         },
         "zh-Hant" : {
@@ -37938,7 +37938,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read this song's lyrics right now. Try again later"
+            "value" : "Couldn’t read this song’s lyrics right now. Try again later"
           }
         },
         "zh-Hant" : {
@@ -37972,7 +37972,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't open %1$@: %2$@"
+            "value" : "Couldn’t open %1$@: %2$@"
           }
         },
         "zh-Hant" : {
@@ -38023,7 +38023,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opened in %@. Save when you're done: lines with timestamps become synced lyrics, text without them is saved as plain text"
+            "value" : "Opened in %@. Save when you’re done: lines with timestamps become synced lyrics, text without them is saved as plain text"
           }
         },
         "zh-Hant" : {
@@ -38074,7 +38074,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read the file (save it as UTF-8 text); not saved"
+            "value" : "Couldn’t read the file (save it as UTF-8 text); not saved"
           }
         },
         "zh-Hant" : {
@@ -38091,7 +38091,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't read this song's lyrics right now; save again later"
+            "value" : "Couldn’t read this song’s lyrics right now; save again later"
           }
         },
         "zh-Hant" : {
@@ -38108,7 +38108,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This song's lyrics changed while you were editing, so this save wasn't applied. Click Edit again to open the latest version"
+            "value" : "This song’s lyrics changed while you were editing, so this save wasn’t applied. Click Edit again to open the latest version"
           }
         },
         "zh-Hant" : {
@@ -38125,7 +38125,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This song's lyrics were updated while you were editing, so your changes weren't saved. They're still in the editor; discard them and edit again to open the latest version"
+            "value" : "This song’s lyrics were updated while you were editing, so your changes weren’t saved. They’re still in the editor; discard them and edit again to open the latest version"
           }
         },
         "zh-Hant" : {
@@ -38213,13 +38213,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ line without a timestamp wasn't added to the word-timed lyrics"
+                  "value" : "%@ line without a timestamp wasn’t added to the word-timed lyrics"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ lines without timestamps weren't added to the word-timed lyrics"
+                  "value" : "%@ lines without timestamps weren’t added to the word-timed lyrics"
                 }
               }
             }
@@ -38256,7 +38256,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't write the lyrics file: %@"
+            "value" : "Couldn’t write the lyrics file: %@"
           }
         },
         "zh-Hant" : {
@@ -38409,7 +38409,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No lyrics source responded during the last lookup, possibly because the network was unavailable; it doesn't mean the song has no lyrics. It will be retried automatically, or you can auto re-match now"
+            "value" : "No lyrics source responded during the last lookup, possibly because the network was unavailable; it doesn’t mean the song has no lyrics. It will be retried automatically, or you can auto re-match now"
           }
         },
         "zh-Hant" : {
@@ -38661,7 +38661,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No lyrics source responded when this song was looked up on %@, possibly because the network was unavailable; it doesn't mean the song has no lyrics. Auto re-match usually finds them"
+            "value" : "No lyrics source responded when this song was looked up on %@, possibly because the network was unavailable; it doesn’t mean the song has no lyrics. Auto re-match usually finds them"
           }
         },
         "zh-Hant" : {
@@ -38678,7 +38678,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No lyrics source responded during the last lookup, possibly because the network was unavailable; it doesn't mean the song has no lyrics. Auto re-match usually finds them"
+            "value" : "No lyrics source responded during the last lookup, possibly because the network was unavailable; it doesn’t mean the song has no lyrics. Auto re-match usually finds them"
           }
         },
         "zh-Hant" : {
@@ -39700,7 +39700,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Word-timed lyrics: only the words change, not the timing"
+            "value" : "Word-by-word lyrics: only the words change, not the timing"
           }
         },
         "zh-Hant" : {
@@ -40628,7 +40628,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accessibility keeps %@'s playback position accurate and shows its shuffle and repeat buttons"
+            "value" : "Accessibility keeps %@’s playback position accurate and shows its shuffle and repeat buttons"
           }
         },
         "zh-Hans" : {
@@ -40651,7 +40651,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Turn this on to keep %@'s playback position accurate during autoplay and show its shuffle and repeat buttons"
+            "value" : "Turn this on to keep %@’s playback position accurate during autoplay and show its shuffle and repeat buttons"
           }
         },
         "zh-Hans" : {
@@ -40674,7 +40674,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrimuse can't write to these locations, so the lyrics engine can't start:"
+            "value" : "Lyrimuse can’t write to these locations, so the lyrics engine can’t start:"
           }
         },
         "zh-Hans" : {
@@ -40743,7 +40743,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (other users can modify it, so macOS won't load it)"
+            "value" : "%@ (other users can modify it, so macOS won’t load it)"
           }
         },
         "zh-Hans" : {
@@ -40972,7 +40972,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Candidates excluded during scoring (for example no timestamps, or the wrong language or length). Automatic matching won't pick them, but you can still preview and use them"
+            "value" : "Candidates excluded during scoring (for example no timestamps, or the wrong language or length). Automatic matching won’t pick them, but you can still preview and use them"
           }
         },
         "zh-Hans" : {
@@ -41064,7 +41064,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This lyrics source doesn't report a length; this is the length %@ reports for the same recording"
+            "value" : "This lyrics source doesn’t report a length; this is the length %@ reports for the same recording"
           }
         },
         "zh-Hans" : {
@@ -41162,7 +41162,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ has no scripting interface. With permission, Lyrimuse reads and uses its menus to control shuffle, repeat and Like, and can pause, resume and skip tracks while another app holds the system media focus. Without permission, these buttons are unavailable and playback can’t be controlled while focus is elsewhere. Seeking while focus is elsewhere isn’t supported yet"
+            "value" : "%@ has no scripting interface. With permission, Lyrimuse reads and uses its menus to control shuffle, repeat and Favorite, and can pause, resume and skip tracks while another app holds the system media focus. Without permission, these buttons are unavailable and playback can’t be controlled while focus is elsewhere. Seeking while focus is elsewhere isn’t supported yet"
           }
         },
         "zh-Hant" : {
@@ -41185,7 +41185,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accessibility permission enables the shuffle, repeat and Like buttons for %@, and lets Lyrimuse pause, resume and skip tracks through its menus while another app holds the system media focus"
+            "value" : "Accessibility permission enables the shuffle, repeat and Favorite buttons for %@, and lets Lyrimuse pause, resume and skip tracks through its menus while another app holds the system media focus"
           }
         },
         "zh-Hant" : {
@@ -41208,7 +41208,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Turn this on to show the shuffle, repeat and Like buttons for %@ and control playback when it loses the system media focus"
+            "value" : "Turn this on to show the shuffle, repeat and Favorite buttons for %@ and control playback when it loses the system media focus"
           }
         },
         "zh-Hant" : {
@@ -41231,7 +41231,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Turn this on to keep %@’s playback position accurate during autoplay, and to show the shuffle, repeat and Like buttons for %@ and control playback without the system media focus"
+            "value" : "Turn this on to keep %@’s playback position accurate during autoplay, and to show the shuffle, repeat and Favorite buttons for %@ and control playback without the system media focus"
           }
         },
         "zh-Hant" : {
@@ -41254,7 +41254,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Accessibility permission; %@’s shuffle, repeat and Like buttons are hidden, and playback can’t be controlled while focus is elsewhere"
+            "value" : "No Accessibility permission; %@’s shuffle, repeat and Favorite buttons are hidden, and playback can’t be controlled while focus is elsewhere"
           }
         },
         "zh-Hant" : {
@@ -41595,25 +41595,25 @@
         }
       }
     },
-    "收听时段与艺人" : {
+    "收听时段与歌手" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Listening times and artists"
+            "value" : "Listening Times and Artists"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "收听时段与艺人"
+            "value" : "收听时段与歌手"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "聆聽時段與藝人"
+            "value" : "聆聽時段與歌手"
           }
         }
       }
@@ -41624,7 +41624,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Current streak"
+            "value" : "Current Streak"
           }
         },
         "zh-Hans" : {
@@ -41740,7 +41740,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Next milestone"
+            "value" : "Next Milestone"
           }
         },
         "zh-Hans" : {
@@ -41786,7 +41786,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Busiest day"
+            "value" : "Busiest Day"
           }
         },
         "zh-Hans" : {
@@ -42020,7 +42020,7 @@
         }
       }
     },
-    "显示「更多」键" : {
+    "显示「更多」按钮" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -42032,13 +42032,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示「更多」键"
+            "value" : "显示「更多」按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顯示「更多」鍵"
+            "value" : "顯示「更多」按鈕"
           }
         }
       }
@@ -42049,7 +42049,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap it to switch to playback position, lyrics timing, Favorite, Shuffle/Repeat and Volume. Items the current player doesn't support are hidden"
+            "value" : "Tap it to switch to playback position, lyrics calibration, Favorite, Shuffle/Repeat and Volume. Items the current player doesn’t support are hidden"
           }
         },
         "zh-Hans" : {
@@ -42118,7 +42118,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the lyrics when playback resumes from pause. Switching songs during playback doesn't expand them, and lyrics you collapsed stay collapsed"
+            "value" : "Shows the lyrics when playback resumes from pause. Switching songs during playback doesn’t expand them, and lyrics you collapsed stay collapsed"
           }
         },
         "zh-Hans" : {
@@ -42721,7 +42721,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟授權頁面"
+            "value" : "打開授權頁面"
           }
         }
       }
@@ -43410,7 +43410,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apps not listed here are suggested when detected. They aren't specifically supported, so compatibility isn't guaranteed and some features may be unavailable"
+            "value" : "Apps not listed here are suggested when detected. They aren’t specifically supported, so compatibility isn’t guaranteed and some features may be unavailable"
           }
         },
         "zh-Hans" : {
@@ -43422,7 +43422,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未列出的 App 會在偵測到時提示加入。此類 App 未經專門適配，無法保證相容性，部分功能可能無法使用"
+            "value" : "未列出的 App 會在偵測到時提示加入。此類 App 未經專門最佳化，無法保證相容性，部分功能可能無法使用"
           }
         }
       }
@@ -43456,7 +43456,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only the players you check are detected. The rest don't show lyrics or count toward your listening history"
+            "value" : "Only the players you check are detected. The rest don’t show lyrics or count toward your listening history"
           }
         },
         "zh-Hans" : {
@@ -43702,7 +43702,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cover and Progress"
+            "value" : "Artwork and Progress"
           }
         },
         "zh-Hant" : {
@@ -43940,7 +43940,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Also shown when hovering over the cover"
+            "value" : "Also shown when hovering over the artwork"
           }
         },
         "zh-Hant" : {
@@ -43968,19 +43968,19 @@
         }
       }
     },
-    "「当前歌词」行最多每 4 秒切换一句，过短的句子将跳过；间奏、暂停或这首歌曲无歌词时显示专辑，专辑已占用一行时留空" : {
+    "歌词行至少间隔 4 秒切换一句；无歌词时显示专辑" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The “Current Lyric” line changes at most every 4 seconds, so very short lines are skipped. During instrumental breaks, while paused, or when the song has no lyrics, it shows the album, or stays empty if the album already has its own line"
+            "value" : "The lyric line changes at most every 4 seconds and shows the album when there are no lyrics"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「目前歌詞」行最多每 4 秒切換一句，過短的句子將略過；間奏、暫停或這首歌曲無歌詞時顯示專輯，專輯已佔用一行時留空"
+            "value" : "歌詞行至少間隔 4 秒切換一句；無歌詞時顯示專輯"
           }
         }
       }
@@ -44969,13 +44969,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%d other entry is matched on its own and won't change with the current entry"
+                  "value" : "%d other entry is matched on its own and won’t change with the current entry"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%d other entries are matched on their own and won't change with the current entry"
+                  "value" : "%d other entries are matched on their own and won’t change with the current entry"
                 }
               }
             }
@@ -45573,7 +45573,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The matched track's title differs from this entry, so it only merges play counts and doesn't sync lyrics"
+            "value" : "The matched track’s title differs from this entry, so it only merges play counts and doesn’t sync lyrics"
           }
         },
         "zh-Hant" : {
@@ -45760,7 +45760,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics are matched independently and won't change with the current entry; manual edits don't sync either"
+            "value" : "Lyrics are matched independently and won’t change with the current entry; manual edits don’t sync either"
           }
         },
         "zh-Hans" : {
@@ -46174,7 +46174,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "With permission, Lyrimuse reads and uses the controls in %@ to show and toggle Like, and can pause, resume and skip tracks while another app holds the system media focus. Lyrics still work without permission, but the Like button is unavailable and playback can’t be controlled without the media focus; seeking without the media focus isn’t supported"
+            "value" : "With permission, Lyrimuse reads and uses the controls in %@ to show and toggle Favorite, and can pause, resume and skip tracks while another app holds the system media focus. Lyrics still work without permission, but the Favorite button is unavailable and playback can’t be controlled without the media focus; seeking without the media focus isn’t supported"
           }
         },
         "zh-Hant" : {
@@ -46208,7 +46208,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enable this permission to show the Like button for %@ and to pause, resume and skip tracks when it loses system media focus"
+            "value" : "Enable this permission to show the Favorite button for %@ and to pause, resume and skip tracks when it loses system media focus"
           }
         },
         "zh-Hant" : {
@@ -46225,7 +46225,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accessibility permission is missing: %@ has no Like button, and can’t pause, resume or skip tracks without system media focus"
+            "value" : "Accessibility permission is missing: %@ has no Favorite button, and can’t pause, resume or skip tracks without system media focus"
           }
         },
         "zh-Hant" : {
@@ -47128,7 +47128,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未連接區域網路"
+            "value" : "未連線至區域網路"
           }
         }
       }
@@ -47231,7 +47231,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pinned centered below the menu bar; can't be dragged"
+            "value" : "Pinned centered below the menu bar; can’t be dragged"
           }
         },
         "zh-Hans" : {
@@ -47254,7 +47254,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pinned centered above the Dock; can't be dragged"
+            "value" : "Pinned centered above the Dock; can’t be dragged"
           }
         },
         "zh-Hans" : {
@@ -47622,7 +47622,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Links you've already shared will stop working"
+            "value" : "Links you’ve already shared will stop working"
           }
         },
         "zh-Hans" : {
@@ -47783,7 +47783,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Port %lld is already in use. The service couldn't start"
+            "value" : "Port %lld is already in use. The service couldn’t start"
           }
         },
         "zh-Hans" : {
@@ -47806,7 +47806,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The service couldn't start: %@"
+            "value" : "The service couldn’t start: %@"
           }
         },
         "zh-Hans" : {
@@ -48117,7 +48117,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未開啟 · 開啟後播放進度更準確，並可調節洛雪音樂的音量"
+            "value" : "未開啟 · 開啟後播放進度更準確，並可調整洛雪音樂的音量"
           }
         }
       }
@@ -48140,7 +48140,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrimuse 透過此介面讀取洛雪音樂的播放進度並調節其音量"
+            "value" : "Lyrimuse 透過此介面讀取洛雪音樂的播放進度並調整其音量"
           }
         }
       }
@@ -48174,7 +48174,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LAN access is allowed, so devices on the same network can also control LX Music"
+            "value" : "Local network access is allowed, so devices on the same network can also control LX Music"
           }
         },
         "zh-Hans" : {
@@ -48301,7 +48301,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在洛雪音樂的設定中開啟開放 API 後可調節音量"
+            "value" : "在洛雪音樂的設定中開啟開放 API 後可調整音量"
           }
         }
       }
@@ -48421,7 +48421,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can't read the lyrics decision for this song"
+            "value" : "Can’t read the lyrics decision for this song"
           }
         },
         "zh-Hans" : {
@@ -48490,7 +48490,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The matching algorithm is set to Priority Order, or the higher-scoring candidates don't match this song's version or duration"
+            "value" : "The matching algorithm is set to Priority Order, or the higher-scoring candidates don’t match this song’s version or duration"
           }
         },
         "zh-Hans" : {
@@ -48582,7 +48582,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatic follows the duet parts: each singer's lines sit on their side, choruses are centered, and lines without duet info stay left"
+            "value" : "Automatic follows the duet parts: each singer’s lines sit on their side, choruses are centered, and lines without duet info stay left"
           }
         },
         "zh-Hant" : {
@@ -48679,7 +48679,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NetEase's music service"
+            "value" : "NetEase’s music service"
           }
         },
         "zh-Hant" : {
@@ -48696,7 +48696,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tencent's music service"
+            "value" : "Tencent’s music service"
           }
         },
         "zh-Hant" : {
@@ -48713,7 +48713,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The world's largest lyrics catalog, also behind Spotify's lyrics"
+            "value" : "The world’s largest lyrics catalog, also behind Spotify’s lyrics"
           }
         },
         "zh-Hant" : {
@@ -48781,7 +48781,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "China Mobile's music service"
+            "value" : "China Mobile’s music service"
           }
         },
         "zh-Hant" : {
@@ -48815,7 +48815,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Music's own lyrics, available after you connect your account"
+            "value" : "Apple Music’s own lyrics, available after you connect your account"
           }
         },
         "zh-Hant" : {
@@ -48832,7 +48832,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ByteDance's music service"
+            "value" : "ByteDance’s music service"
           }
         },
         "zh-Hant" : {
@@ -48849,7 +48849,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Naver's music service from Korea"
+            "value" : "Naver’s music service from Korea"
           }
         },
         "zh-Hant" : {
@@ -48889,7 +48889,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 拒收：%2$@"
+            "value" : "%1$@拒收：%2$@"
           }
         }
       }
@@ -49110,7 +49110,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除⋯"
+            "value" : "刪除…"
           }
         }
       }
@@ -49291,7 +49291,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Turn off the IP allowlist in the bot's security settings, or use signature verification instead"
+            "value" : "Turn off the IP allowlist in the bot’s security settings, or use signature verification instead"
           }
         },
         "zh-Hant" : {
@@ -49308,7 +49308,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add the keyword “%@” in the bot's security settings, or use signature verification instead"
+            "value" : "Add the keyword “%@” in the bot’s security settings, or use signature verification instead"
           }
         },
         "zh-Hant" : {
@@ -49563,7 +49563,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This Mac's IP isn't on the bot's allowlist"
+            "value" : "This Mac’s IP isn’t on the bot’s allowlist"
           }
         },
         "zh-Hant" : {
@@ -49688,7 +49688,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在傳送測試訊息⋯"
+            "value" : "正在傳送測試訊息…"
           }
         }
       }
@@ -49699,7 +49699,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't connect"
+            "value" : "Couldn’t connect"
           }
         },
         "zh-Hant" : {
@@ -49716,7 +49716,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The message doesn't contain the custom keyword"
+            "value" : "The message doesn’t contain the custom keyword"
           }
         },
         "zh-Hant" : {
@@ -49767,7 +49767,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The channel is incomplete, or the URL isn't valid"
+            "value" : "The channel is incomplete, or the URL isn’t valid"
           }
         },
         "zh-Hant" : {
@@ -49807,7 +49807,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編輯⋯"
+            "value" : "編輯…"
           }
         }
       }
@@ -50022,7 +50022,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A Telegram bot. Create one with @BotFather; reports go to you or to a group you're in"
+            "value" : "A Telegram bot. Create one with @BotFather; reports go to you or to a group you’re in"
           }
         },
         "zh-Hant" : {
@@ -50243,13 +50243,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Listening Digests"
+            "value" : "Listening Reports"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "聆聽報告"
+            "value" : "聽歌報告"
           }
         }
       }
@@ -50288,19 +50288,19 @@
         }
       }
     },
-    "这一档的数据来源" : {
+    "这份报告的数据来源" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Data Source for This Digest"
+            "value" : "Data Source for This Report"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "這一項的資料來源"
+            "value" : "這份報告的資料來源"
           }
         }
       }
@@ -50310,7 +50310,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "KT's music service from Korea"
+            "value" : "KT’s music service from Korea"
           }
         },
         "zh-Hant" : {
@@ -50343,7 +50343,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Player's Own Lyrics"
+            "value" : "Player’s Own Lyrics"
           }
         },
         "zh-Hant" : {
@@ -50805,7 +50805,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未連接 Last.fm 或 ListenBrainz"
+            "value" : "未連線至 Last.fm 或 ListenBrainz"
           }
         }
       }
@@ -51020,13 +51020,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "POST to the address you entered"
+            "value" : "POST to the URL you entered"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "POST 到你填的位址"
+            "value" : "POST 到你填的網址"
           }
         }
       }
@@ -51129,7 +51129,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the title, artist and cover in the top-left corner"
+            "value" : "Shows the title, artist and artwork in the top-left corner"
           }
         },
         "zh-Hans" : {
@@ -51413,13 +51413,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last.fm or ListenBrainz isn't connected yet, so sample data is shown"
+            "value" : "Last.fm or ListenBrainz isn’t connected yet, so sample data is shown"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未連接 Last.fm 或 ListenBrainz，先以測試資料示意"
+            "value" : "尚未連線至 Last.fm 或 ListenBrainz，先以測試資料示意"
           }
         }
       }
@@ -51447,7 +51447,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn't fetch real data (network or background service not responding), so sample data is shown"
+            "value" : "Couldn’t fetch real data (network or background service not responding), so sample data is shown"
           }
         },
         "zh-Hant" : {
@@ -51492,7 +51492,7 @@
         }
       }
     },
-    "听歌报告会推到所有启用的渠道；有多个渠道时，可在下方「听歌报告」里为每一档单独选择。点一行可编辑或发送测试，右键可删除" : {
+    "听歌报告会推到所有启用的渠道；有多个渠道时，可在下方「听歌报告」里为每份报告单独选择。点一行可编辑或发送测试，右键可删除" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -51504,7 +51504,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "聽歌報告會推播到所有啟用的管道；有多個管道時，可在下方「聽歌報告」裡為每一檔單獨選擇。點一列可編輯或傳送測試，右鍵可刪除"
+            "value" : "聽歌報告會推播到所有啟用的管道；有多個管道時，可在下方「聽歌報告」裡為每份報告單獨選擇。按一下某列可編輯或傳送測試，按右鍵可刪除"
           }
         }
       }
@@ -51549,7 +51549,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushes to this channel stop after it's deleted; the delivery history is kept"
+            "value" : "Pushes to this channel stop after it’s deleted; the delivery history is kept"
           }
         },
         "zh-Hant" : {
@@ -51583,7 +51583,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No address yet"
+            "value" : "No URL yet"
           }
         },
         "zh-Hant" : {
@@ -51611,7 +51611,7 @@
         }
       }
     },
-    "这一档推到哪些渠道" : {
+    "这份报告推到哪些渠道" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -51623,7 +51623,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "這一檔推播到哪些管道"
+            "value" : "這份報告推播到哪些管道"
           }
         }
       }
@@ -51651,7 +51651,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paste the full address and the platform is recognized automatically"
+            "value" : "Paste the full URL and the platform is recognized automatically"
           }
         },
         "zh-Hant" : {
@@ -51685,7 +51685,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This address looks like %@. To change platform, delete this channel and add it again"
+            "value" : "This URL looks like %@. To change platform, delete this channel and add it again"
           }
         },
         "zh-Hant" : {
@@ -51770,7 +51770,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The content comes from this period's real data and matches the real push"
+            "value" : "The content comes from this period’s real data and matches the real push"
           }
         },
         "zh-Hant" : {
@@ -51781,19 +51781,19 @@
         }
       }
     },
-    "开启后四档听歌报告都会推到这里，之后可在「听歌报告」里按档调整" : {
+    "开启后所有听歌报告都会推到这里，之后可在「听歌报告」里按报告调整" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When on, all four listening reports are pushed here; adjust per report under Listening Reports"
+            "value" : "When on, all listening reports are pushed here; adjust per report under Listening Reports"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟後四檔聽歌報告都會推播到這裡，之後可在「聽歌報告」裡按檔調整"
+            "value" : "開啟後所有聽歌報告都會推播到這裡，之後可在「聽歌報告」裡按報告調整"
           }
         }
       }
@@ -51838,7 +51838,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In this Mac's current time zone (%@)"
+            "value" : "In this Mac’s current time zone (%@)"
           }
         },
         "zh-Hant" : {
@@ -51855,7 +51855,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushed at %@ every day with that day's listening"
+            "value" : "Pushed at %@ every day with that day’s listening"
           }
         },
         "zh-Hant" : {
@@ -51872,7 +51872,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushed at %@ every day with the previous day's listening"
+            "value" : "Pushed at %@ every day with the previous day’s listening"
           }
         },
         "zh-Hant" : {
@@ -51889,7 +51889,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushed at %@ after each week ends, with last week's summary"
+            "value" : "Pushed at %@ after each week ends, with last week’s summary"
           }
         },
         "zh-Hant" : {
@@ -51906,7 +51906,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushed at %@ on the 1st with last month's summary"
+            "value" : "Pushed at %@ on the 1st with last month’s summary"
           }
         },
         "zh-Hant" : {
@@ -51923,7 +51923,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pushed at %@ on January 1 with last year's summary"
+            "value" : "Pushed at %@ on January 1 with last year’s summary"
           }
         },
         "zh-Hant" : {
@@ -51946,7 +51946,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "進度條"
+            "value" : "進度列"
           }
         }
       }
@@ -51963,7 +51963,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "關閉後，僅在懸停顯示播放控制時出現"
+            "value" : "關閉後，僅在指向顯示播放控制時出現"
           }
         }
       }
@@ -51997,7 +51997,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Other lyric sources report the same track length as the local one, but this source's differs by more than 5%; likely another recording such as a live version or remix"
+            "value" : "Other lyric sources report the same track length as the local one, but this source’s differs by more than 5%; likely another recording such as a live version or remix"
           }
         },
         "zh-Hans" : {
@@ -52342,7 +52342,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "There are no lyrics left after your changes, so they weren't saved. They're still in the editor"
+            "value" : "There are no lyrics left after your changes, so they weren’t saved. They’re still in the editor"
           }
         },
         "zh-Hans" : {
@@ -52365,7 +52365,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your edited lyrics have no timestamps at all, so they weren't saved (the existing timing would be lost). They're still in the editor"
+            "value" : "Your edited lyrics have no timestamps at all, so they weren’t saved (the existing timing would be lost). They’re still in the editor"
           }
         },
         "zh-Hans" : {
@@ -52388,7 +52388,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“Automatic” picks the display with the notch; “Follow Active Window” shows it on the display of the window you’re using; “All Displays” shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
+            "value" : "Automatic picks the display with the notch; Follow Active Window shows it on the display of the window you’re using; All Displays shows one on every display; while the chosen display is unplugged it follows Automatic and moves back when it’s plugged in again"
           }
         },
         "zh-Hans" : {
@@ -52526,7 +52526,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Japanese Reading"
+            "value" : "Japanese Romanization Style"
           }
         },
         "zh-Hans" : {
@@ -53078,7 +53078,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Covers and lookups that can be fetched again"
+            "value" : "Artwork and lookups that can be fetched again"
           }
         },
         "zh-Hans" : {
@@ -53170,7 +53170,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Motion covers and cached lookups will be deleted and Lyrimuse will restart right away, fetching them again when needed. Settings, lyrics and listening history are kept"
+            "value" : "Animated artwork and cached lookups will be deleted and Lyrimuse will restart right away, fetching them again when needed. Settings, lyrics and listening history are kept"
           }
         },
         "zh-Hans" : {
@@ -53182,7 +53182,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "將刪除動態封面與連網查詢的快取並立即重新啟動，用到時會重新取得；設定、歌詞與播放紀錄不受影響"
+            "value" : "將刪除動態封面與連線查詢的快取並立即重新啟動，用到時會重新取得；設定、歌詞與播放記錄不受影響"
           }
         }
       }
@@ -53285,7 +53285,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title and Title & Artist don't follow the lyrics, and still collapse to the icon when paused"
+            "value" : "Title and Title & Artist don’t follow the lyrics, and still collapse to the icon when paused"
           }
         },
         "zh-Hans" : {
@@ -54044,7 +54044,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Use Album Art as Icon"
+            "value" : "Use Artwork as Icon"
           }
         },
         "zh-Hans" : {
@@ -54067,7 +54067,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the chosen icon when there is no album art"
+            "value" : "Shows the chosen icon when there is no artwork"
           }
         },
         "zh-Hans" : {
@@ -54159,7 +54159,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kazakhstan's official Latin alphabet (2021), e.g. Сәлем → Sälem"
+            "value" : "Kazakhstan’s official Latin alphabet (2021), e.g. Сәлем → Sälem"
           }
         },
         "zh-Hans" : {
@@ -54182,7 +54182,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "North Macedonia's official-document spelling, e.g. Ѓорѓи → Gjorgji"
+            "value" : "North Macedonia’s official-document spelling, e.g. Ѓорѓи → Gjorgji"
           }
         },
         "zh-Hans" : {
@@ -54228,7 +54228,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sri Lanka's national system, e.g. ලංකා → laṅkā"
+            "value" : "Sri Lanka’s national system, e.g. ලංකා → laṅkā"
           }
         },
         "zh-Hans" : {
@@ -54274,7 +54274,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uses the song's looping Spotify video as the background; only for songs you've played in Spotify"
+            "value" : "Uses the song’s looping Spotify video as the background; only for songs you’ve played in Spotify"
           }
         },
         "zh-Hans" : {
@@ -54677,7 +54677,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未取得輔助使用權限，%@ 拖動進度後歌詞可能差半秒左右，不顯示循環按鈕和音量調節，失去焦點時也無法控制播放"
+            "value" : "未取得輔助使用權限，%@ 拖移進度後歌詞可能差半秒左右，不顯示循環按鈕和音量調整，失去焦點時也無法控制播放"
           }
         }
       }
@@ -54700,7 +54700,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "輔助使用權限可讓%@拖動進度後的歌詞更準、顯示循環按鈕和音量調節，也可在系統媒體焦點被其他 App 佔用時，透過選單暫停、恢復和切換上一首或下一首"
+            "value" : "輔助使用權限可讓%@拖移進度後的歌詞更準、顯示循環按鈕和音量調整，也可在系統媒體焦點被其他 App 佔用時，透過選單暫停、恢復和切換上一首或下一首"
           }
         }
       }
@@ -54723,7 +54723,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請開啟此權限，以校準%@拖動進度後的播放位置、顯示循環按鈕和音量調節，並在失去系統媒體焦點時控制播放"
+            "value" : "請開啟此權限，以校正%@拖移進度後的播放位置、顯示循環按鈕和音量調整，並在失去系統媒體焦點時控制播放"
           }
         }
       }
@@ -54746,7 +54746,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 回報的播放進度只精確到秒。授權後，Lyrimuse 將讀取其介面上的進度條校準位置、讀取播放清單以預先解析即將播放的歌曲，操作其選單以控制循環，並讀取和調整其音量；系統媒體焦點被其他 App 佔用時，也可暫停、恢復和切換上一首或下一首。未授權時仍可使用，但拖動進度後歌詞可能差半秒左右，不提供循環按鈕和音量調節，失去焦點時也無法控制播放"
+            "value" : "%@ 回報的播放進度只精確到秒。授權後，Lyrimuse 將讀取其介面上的進度列校正位置、讀取播放清單以預先解析即將播放的歌曲，操作其選單以控制循環，並讀取和調整其音量；系統媒體焦點被其他 App 佔用時，也可暫停、恢復和切換上一首或下一首。未授權時仍可使用，但拖移進度後歌詞可能差半秒左右，不提供循環按鈕和音量調整，失去焦點時也無法控制播放"
           }
         }
       }
@@ -54803,7 +54803,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NetEase Cloud Music's format"
+            "value" : "NetEase Cloud Music’s format"
           }
         },
         "zh-Hans" : {
@@ -54849,7 +54849,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QQ Music's encrypted format"
+            "value" : "QQ Music’s encrypted format"
           }
         },
         "zh-Hans" : {
@@ -54872,7 +54872,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kugou Music's encrypted format, can carry translations"
+            "value" : "Kugou Music’s encrypted format, can carry translations"
           }
         },
         "zh-Hans" : {
@@ -55850,7 +55850,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "推送內容"
+            "value" : "推播內容"
           }
         }
       }
@@ -55873,30 +55873,30 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已自訂，以純文字推送"
+            "value" : "已自訂，以純文字推播"
           }
         }
       }
     },
-    "四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送" : {
+    "所有报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shared by all four reports. Click a placeholder below to insert it at the cursor; a line is left out when none of its placeholders has data"
+            "value" : "Shared by all reports. Click a placeholder below to insert it at the cursor; a line is left out when none of its placeholders has data"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四档报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"
+            "value" : "所有报告共用。点下面的占位符插到光标处；一行里的占位符都没有数据时，这一行不发送"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四種報告共用。點下面的預留位置插入到游標處；一行裡的預留位置都沒有資料時，這一行不會送出"
+            "value" : "所有報告共用。點下面的預留位置插入到游標處；一行裡的預留位置都沒有資料時，這一行不會送出"
           }
         }
       }
@@ -55907,7 +55907,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Custom content is sent as plain text, without each platform's card layout"
+            "value" : "Custom content is sent as plain text, without each platform’s card layout"
           }
         },
         "zh-Hans" : {
@@ -55919,7 +55919,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自訂內容以純文字推送，不套用各平台的卡片排版"
+            "value" : "自訂內容以純文字推播，不套用各平台的卡片排版"
           }
         }
       }
@@ -56390,7 +56390,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The default title, with this period's dates"
+            "value" : "The default title, with this period’s dates"
           }
         },
         "zh-Hans" : {
@@ -56873,7 +56873,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows each line's translation; lines without one show the original"
+            "value" : "Shows each line’s translation; lines without one show the original"
           }
         },
         "zh-Hans" : {
@@ -57000,7 +57000,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預設內容推送時依各平台的格式排版，這裡只顯示文字"
+            "value" : "預設內容推播時依各平台的格式排版，這裡只顯示文字"
           }
         }
       }
@@ -57207,7 +57207,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "依你寫的範本，以純文字推送"
+            "value" : "依你寫的範本，以純文字推播"
           }
         }
       }
@@ -57218,7 +57218,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accent Color"
+            "value" : "Match Accent Color"
           }
         },
         "zh-Hans" : {
@@ -57241,7 +57241,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrics flow left to right in rainbow colours, darkened on a light menu bar; system colours return while the menu is open"
+            "value" : "Lyrics flow left to right in rainbow colors, darkened on a light menu bar; system colors return while the menu is open"
           }
         },
         "zh-Hans" : {
@@ -57258,25 +57258,25 @@
         }
       }
     },
-    "四档共用" : {
+    "所有报告共用" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shared by All Four"
+            "value" : "Shared by All Reports"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四档共用"
+            "value" : "所有报告共用"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "四檔共用"
+            "value" : "所有報告共用"
           }
         }
       }
@@ -57563,7 +57563,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This player streams a different master, so its own platform's lyrics line up with it"
+            "value" : "This player streams a different master, so its own platform’s lyrics line up with it"
           }
         },
         "zh-Hans" : {
@@ -57668,6 +57668,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刪除前會先自動備份"
+          }
+        }
+      }
+    },
+    "规则" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rules"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "规则"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "規則"
+          }
+        }
+      }
+    },
+    "%@内容" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ report"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@内容"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@內容"
           }
         }
       }

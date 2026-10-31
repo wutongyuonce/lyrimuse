@@ -1344,7 +1344,7 @@
         "触控栏",
         "布局"
       ],
-      "subtitle" : "上一首、播放/暂停、下一首和设置键",
+      "subtitle" : "上一首、播放/暂停、下一首和设置按钮",
       "title" : "显示播放控制"
     },
     {
@@ -1364,7 +1364,7 @@
         "布局"
       ],
       "subtitle" : "点按后切换到播放进度、歌词校准、喜欢、随机/循环和音量；当前播放器不支持的项不显示",
-      "title" : "显示「更多」键"
+      "title" : "显示「更多」按钮"
     },
     {
       "dest" : "tab:appearance",
@@ -2286,7 +2286,7 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "Scrobble 规则"
     },
@@ -2294,7 +2294,7 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "匹配模式"
     },
@@ -2302,7 +2302,7 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "歌名"
     },
@@ -2310,7 +2310,7 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "歌手"
     },
@@ -2318,7 +2318,7 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "Scrobble 时机"
     },
@@ -2326,15 +2326,15 @@
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
-      "title" : "短于 30 秒的曲目"
+      "title" : "Scrobble 短于 30 秒的曲目"
     },
     {
       "dest" : "account:lastfm",
       "path" : [
         "Last.fm",
-        "设置"
+        "规则"
       ],
       "title" : "Scrobble 的播放器"
     },

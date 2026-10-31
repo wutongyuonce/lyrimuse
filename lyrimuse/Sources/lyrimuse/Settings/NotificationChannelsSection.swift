@@ -103,7 +103,7 @@ enum NotificationFailureText {
         if let code = f.code { parts.append(code) } else if let status = f.status, f.kind != .network { parts.append("HTTP \(status)") }
         let head = parts.count > 1 ? "\(parts[0])（\(parts[1])）" : parts[0]
         guard let name = platform?.displayName, f.kind != .network, f.kind != .config else { return head }
-        return String(format: L10n.t("%1$@拒收：%2$@"), name, head)
+        return L10n.formatNames(L10n.t("%1$@拒收：%2$@"), name, head)
     }
 
     /// 该怎么改;说不出具体建议时为 nil(平台原话见 `detail`)。
@@ -198,7 +198,7 @@ struct NotificationChannelsCard: View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(
                 title: L10n.t("推送渠道"),
-                help: L10n.t("听歌报告会推到所有启用的渠道；有多个渠道时，可在下方「听歌报告」里为每一档单独选择。点一行可编辑或发送测试，右键可删除")
+                help: L10n.t("听歌报告会推到所有启用的渠道；有多个渠道时，可在下方「听歌报告」里为每份报告单独选择。点一行可编辑或发送测试，右键可删除")
             ) {
                 Button {
                     editing = NotificationChannel(platform: NotificationPlatform.displayOrder.first?.rawValue ?? "bark")
@@ -329,7 +329,7 @@ struct NotificationChannelsCard: View {
             let missing = channel.platform == "telegram" && !channel.url.isEmpty ? L10n.t("还没填 Chat ID") : L10n.t("还没填地址")
             return (prefix + missing, .orange, nil)
         }
-        let lead = prefix + channel.resolvedDigest(legacy: FeatureSettingsStore.shared.digestTemplate).style.label + " · "
+        let lead = prefix + String(format: L10n.t("%@内容"), channel.resolvedDigest(legacy: FeatureSettingsStore.shared.digestTemplate).style.label) + " · "
         guard let last = log.latestByChannel[channel.id] else { return (lead + L10n.t("还没推送过"), .secondary, nil) }
         let when = notificationTimeText(last.date)
         guard let failure = last.failure else {
@@ -432,7 +432,7 @@ struct NotificationRoutePicker: View {
             .settingsCardBackground(cornerRadius: 14)
             // 名字长时截断:封顶放在玻璃外面,胶囊贴着字、不被撑满 150。
             .frame(maxWidth: 150, alignment: .trailing)
-            .help(L10n.t("这一档推到哪些渠道"))
+            .help(L10n.t("这份报告推到哪些渠道"))
             .popover(isPresented: $open, arrowEdge: .bottom) { popover }
         }
     }
@@ -707,12 +707,12 @@ struct NotificationChannelEditor: View {
                         }
                     }
                     if let mismatch {
-                        Label(String(format: L10n.t("这个地址看起来是%@的。要换平台，请删除这个渠道后重新添加"), mismatch.displayName),
+                        Label(L10n.formatNames(L10n.t("这个地址看起来是%@的。要换平台，请删除这个渠道后重新添加"), mismatch.displayName),
                               systemImage: "exclamationmark.triangle")
                             .font(.system(size: 11))
                             .foregroundStyle(.orange)
                     } else if let detected {
-                        Label(String(format: L10n.t("已识别为%@，平台已自动切换"), detected.displayName), systemImage: "sparkle.magnifyingglass")
+                        Label(L10n.formatNames(L10n.t("已识别为%@，平台已自动切换"), detected.displayName), systemImage: "sparkle.magnifyingglass")
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                     } else if isNew && draft.url.isEmpty {
@@ -771,7 +771,7 @@ struct NotificationChannelEditor: View {
                         .toggleStyle(.switch)
                         .controlSize(.small)
                     Text(isNew
-                         ? L10n.t("开启后四档听歌报告都会推到这里，之后可在「听歌报告」里按档调整")
+                         ? L10n.t("开启后所有听歌报告都会推到这里，之后可在「听歌报告」里按报告调整")
                          : L10n.t("关闭后暂停推送到这个渠道，填写的内容会保留"))
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)

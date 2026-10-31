@@ -411,7 +411,7 @@ func runSettingsSearchTests() {
     do {
         let menuBar = ["歌词显示", "菜单栏", "布局"]
         let notch = ["歌词显示", "灵动岛", "歌词行"]
-        let lastfm = ["Last.fm", "设置"]
+        let lastfm = ["Last.fm", "规则"]
         func gate(_ path: [String], _ title: String, false falseConditions: Set<String>) -> String? {
             SettingsSearchCatalog.gateTitle(path: path, title: title) { !falseConditions.contains($0) }
         }

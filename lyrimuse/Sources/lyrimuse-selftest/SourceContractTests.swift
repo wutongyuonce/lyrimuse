@@ -4009,7 +4009,7 @@ func runSourceContractSettingsTests() {
         expectEqual(sourceHas(pushRow, "features.digestPushMinutes = value Task { await features.save() }")
                         && sourceHas(pushRow, "DigestPushTime.timeZoneText(.autoupdatingCurrent)")
                         && sourceHas(tab, "DigestPushTimeCell()") && !card.contains("DigestPushTimeCell"),
-                    true, "推送时间: 那一块在听歌报告卡的「四档共用」里(不在渠道卡),ⓘ 写明时区,改了就落盘")
+                    true, "推送时间: 那一块在听歌报告卡的「所有报告共用」里(不在渠道卡),ⓘ 写明时区,改了就落盘")
         expectEqual(sourceHas(tab, "if digestSourcesChoosable {")
                         && sourceHas(tab, "config.lastfmBridgeMissingHint() == nil && config.isListenBrainzReadable"),
                     true, "推送提醒第二期: 两个账号都能读统计时才给选数据源(分段和右键都是)")
@@ -4038,13 +4038,13 @@ func runSourceContractSettingsTests() {
                     "推送内容编辑器: 点预设换文字可撤销、标题超宽横着滚不截断")
         expectEqual(sourceHas(sourceBody("func updateNSView(", in: placeholderView), "!tv.hasMarkedText(), tv.string != text"), true,
                     "推送内容编辑器: 输入法组字期间不拿外部文字整段替换(会抹掉没上屏的拼音)")
-        expectEqual(sourceHas(tab, "SettingsTileGrid(title: L10n.t(\"四档共用\"), columns: 1) {")
+        expectEqual(sourceHas(tab, "SettingsTileGrid(title: L10n.t(\"所有报告共用\"), columns: 1) {")
                         && sourceHas(sourceBody("private func digestTile(", in: tab), "SettingsToggleTile(icon: icon, title: title, detail: subtitle,")
                         && !section.contains("SettingsGlassTabPicker") && !editorSource.contains("SettingsGlassTabPicker")
                         && sourceHas(section, ".settingsCardBackground(cornerRadius: 12, inSheet: true)")
                         && sourceHas(section, ".settingsGlassButtons(inSheet: true)")
                         && sourceHas(editorSource, ".settingsGlassButtons(inSheet: true)"), true,
-                    "推送提醒页: 四档小块、四档共用一组;弹窗里不用玻璃分段,卡片和按钮画 sheet 替身")
+                    "推送提醒页: 四档小块、所有报告共用一组;弹窗里不用玻璃分段,卡片和按钮画 sheet 替身")
         expectEqual(sourceHas(tab, ".environment(\\.settingsOutlinedTiles, true)")
                         && sourceHas(sourceBody("struct NotificationLogCard: View {", in: section), "Button(showAll ? L10n.t(\"收起\") : L10n.t(\"展开\")) {"), true,
                     "推送提醒页: 听歌报告卡的小块画淡底加描边,不用默认灰底;推送记录的按钮只写展开 / 收起,不报条数(15 章决策 93)")
@@ -5875,7 +5875,7 @@ func runSourceContractIdentityTests() {
         let accountTab = code("AccountLinkingTab.swift")
         let statusCall = "mirrorInfo: mirrorStatus.info, relayVerdict: relayStatus.verdict, lbInfo: lbStatus.info,"
         expectEqual(accountTab.components(separatedBy: statusCall).count - 1 == 2 && labsPage.components(separatedBy: statusCall).count - 1 == 2
-                    && accountTab.contains("if config.isListenBrainzConfigured, lbInfo != nil { return .error(L10n.t(\"令牌已失效\")) }")
+                    && accountTab.contains("if config.isListenBrainzConfigured, lbInfo != nil { return .error(L10n.t(\"Token 已失效\")) }")
                     && code("AppDelegate.swift").contains("ListenBrainzAuthNotifier.shared.start()")
                     && code("Settings/UnknownPlayerNotifier.swift").contains("if category == ListenBrainzAuthNotifier.categoryID {"), true,
                     "ListenBrainz 令牌状态: 四处账号徽标都传引擎报的状态,被拒时报红;启动时订阅通知,点通知去 ListenBrainz 页")

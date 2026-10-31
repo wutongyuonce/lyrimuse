@@ -108,6 +108,12 @@ enum L10n {
         return t(key)
     }
 
+    /// 把播放器名、平台名填进句子:名字以拉丁字母或数字开头 / 结尾、挨着汉字时补半角空格(Core `MixedScriptSpacing`)。
+    /// 只用在模板里 `%@` 直接贴着汉字的那几处;参数按位置取,同 `String(format:)`。
+    static func formatNames(_ template: String, _ names: String...) -> String {
+        MixedScriptSpacing.format(template, names)
+    }
+
     /// 把几样东西拼成句子里的列表(「A、B和C」/ "A, B, and C"),按**界面语言**拼(`locale`)。
     /// 别用 `ListFormatter.localizedString(byJoining:)`:它按系统语言拼。
     static func list(_ items: [String]) -> String {

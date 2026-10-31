@@ -27,12 +27,13 @@ struct LastfmFootprintView: View {
             milestoneTiles
             heatmapTile
             HStack(alignment: .center, spacing: 8) {
-                sectionTitle(L10n.t("收听时段与艺人"))
+                sectionTitle(L10n.t("收听时段与歌手"))
                 Spacer(minLength: 8)
-                SettingsPillSegmentedControl(
+                SettingsGlassTabPicker(
                     selection: Binding(get: { span }, set: { spanRaw = $0.rawValue }),
                     options: ListeningHours.Span.allCases,
-                    label: Self.spanLabel
+                    label: Self.spanLabel,
+                    compact: true
                 )
             }
             .padding(.top, 10)
@@ -249,7 +250,7 @@ struct LastfmFootprintView: View {
         FootprintTile(padded: false) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
-                    tileLabel(L10n.t("播放热力图"), icon: "square.grid.3x3.fill")
+                    tileLabel(L10n.t("收听热力图"), icon: "square.grid.3x3.fill")
                     Spacer(minLength: 8)
                     heatmapYearPicker
                 }
@@ -594,8 +595,7 @@ struct LastfmFootprintView: View {
                             ProgressView().controlSize(.small)
                             Text(L10n.t("正在查询那年今日…")).foregroundStyle(.secondary)
                         case .empty:
-                            Label(L10n.t("过去三年的今天及前后一周均无收听记录"),
-                                  systemImage: "calendar.badge.exclamationmark")
+                            Text(L10n.t("过去三年的今天及前后一周均无收听记录"))
                                 .foregroundStyle(.secondary)
                         case .failed:
                             Label(L10n.t("无法获取「那年今日」：Last.fm 未响应"), systemImage: "exclamationmark.triangle")

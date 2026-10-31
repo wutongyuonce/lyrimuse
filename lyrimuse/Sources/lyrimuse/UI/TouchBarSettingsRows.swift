@@ -188,7 +188,7 @@ struct TouchBarLayoutRows: View {
                     }
                 }
                 SettingsToggleTile(icon: "playpause.fill", title: L10n.t("显示播放控制"),
-                                   help: L10n.t("上一首、播放/暂停、下一首和设置键"),
+                                   help: L10n.t("上一首、播放/暂停、下一首和设置按钮"),
                                    isOn: $settings.touchBarShowsControls) {
                     if settings.touchBarShowsControls {
                         TouchBarSidePicker(selection: $settings.touchBarControlsSide)
@@ -197,7 +197,7 @@ struct TouchBarLayoutRows: View {
                     }
                 }
                 // 最右端那颗「⋯」键,点一下换成「更多」那一页(17 章决策 47)。
-                SettingsToggleTile(icon: "ellipsis.circle", title: L10n.t("显示「更多」键"),
+                SettingsToggleTile(icon: "ellipsis.circle", title: L10n.t("显示「更多」按钮"),
                                    help: L10n.t("点按后切换到播放进度、歌词校准、喜欢、随机/循环和音量；当前播放器不支持的项不显示"),
                                    isOn: $settings.touchBarShowsMoreKey)
                 // 占满整条触控栏要连系统的功能栏一起收起,展开期间够不着亮度、音量;默认开(`AppSettings.defaultTouchBarHidesControlStrip`)。

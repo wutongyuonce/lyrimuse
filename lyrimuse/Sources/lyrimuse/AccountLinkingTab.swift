@@ -63,7 +63,7 @@ private struct DestinationStatusLabel: View {
         Group {
             switch status {
             case .disabled:
-                Label(L10n.t("未启用"), systemImage: "circle").foregroundStyle(.secondary)
+                Label(L10n.t("未开启"), systemImage: "circle").foregroundStyle(.secondary)
             case .notConfigured(let hint):
                 // 详情页仍然如实说明状态(用户既然点进来了就是想知道),只是外观中性 ——
                 // 空心圆 + 次要色,跟"未启用"一个量级,不是警告。
@@ -167,6 +167,7 @@ private struct SecretFieldRow: View {
                 if !value.isEmpty {
                     Button(L10n.t("完成")) { isEditing = false }
                         .buttonBorderShape(.capsule)
+                        .settingsGlassButtons()
                 }
             }
         } else {
@@ -177,6 +178,7 @@ private struct SecretFieldRow: View {
                     .font(.caption).foregroundStyle(.green)
                 Button(L10n.t("更改")) { isEditing = true }
                     .buttonBorderShape(.capsule)
+                    .settingsGlassButtons()
             }
         }
     }
@@ -327,11 +329,11 @@ func destinationStatus(for destination: AccountDestination, config: ConfigStore,
     switch destination {
     case .listenBrainz:
         // 引擎报令牌被拒压过「已连接」:提交全停在待重发队列里,绿标就是在撒谎(同 Last.fm 的「授权已失效」)。
-        if config.isListenBrainzConfigured, lbInfo != nil { return .error(L10n.t("令牌已失效")) }
+        if config.isListenBrainzConfigured, lbInfo != nil { return .error(L10n.t("Token 已失效")) }
         // ListenBrainz 是可选账号(只想用悬浮歌词可以完全不配),未配置不算硬性错误,
         // 跟其它卡片一致用橙色"缺凭据"提示。
         if config.isListenBrainzReadable {
-            return .active(String(format: L10n.t("已连接为 @%@"), config.listenbrainzUser))
+            return .active(String(format: L10n.t("已连接 · @%@"), config.listenbrainzUser))
         }
         // 只填了 token、没填用户名:提交收听其实已经在跑了,但听歌报告读不回数据。这跟
         // "压根没配"是两种不同的状态,混成一句"未配置"会让填了 token 的人以为自己没填。
@@ -355,7 +357,7 @@ func destinationStatus(for destination: AccountDestination, config: ConfigStore,
         // 本地攥着的 session key 是废的,绿标就是在撒谎。
         if mirrorInfo != nil { return .error(L10n.t("授权已失效")) }
         let name = lastfmDisplayName(config: config)
-        return .active(name.isEmpty ? nil : String(format: L10n.t("已连接：%@"), name))
+        return .active(name.isEmpty ? nil : String(format: L10n.t("已连接 · %@"), name))
     case .bark:
         // 一个渠道都没有 = 没碰过;有渠道但都停用 / 没填齐不算出错(停用是用户自己选的),也不给徽标。
         if let hint = config.pushMissingHint() { return .notConfigured(hint) }
@@ -789,7 +791,7 @@ struct AccountLinkingTab: View {
         .contentShape(Rectangle())
         .contextMenu {
             if digestSourcesChoosable {
-                Picker(L10n.t("这一档的数据来源"), selection: digestSourceBinding(source)) {
+                Picker(L10n.t("这份报告的数据来源"), selection: digestSourceBinding(source)) {
                     Text("Last.fm").tag("lastfm")
                     Text("ListenBrainz").tag("listenbrainz")
                 }
@@ -857,6 +859,13 @@ struct AccountLinkingTab: View {
         }
     }
 
+    /// 「获取 Token →」只在还没填、或这次校验判了无效时出现;连上之后用不着。
+    private var listenBrainzTokenNeeded: Bool {
+        if config.listenbrainzToken.isEmpty { return true }
+        if case .invalid = tokenCheck.state { return true }
+        return false
+    }
+
     private var listenBrainzFields: some View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(title: L10n.t("账号信息"))
@@ -866,9 +875,11 @@ struct AccountLinkingTab: View {
                     HStack(spacing: 8) {
                         listenBrainzTokenStatus
                         Spacer(minLength: 0)
-                        Link(
-                            L10n.t("获取 Token →"),
-                            destination: URL(string: "https://listenbrainz.org/settings/")!)
+                        if listenBrainzTokenNeeded {
+                            Link(
+                                L10n.t("获取 Token →"),
+                                destination: URL(string: "https://listenbrainz.org/settings/")!)
+                        }
                     }
                     .font(.caption)
                 }
@@ -884,31 +895,29 @@ struct AccountLinkingTab: View {
     @ViewBuilder
     private var stateRelayFields: some View {
         SettingsCard(cornerRadius: 18) {
-            SettingsCardHeader(
-                title: L10n.t("连接信息"),
-                help: L10n.t("需先部署网页端并获取访问令牌。部署步骤见项目 README 的「网页端」一节：https://github.com/Yudaotor/lyrimuse#网页端")
-            )
-            SettingsRawRow(insetToText: true) {
-                VStack(alignment: .leading, spacing: 8) {
-                    // 标题和「?」常驻在框外,同 LabeledInputRow:卡片不在 Form 里,TextField 自带的 label 不显示。
-                    HStack {
-                        HStack(spacing: 4) {
-                            Text(L10n.t("同步服务地址"))
-                            HelpButton(
-                                text: L10n.t("使用 Cloudflare Worker + KV 自行搭建的 state-worker 服务（独立公开仓库 Yudaotor/nowplaying-workers）。也可不自建：配置「ListenBrainz」后，网页同样能显示「正在播放」，两者配置其一即可。效果截图与完整搭建步骤见该仓库的 README"),
-                                docTitle: L10n.t("查看效果与教程 →"),
-                                // 指向 Yudaotor/nowplaying-workers 仓库自己的 README(#readme 锚点,
-                                // GitHub 会自动渲染仓库首页那份)。
-                                docURL: URL(string: "https://github.com/Yudaotor/nowplaying-workers#readme")!
-                            )
-                        }
-                        .fixedSize()
-                        TextField(L10n.t("同步服务地址"), text: $config.stateRelayURL,
-                                  prompt: Text(L10n.t("例如 https://yourdomain.com/api/state")))
-                            .labelsHidden()
+            SettingsCardHeader(title: L10n.t("连接信息"))
+            SettingsRawRow(insetToText: true, icon: "link") {
+                // 标题和「?」常驻在框外,同 LabeledInputRow:卡片不在 Form 里,TextField 自带的 label 不显示。
+                HStack {
+                    HStack(spacing: 4) {
+                        Text(L10n.t("同步服务地址"))
+                        HelpButton(
+                            text: L10n.t("需自行部署同步服务；只连接 ListenBrainz 时网页同样能显示正在播放"),
+                            docTitle: L10n.t("查看效果与教程 →"),
+                            // 指向 Yudaotor/nowplaying-workers 仓库自己的 README(#readme 锚点,
+                            // GitHub 会自动渲染仓库首页那份)。
+                            docURL: URL(string: "https://github.com/Yudaotor/nowplaying-workers#readme")!
+                        )
                     }
-                    SecretFieldRow(L10n.t("访问令牌"), value: $config.stateRelayToken)
+                    .fixedSize()
+                    TextField(L10n.t("同步服务地址"), text: $config.stateRelayURL,
+                              prompt: Text(L10n.t("例如 https://yourdomain.com/api/state")))
+                        .labelsHidden()
                 }
+            }
+            CardDivider()
+            SettingsRawRow(insetToText: true, icon: "key.fill") {
+                SecretFieldRow(L10n.t("访问令牌"), value: $config.stateRelayToken)
             }
             if let note = relayPushNote {
                 CardDivider()
@@ -959,7 +968,7 @@ struct AccountLinkingTab: View {
                                        notifyLatest: notifyLog.latestByChannel)
         switch status {
         case .disabled:
-            return (.secondary, L10n.t("未启用"), nil)
+            return (.secondary, L10n.t("未开启"), nil)
         case .notConfigured(let hint):
             return (.secondary, hint, nil)
         case .missingCreds(let hint), .warning(let hint):
@@ -971,9 +980,9 @@ struct AccountLinkingTab: View {
             case .listenBrainz:
                 return (.green, "@" + config.listenbrainzUser, L10n.t("已连接"))
             case .stateRelay:
-                // 只说「已配置」不说推得出去:没出问题(`.ok`)也包括引擎刚启动还没推过、刚改了地址或令牌、连不上还不到 10 分钟。
+                // 只说「已设置」不说推得出去:没出问题(`.ok`)也包括引擎刚启动还没推过、刚改了地址或令牌、连不上还不到 10 分钟。
                 let host = URL(string: config.stateRelayURL)?.host ?? config.stateRelayURL
-                return (.green, L10n.t("已配置"), host.isEmpty ? nil : host)
+                return (.green, L10n.t("已设置"), host.isEmpty ? nil : host)
             case .bark:
                 return (.green, notificationChannelSummary(config.activeNotificationChannels), L10n.t("已设置"))
             case .lastfm, .discord:
@@ -1012,7 +1021,7 @@ struct AccountLinkingTab: View {
     // **外面**、无条件渲染;下面这几段只负责"已连接之后想细看的几件事"。
     private enum LastfmSection: String, CaseIterable, Identifiable {
         case stats, chart, onThisDay
-        /// 「设置」段。
+        /// 「规则」段(深链和存下来的值仍是 settings)。
         ///
         /// 装的是**跟 Last.fm 上送行为有关、但不是开关本身**的那些配置。为什么不摆在
         /// 上面那张常驻的连接卡里:那张卡的定位是"不看哪个 tab 都该一直看得见的东西"
@@ -1025,7 +1034,7 @@ struct AccountLinkingTab: View {
             case .stats: return L10n.t("统计")
             case .chart: return L10n.t("榜单")
             case .onThisDay: return L10n.t("足迹") // 这一段是「收听足迹」+「那年今日」两张卡,足迹在上
-            case .settings: return L10n.t("设置")
+            case .settings: return L10n.t("规则")
             }
         }
     }
@@ -1386,8 +1395,8 @@ struct AccountLinkingTab: View {
                 // 文案照这张卡的惯例只写效果。
                 SettingsRow(
                     icon: "timer",
-                    title: L10n.t("短于 30 秒的曲目"),
-                    help: L10n.t("开：同样 Scrobble，播放过半即记录\n关：不记录（Last.fm 官方规则）")
+                    title: L10n.t("Scrobble 短于 30 秒的曲目"),
+                    help: L10n.t("开启后播放过半即记录；Last.fm 官方规则不记录")
                 ) {
                     Toggle("", isOn: Binding(
                         get: { features.scrobbleShortTracks },
@@ -1988,7 +1997,7 @@ struct AccountLinkingTab: View {
             }
         case .success(let username):
             HStack {
-                Label(String(format: L10n.t("已连接：%@"), username), systemImage: "checkmark.seal.fill")
+                Label(String(format: L10n.t("已连接 · %@"), username), systemImage: "checkmark.seal.fill")
                     .font(.system(size: 12.5))
                     .foregroundStyle(.green)
                 Spacer()
@@ -1997,7 +2006,7 @@ struct AccountLinkingTab: View {
         case .idle where lastfmConnected:
             HStack {
                 Label(
-                    config.lastfmScrobbleUsername.isEmpty ? L10n.t("已连接 Last.fm 账号") : String(format: L10n.t("已连接：%@"), config.lastfmScrobbleUsername),
+                    config.lastfmScrobbleUsername.isEmpty ? L10n.t("已连接 Last.fm 账号") : String(format: L10n.t("已连接 · %@"), config.lastfmScrobbleUsername),
                     systemImage: "checkmark.seal.fill"
                 )
                 .font(.system(size: 12.5))
@@ -2081,15 +2090,15 @@ struct AccountLinkingTab: View {
                 }
                 // 「数据来源」的分段宽,单独占一行;另两项并排。
                 VStack(spacing: 6) {
-                    SettingsTileGrid(title: L10n.t("四档共用"), columns: 1) {
+                    SettingsTileGrid(title: L10n.t("所有报告共用"), columns: 1) {
                         SettingsControlCell(icon: "cylinder.split.1x2", title: L10n.t("数据来源")) {
                             // 两个账号都能读统计时才给选;只连了一个就直接写那个名字,不摆一个点了也换不过去的分段。
                             if digestSourcesChoosable {
-                                SettingsPillSegmentedControl(
+                                SettingsGlassTabPicker(
                                     selection: sharedDigestSourceBinding,
                                     options: ["lastfm", "listenbrainz"],
                                     label: { Self.digestSourceName($0) },
-                                    minWidth: 0
+                                    compact: true
                                 )
                             } else {
                                 Text(sharedDigestSource.isEmpty ? L10n.t("未连接 Last.fm 或 ListenBrainz") : Self.digestSourceName(sharedDigestSource))
@@ -2307,7 +2316,7 @@ struct AccountLinkingTab: View {
             }
             .disabled(hidesSong)
             if layout.followsLyrics {
-                Text(L10n.t("「当前歌词」行最多每 4 秒切换一句，过短的句子将跳过；间奏、暂停或这首歌曲无歌词时显示专辑，专辑已占用一行时留空"))
+                Text(L10n.t("歌词行至少间隔 4 秒切换一句；无歌词时显示专辑"))
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)

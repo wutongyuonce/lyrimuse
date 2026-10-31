@@ -44,7 +44,7 @@ final class ListenBrainzAuthNotifier {
         guard await UnknownPlayerNotifier.shared.ensureAuthorized() else { return }
         let content = UNMutableNotificationContent()
         content.title = "ListenBrainz"
-        content.body = L10n.t("令牌已失效，收听提交已暂停") + "\n" + L10n.t("点按此处前往设置重新连接")
+        content.body = L10n.t("Token 已失效，收听提交已暂停") + "\n" + L10n.t("点按此处前往设置重新连接")
         content.categoryIdentifier = Self.categoryID
         content.threadIdentifier = Self.categoryID
         content.sound = .default
