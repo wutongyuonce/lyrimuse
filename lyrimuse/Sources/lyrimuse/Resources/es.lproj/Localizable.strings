@@ -274,7 +274,7 @@
 "「获取 Lyrimuse」" = "«Obtener Lyrimuse»";
 "一" = "L";
 "一切就绪" = "Todo listo";
-"一周结束后的 %@ 推送上一周的小结" = "Se envía a las %@ al terminar cada semana, con el resumen de la semana anterior";
+"一周结束后的 %@ 推送上一周的小结" = "Se envía a las %@ al acabar cada semana, con su resumen";
 "一并解锁" = "Desbloquearlas";
 "一直显示" = "Siempre";
 "一行 1 分，最多 200" = "Un punto por línea, hasta 200";
@@ -399,7 +399,7 @@
 "仅作用于悬浮歌词和歌词窗口" = "Solo afecta a la letra flotante y a la ventana de letra";
 "仅作用于歌词；「自动」根据背景亮度在浅色与深色之间切换" = "Solo la letra; «Auto» alterna entre claro y oscuro según el brillo del fondo";
 "仅作用于歌词；字号随窗口大小自动调整" = "Solo afecta a la letra; el tamaño se adapta a la ventana";
-"仅作用于歌词；顶部信息和播放控制仍用系统字体" = "Solo la letra; el encabezado y los controles de reproducción mantienen el tipo de letra del sistema";
+"仅作用于歌词；顶部信息和播放控制仍用系统字体" = "Solo la letra; el encabezado y los controles de reproducción mantienen la fuente del sistema";
 "仅作用于能完整显示的句子" = "Solo se aplica a las líneas que caben";
 "仅作用于能完整显示的句子；「自动」按对唱声部对齐，合唱居中，无对唱信息时靠左" = "Solo se aplica a las líneas que caben. «Auto» sigue las voces del dueto: los coros van centrados y las líneas sin información de dueto, a la izquierda";
 "仅列出可翻译为当前译文语言的语言，因此可能少于「系统设置」中的数量。点按未下载的语言即可下载" = "Solo aparecen los idiomas que pueden traducirse a tu idioma de traducción, así que puede haber menos que en Ajustes del Sistema. Haz clic en un idioma no descargado para descargarlo";
@@ -411,7 +411,7 @@
 "仅在机器人安全设置开启「签名校验」时需要填写，未开启时也能正常接收消息" = "Solo hace falta si la seguridad del bot tiene activada la «Verificación de firma»; sin ella los mensajes llegan igualmente";
 "仅在机器人安全设置选择「加签」时需要填写，留空则按未加签处理" = "Solo hace falta si la seguridad del bot tiene activada la «Firma»; déjalo vacío para tratarlo como sin firma";
 "仅当前条目" = "Solo la entrada actual";
-"仅恢复主题、字体和颜色" = "Solo restablece el tema, el tipo de letra y los colores";
+"仅恢复主题、字体和颜色" = "Solo restablece el tema, la fuente y los colores";
 "仅搜索无歌词或仅有纯文本歌词的歌曲" = "Solo canciones sin letra o con letra en texto plano";
 "仅显示所用播放器和播放进度，不发送歌名、歌手、专辑、歌词、链接和「在播放器上收听」按钮" = "Solo muestra el reproductor que usas y el progreso. No se envían el título, el artista, el álbum, la letra, los enlaces ni el botón «Escuchar en el reproductor»";
 "仅有纯文本，无时间戳" = "Solo texto, sin sincronización";
@@ -637,7 +637,7 @@
 "删除后不再推送到这个渠道，推送记录会保留" = "Al eliminarlo, dejan de enviarse informes a este canal; el historial de envíos se conserva";
 "删除失败" = "No se pudo eliminar";
 "删除本地记录…" = "Eliminar letras guardadas…";
-"删除此导入的字体（不可恢复）" = "Eliminar este tipo de letra importado (no se puede deshacer)";
+"删除此导入的字体（不可恢复）" = "Eliminar esta fuente importada (no se puede deshacer)";
 "删除语言包：系统设置 › 通用 › 语言与地区 › 翻译语言" = "Para eliminar idiomas: Ajustes del Sistema › General › Idioma y región › Idiomas de traducción";
 "删除选中的 %@ 条" = "Eliminar %@ canciones";
 "删除选中的 %@ 条#one" = "Eliminar %@ canción";
@@ -940,10 +940,10 @@
 "密钥或地址有误" = "Secreto o URL incorrectos";
 "对齐方式" = "Alineación";
 "导入" = "Importar";
-"导入失败：不是有效的 .ttf / .otf 字体文件" = "Error al importar: no es un archivo de tipo de letra .ttf / .otf válido";
+"导入失败：不是有效的 .ttf / .otf 字体文件" = "Error al importar: no es un archivo de fuente .ttf / .otf válido";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Error al importar: no se pudo leer el archivo seleccionado. Puede que no esté descargado en este Mac o que Lyrimuse no pueda leerlo";
 "导入失败：该文件不是 Lyrimuse 的设置备份，或已损坏。当前设置未更改" = "Error al importar: este archivo no es una copia de los ajustes de Lyrimuse o está dañado. Tus ajustes actuales no han cambiado";
-"导入字体…" = "Importar tipo de letra…";
+"导入字体…" = "Importar fuente…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Al importar se traen tus cuentas y todos tus ajustes personales; después Lyrimuse se reinicia";
 "导入并重启" = "Importar y reiniciar";
 "导出…" = "Exportar…";
@@ -1392,7 +1392,7 @@
 "搜索" = "Buscar";
 "搜索候选歌词" = "Buscar letra";
 "搜索失败：%@" = "No se pudo buscar la letra: %@";
-"搜索字体" = "Buscar tipos de letra";
+"搜索字体" = "Buscar fuentes";
 "搜索时默认按相关度排序：歌名开头匹配的优先，其次是歌名、歌手、专辑中匹配的" = "Al buscar, los resultados se ordenan por relevancia: primero los títulos que empiezan por la búsqueda y luego las coincidencias en título, artista y álbum";
 "搜索期间这首歌曲被修改过，本轮结果未采用" = "Esta canción se editó durante la búsqueda, así que no se aplicó el resultado de esta ronda";
 "搜索歌手/歌名/专辑" = "Buscar artista/título/álbum";
@@ -1408,7 +1408,7 @@
 "播放器原始写法：%@" = "Según el reproductor: %@";
 "播放器或曲库提供的标识符可信度最高；按曲名检索得到的结果可能有误，仅供参考" = "Los identificadores de reproductores o bases de datos musicales son los más fiables; los resultados por búsqueda de título pueden ser erróneos y son solo orientativos";
 "播放器未提供歌手，按歌名和时长推断" = "El reproductor no indicó el artista; se dedujo del título y la duración";
-"播放器联动" = "Abrir y cerrar";
+"播放器联动" = "Abrir y salir";
 "播放器自带歌词" = "Letra del propio reproductor";
 "播放控制" = "Controles";
 "播放控制位置" = "Posición de los controles";
@@ -1477,7 +1477,7 @@
 "旁遮普语" = "Panyabí";
 "无 GitHub 账号时，可发送邮件至 %@；右键点按可拷贝地址" = "Si no tienes cuenta de GitHub, escribe a %@. Haz clic secundario para copiar la dirección";
 "无副行" = "Una sola línea";
-"无匹配的字体" = "Ningún tipo de letra coincide";
+"无匹配的字体" = "Ninguna fuente coincide";
 "无可保存的更改" = "No hay cambios que guardar";
 "无可恢复的歌词" = "No hay letras ocultas que restaurar";
 "无待重新匹配的歌曲" = "No queda nada por volver a buscar";
@@ -1547,7 +1547,7 @@
 "显示 10 首" = "Mostrar 10 canciones";
 "显示/隐藏悬浮歌词" = "Mostrar/ocultar letra flotante";
 "显示/隐藏灵动岛歌词" = "Mostrar/ocultar letra del notch";
-"显示/隐藏菜单栏歌词" = "Mostrar/ocultar letra de la barra de menús";
+"显示/隐藏菜单栏歌词" = "Mostrar/ocultar letra de barra de menús";
 "显示/隐藏译文" = "Mostrar/ocultar traducción";
 "显示/隐藏读音" = "Mostrar/ocultar romanización";
 "显示「更多」按钮" = "Mostrar botón «Más»";
@@ -1885,11 +1885,11 @@
 "歌词窗口" = "Ventana de letra";
 "歌词窗口…" = "Ventana de letra…";
 "歌词窗口的文字颜色；「自动」根据背景亮度在浅色与深色之间切换" = "Color del texto de la ventana de letra. «Auto» alterna entre claro y oscuro según el brillo del fondo";
-"歌词窗口的歌词字体（正文、译文、读音）" = "Tipo de letra de la ventana de letra (texto, traducción y romanización)";
+"歌词窗口的歌词字体（正文、译文、读音）" = "Fuente de la ventana de letra (texto, traducción y romanización)";
 "歌词窗口的背景：跟随封面、纯色、渐变或毛玻璃" = "Fondo de la ventana de letra: según la ilustración, color sólido, degradado o vidrio esmerilado";
 "歌词管理" = "Gestor de letras";
 "歌词管理…" = "Gestor de letras…";
-"歌词类型" = "Tipo de letras";
+"歌词类型" = "Sincronización";
 "歌词缺失" = "Sin letra";
 "歌词行" = "Línea de letra";
 "歌词行的高度，常态与展开时相同。默认恰好容纳文字（开启副行时更高），可调高" = "Altura de la fila de letra, igual en reposo y expandida. Por omisión se ajusta al texto (más alta con la segunda línea activada); puedes aumentarla";
@@ -2175,7 +2175,7 @@
 "系统功能栏" = "Control Strip";
 "系统媒体信息通道不可用" = "Canal multimedia del sistema no disponible";
 "系统媒体信息通道在本机不可用：%@ 将改为直接读取播放状态（进度可能略有偏差），其他播放器暂时无法读取" = "El canal multimedia del sistema no está disponible en este Mac: %@ se leerá directamente (el progreso puede desviarse un poco); los demás reproductores no se pueden leer por ahora";
-"系统字体" = "Tipo de letra del sistema";
+"系统字体" = "Fuente del sistema";
 "系统已开启「减弱动态效果」，触控栏歌词不滚动、不逐字高亮" = "«Reducir movimiento» está activado, así que la letra de la Touch Bar no se desplaza ni se ilumina palabra por palabra";
 "系统自动化授权：上次检测时已授权" = "Acceso de automatización del sistema: concedido en la última comprobación";
 "系统自动化授权：尚未授权" = "Acceso de automatización del sistema: aún no concedido";
@@ -2301,7 +2301,7 @@
 "自动识别中" = "Detección automática";
 "自动识别正在播放的 App" = "La app que esté reproduciendo, detectada automáticamente";
 "自动识别正在播放的 App，以及 %@" = "La app que esté reproduciendo, además de %@";
-"自动跳过 YouTube Music 广告" = "Omitir anuncios de YouTube Music automáticamente";
+"自动跳过 YouTube Music 广告" = "Omitir anuncios de YouTube Music";
 "自动选定歌词时的记录，重新搜索的结果可能不同" = "Se guardó al elegir la letra automáticamente; buscar de nuevo ahora puede dar otros resultados";
 "自动隐藏" = "Ocultar automáticamente";
 "自定义" = "Personalizado";
@@ -2602,7 +2602,7 @@
 "选中的候选" = "Candidata seleccionada";
 "选定之后" = "Tras elegir la letra";
 "选择" = "Elegir";
-"选择 .ttf 或 .otf 字体文件，可多选" = "Elige un archivo de tipo de letra .ttf u .otf (puedes seleccionar varios)";
+"选择 .ttf 或 .otf 字体文件，可多选" = "Elige un archivo de fuente .ttf u .otf (puedes seleccionar varios)";
 "选择 Lyrimuse 应视为播放器的 App" = "Elige una app para que Lyrimuse la trate como reproductor";
 "选择…" = "Elegir…";
 "选择一个会自动同步的文件夹（如 Dropbox、坚果云、OneDrive），在新 Mac 上选择同一文件夹即可恢复" = "Elige una carpeta que se sincronice automáticamente, como Dropbox u OneDrive. En un Mac nuevo, elige la misma carpeta para restaurar";
@@ -2692,7 +2692,7 @@
 "链接" = "Enlace";
 "链接无效或已失效" = "Este enlace no es válido o ha caducado";
 "链接需以 http:// 或 https:// 开头" = "El enlace debe empezar por http:// o https://";
-"锁定/解锁位置" = "Bloquear/desbloquear posición";
+"锁定/解锁位置" = "Fijar/liberar posición";
 "锁定位置" = "Bloquear posición";
 "锁定位置仅对悬浮歌词有效" = "Bloquear la posición solo afecta a la letra flotante";
 "锁定后无法拖动，悬停时也不显示播放控制" = "Bloqueada, la letra no se puede arrastrar y los controles al pasar el puntero no aparecen";

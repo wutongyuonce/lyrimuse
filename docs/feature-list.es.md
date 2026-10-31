@@ -50,7 +50,7 @@ Estas funciones siguen desactivadas después de instalar. Actívalas primero en 
 | [Atenuar la fila de letra del notch al pasar el puntero](#feature-notch-lyric-row-fade) | Ajustes › Mostrar letra › Notch › Línea de letra › Atenuar al pasar el puntero |
 | [Letra web: teléfono o tableta como segunda pantalla, o fuente de navegador de OBS](#feature-web-lyrics) | Ajustes › Mostrar letra › Ventana de letra › Letra web |
 | [YouTube Music y Spotify Web en el navegador](#feature-web-players) | Ajustes › Reproductor › Web |
-| [Omitir anuncios de YouTube Music automáticamente](#feature-skip-youtube-ads) | Ajustes › Reproductor › Web › Omitir anuncios de YouTube Music automáticamente |
+| [Omitir anuncios de YouTube Music automáticamente](#feature-skip-youtube-ads) | Ajustes › Reproductor › Web › Omitir anuncios de YouTube Music |
 | [Abrir y salir junto con el reproductor](#feature-player-linkage) | Ajustes › Reproductor › Abrir y salir › Abrir reproductores al iniciar |
 | [Scrobble y perfil de escucha en Last.fm](#feature-lastfm) | Ajustes › Last.fm › Reglas › Reglas de scrobble |
 | [Sincronizar con ListenBrainz](#feature-listenbrainz) | Ajustes › Laboratorio › ListenBrainz › Información de la cuenta |
@@ -292,7 +292,7 @@ La línea actual aparece en la barra de menús y se desplaza si es demasiado lar
 - Ajustes: Mostrar letra › Barra de menús › Diseño › Posición de la letra
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Qué se muestra
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Segunda línea
-- Ajustes: Atajos de teclado › Mostrar/ocultar letra de la barra de menús
+- Ajustes: Atajos de teclado › Mostrar/ocultar letra de barra de menús
 
 <a id="feature-touch-bar-lyrics"></a>
 
@@ -428,7 +428,7 @@ Bloqueada, la letra flotante no se puede arrastrar; o bien exige mantener pulsad
 - Desactivada por omisión
 - Ajustes: Mostrar letra › Letra flotante › Comportamiento › Bloquear posición
 - Ajustes: Mostrar letra › Letra flotante › Comportamiento › Haz clic y mantén para arrastrar
-- Ajustes: Atajos de teclado › Bloquear/desbloquear posición
+- Ajustes: Atajos de teclado › Fijar/liberar posición
 
 <a id="feature-hover-controls"></a>
 
@@ -596,7 +596,7 @@ Tras vincular tu navegador, la música que suena en una página web también tie
 Cuando aparece el botón «Omitir» en YouTube Music en el navegador, se pulsa automáticamente. Si está desactivado, puedes omitirlos tú desde el notch. Requiere el permiso de «Accesibilidad».
 
 - Desactivada por omisión
-- Ajustes: Reproductor › Web › Omitir anuncios de YouTube Music automáticamente
+- Ajustes: Reproductor › Web › Omitir anuncios de YouTube Music
 - Ajustes: Reproductor › Permisos y servicios › Accesibilidad
 
 <a id="feature-other-players"></a>
@@ -921,7 +921,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Reproductor › Web
 
-- **Omitir anuncios de YouTube Music automáticamente**: Los anuncios que se pueden saltar se saltan en cuanto aparecen
+- **Omitir anuncios de YouTube Music**: Los anuncios que se pueden saltar se saltan en cuanto aparecen
 
 ### Reproductor › Permisos y servicios
 
@@ -933,7 +933,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 
 ### Reproductor › Abrir y salir
 
-- **Abrir y cerrar**: Solo aparecen los reproductores que seleccionaste. Con «Detección automática» activada, también aparecen los instalados en este Mac
+- **Abrir y salir**: Solo aparecen los reproductores que seleccionaste. Con «Detección automática» activada, también aparecen los instalados en este Mac
 - **Abrir reproductores al iniciar**
 - **Abrir con el reproductor**
 - **Salir con el reproductor**
@@ -945,7 +945,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Tema**
 - **Ancho**
 - **Posición**
-- **Restaurar valores por defecto**: Solo restablece el tema, el tipo de letra y los colores
+- **Restaurar valores por defecto**: Solo restablece el tema, la fuente y los colores
 
 ### Mostrar letra › Letra flotante › OBS
 
@@ -1173,7 +1173,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 ### Mostrar letra › Ventana de letra › Fuente
 
 - **Tamaño de letra** (solo tamaño mini): Tamaño máximo del texto de la letra en tamaño mini
-- **Fuente**: Tipo de letra de la ventana de letra (texto, traducción y romanización)
+- **Fuente**: Fuente de la ventana de letra (texto, traducción y romanización)
 - **Grosor**
 
 ### Mostrar letra › Ventana de letra › Diseño
@@ -1224,10 +1224,10 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 299 en total. Esc
 - **Mostrar/ocultar letra flotante**
 - **Mostrar/ocultar letra del notch**
 - **Echar un vistazo al notch**
-- **Mostrar/ocultar letra de la barra de menús**
+- **Mostrar/ocultar letra de barra de menús**
 - **Expandir/contraer letra de la Touch Bar**
 - **Ocultar/restaurar todas las letras**
-- **Bloquear/desbloquear posición**
+- **Fijar/liberar posición**
 - **Mostrar/ocultar traducción**
 - **Mostrar/ocultar romanización**
 - **Aumentar tamaño de la letra flotante**

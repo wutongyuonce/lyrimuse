@@ -1549,7 +1549,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo la letra; el encabezado y los controles de reproducción mantienen el tipo de letra del sistema"
+            "value" : "Solo la letra; el encabezado y los controles de reproducción mantienen la fuente del sistema"
           }
         },
         "ja" : {
@@ -22012,7 +22012,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buscar tipos de letra"
+            "value" : "Buscar fuentes"
           }
         },
         "ja" : {
@@ -23770,7 +23770,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar/ocultar letra de la barra de menús"
+            "value" : "Mostrar/ocultar letra de barra de menús"
           }
         },
         "ja" : {
@@ -28858,7 +28858,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ningún tipo de letra coincide"
+            "value" : "Ninguna fuente coincide"
           }
         },
         "ja" : {
@@ -31570,7 +31570,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de letra del sistema"
+            "value" : "Fuente del sistema"
           }
         },
         "ja" : {
@@ -41124,7 +41124,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bloquear/desbloquear posición"
+            "value" : "Fijar/liberar posición"
           }
         },
         "ja" : {
@@ -48004,7 +48004,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir y cerrar"
+            "value" : "Abrir y salir"
           }
         },
         "ja" : {
@@ -53534,7 +53534,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importar tipo de letra…"
+            "value" : "Importar fuente…"
           }
         },
         "ja" : {
@@ -53575,7 +53575,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige un archivo de tipo de letra .ttf u .otf (puedes seleccionar varios)"
+            "value" : "Elige un archivo de fuente .ttf u .otf (puedes seleccionar varios)"
           }
         },
         "ja" : {
@@ -53616,7 +53616,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error al importar: no es un archivo de tipo de letra .ttf / .otf válido"
+            "value" : "Error al importar: no es un archivo de fuente .ttf / .otf válido"
           }
         },
         "ja" : {
@@ -53722,7 +53722,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eliminar este tipo de letra importado (no se puede deshacer)"
+            "value" : "Eliminar esta fuente importada (no se puede deshacer)"
           }
         },
         "ja" : {
@@ -56611,7 +56611,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de letra de la ventana de letra (texto, traducción y romanización)"
+            "value" : "Fuente de la ventana de letra (texto, traducción y romanización)"
           }
         },
         "ja" : {
@@ -61244,7 +61244,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Omitir anuncios de YouTube Music automáticamente"
+            "value" : "Omitir anuncios de YouTube Music"
           }
         },
         "ja" : {
@@ -73370,7 +73370,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo restablece el tema, el tipo de letra y los colores"
+            "value" : "Solo restablece el tema, la fuente y los colores"
           }
         },
         "ja" : {
@@ -74025,7 +74025,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de letras"
+            "value" : "Sincronización"
           }
         },
         "ja" : {
@@ -96676,7 +96676,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se envía a las %@ al terminar cada semana, con el resumen de la semana anterior"
+            "value" : "Se envía a las %@ al acabar cada semana, con su resumen"
           }
         },
         "ja" : {
