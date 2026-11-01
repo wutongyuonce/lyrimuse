@@ -2205,6 +2205,13 @@
       "path" : [
         "关于"
       ],
+      "title" : "官网"
+    },
+    {
+      "dest" : "tab:about",
+      "path" : [
+        "关于"
+      ],
       "subtitle" : "与其他用户交流，也可在此提问或提出建议",
       "title" : "Discord 社区"
     },

@@ -875,7 +875,7 @@ At most once a day, sends the version, macOS, which features are on and crash su
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 299 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 300 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1294,6 +1294,7 @@ Every setting in the Settings window, by where it lives: 299 in all. Type a name
 
 ### About
 
+- **Website**
 - **Discord Community**: Chat with other users, ask questions or suggest features
 - **Telegram Group**: Chat with other users, ask questions or suggest features
 - **QQ Group**: Chat with other users, ask questions or suggest features

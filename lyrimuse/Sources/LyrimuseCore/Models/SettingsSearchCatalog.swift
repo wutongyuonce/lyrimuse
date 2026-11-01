@@ -656,6 +656,7 @@ public enum SettingsSearchCatalog {
         about("反馈问题", sub: "在 GitHub 新建 issue，自动附带版本、系统与播放器信息", kw: ["issue", "bug", "反馈", "建议", "github", "邮件", "邮箱", "email"], group: "更新与帮助"),
         about("使用求助", sub: "在 GitHub 讨论区的问答分类中提问", kw: ["discussion", "求助", "提问", "问答", "help"], group: "更新与帮助"),
         about("功能清单", sub: "全部功能、所在位置及默认状态", kw: ["全部功能", "功能列表", "功能介绍", "默认", "设置项", "features"], group: "更新与帮助"),
+        about("官网", kw: ["官网", "网站", "主页", "官方网站", "website", "homepage"], group: nil),
         about("Discord 社区", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["discord", "社区", "社群", "交流", "聊天", "community"], group: nil),
         about("Telegram 群组", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["telegram", "电报", "群组", "社群", "交流", "聊天", "community"], group: nil),
         about("QQ 群", sub: "与其他用户交流，也可在此提问或提出建议", kw: ["qq", "QQ群", "群聊", "社群", "交流", "聊天", "community"], group: nil),

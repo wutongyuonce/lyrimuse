@@ -3185,6 +3185,12 @@ func runSourceContractSurfaceTests() {
                      "https://yudaotor.github.io/lyrimuse/ko/features/", "https://yudaotor.github.io/lyrimuse/es/features/",
                      "https://yudaotor.github.io/lyrimuse/features/"],
                     "反馈链接: 功能清单按界面语言开落地页对应的那一份,认不出的语言开英文")
+        expectEqual(["en", "zh-hans", "zh-hant", "ja", "ko", "es", "fr"].map { FeedbackLinks.websiteURL(language: $0).absoluteString },
+                    ["https://yudaotor.github.io/lyrimuse/", "https://yudaotor.github.io/lyrimuse/zh/",
+                     "https://yudaotor.github.io/lyrimuse/zh-Hant/", "https://yudaotor.github.io/lyrimuse/ja/",
+                     "https://yudaotor.github.io/lyrimuse/ko/", "https://yudaotor.github.io/lyrimuse/es/",
+                     "https://yudaotor.github.io/lyrimuse/"],
+                    "反馈链接: 官网按界面语言开落地页对应的那一份,认不出的语言开英文")
         expectEqual(FeedbackLinks.macOSVersionString(OperatingSystemVersion(majorVersion: 27, minorVersion: 0, patchVersion: 1)),
                     "27.0.1", "反馈链接: 系统版本号三段")
         expectEqual([FeedbackLinks.architectureName(nativeArm64: true, translated: false),

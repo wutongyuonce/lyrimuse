@@ -8144,6 +8144,13 @@ private struct AboutSettingsTab: View {
                 }
                 .settingsProminentGlassButton(tint: .orange)
                 Button {
+                    NSWorkspace.shared.open(FeedbackLinks.websiteURL(language: L10n.current))
+                } label: {
+                    Label(L10n.t("官网"), systemImage: "globe")
+                }
+                .settingsGlassButtons()
+                .settingsSearchHighlight(title: L10n.t("官网"))
+                Button {
                     NSWorkspace.shared.open(URL(string: "https://github.com/Yudaotor/lyrimuse")!)
                 } label: {
                     HStack(spacing: 6) {
