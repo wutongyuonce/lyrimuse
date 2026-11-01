@@ -175,6 +175,17 @@ Depuis le menu ⋯ de la fenêtre des paroles, cherchez d’autres paroles, rela
 
 - Réglages : Raccourcis clavier › Rechercher les paroles
 
+<a id="feature-import-lyrics"></a>
+
+### Importez vos propres fichiers de paroles
+
+Importez des paroles LRC, LRC enrichi, TTML, QRC, KRC, YRC ou texte brut pour un morceau, ou tout un dossier d’un coup : les fichiers sont associés aux morceaux de votre bibliothèque et présentés dans un aperçu avant toute écriture. Choisissez si les paroles importées sont verrouillées, prioritaires ou ne complètent que les morceaux sans paroles. Les fichiers de morceaux pas encore écoutés sont conservés et utilisés à leur première lecture. Un dossier surveillé importe automatiquement les nouveaux fichiers.
+
+- Réglages : Paroles › Bibliothèque de paroles › Importer un dossier de paroles
+- Réglages : Paroles › Bibliothèque de paroles › Mode d’importation des dossiers
+- Réglages : Paroles › Bibliothèque de paroles › Dossier surveillé
+- Réglages : Paroles › Bibliothèque de paroles › Bibliothèque d’importation
+
 <a id="feature-offline"></a>
 
 ### Hors ligne, en simples fichiers .lrc
@@ -875,7 +886,7 @@ Au plus une fois par jour, envoie la version, macOS, les fonctions activées et 
 
 ## Tous les réglages
 
-Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au total. Tapez un nom dans le champ de recherche en haut de la barre latérale des Réglages pour y aller directement.
+Tous les réglages de la fenêtre Réglages, classés par emplacement : 304 au total. Tapez un nom dans le champ de recherche en haut de la barre latérale des Réglages pour y aller directement.
 
 ### Paroles › Source
 
@@ -910,6 +921,10 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 - **Intervalle d’analyse** : Secondes entre deux morceaux ; au moins 2 secondes recommandées pour éviter les limitations de débit
 - **Dossier des paroles** : Les fichiers existants restent en place si vous changez l’emplacement
 - **Format des paroles mot à mot**
+- **Importer un dossier de paroles** : Associe les fichiers de paroles d’un dossier aux morceaux de votre bibliothèque, avec un aperçu avant l’importation
+- **Mode d’importation des dossiers** : Utilisé par défaut lors de l’importation d’un dossier ; modifiable dans l’aperçu
+- **Dossier surveillé** : Les fichiers de paroles ajoutés ou modifiés dans le dossier sont importés automatiquement : les morceaux sans paroles les reçoivent aussitôt, les autres restent inchangés
+- **Bibliothèque d’importation** : Afficher et supprimer les paroles importées
 
 ### Lecteur
 

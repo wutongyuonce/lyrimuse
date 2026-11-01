@@ -175,6 +175,17 @@ Desde el menú «⋯» de la ventana de letra, busca otra letra, vuelve a buscar
 
 - Ajustes: Atajos de teclado › Buscar letra
 
+<a id="feature-import-lyrics"></a>
+
+### Importa tus propios archivos de letras
+
+Importa letras en LRC, LRC mejorado, TTML, QRC, KRC, YRC o texto plano para una canción, o una carpeta entera de una vez: los archivos se asocian a las canciones de tu biblioteca y se muestran en una vista previa antes de escribir nada. Elige si las letras importadas quedan bloqueadas, tienen preferencia o solo completan las canciones sin letra. Los archivos de canciones que aún no has reproducido se guardan y se usan la primera vez que suenen. Una carpeta vigilada importa los archivos nuevos automáticamente.
+
+- Ajustes: Letra › Biblioteca de letras › Importar carpeta de letras
+- Ajustes: Letra › Biblioteca de letras › Modo de importación de carpetas
+- Ajustes: Letra › Biblioteca de letras › Carpeta vigilada
+- Ajustes: Letra › Biblioteca de letras › Biblioteca de importación
+
 <a id="feature-offline"></a>
 
 ### Funciona sin conexión; la letra se guarda en .lrc
@@ -875,7 +886,7 @@ Como máximo una vez al día, envía al servidor del propio autor la versión, e
 
 ## Todos los ajustes
 
-Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Escribe un nombre en el campo de búsqueda de la parte superior de la barra lateral de Ajustes para ir directamente a él.
+Todos los ajustes de la ventana Ajustes, según dónde están: 304 en total. Escribe un nombre en el campo de búsqueda de la parte superior de la barra lateral de Ajustes para ir directamente a él.
 
 ### Letra › Fuente
 
@@ -910,6 +921,10 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Esc
 - **Intervalo de escaneo**: Segundos entre canciones; se recomiendan al menos 2 segundos para evitar límites de solicitudes
 - **Carpeta de letras**: Los archivos existentes no se mueven al cambiar la ubicación
 - **Formato de letra palabra por palabra**
+- **Importar carpeta de letras**: Empareja los archivos de letra de una carpeta con las canciones de tu biblioteca, con vista previa antes de importar
+- **Modo de importación de carpetas**: Se usa por defecto al importar una carpeta; puedes cambiarlo en la vista previa
+- **Carpeta vigilada**: Los archivos de letra nuevos o modificados de la carpeta se importan solos: las canciones sin letra la reciben de inmediato y las que ya tienen no cambian
+- **Biblioteca de importación**: Ver y eliminar las letras importadas
 
 ### Reproductor
 

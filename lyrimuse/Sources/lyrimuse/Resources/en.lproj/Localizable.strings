@@ -968,6 +968,7 @@
 "导入" = "Import";
 "导入 %@ 首" = "Import %@ Songs";
 "导入 %@ 首#one" = "Import %@ Song";
+"导入…" = "Import…";
 "导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "The lyrics library was backed up automatically before importing. You can restore it from the ⋯ menu in Lyrics Manager";
 "导入失败，请重试" = "Couldn’t import. Try again";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Import failed: not a valid .ttf / .otf font file";
@@ -980,6 +981,7 @@
 "导入库…" = "Import Library…";
 "导入库是空的" = "The import library is empty";
 "导入文件…" = "Import File…";
+"导入文件夹时的默认方式，预览中可更改" = "Used by default when importing a folder; you can change it in the preview";
 "导入方式" = "Import as";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Import a lyrics file from this Mac (LRC, TTML, YRC, QRC, KRC or plain text), or drag it into the window";
 "导入歌词文件…" = "Import Lyrics File…";
@@ -1359,6 +1361,7 @@
 "扫描中 %1$@/%2$@" = "Scanning %1$@/%2$@";
 "扫描间隔" = "Scan Interval";
 "批量匹配" = "Batch Matching";
+"批量导入方式" = "Folder Import Mode";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Chat not found (incorrect Chat ID, or you haven’t messaged the bot yet)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Found %1$@ · Not found %2$@ · Skipped %3$@";
 "找到 %@ 首" = "%@ Found";
@@ -1826,9 +1829,11 @@
 "来自酷狗音乐" = "From Kugou Music";
 "松开即可导入歌词文件" = "Drop to import the lyrics file";
 "查找更优歌词" = "Search for better lyrics";
+"查看…" = "View…";
 "查看、编辑和重新搜索已缓存的歌词" = "View, edit and re-search cached lyrics";
 "查看「%@」" = "Show “%@”";
 "查看专辑简介" = "View Album Notes";
+"查看和删除导入的歌词" = "View and delete imported lyrics";
 "查看和删除导入的歌词，设置监视文件夹" = "Review and remove imported lyrics, and set a watched folder";
 "查看完整说明" = "Full Release Notes";
 "查看官方文档 →" = "View Official Docs →";
@@ -1917,6 +1922,7 @@
 "歌词列表" = "Lyric List";
 "歌词占满整条触控栏；需要调节亮度、音量等时，请先点按左端的 ✕ 收起歌词" = "Lyrics fill the whole Touch Bar. To reach brightness, volume and other system buttons, tap ✕ on the left to collapse the lyrics first";
 "歌词同步" = "Synced Lyrics";
+"歌词导入" = "Lyrics Import";
 "歌词已同步显示" = "Lyrics are showing";
 "歌词布局" = "Lyrics Layout";
 "歌词库" = "Lyrics Library";

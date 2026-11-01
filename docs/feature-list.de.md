@@ -175,6 +175,17 @@ Derselbe Titel, in verschiedenen Playern oder aus verschiedenen Veröffentlichun
 
 - Einstellungen: Tastaturkurzbefehle › Liedtext suchen
 
+<a id="feature-import-lyrics"></a>
+
+### Eigene Liedtext-Dateien importieren
+
+Importiere Liedtexte als LRC, erweitertes LRC, TTML, QRC, KRC, YRC oder reinen Text für einen Song oder einen ganzen Ordner auf einmal: Die Dateien werden den Songs in deiner Bibliothek zugeordnet und vor dem Schreiben in einer Vorschau gezeigt. Wähle, ob importierte Texte gesperrt werden, Vorrang haben oder nur Songs ohne Text ergänzen. Dateien zu Songs, die du noch nicht gehört hast, werden aufbewahrt und beim ersten Abspielen verwendet. Ein überwachter Ordner importiert neue Dateien automatisch.
+
+- Einstellungen: Liedtext › Liedtext-Bibliothek › Liedtext-Ordner importieren
+- Einstellungen: Liedtext › Liedtext-Bibliothek › Ordner-Importmodus
+- Einstellungen: Liedtext › Liedtext-Bibliothek › Überwachter Ordner
+- Einstellungen: Liedtext › Liedtext-Bibliothek › Import-Bibliothek
+
 <a id="feature-offline"></a>
 
 ### Funktioniert offline; Liedtexte sind einfache .lrc-Dateien
@@ -875,7 +886,7 @@ Sendet höchstens einmal täglich Version, macOS, aktivierte Funktionen und Abst
 
 ## Alle Einstellungen
 
-Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen Namen in das Suchfeld oben in der Seitenleiste der Einstellungen ein, um direkt dorthin zu springen.
+Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 304. Gib einen Namen in das Suchfeld oben in der Seitenleiste der Einstellungen ein, um direkt dorthin zu springen.
 
 ### Liedtext › Quelle
 
@@ -910,6 +921,10 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 - **Scanintervall**: Sekunden zwischen Titeln; mindestens 2 Sekunden werden empfohlen, um Drosselung zu vermeiden
 - **Liedtext-Ordner**: Vorhandene Dateien bleiben, wo sie sind, wenn du den Ort änderst
 - **Wort-für-Wort-Format**
+- **Liedtext-Ordner importieren**: Ordnet die Liedtextdateien eines Ordners den Titeln deiner Bibliothek zu, mit Vorschau vor dem Import
+- **Ordner-Importmodus**: Standard beim Importieren eines Ordners, in der Vorschau änderbar
+- **Überwachter Ordner**: Neue oder geänderte Liedtextdateien im Ordner werden automatisch importiert: Titel ohne Liedtext erhalten ihn sofort, Titel mit Liedtext bleiben unverändert
+- **Import-Bibliothek**: Importierte Liedtexte ansehen und löschen
 
 ### Player
 

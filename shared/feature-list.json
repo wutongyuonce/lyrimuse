@@ -428,6 +428,51 @@
           ]
         },
         {
+          "id": "import-lyrics",
+          "title": {
+            "en": "Import your own lyrics files",
+            "zh-Hans": "导入自己的歌词文件",
+            "zh-Hant": "匯入自己的歌詞檔案",
+            "ja": "手持ちの歌詞ファイルを読み込む",
+            "ko": "가지고 있는 가사 파일 가져오기",
+            "es": "Importa tus propios archivos de letras",
+            "fr": "Importez vos propres fichiers de paroles",
+            "de": "Eigene Liedtext-Dateien importieren"
+          },
+          "desc": {
+            "en": "Import LRC, enhanced LRC, TTML, QRC, KRC, YRC or plain-text lyrics for one song, or a whole folder at once: files are matched to songs in your library and shown in a preview before anything is written. Choose whether imported lyrics are locked, preferred, or only fill songs without lyrics. Files for songs you have not played yet are kept and used when they first play. A watched folder imports new files automatically.",
+            "zh-Hans": "可为单首歌曲导入 LRC、增强 LRC、TTML、QRC、KRC、YRC 或纯文本歌词，也可一次导入整个文件夹：文件会对应到歌词库中的歌曲，写入前先预览。可选择导入的歌词锁定、优先使用，或只补没有歌词的歌曲。尚未播放过的歌曲的歌词文件会先保存，首次播放时使用。设置监视文件夹后，新放入的文件会自动导入。",
+            "zh-Hant": "可為單首歌曲匯入 LRC、增強 LRC、TTML、QRC、KRC、YRC 或純文字歌詞，也可一次匯入整個資料夾：檔案會對應到歌詞庫中的歌曲，寫入前先預覽。可選擇匯入的歌詞鎖定、優先使用，或只補沒有歌詞的歌曲。尚未播放過的歌曲的歌詞檔案會先儲存，首次播放時使用。設定監視資料夾後，新放入的檔案會自動匯入。",
+            "ja": "1曲ずつ、またはフォルダごとまとめて、LRC、拡張LRC、TTML、QRC、KRC、YRC、プレーンテキストの歌詞を読み込めます。ファイルは歌詞ライブラリの曲に対応付けられ、書き込む前にプレビューで確認できます。読み込んだ歌詞をロックするか、優先して使うか、歌詞のない曲だけに使うかを選べます。まだ再生していない曲の歌詞ファイルは保存され、初めて再生したときに使われます。監視フォルダを設定すると、新しく入れたファイルが自動で読み込まれます。",
+            "ko": "곡 하나씩 또는 폴더 전체를 한 번에 LRC, 확장 LRC, TTML, QRC, KRC, YRC, 일반 텍스트 가사로 가져올 수 있습니다. 파일은 가사 보관함의 곡에 대응되며, 쓰기 전에 미리 보기로 확인합니다. 가져온 가사를 잠글지, 우선 사용할지, 가사가 없는 곡에만 채울지 선택할 수 있습니다. 아직 재생하지 않은 곡의 가사 파일은 저장해 두었다가 처음 재생할 때 사용합니다. 감시 폴더를 설정하면 새로 넣은 파일을 자동으로 가져옵니다.",
+            "es": "Importa letras en LRC, LRC mejorado, TTML, QRC, KRC, YRC o texto plano para una canción, o una carpeta entera de una vez: los archivos se asocian a las canciones de tu biblioteca y se muestran en una vista previa antes de escribir nada. Elige si las letras importadas quedan bloqueadas, tienen preferencia o solo completan las canciones sin letra. Los archivos de canciones que aún no has reproducido se guardan y se usan la primera vez que suenen. Una carpeta vigilada importa los archivos nuevos automáticamente.",
+            "fr": "Importez des paroles LRC, LRC enrichi, TTML, QRC, KRC, YRC ou texte brut pour un morceau, ou tout un dossier d’un coup : les fichiers sont associés aux morceaux de votre bibliothèque et présentés dans un aperçu avant toute écriture. Choisissez si les paroles importées sont verrouillées, prioritaires ou ne complètent que les morceaux sans paroles. Les fichiers de morceaux pas encore écoutés sont conservés et utilisés à leur première lecture. Un dossier surveillé importe automatiquement les nouveaux fichiers.",
+            "de": "Importiere Liedtexte als LRC, erweitertes LRC, TTML, QRC, KRC, YRC oder reinen Text für einen Song oder einen ganzen Ordner auf einmal: Die Dateien werden den Songs in deiner Bibliothek zugeordnet und vor dem Schreiben in einer Vorschau gezeigt. Wähle, ob importierte Texte gesperrt werden, Vorrang haben oder nur Songs ohne Text ergänzen. Dateien zu Songs, die du noch nicht gehört hast, werden aufbewahrt und beim ersten Abspielen verwendet. Ein überwachter Ordner importiert neue Dateien automatisch."
+          },
+          "settings": [
+            [
+              "歌词",
+              "歌词库",
+              "导入歌词文件夹"
+            ],
+            [
+              "歌词",
+              "歌词库",
+              "批量导入方式"
+            ],
+            [
+              "歌词",
+              "歌词库",
+              "监视文件夹"
+            ],
+            [
+              "歌词",
+              "歌词库",
+              "导入库"
+            ]
+          ]
+        },
+        {
           "id": "offline",
           "title": {
             "en": "Works offline; lyrics are plain .lrc files",

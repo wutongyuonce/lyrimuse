@@ -968,6 +968,7 @@
 "导入" = "Importer";
 "导入 %@ 首" = "Importer %@ morceaux";
 "导入 %@ 首#one" = "Importer %@ morceau";
+"导入…" = "Importer…";
 "导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "La bibliothèque de paroles a été sauvegardée automatiquement avant l’importation. Vous pouvez la restaurer depuis le menu ⋯ du gestionnaire de paroles";
 "导入失败，请重试" = "Échec de l’importation. Réessayez";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Échec de l’import : fichier de police .ttf / .otf non valide";
@@ -980,6 +981,7 @@
 "导入库…" = "Bibliothèque d’importation…";
 "导入库是空的" = "La bibliothèque d’importation est vide";
 "导入文件…" = "Importer un fichier…";
+"导入文件夹时的默认方式，预览中可更改" = "Utilisé par défaut lors de l’importation d’un dossier ; modifiable dans l’aperçu";
 "导入方式" = "Importer en mode";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importer un fichier de paroles de ce Mac (LRC, TTML, YRC, QRC, KRC ou texte brut), ou le glisser dans la fenêtre";
 "导入歌词文件…" = "Importer un fichier de paroles…";
@@ -1359,6 +1361,7 @@
 "扫描中 %1$@/%2$@" = "Analyse %1$@/%2$@";
 "扫描间隔" = "Intervalle d’analyse";
 "批量匹配" = "Association par lot";
+"批量导入方式" = "Mode d’importation des dossiers";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Discussion introuvable (Chat ID incorrect, ou vous n’avez pas encore écrit au bot)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Trouvés %1$@ · Introuvables %2$@ · Ignorés %3$@";
 "找到 %@ 首" = "Trouvés : %@";
@@ -1826,9 +1829,11 @@
 "来自酷狗音乐" = "Via Kugou Music";
 "松开即可导入歌词文件" = "Déposez pour importer le fichier de paroles";
 "查找更优歌词" = "Chercher de meilleures paroles";
+"查看…" = "Afficher…";
 "查看、编辑和重新搜索已缓存的歌词" = "Afficher, modifier et rechercher à nouveau les paroles en cache";
 "查看「%@」" = "Afficher « %@ »";
 "查看专辑简介" = "Voir les notes d’album";
+"查看和删除导入的歌词" = "Afficher et supprimer les paroles importées";
 "查看和删除导入的歌词，设置监视文件夹" = "Consultez et retirez les paroles importées, et définissez un dossier surveillé";
 "查看完整说明" = "Notes de version complètes";
 "查看官方文档 →" = "Voir la documentation officielle →";
@@ -1917,6 +1922,7 @@
 "歌词列表" = "Liste des paroles";
 "歌词占满整条触控栏；需要调节亮度、音量等时，请先点按左端的 ✕ 收起歌词" = "Les paroles occupent toute la Touch Bar. Pour accéder à la luminosité, au volume et aux autres boutons système, touchez d’abord ✕ à gauche pour les replier";
 "歌词同步" = "Paroles synchronisées";
+"歌词导入" = "Importation de paroles";
 "歌词已同步显示" = "Paroles affichées";
 "歌词布局" = "Disposition des paroles";
 "歌词库" = "Bibliothèque de paroles";

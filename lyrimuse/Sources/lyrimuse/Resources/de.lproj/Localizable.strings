@@ -968,6 +968,7 @@
 "导入" = "Importieren";
 "导入 %@ 首" = "%@ Titel importieren";
 "导入 %@ 首#one" = "%@ Titel importieren";
+"导入…" = "Importieren …";
 "导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "Die Liedtext-Bibliothek wurde vor dem Import automatisch gesichert. Du kannst sie im Menü „⋯“ der Liedtext-Verwaltung wiederherstellen";
 "导入失败，请重试" = "Import fehlgeschlagen. Versuch es erneut";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Import fehlgeschlagen: keine gültige .ttf- / .otf-Schriftdatei";
@@ -980,6 +981,7 @@
 "导入库…" = "Import-Bibliothek …";
 "导入库是空的" = "Die Import-Bibliothek ist leer";
 "导入文件…" = "Datei importieren …";
+"导入文件夹时的默认方式，预览中可更改" = "Standard beim Importieren eines Ordners, in der Vorschau änderbar";
 "导入方式" = "Importieren als";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importiere eine Liedtextdatei von diesem Mac (LRC, TTML, YRC, QRC, KRC oder reiner Text) oder zieh sie ins Fenster";
 "导入歌词文件…" = "Liedtextdatei importieren …";
@@ -1359,6 +1361,7 @@
 "扫描中 %1$@/%2$@" = "Scannen %1$@/%2$@";
 "扫描间隔" = "Scanintervall";
 "批量匹配" = "Stapelzuordnung";
+"批量导入方式" = "Ordner-Importmodus";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Chat nicht gefunden (falsche Chat-ID oder du hast dem Bot noch nicht geschrieben)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Gefunden %1$@ · Nicht gefunden %2$@ · Übersprungen %3$@";
 "找到 %@ 首" = "%@ gefunden";
@@ -1826,9 +1829,11 @@
 "来自酷狗音乐" = "Von Kugou Music";
 "松开即可导入歌词文件" = "Loslassen, um die Liedtextdatei zu importieren";
 "查找更优歌词" = "Besseren Liedtext suchen";
+"查看…" = "Anzeigen …";
 "查看、编辑和重新搜索已缓存的歌词" = "Gespeicherte Liedtexte ansehen, bearbeiten und neu suchen";
 "查看「%@」" = "„%@“ zeigen";
 "查看专辑简介" = "Albumnotizen ansehen";
+"查看和删除导入的歌词" = "Importierte Liedtexte ansehen und löschen";
 "查看和删除导入的歌词，设置监视文件夹" = "Importierte Liedtexte ansehen und entfernen, überwachten Ordner festlegen";
 "查看完整说明" = "Alle Versionshinweise";
 "查看官方文档 →" = "Offizielle Doku ansehen →";
@@ -1917,6 +1922,7 @@
 "歌词列表" = "Textliste";
 "歌词占满整条触控栏；需要调节亮度、音量等时，请先点按左端的 ✕ 收起歌词" = "Der Liedtext füllt die ganze Touch Bar. Um Helligkeit, Lautstärke und andere Systemtasten zu erreichen, tippe zuerst links auf ✕, um den Text einzuklappen";
 "歌词同步" = "Liedtext synchron";
+"歌词导入" = "Liedtext-Import";
 "歌词已同步显示" = "Liedtext wird angezeigt";
 "歌词布局" = "Liedtext-Layout";
 "歌词库" = "Liedtext-Bibliothek";

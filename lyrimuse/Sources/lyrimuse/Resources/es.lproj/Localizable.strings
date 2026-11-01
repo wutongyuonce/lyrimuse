@@ -968,6 +968,7 @@
 "导入" = "Importar";
 "导入 %@ 首" = "Importar %@ canciones";
 "导入 %@ 首#one" = "Importar %@ canción";
+"导入…" = "Importar…";
 "导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "Se hizo una copia de seguridad automática de la biblioteca de letras antes de importar. Puedes restaurarla desde el menú ⋯ del Gestor de letras";
 "导入失败，请重试" = "No se pudo importar. Inténtalo de nuevo";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Error al importar: no es un archivo de fuente .ttf / .otf válido";
@@ -980,6 +981,7 @@
 "导入库…" = "Biblioteca de importación…";
 "导入库是空的" = "La biblioteca de importación está vacía";
 "导入文件…" = "Importar archivo…";
+"导入文件夹时的默认方式，预览中可更改" = "Se usa por defecto al importar una carpeta; puedes cambiarlo en la vista previa";
 "导入方式" = "Importar como";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importa un archivo de letra de este Mac (LRC, TTML, YRC, QRC, KRC o texto sin formato), o arrástralo a la ventana";
 "导入歌词文件…" = "Importar archivo de letra…";
@@ -1359,6 +1361,7 @@
 "扫描中 %1$@/%2$@" = "Escaneando %1$@/%2$@";
 "扫描间隔" = "Intervalo de escaneo";
 "批量匹配" = "Búsqueda por lotes";
+"批量导入方式" = "Modo de importación de carpetas";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Chat no encontrado (Chat ID incorrecto o aún no has escrito al bot)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Encontradas: %1$@ · No encontradas: %2$@ · Omitidas: %3$@";
 "找到 %@ 首" = "%@ encontradas";
@@ -1826,9 +1829,11 @@
 "来自酷狗音乐" = "De Kugou Music";
 "松开即可导入歌词文件" = "Suelta para importar el archivo de letra";
 "查找更优歌词" = "Buscar una letra mejor";
+"查看…" = "Ver…";
 "查看、编辑和重新搜索已缓存的歌词" = "Ver, editar y volver a buscar letras en caché";
 "查看「%@」" = "Mostrar «%@»";
 "查看专辑简介" = "Ver notas del álbum";
+"查看和删除导入的歌词" = "Ver y eliminar las letras importadas";
 "查看和删除导入的歌词，设置监视文件夹" = "Revisa y quita letras importadas, y define una carpeta vigilada";
 "查看完整说明" = "Notas de la versión completas";
 "查看官方文档 →" = "Ver documentación oficial →";
@@ -1917,6 +1922,7 @@
 "歌词列表" = "Lista de letras";
 "歌词占满整条触控栏；需要调节亮度、音量等时，请先点按左端的 ✕ 收起歌词" = "La letra ocupa toda la Touch Bar. Para acceder al brillo, el volumen y otros botones del sistema, toca primero ✕ a la izquierda para contraer la letra";
 "歌词同步" = "Letra sincronizada";
+"歌词导入" = "Importación de letras";
 "歌词已同步显示" = "Se muestra la letra";
 "歌词布局" = "Diseño de la letra";
 "歌词库" = "Biblioteca de letras";

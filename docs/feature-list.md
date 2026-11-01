@@ -175,6 +175,17 @@ From the lyrics window's ⋯ menu, search for other lyrics, run matching again, 
 
 - Settings: Keyboard Shortcuts › Search Lyrics
 
+<a id="feature-import-lyrics"></a>
+
+### Import your own lyrics files
+
+Import LRC, enhanced LRC, TTML, QRC, KRC, YRC or plain-text lyrics for one song, or a whole folder at once: files are matched to songs in your library and shown in a preview before anything is written. Choose whether imported lyrics are locked, preferred, or only fill songs without lyrics. Files for songs you have not played yet are kept and used when they first play. A watched folder imports new files automatically.
+
+- Settings: Lyrics › Lyrics Library › Import Lyrics Folder
+- Settings: Lyrics › Lyrics Library › Folder Import Mode
+- Settings: Lyrics › Lyrics Library › Watched Folder
+- Settings: Lyrics › Lyrics Library › Import Library
+
 <a id="feature-offline"></a>
 
 ### Works offline; lyrics are plain .lrc files
@@ -875,7 +886,7 @@ At most once a day, sends the version, macOS, which features are on and crash su
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 300 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 304 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -910,6 +921,10 @@ Every setting in the Settings window, by where it lives: 300 in all. Type a name
 - **Scan Interval**: Seconds between songs; at least 2 seconds is recommended to avoid rate limits
 - **Lyrics Folder**: Existing files stay where they are when you change the location
 - **Word-by-Word Lyrics Format**
+- **Import Lyrics Folder**: Matches the lyrics files in a folder to songs in your library, with a preview before importing
+- **Folder Import Mode**: Used by default when importing a folder; you can change it in the preview
+- **Watched Folder**: New or changed lyrics files in the folder are imported automatically: songs without lyrics get them right away, songs with lyrics stay unchanged
+- **Import Library**: View and delete imported lyrics
 
 ### Player
 

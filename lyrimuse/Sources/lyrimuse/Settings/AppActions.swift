@@ -71,10 +71,22 @@ final class AppActions {
         lyricsImportRequests.send()
     }
 
-    /// 歌词管理弹「导入歌词文件夹」预览面板(调试深链 `debug/import-lyrics-folder` 用),歌词管理窗口要开着。
-    let lyricsFolderImportRequests = PassthroughSubject<URL, Never>()
-    /// 歌词管理弹「导入库」面板(调试深链 `debug/import-library` 用),歌词管理窗口要开着。
-    let importLibraryRequests = PassthroughSubject<Void, Never>()
+    /// 要歌词管理弹的导入面板:「导入歌词文件夹」的预览(带选好的文件夹)、「导入库」。
+    enum LyricsManagerSheetRequest {
+        case importFolder(URL)
+        case importLibrary
+    }
+
+    /// 同 `pendingSongVersions` 两条路:信箱管窗口还没建出来(读完缓存后取),subject 管已经开着;只认 60 秒以内的。
+    var pendingLyricsManagerSheet: (request: LyricsManagerSheetRequest, at: Date)?
+    let lyricsManagerSheetRequests = PassthroughSubject<Void, Never>()
+
+    /// 设置页「歌词导入」卡、调试深链都走这里。`open` 为假时不开窗(调试深链先 `lyrics-manager?background=1` 自己开)。
+    func requestLyricsManagerSheet(_ request: LyricsManagerSheetRequest, open: Bool = true) {
+        pendingLyricsManagerSheet = (request, Date())
+        lyricsManagerSheetRequests.send()
+        if open { openLyricsManager?() }
+    }
 
     /// 「搜索歌词…」窗口里采纳成功(带写回的 key)、「重新自动匹配」有了结论。歌词管理开着同一首时据此重载编辑框、挂结论。
     let lyricsSearchApplied = PassthroughSubject<String, Never>()

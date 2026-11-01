@@ -1294,16 +1294,8 @@ struct LyricsManagerView: View {
         .sheet(isPresented: $showImportLibrary) {
             LyricsImportLibrarySheet()
         }
-        // lyrimuse://debug/import-library:窗口开着时直接弹「导入库」面板。
-        .onReceive(AppActions.shared.importLibraryRequests) {
-            guard !showImportLibrary, !windowFrame.hasAttachedSheet else { return }
-            showImportLibrary = true
-        }
-        // lyrimuse://debug/import-lyrics-folder:窗口开着时直接弹预览面板。
-        .onReceive(AppActions.shared.lyricsFolderImportRequests) { url in
-            guard batchImportRequest == nil, !windowFrame.hasAttachedSheet else { return }
-            batchImportRequest = LyricsBatchImportRequest(folder: url)
-        }
+        // 设置页「歌词导入」卡、调试深链要弹的导入面板:窗口开着时收 subject,开窗那一轮读完缓存后取信箱(见 onAppear)。
+        .onReceive(AppActions.shared.lyricsManagerSheetRequests) { if !pendingAutoFocus { consumeLyricsManagerSheetRequest() } }
         .confirmationDialog(
             L10n.t("确定要清空全部歌词缓存吗？"),
             isPresented: $showClearAllConfirm,
@@ -1891,6 +1883,7 @@ struct LyricsManagerView: View {
                 refreshNowPlayingKey()
                 guard pendingAutoFocus else {
                     consumeSongVersionsRequest()
+                    consumeLyricsManagerSheetRequest()
                     return
                 }
                 pendingAutoFocus = false
@@ -1902,6 +1895,7 @@ struct LyricsManagerView: View {
                 DispatchQueue.main.async { windowFrame.focusList() }
                 // 链接带的条目排在自动定位之后,不被正在放的那首顶掉。
                 consumeSongVersionsRequest()
+                consumeLyricsManagerSheetRequest()
             }
         }
         // 自动匹配的进度卡、写入失败的红字挂在列表底下,列表的最后几行能滚到它们上面。
@@ -3697,6 +3691,18 @@ struct LyricsManagerView: View {
     /// 链接要的「同曲条目」面板:带了写法键先选中那一条,没带就是详情页正显示的那条;条件跟「⋯」里那一项一样(这条有实体 id)。
     /// 取了就清,开没开成都一样;信箱只认 60 秒内的请求。有没保存的修改时 select 先问一句,这一下不开面板。开着别的面板时不动,
     /// 免得换掉它底下那一条;开着的就是同曲条目时换成链接要的那一首。
+    /// 取走要弹的导入面板(`AppActions.requestLyricsManagerSheet`)。已经开着别的面板时不弹,请求作废。
+    private func consumeLyricsManagerSheetRequest() {
+        guard let pending = AppActions.shared.pendingLyricsManagerSheet else { return }
+        AppActions.shared.pendingLyricsManagerSheet = nil
+        guard Date().timeIntervalSince(pending.at) < 60, batchImportRequest == nil, !showImportLibrary,
+              !windowFrame.hasAttachedSheet else { return }
+        switch pending.request {
+        case let .importFolder(url): batchImportRequest = LyricsBatchImportRequest(folder: url)
+        case .importLibrary: showImportLibrary = true
+        }
+    }
+
     private func consumeSongVersionsRequest() {
         guard let request = AppActions.shared.pendingSongVersions else { return }
         AppActions.shared.pendingSongVersions = nil

@@ -2458,6 +2458,7 @@ private struct LyricsSettingsTab: View {
                 }
             }
         }
+        LyricsImportSettingsCard()
         }
         // 玻璃要背后有东西才看得出来,跟 Last.fm 各段同一份淡色光(12 章决策 63)。
         .background { LastfmGlassGlow() }
