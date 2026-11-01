@@ -516,11 +516,14 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 components.queryItems = [URLQueryItem(name: "leg", value: leg.rawValue), URLQueryItem(name: "on", value: on ? "1" : "0")]
             case let .menuBarCenter(center, ignoreNotch, screen, hover, click):
                 components.path = "/menubar-center"
-                components.queryItems = (center.map { [URLQueryItem(name: "center", value: $0 ? "1" : "0")] } ?? [])
-                    + (ignoreNotch.map { [URLQueryItem(name: "ignore-notch", value: $0 ? "1" : "0")] } ?? [])
-                    + (screen.map { [URLQueryItem(name: "screen", value: $0)] } ?? [])
-                    + (hover.map { [URLQueryItem(name: "hover", value: $0 ? "1" : "0")] } ?? [])
-                    + (click.map { [URLQueryItem(name: "click", value: $0)] } ?? [])
+                // 逐项 append:同一个表达式里 `+` 串起五个 `map ?? []`,CI 的编译器类型检查超时。
+                var items: [URLQueryItem] = []
+                if let center { items.append(URLQueryItem(name: "center", value: center ? "1" : "0")) }
+                if let ignoreNotch { items.append(URLQueryItem(name: "ignore-notch", value: ignoreNotch ? "1" : "0")) }
+                if let screen { items.append(URLQueryItem(name: "screen", value: screen)) }
+                if let hover { items.append(URLQueryItem(name: "hover", value: hover ? "1" : "0")) }
+                if let click { items.append(URLQueryItem(name: "click", value: click)) }
+                components.queryItems = items
             case let .menuBarDisplay(artwork, content, iconSize, iconStyle, hoverControls, secondary, alignment):
                 components.path = "/menubar-display"
                 var items: [URLQueryItem] = []
@@ -565,19 +568,22 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 components.queryItems = [URLQueryItem(name: "off", value: "1")]
             case let .wordFormatSwitch(state, format, done, total, removing):
                 components.path = "/word-format-switch"
-                components.queryItems = [URLQueryItem(name: "state", value: state)]
-                    + (format.map { [URLQueryItem(name: "format", value: $0)] } ?? [])
-                    + (done.map { [URLQueryItem(name: "done", value: String($0))] } ?? [])
-                    + (total.map { [URLQueryItem(name: "total", value: String($0))] } ?? [])
-                    + (removing.isEmpty ? [] : [URLQueryItem(name: "remove", value: removing.joined(separator: ","))])
+                var items = [URLQueryItem(name: "state", value: state)]
+                if let format { items.append(URLQueryItem(name: "format", value: format)) }
+                if let done { items.append(URLQueryItem(name: "done", value: String(done))) }
+                if let total { items.append(URLQueryItem(name: "total", value: String(total))) }
+                if !removing.isEmpty { items.append(URLQueryItem(name: "remove", value: removing.joined(separator: ","))) }
+                components.queryItems = items
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]
             case let .rainbow(overlay, notch, menuBar):
                 components.path = "/rainbow"
-                components.queryItems = (overlay.map { [URLQueryItem(name: "overlay", value: $0 ? "1" : "0")] } ?? [])
-                    + (notch.map { [URLQueryItem(name: "notch", value: $0 ? "1" : "0")] } ?? [])
-                    + (menuBar.map { [URLQueryItem(name: "menubar", value: $0 ? "1" : "0")] } ?? [])
+                var items: [URLQueryItem] = []
+                if let overlay { items.append(URLQueryItem(name: "overlay", value: overlay ? "1" : "0")) }
+                if let notch { items.append(URLQueryItem(name: "notch", value: notch ? "1" : "0")) }
+                if let menuBar { items.append(URLQueryItem(name: "menubar", value: menuBar ? "1" : "0")) }
+                components.queryItems = items
             case let .touchBarDisplay(color):
                 components.path = "/touchbar-display"
                 components.queryItems = [URLQueryItem(name: "color", value: color.rawValue)]
