@@ -1962,6 +1962,7 @@
 "正在同步历史（%1$@/%2$@ 页）" = "Verlauf wird synchronisiert (Seite %1$@ von %2$@)";
 "正在启用…" = "Wird gestartet …";
 "正在备份歌词…" = "Backup der Liedtexte wird erstellt …";
+"正在备份歌词库…" = "Bibliothek wird gesichert …";
 "正在安装…" = "Wird installiert …";
 "正在导入…" = "Wird importiert …";
 "正在应用到歌词引擎…" = "Wird auf die Liedtext-Engine angewendet …";

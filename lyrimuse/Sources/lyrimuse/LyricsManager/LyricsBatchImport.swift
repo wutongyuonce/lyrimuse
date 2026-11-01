@@ -141,6 +141,7 @@ enum LyricsBatchImport {
             files.append(.init(name: url.lastPathComponent, path: rel, data: data))
         }
         guard !files.isEmpty else { return .failure(.noFiles) }
+        discardStaleStaging()
         FileIO.createDirectory(stagingDirectory)
         let staging = stagingDirectory.appendingPathComponent("\(UUID().uuidString).json")
         guard let body = try? JSONEncoder().encode(StagingRequest(files: files)), FileIO.write(body, to: staging) else {
@@ -159,6 +160,17 @@ enum LyricsBatchImport {
 
     static func discard(_ staging: URL) {
         FileIO.remove(staging)
+    }
+
+    /// 一小时前的暂存请求:面板没走到 onDisappear 就没了(随窗口一起关、App 退出)时留下的。
+    private static func discardStaleStaging() {
+        let cutoff = Date().addingTimeInterval(-3600)
+        let names = (try? FileManager.default.contentsOfDirectory(
+            at: stagingDirectory, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
+        for url in names where url.pathExtension == "json" {
+            let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+            if let modified, modified < cutoff { FileIO.remove(url) }
+        }
     }
 
     /// 时长写成 4:31。
@@ -189,7 +201,8 @@ struct LyricsBatchImportSheet: View {
     @State private var forced: Set<Int> = []
     /// 对得上好几首时用户挑的那一首。
     @State private var choices: [Int: String] = [:]
-    @State private var importing = false
+    /// 导入进行到哪一步(先打整库快照,歌词库大时要几十秒,再写入);nil = 没在导入。
+    @State private var importPhase: EnrichCacheStore.BatchImportPhase?
     @State private var importedCount: Int?
     @State private var importFailed = false
 
@@ -414,17 +427,28 @@ struct LyricsBatchImportSheet: View {
     }
 
     private var footer: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if importedCount == nil, prepared != nil {
+                // 说明单独一行、能折行:跟下拉、按钮挤在一行时长语言被截掉半句。
+                Text(mode.explanation)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            footerControls
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+    }
+
+    private var footerControls: some View {
         HStack(spacing: 12) {
             if importedCount == nil, prepared != nil {
                 Text(L10n.t("导入方式"))
                     .foregroundStyle(.secondary)
                 SettingsGlassMenuPicker(selection: $mode, options: LyricsBatchImport.Mode.allCases, label: \.title, compact: true)
                     .fixedSize()
-                Text(mode.explanation)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .disabled(importPhase != nil)
             }
             if importFailed {
                 Label(L10n.t("导入失败，请重试"), systemImage: "exclamationmark.triangle.fill")
@@ -441,17 +465,22 @@ struct LyricsBatchImportSheet: View {
                     .keyboardShortcut(.cancelAction)
                     .settingsGlassButtons(inSheet: true)
                 let count = selectedItems.count
-                Button(importing ? L10n.t("正在导入…")
-                                 : String(format: L10n.plural("导入 %@ 首", count: count), "\(count)")) {
+                Button(importButtonTitle(count: count)) {
                     Task { await runImport() }
                 }
                 .keyboardShortcut(.defaultAction)
                 .settingsProminentGlassButton(tint: .accentColor)
-                .disabled(count == 0 || importing)
+                .disabled(count == 0 || importPhase != nil)
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 12)
+    }
+
+    private func importButtonTitle(count: Int) -> String {
+        switch importPhase {
+        case .backingUp: L10n.t("正在备份歌词库…")
+        case .writing: L10n.t("正在导入…")
+        case nil: String(format: L10n.plural("导入 %@ 首", count: count), "\(count)")
+        }
     }
 
     // MARK: - 动作
@@ -465,19 +494,21 @@ struct LyricsBatchImportSheet: View {
     }
 
     private func runImport() async {
-        guard let prepared, !importing else { return }
+        guard let prepared, importPhase == nil else { return }
         let items: [[String: Any]] = selectedItems.compactMap { item in
             guard let key = target(item)?.key else { return nil }
             var entry: [String: Any] = ["id": item.id, "key": key]
             if forced.contains(item.id) { entry["force"] = true }
             return entry
         }
-        importing = true
+        importPhase = .backingUp
         importFailed = false
-        let changed = await EnrichCacheStore.shared.importLyricsBatch(staging: prepared.staging, mode: mode.rawValue, items: items)
-        importing = false
+        let changed = await EnrichCacheStore.shared.importLyricsBatch(
+            staging: prepared.staging, mode: mode.rawValue, items: items) { importPhase = $0 }
+        importPhase = nil
         if let changed {
             importedCount = changed
+            LyricsBatchImport.discard(prepared.staging)
         } else {
             importFailed = true
         }

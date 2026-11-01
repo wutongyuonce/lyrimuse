@@ -1962,6 +1962,7 @@
 "正在同步历史（%1$@/%2$@ 页）" = "Syncing history (page %1$@ of %2$@)";
 "正在启用…" = "Starting…";
 "正在备份歌词…" = "Backing up lyrics…";
+"正在备份歌词库…" = "Backing Up Lyrics Library…";
 "正在安装…" = "Installing…";
 "正在导入…" = "Importing…";
 "正在应用到歌词引擎…" = "Applying to the lyrics engine…";

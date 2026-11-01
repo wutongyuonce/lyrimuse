@@ -1415,11 +1415,18 @@ public final class EnrichCacheStore: ObservableObject {
         return true
     }
 
+    enum BatchImportPhase {
+        case backingUp, writing
+    }
+
     /// 「导入歌词文件夹」:先打自动快照(一次改写很多首),再交给引擎按预览表写入(import_lyrics_batch,见
     /// LyricsBatchImport)。返回写了几首;nil = 备份没成或引擎没执行。
-    func importLyricsBatch(staging: URL, mode: String, items: [[String: Any]]) async -> Int? {
+    func importLyricsBatch(staging: URL, mode: String, items: [[String: Any]],
+                           onPhase: (BatchImportPhase) -> Void = { _ in }) async -> Int? {
+        onPhase(.backingUp)
         guard await takeAutoSnapshot(reason: "import", abortMessage: L10n.t("自动备份失败，为避免数据无法恢复，本次未执行导入。请检查磁盘空间和配置文件夹的写入权限后重试"))
         else { return nil }
+        onPhase(.writing)
         let result = await commit("import_lyrics_batch", ["staging": staging.path, "mode": mode, "items": items])
         return result.ok ? result.changed : nil
     }

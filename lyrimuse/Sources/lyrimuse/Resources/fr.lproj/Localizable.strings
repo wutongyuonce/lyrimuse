@@ -1962,6 +1962,7 @@
 "正在同步历史（%1$@/%2$@ 页）" = "Synchronisation de l’historique (page %1$@ sur %2$@)";
 "正在启用…" = "Démarrage…";
 "正在备份歌词…" = "Sauvegarde des paroles…";
+"正在备份歌词库…" = "Sauvegarde de la bibliothèque…";
 "正在安装…" = "Installation…";
 "正在导入…" = "Importation…";
 "正在应用到歌词引擎…" = "Application au moteur de paroles…";
