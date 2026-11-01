@@ -312,6 +312,10 @@ func runDeepLinkTests() {
                     .debug(.importLyrics(paths: ["/tmp/a b.lrc", "/tmp/a.tr.lrc"])), "debug: 导入歌词文件,只认绝对路径、按顺序")
         expectEqual(link("lyrimuse://debug/import-lyrics") == nil && link("lyrimuse://debug/import-lyrics?path=x.lrc") == nil, true,
                     "debug: 导入歌词文件没带绝对路径认不出")
+        expectEqual(link("lyrimuse://debug/import-lyrics-folder?path=/Users/a/%E6%AD%8C%E8%AF%8D"),
+                    .debug(.importLyricsFolder(path: "/Users/a/歌词")), "debug: 导入歌词文件夹,路径原样")
+        expectEqual(link("lyrimuse://debug/import-lyrics-folder") == nil && link("lyrimuse://debug/import-lyrics-folder?path=rel") == nil, true,
+                    "debug: 导入歌词文件夹没带绝对路径认不出")
 
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         func source(_ rel: String) -> String {
@@ -435,6 +439,7 @@ func runDeepLinkTests() {
             .debug(.menuBarDisplay(artwork: nil, content: nil, alignment: "center")),
             .debug(.settingsSearch(query: "OBS 输出")),
             .debug(.importLyrics(paths: ["/tmp/歌 词.lrc", "/tmp/歌 词.tr.lrc"])),
+            .debug(.importLyricsFolder(path: "/tmp/歌 词")),
             .debug(.editNotifyChannel(id: nil)), .debug(.editNotifyChannel(id: "Legacy-1")),
             .setPlayMode(.list), .setPlayMode(.shuffle), .setPlayMode(.repeatAll), .setPlayMode(.repeatOne),
         ] + LyrimuseAction.allCases.map { .action($0, on: nil, stepSeconds: nil) }

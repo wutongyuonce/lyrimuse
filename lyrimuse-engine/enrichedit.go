@@ -106,6 +106,11 @@ type enrichEditRequest struct {
 	Value bool `json:"value,omitempty"`
 
 	// split_song:Keys 是拆出去的写法;unsplit_song:Keys 里两两之间的拆开记录都删掉;resolve_manual_conflict:Key 是选定的那份手改。
+
+	// import_lyrics_batch(importbatch.go):暂存文件、导入方式、预览表里定下的每一组对到哪个 key。
+	Staging     string            `json:"staging,omitempty"`
+	Mode        string            `json:"mode,omitempty"`
+	ImportItems []importBatchItem `json:"items,omitempty"`
 }
 
 type enrichEditResult struct {
@@ -244,11 +249,17 @@ func applyEnrichEditLocked(req enrichEditRequest) enrichEditOutcome {
 		}
 		enrichCache[req.Key] = e
 		cancelInFlightEnrichLocked(req.Key)
+		// 用户在这首上采用了别的歌词:导入库里那份作废,不然下一轮选词又把它挑回来(importstore.go)。
+		if req.Source != importLyricsSource {
+			dropImportedLyrics(req.Key)
+		}
 		exports := []string{req.Key}
 		if songEntitySharing() {
 			exports = append(exports, shareManualEditLocked(req.Key, time.Now())...)
 		}
 		return enrichEditOutcome{changed: len(exports), exports: exports}
+	case "import_lyrics_batch":
+		return applyImportBatchLocked(req)
 	case "save_plain_text":
 		if req.Key == "" {
 			return enrichEditOutcome{err: fmt.Errorf("save_plain_text: empty key")}
@@ -267,6 +278,9 @@ func applyEnrichEditLocked(req enrichEditRequest) enrichEditOutcome {
 		}
 		enrichCache[req.Key] = e
 		cancelInFlightEnrichLocked(req.Key)
+		if req.PlainLyricsSource != importLyricsSource {
+			dropImportedLyrics(req.Key)
+		}
 		return enrichEditOutcome{changed: 1}
 	case "set_instrumental":
 		// 单个 key(详情页、搜索面板)或一串 keys(歌词管理多选「全部标为纯音乐」:一次请求改完,App 只重读一遍缓存)。

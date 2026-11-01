@@ -28,6 +28,7 @@ func TestLyricCandidateTieOrderMatchesConstruction(t *testing.T) {
 		"lxMusicLocalLyricsSource": lxMusicLocalLyricsSource,
 		"localFileLyricsSource":    localFileLyricsSource,
 		"spotifyLocalLyricsSource": spotifyLocalLyricsSource,
+		"importLyricsSource":       importLyricsSource,
 	}
 	var built []string
 	for _, m := range regexp.MustCompile(`source:\s*("(\w+)"|(\w+LyricsSource)\b)`).FindAllStringSubmatch(body, -1) {

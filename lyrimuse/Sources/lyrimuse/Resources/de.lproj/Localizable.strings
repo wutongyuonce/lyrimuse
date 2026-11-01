@@ -341,6 +341,7 @@
 "与 %@ 正文相同" = "Gleicher Liedtext wie %@";
 "与 Apple Music 目录中的曲名吻合" = "Passt zu einem Titel im Apple Music-Katalog";
 "与 Spotify 的连接已过期，Spotify 上播放的歌曲未记录到 Last.fm" = "Die Verbindung zu Spotify ist abgelaufen, daher werden auf Spotify gespielte Titel nicht gescrobbelt";
+"与其他文件对应同一首歌曲，未使用 %@" = "Gleicher Titel wie eine andere Datei, nicht verwendet %@";
 "与其他用户交流，也可在此提问或提出建议" = "Tausche dich mit anderen aus, stelle Fragen oder schlage Funktionen vor";
 "与同曲条目共用" = "Mit anderen Einträgen desselben Titels geteilt";
 "与当前使用的歌词文字一致，仅分行不同" = "Gleicher Text wie der verwendete Liedtext, anders in Zeilen aufgeteilt";
@@ -456,6 +457,7 @@
 "从文件导入…" = "Aus Datei importieren …";
 "从暂停恢复播放时展开歌词；播放中切歌不展开，手动收起后保持收起" = "Zeigt den Liedtext, wenn die Wiedergabe nach einer Pause weitergeht. Ein Titelwechsel während der Wiedergabe klappt ihn nicht aus, und eingeklappter Text bleibt eingeklappt";
 "从本机文件导入，未参与评分；采用后不会被自动匹配替换" = "Aus einer Datei auf diesem Mac importiert und nicht bewertet. Nach dem Übernehmen ersetzt die automatische Zuordnung ihn nicht";
+"从歌词文件夹导入的歌词优先使用（+300），其他来源提供带逐字时间轴等明显更好的版本时仍可胜出" = "Aus einem Ordner importierte Liedtexte werden bevorzugt (+300). Eine andere Quelle kann mit einer deutlich besseren Version, etwa mit Wort-Timing, trotzdem gewinnen";
 "从此句开始播放" = "Ab dieser Zeile abspielen";
 "从自动备份恢复" = "Aus Auto-Backup wiederherstellen";
 "从资料库删除" = "Aus Mediathek löschen";
@@ -468,6 +470,7 @@
 "仿 Winamp 的本地音乐播放器" = "Ein lokaler Musikplayer im Stil von Winamp";
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "Ein WeCom-Gruppenbot. Berichte werden im Gruppenchat gepostet; füge einfach seine URL ein";
+"优先使用" = "Bevorzugen";
 "优先在本机翻译，无法翻译时再联网翻译" = "Übersetzt zuerst auf diesem Mac und online, wenn das nicht möglich ist";
 "优先用歌曲文件自带的歌词" = "Liedtext aus der Datei bevorzugen";
 "伴奏版，不采用人声歌词" = "Instrumentalversion; Gesangstext nicht verwendet";
@@ -736,6 +739,8 @@
 "另一时长" = "Andere Länge";
 "另一轮扫描正在进行，请在完成后再试" = "Ein anderer Scan läuft. Versuch es danach erneut";
 "另外两项均开启时不显示" = "Ausgeblendet, wenn die anderen beiden aktiv sind";
+"另有 %@ 个文件" = "%@ weitere Dateien";
+"另有 %@ 个文件#one" = "%@ weitere Datei";
 "另有 %@ 条记录过旧，Last.fm 不再接受" = "%@ weitere sind zu alt für Last.fm";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配" = "%@ weitere Titel ohne Antwort der Quellen · Alle zuordnen";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配#one" = "%@ weiterer Titel ohne Antwort der Quellen · Alle zuordnen";
@@ -744,6 +749,7 @@
 "只显示歌词源自带的读音" = "Zeigt nur die Umschrift der Liedtextquelle";
 "只有播放次数、时长和新听了几位歌手" = "Nur Wiedergaben, Hördauer und Anzahl neuer Künstler";
 "只给汉字标注平假名" = "Hiragana nur für Kanji";
+"只补没有歌词的歌曲" = "Nur Titel ohne Liedtext";
 "可以直接粘贴完整地址，会自动识别是哪个平台" = "Füge die vollständige URL ein, die Plattform wird automatisch erkannt";
 "可同时开启多项" = "Du kannst mehrere aktivieren";
 "可在任意 App 中触发，需包含 ⌘、⌥ 或 ⌃ 之一" = "Funktioniert in jeder App; muss ⌘, ⌥ oder ⌃ enthalten";
@@ -943,8 +949,12 @@
 "宽度" = "Breite";
 "宽度模式" = "Breitenmodus";
 "密钥或地址有误" = "Schlüssel oder URL falsch";
+"对应多首歌曲，请选择 %@" = "Passt zu mehreren Titeln, bitte wählen %@";
 "对齐方式" = "Ausrichtung";
 "导入" = "Importieren";
+"导入 %@ 首" = "%@ Titel importieren";
+"导入 %@ 首#one" = "%@ Titel importieren";
+"导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "Die Liedtext-Bibliothek wurde vor dem Import automatisch gesichert. Du kannst sie im Menü „⋯“ der Liedtext-Verwaltung wiederherstellen";
 "导入失败，请重试" = "Import fehlgeschlagen. Versuch es erneut";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Import fehlgeschlagen: keine gültige .ttf- / .otf-Schriftdatei";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Import fehlgeschlagen: Die ausgewählte Datei ist nicht lesbar. Sie ist eventuell nicht auf diesen Mac geladen oder Lyrimuse hat keinen Zugriff";
@@ -953,8 +963,11 @@
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Der Import übernimmt deine Accounts und alle persönlichen Einstellungen und startet Lyrimuse dann neu";
 "导入并重启" = "Importieren und neu starten";
 "导入文件…" = "Datei importieren …";
+"导入方式" = "Importieren als";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importiere eine Liedtextdatei von diesem Mac (LRC, TTML, YRC, QRC, KRC oder reiner Text) oder zieh sie ins Fenster";
 "导入歌词文件…" = "Liedtextdatei importieren …";
+"导入歌词文件夹" = "Liedtext-Ordner importieren";
+"导入歌词文件夹…" = "Liedtext-Ordner importieren …";
 "导入的文件" = "Importierte Datei";
 "导入的歌词" = "Importierter Liedtext";
 "导出…" = "Exportieren …";
@@ -975,10 +988,12 @@
 "将听歌报告推送到手机、群聊或自建服务" = "Sendet Hörberichte an dein Handy, Gruppenchats oder deinen eigenen Dienst";
 "将在退出 Lyrimuse 时安装" = "Wird beim Beenden von Lyrimuse installiert";
 "将完整的决策记录拷贝到剪贴板（纯文本）" = "Gesamtes Entscheidungsprotokoll als reinen Text in die Zwischenablage kopieren";
+"将导入 %@" = "Wird importiert %@";
 "将当前播放状态推送到网页小组件和状态徽章" = "Sendet den aktuellen Wiedergabestatus an Web-Widget und Status-Badge";
 "将打开 Last.fm 授权页，点按「Yes, allow access」后自动返回此处" = "Öffnet die Autorisierungsseite von Last.fm. Klicke auf „Yes, allow access“, um automatisch hierher zurückzukehren";
 "将播放记录同步到 Last.fm" = "Synchronisiert deine Wiedergaben mit Last.fm";
 "将播放记录同步到 ListenBrainz" = "Synchronisiert deine Wiedergaben mit ListenBrainz";
+"将文件夹中的歌词文件对应到歌词库中的歌曲，导入前可预览" = "Ordnet die Liedtextdateien eines Ordners den Titeln deiner Bibliothek zu, mit Vorschau vor dem Import";
 "将此句恢复为编辑前的内容" = "Diese Zeile auf den Stand vor dem Bearbeiten zurücksetzen";
 "将消息转发到微信的服务：使用微信扫码登录获取 SendKey，报告将显示在微信「方糖」服务号中" = "Ein Dienst, der Nachrichten an WeChat weiterleitet. Scanne den QR-Code mit WeChat, um einen SendKey zu erhalten; Berichte erscheinen im offiziellen Fangtang-Account";
 "将清除 %d 首歌曲的手动时间轴校准，此操作无法撤销。歌词内容和设置中的「时间轴偏移」不受影响。清除后，这些歌曲将恢复自动更新歌词源" = "Entfernt die manuelle Timing-Kalibrierung für %d Titel. Dies kann nicht widerrufen werden. Liedtexte und die Einstellung „Timing-Versatz“ bleiben unverändert. Danach erhalten diese Titel wieder automatische Updates der Liedtextquelle";
@@ -1034,6 +1049,7 @@
 "已下载，可安装" = "Geladen und bereit zur Installation";
 "已中断：%@" = "Abgebrochen: %@";
 "已人工修正" = "Manuell bearbeitet";
+"已人工修正，默认不导入 %@" = "Manuell bearbeitet, standardmäßig nicht importiert %@";
 "已从此歌曲拆分：作为独立歌曲单独统计播放次数，歌词不再关联。如拆分有误，可恢复合并" = "Von diesem Titel abgetrennt: Er zählt als eigener Titel mit eigenen Wiedergaben, und sein Liedtext ist nicht mehr verknüpft. Führe ihn wieder zusammen, falls das ein Fehler war";
 "已保存" = "Gesichert";
 "已保存为纯文本歌词，仅在歌词窗口中显示" = "Als reiner Text gesichert, nur im Liedtextfenster angezeigt";
@@ -1069,6 +1085,8 @@
 "已安装但未运行" = "Installiert, aber nicht aktiv";
 "已安装但未运行（上次退出码 %d）" = "Installiert, aber nicht aktiv (letzter Exit-Code %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ von %2$@ fertig";
+"已导入 %@ 首歌曲的歌词" = "Liedtexte für %@ Titel importiert";
+"已导入 %@ 首歌曲的歌词#one" = "Liedtext für %@ Titel importiert";
 "已导入，另有 %@ 个文件未使用" = "Importiert. %@ weitere Dateien wurden nicht verwendet";
 "已导入，另有 %@ 个文件未使用#one" = "Importiert. %@ weitere Datei wurde nicht verwendet";
 "已导出的歌词文件将一并删除。再次播放这首歌曲时会重新匹配，结果可能不同" = "Die exportierte Liedtextdatei wird ebenfalls gelöscht. Der Titel wird bei der nächsten Wiedergabe neu zugeordnet, das Ergebnis kann abweichen";
@@ -1116,6 +1134,8 @@
 "已更新 %@ 首" = "%@ aktualisiert";
 "已更新到 %@" = "Aktualisiert auf %@";
 "已有歌词的歌曲也会重新匹配；人工修正、已校准时间轴和纯音乐的歌曲除外" = "Ordnet auch Titel mit Liedtext neu zu, außer manuell bearbeiteten, kalibrierten und instrumentalen";
+"已有歌词的歌曲保持不变，其余同「优先使用」" = "Titel mit Liedtext bleiben unverändert, alle anderen wie bei „Bevorzugen“";
+"已有歌词，将跳过 %@" = "Liedtext vorhanden, wird übersprungen %@";
 "已标为纯音乐" = "Als instrumental markiert";
 "已标为纯音乐：不显示歌词，也不自动搜索。采用任一候选将取消标记" = "Als instrumental markiert: Liedtexte werden ausgeblendet und nicht automatisch gesucht. Wenn du einen Treffer verwendest, wird die Markierung entfernt";
 "已校准" = "Kalibriert";
@@ -1469,6 +1489,8 @@
 "整行时间轴" = "Zeilen-Timing";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "Die Datei enthält deine Zugangsdaten und Schlüssel im Klartext. Bewahre sie sicher auf und teile sie nicht. Die Liedtext-Bibliothek wird als zweite Datei mit passendem Namen gesichert; kopiere beide beim Umzug auf einen neuen Mac";
 "文件中尚无歌词，未保存" = "Die Datei enthält noch keinen Liedtext; nicht gesichert";
+"文件夹中没有可识别的歌词文件" = "Keine erkennbaren Liedtextdateien in diesem Ordner";
+"文件过多（上限 %@ 个、200 MB），请分批导入" = "Zu viele Dateien (höchstens %@ Dateien, 200 MB). Importiere sie in mehreren Durchgängen";
 "文件过大，不像是歌词，未保存" = "Die Datei ist zu groß für einen Liedtext; nicht gesichert";
 "文件过大，无法导入" = "Die Datei ist zu groß zum Importieren";
 "文字" = "Text";
@@ -1516,6 +1538,7 @@
 "无法获取「那年今日」：Last.fm 未响应" = "„An diesem Tag“ nicht ladbar – Last.fm antwortet nicht";
 "无法获取当天的收听记录：Last.fm 未响应" = "Scrobbles dieses Tages nicht geladen: Last.fm antwortet nicht";
 "无法获取末句时间" = "Kein Zeitstempel in der letzten Zeile";
+"无法识别歌词 %@" = "Liedtext nicht erkannt %@";
 "无法识别的链接" = "Unbekannter Link";
 "无法读取 %@ 的歌词缓存" = "Liedtext-Cache von %@ nicht lesbar";
 "无法读取 %@ 的歌词缓存，点按查看处理方法" = "Liedtext-Cache von %@ nicht lesbar – klicke für Hilfe";
@@ -1642,6 +1665,8 @@
 "更新时间 旧→新" = "Aktualisiert alt→neu";
 "更新设置" = "Update-Einstellungen";
 "更早的记录尚未加载，这些行暂不编号" = "Ältere Wiedergaben sind noch nicht geladen, daher sind diese Zeilen nicht nummeriert";
+"替换现有歌词并锁定，自动匹配不再更换" = "Ersetzt den aktuellen Liedtext und sperrt ihn, damit die automatische Zuordnung ihn nicht mehr ändert";
+"替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Ersetzt den aktuellen Liedtext. Bietet eine andere Quelle eine deutlich bessere Version, etwa mit Wort-Timing, wird weiterhin automatisch gewechselt";
 "最后一句晚于歌曲结束 5 秒以上，可能是完整版歌词对应了精简版曲目" = "Die letzte Zeile liegt mehr als 5 Sekunden nach dem Titelende; vermutlich Liedtext der Vollversion für eine gekürzte Fassung";
 "最后一句的时间与曲长相差 25% 以上，可能是其他版本" = "Die Zeit der letzten Zeile weicht mehr als 25 % von der Titellänge ab; vermutlich eine andere Version";
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "Die Zeit der letzten Zeile weicht mehr als 25 % von der Titellänge ab; weiter nutzbar, aber hinter allen Treffern mit passender Länge eingestuft";
@@ -1868,6 +1893,7 @@
 "歌词布局" = "Liedtext-Layout";
 "歌词库" = "Liedtext-Bibliothek";
 "歌词库中尚无这首歌曲的记录，可先通过「搜索歌词」查找" = "Dieser Titel ist noch nicht in der Liedtext-Bibliothek. Suche zuerst mit „Liedtext suchen“";
+"歌词库中没有对应的歌曲 %@" = "Kein passender Titel in der Bibliothek %@";
 "歌词库正在刷新，请稍后重试" = "Die Liedtext-Bibliothek wird aktualisiert. Versuche es gleich noch einmal";
 "歌词延后" = "Text später";
 "歌词引擎" = "Liedtext-Engine";
@@ -1937,6 +1963,7 @@
 "正在启用…" = "Wird gestartet …";
 "正在备份歌词…" = "Backup der Liedtexte wird erstellt …";
 "正在安装…" = "Wird installiert …";
+"正在导入…" = "Wird importiert …";
 "正在应用到歌词引擎…" = "Wird auf die Liedtext-Engine angewendet …";
 "正在搜索歌词…" = "Liedtext wird gesucht …";
 "正在搜索：%@" = "Suche: %@";
@@ -1964,6 +1991,7 @@
 "正在解析收听次数" = "Wiedergabezahl wird noch ermittelt";
 "正在记录" = "Wird gescrobbelt";
 "正在读取其余歌曲…" = "Rest wird geladen …";
+"正在读取并匹配歌词文件…" = "Liedtextdateien werden gelesen und zugeordnet …";
 "正在连接 Discord…" = "Verbindung zu Discord …";
 "正在连接 Lyrimuse…" = "Verbinden mit Lyrimuse …";
 "正在采用…" = "Wird übernommen …";
@@ -2321,6 +2349,7 @@
 "自动匹配的歌词与当前条目同步：更换歌词时一并更新，手动修改也会同步" = "Automatisch zugeordneter Liedtext bleibt mit dem aktuellen Eintrag synchron: Ersetzungen und manuelle Änderungen gelten für beide";
 "自动匹配缺失歌词" = "Fehlende Liedtexte zuordnen";
 "自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试" = "Das automatische Backup ist fehlgeschlagen, daher wurde nichts gelöscht, damit alles wiederherstellbar bleibt. Prüfe den Speicherplatz und die Schreibrechte für den Konfigurationsordner und versuche es erneut";
+"自动备份失败，为避免数据无法恢复，本次未执行导入。请检查磁盘空间和配置文件夹的写入权限后重试" = "Die automatische Sicherung ist fehlgeschlagen. Damit deine Daten wiederherstellbar bleiben, wurde nichts importiert. Prüfe den Speicherplatz und die Schreibrechte für den Konfigurationsordner und versuch es erneut";
 "自动对齐" = "Auto-Ausrichtung";
 "自动展开" = "Auto-Ausklappen";
 "自动检查" = "Automatisch prüfen";
@@ -2483,6 +2512,7 @@
 "请求系统授权" = "Zugriff anfordern";
 "请确认已登录 Discord；如仍无法连接，请退出 Discord 后重新打开" = "Stelle sicher, dass du bei Discord angemeldet bist. Klappt es dann noch nicht, beende Discord und öffne es erneut";
 "请稍后重试" = "Versuche es später erneut";
+"读取失败，请重试" = "Ordner konnte nicht gelesen werden. Versuch es erneut";
 "读取播放状态，获取歌词和封面" = "Liest den Wiedergabestatus und lädt Liedtext und Cover";
 "读取本地记录文件失败" = "Lokale Datensatzdatei nicht lesbar";
 "读音" = "Umschrift";
@@ -2633,10 +2663,12 @@
 "选择 Lyrimuse 应视为播放器的 App" = "Wähle eine App, die Lyrimuse als Player behandeln soll";
 "选择…" = "Auswählen …";
 "选择一个会自动同步的文件夹（如 Dropbox、坚果云、OneDrive），在新 Mac 上选择同一文件夹即可恢复" = "Wähle einen Ordner, der automatisch synchronisiert wird, etwa Dropbox oder OneDrive. Wähle auf einem neuen Mac denselben Ordner, um wiederherzustellen";
+"选择存放歌词文件的文件夹" = "Wähle den Ordner mit deinen Liedtextdateien";
 "选择左侧或表格中的其他条目，可与当前条目逐项对比" = "Wähle links oder in der Tabelle einen anderen Eintrag, um ihn mit dem aktuellen zu vergleichen";
 "选择左侧的设置分类" = "Links eine Kategorie auswählen";
 "选择播放器" = "Player auswählen";
 "选择本机的歌词文件，预览后再决定是否采用" = "Wähle eine Liedtextdatei auf diesem Mac und sieh sie dir vor dem Übernehmen an";
+"选择歌曲" = "Titel auswählen";
 "选择歌词文件，可同时选择同名的译文、读音文件" = "Wähle eine Liedtextdatei. Gleichnamige Übersetzungs- und Umschriftdateien kannst du mit auswählen";
 "选择歌词显示方式" = "Liedtext-Anzeige wählen";
 "选择用于播放此网站的浏览器" = "Wähle den Browser, den du für diese Website nutzt";
@@ -2722,6 +2754,7 @@
 "链接无效或已失效" = "Dieser Link ist ungültig oder abgelaufen";
 "链接需以 http:// 或 https:// 开头" = "Der Link muss mit http:// oder https:// beginnen";
 "锁定/解锁位置" = "Position sperren/entsperren";
+"锁定为手动修改" = "Als manuell bearbeitet sperren";
 "锁定位置" = "Position sperren";
 "锁定位置仅对悬浮歌词有效" = "Die Positionssperre gilt nur für „Schwebender Text“";
 "锁定后无法拖动，悬停时也不显示播放控制" = "Gesperrt lässt sich der Text nicht ziehen, und die Steuerung beim Darüberfahren bleibt ausgeblendet";

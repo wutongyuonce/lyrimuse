@@ -1,0 +1,485 @@
+import AppKit
+import LyrimuseCore
+import SwiftUI
+import os
+
+private let logger = Logger(subsystem: "me.yudaotor.lyrimuse", category: "lyrics-batch-import")
+
+/// 歌词管理「导入歌词文件夹…」(11 章决策 150)。App 读文件夹里的歌词文件(文件夹可能在受保护的目录里,常驻引擎读不到),
+/// 写一份暂存请求,交引擎 `plan-lyrics-import` 认出每组文件是哪首歌、出预览清单;用户在预览表里挑定、选好导入方式之后,
+/// 交引擎 `import_lyrics_batch` 写入(`EnrichCacheStore.importLyricsBatch`,写之前打自动快照)。
+enum LyricsBatchImport {
+    /// 导入方式,rawValue 跟引擎 importModeManual / importModePrefer / importModeFill 一致。
+    enum Mode: String, CaseIterable, Identifiable {
+        case prefer, manual, fill
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .prefer: L10n.t("优先使用")
+            case .manual: L10n.t("锁定为手动修改")
+            case .fill: L10n.t("只补没有歌词的歌曲")
+            }
+        }
+
+        var explanation: String {
+            switch self {
+            case .prefer: L10n.t("替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换")
+            case .manual: L10n.t("替换现有歌词并锁定，自动匹配不再更换")
+            case .fill: L10n.t("已有歌词的歌曲保持不变，其余同「优先使用」")
+            }
+        }
+    }
+
+    /// 导入方式记在本机偏好里,下次打开照旧。
+    static let modeDefaultsKey = "np:lyricsBatchImportMode"
+    /// 一次最多读这么多个文件、这么多字节,超了不导(请用户分几次)。
+    static let maxFiles = 10_000
+    static let maxTotalBytes = 200 << 20
+    /// 暂存请求放这里,跟引擎 importStagingDir 是同一个目录。
+    static let stagingDirectoryName = "lyrimuse-import-staging"
+
+    struct Plan: Decodable {
+        let items: [Item]
+    }
+
+    struct Option: Decodable, Hashable, Identifiable {
+        let key: String
+        let artist: String
+        let title: String
+        let album: String
+        let durationSecs: Double?
+        let hasLyrics: Bool
+        let manual: Bool
+        let source: String?
+        var id: String { key }
+
+        enum CodingKeys: String, CodingKey {
+            case key, artist, title, album, manual, source
+            case durationSecs = "duration_secs"
+            case hasLyrics = "has_lyrics"
+        }
+    }
+
+    enum Status: String, Decodable {
+        case matched, ambiguous, unmatched, unrecognized, duplicate
+    }
+
+    struct Item: Decodable, Identifiable {
+        let id: Int
+        let files: [String]
+        let format: String?
+        let lines: Int?
+        let hasWordTiming: Bool?
+        let hasTranslation: Bool?
+        let hasRomanization: Bool?
+        let plainText: Bool?
+        let artist: String?
+        let title: String?
+        let album: String?
+        let status: Status
+        let key: String?
+        let options: [Option]?
+
+        enum CodingKeys: String, CodingKey {
+            case id, files, format, lines, artist, title, album, status, key, options
+            case hasWordTiming = "has_word_timing"
+            case hasTranslation = "has_translation"
+            case hasRomanization = "has_romanization"
+            case plainText = "plain_text"
+        }
+
+        var choices: [Option] { options ?? [] }
+    }
+
+    struct Prepared {
+        let folder: URL
+        let staging: URL
+        let plan: Plan
+    }
+
+    enum PrepareError: Error {
+        case noFiles
+        case tooMany
+        case failed
+    }
+
+    private struct StagingRequest: Encodable {
+        struct File: Encodable {
+            let name: String
+            let path: String
+            let data: Data
+        }
+        let files: [File]
+    }
+
+    static var stagingDirectory: URL { LyrimusePaths.configFile(stagingDirectoryName) }
+
+    /// 读文件夹(含子文件夹)里认得的歌词文件,写暂存请求,交引擎出预览清单。阻塞,放后台跑。
+    static func prepare(folder: URL) async -> Result<Prepared, PrepareError> {
+        await Task.detached(priority: .userInitiated) { prepareBlocking(folder: folder) }.value
+    }
+
+    private static func prepareBlocking(folder: URL) -> Result<Prepared, PrepareError> {
+        let root = folder.standardizedFileURL.path
+        guard let walker = FileManager.default.enumerator(
+            at: folder, includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]) else { return .failure(.failed) }
+        let extensions = Set(LyricsSearchService.importExtensions)
+        var files: [StagingRequest.File] = []
+        var total = 0
+        for case let url as URL in walker {
+            guard extensions.contains(url.pathExtension.lowercased()),
+                  (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true,
+                  let handle = try? FileHandle(forReadingFrom: url) else { continue }
+            defer { try? handle.close() }
+            guard let data = try? handle.read(upToCount: LyricsSearchService.importMaxBytes + 1) else { continue }
+            total += data.count
+            guard files.count < maxFiles, total <= maxTotalBytes else { return .failure(.tooMany) }
+            let full = url.standardizedFileURL.path
+            let rel = full.hasPrefix(root + "/") ? String(full.dropFirst(root.count + 1)) : url.lastPathComponent
+            files.append(.init(name: url.lastPathComponent, path: rel, data: data))
+        }
+        guard !files.isEmpty else { return .failure(.noFiles) }
+        FileIO.createDirectory(stagingDirectory)
+        let staging = stagingDirectory.appendingPathComponent("\(UUID().uuidString).json")
+        guard let body = try? JSONEncoder().encode(StagingRequest(files: files)), FileIO.write(body, to: staging) else {
+            return .failure(.failed)
+        }
+        guard let result = ProcessRunner.run(LyrimusePaths.bundledEnginePath, ["plan-lyrics-import", staging.path],
+                                             timeout: 300, environment: LyrimusePaths.engineProcessEnvironment()),
+              result.succeeded,
+              let plan = try? JSONDecoder().decode(Plan.self, from: result.stdout) else {
+            logger.error("plan-lyrics-import failed for \(files.count, privacy: .public) files")
+            discard(staging)
+            return .failure(.failed)
+        }
+        return .success(Prepared(folder: folder, staging: staging, plan: plan))
+    }
+
+    static func discard(_ staging: URL) {
+        FileIO.remove(staging)
+    }
+
+    /// 时长写成 4:31。
+    static func clock(_ seconds: Double?) -> String? {
+        guard let seconds, seconds > 0 else { return nil }
+        return LyricsCandidateDuration.clock(seconds)
+    }
+}
+
+/// 打开歌词管理的「导入歌词文件夹」面板的请求(调试深链也走这里,见 AppActions.requestLyricsFolderImport)。
+struct LyricsBatchImportRequest: Identifiable {
+    let id = UUID()
+    let folder: URL
+}
+
+/// 「导入歌词文件夹」的预览面板:读文件夹 → 预览表(每组对到哪首、要不要导)→ 导入方式 → 导入 → 结果。
+struct LyricsBatchImportSheet: View {
+    let folder: URL
+
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var languageSettings = AppLanguageObserver.shared
+    @AppStorage(LyricsBatchImport.modeDefaultsKey) private var mode: LyricsBatchImport.Mode = .prefer
+    @State private var prepared: LyricsBatchImport.Prepared?
+    @State private var prepareError: LyricsBatchImport.PrepareError?
+    /// 用户取消勾选的组。
+    @State private var excluded: Set<Int> = []
+    /// 用户勾上的手改过的组(引擎按 force 写)。
+    @State private var forced: Set<Int> = []
+    /// 对得上好几首时用户挑的那一首。
+    @State private var choices: [Int: String] = [:]
+    @State private var importing = false
+    @State private var importedCount: Int?
+    @State private var importFailed = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            header
+            Divider()
+            content
+            Divider()
+            footer
+        }
+        .frame(minWidth: 760, idealWidth: 900, minHeight: 520, idealHeight: 640)
+        .task { await load() }
+        .onDisappear {
+            if let prepared { LyricsBatchImport.discard(prepared.staging) }
+        }
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(L10n.t("导入歌词文件夹")).font(.headline)
+            Text(folder.path)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .help(folder.path)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
+        .background(WindowDragHandle())
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let importedCount {
+            ContentUnavailableView {
+                Label(String(format: L10n.plural("已导入 %@ 首歌曲的歌词", count: importedCount), "\(importedCount)"),
+                      systemImage: "checkmark.circle")
+            } description: {
+                Text(L10n.t("导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复"))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let prepareError {
+            ContentUnavailableView(Self.prepareErrorText(prepareError), systemImage: "exclamationmark.triangle")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let prepared {
+            planList(prepared.plan)
+        } else {
+            VStack(spacing: 10) {
+                ProgressView()
+                Text(L10n.t("正在读取并匹配歌词文件…")).foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private static func prepareErrorText(_ error: LyricsBatchImport.PrepareError) -> String {
+        switch error {
+        case .noFiles: L10n.t("文件夹中没有可识别的歌词文件")
+        case .tooMany: String(format: L10n.t("文件过多（上限 %@ 个、200 MB），请分批导入"), LyricsBatchImport.maxFiles.formatted())
+        case .failed: L10n.t("读取失败，请重试")
+        }
+    }
+
+    // MARK: - 预览表
+
+    /// 一组最后对到哪首:用户挑过的,否则引擎认出的。
+    private func target(_ item: LyricsBatchImport.Item) -> LyricsBatchImport.Option? {
+        let key = choices[item.id] ?? item.key
+        return item.choices.first { $0.key == key }
+    }
+
+    private enum Bucket: CaseIterable {
+        case ready, choose, manual, hasLyrics, unmatched, unrecognized, duplicate
+    }
+
+    private func bucket(_ item: LyricsBatchImport.Item) -> Bucket {
+        switch item.status {
+        case .unmatched: return .unmatched
+        case .unrecognized: return .unrecognized
+        case .duplicate: return .duplicate
+        case .matched, .ambiguous:
+            guard let t = target(item) else { return .choose }
+            if t.manual { return .manual }
+            if mode == .fill, t.hasLyrics { return .hasLyrics }
+            return .ready
+        }
+    }
+
+    private func bucketTitle(_ b: Bucket, count: Int) -> String {
+        let n = "\(count)"
+        switch b {
+        case .ready: return String(format: L10n.t("将导入 %@"), n)
+        case .choose: return String(format: L10n.t("对应多首歌曲，请选择 %@"), n)
+        case .manual: return String(format: L10n.t("已人工修正，默认不导入 %@"), n)
+        case .hasLyrics: return String(format: L10n.t("已有歌词，将跳过 %@"), n)
+        case .unmatched: return String(format: L10n.t("歌词库中没有对应的歌曲 %@"), n)
+        case .unrecognized: return String(format: L10n.t("无法识别歌词 %@"), n)
+        case .duplicate: return String(format: L10n.t("与其他文件对应同一首歌曲，未使用 %@"), n)
+        }
+    }
+
+    private func isIncluded(_ item: LyricsBatchImport.Item) -> Bool {
+        switch bucket(item) {
+        case .ready: !excluded.contains(item.id)
+        case .manual: forced.contains(item.id)
+        default: false
+        }
+    }
+
+    private func planList(_ plan: LyricsBatchImport.Plan) -> some View {
+        let grouped = Dictionary(grouping: plan.items, by: bucket)
+        return List {
+            ForEach(Bucket.allCases, id: \.self) { b in
+                if let items = grouped[b], !items.isEmpty {
+                    Section(bucketTitle(b, count: items.count)) {
+                        ForEach(items) { item in row(item, bucket: b) }
+                    }
+                }
+            }
+        }
+        .listStyle(.inset)
+    }
+
+    private func row(_ item: LyricsBatchImport.Item, bucket b: Bucket) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            if b == .ready || b == .manual {
+                Toggle("", isOn: Binding(
+                    get: { isIncluded(item) },
+                    set: { on in
+                        if b == .manual {
+                            if on { forced.insert(item.id) } else { forced.remove(item.id) }
+                        } else if on {
+                            excluded.remove(item.id)
+                        } else {
+                            excluded.insert(item.id)
+                        }
+                    }))
+                    .labelsHidden()
+                    .toggleStyle(.checkbox)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.files.first ?? "")
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .help(item.files.joined(separator: "\n"))
+                Text(fileTraits(item))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            targetView(item, bucket: b)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, 2)
+    }
+
+    /// 「LRC · 32 行 · 逐字 · 译文 · 另有 2 个文件」。
+    private func fileTraits(_ item: LyricsBatchImport.Item) -> String {
+        var parts: [String] = []
+        if let format = item.format, !format.isEmpty { parts.append(format.uppercased()) }
+        if let lines = item.lines, lines > 0 { parts.append(String(format: L10n.t("%@ 行"), "\(lines)")) }
+        if item.hasWordTiming == true { parts.append(L10n.t("逐字时间轴")) }
+        if item.hasTranslation == true { parts.append(L10n.t("译文")) }
+        if item.hasRomanization == true { parts.append(L10n.t("自带读音")) }
+        if item.plainText == true { parts.append(L10n.t("纯文本")) }
+        if item.files.count > 1 {
+            parts.append(String(format: L10n.plural("另有 %@ 个文件", count: item.files.count - 1), "\(item.files.count - 1)"))
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    @ViewBuilder
+    private func targetView(_ item: LyricsBatchImport.Item, bucket b: Bucket) -> some View {
+        if item.status == .ambiguous {
+            SettingsGlassMenuPicker(
+                selection: Binding(
+                    get: { choices[item.id] ?? item.key ?? "" },
+                    set: { choices[item.id] = $0 }),
+                options: [""] + item.choices.map(\.key),
+                label: { key in
+                    guard let o = item.choices.first(where: { $0.key == key }) else { return L10n.t("选择歌曲") }
+                    return optionLabel(o)
+                },
+                compact: true)
+                .fixedSize()
+        } else if let t = target(item) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(t.title).lineLimit(1)
+                Text([t.artist, t.album].filter { !$0.isEmpty }.joined(separator: " · "))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .help(optionLabel(t))
+        } else {
+            Text(guessText(item))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+    }
+
+    /// 「歌名 · 歌手 · 专辑 · 4:31」。
+    private func optionLabel(_ o: LyricsBatchImport.Option) -> String {
+        ([o.title, o.artist, o.album] + [LyricsBatchImport.clock(o.durationSecs)].compactMap { $0 })
+            .filter { !$0.isEmpty }
+            .joined(separator: " · ")
+    }
+
+    /// 库里没有对应歌曲时,写从文件里认出来的身份。
+    private func guessText(_ item: LyricsBatchImport.Item) -> String {
+        [item.title, item.artist].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    // MARK: - 底栏
+
+    private var selectedItems: [LyricsBatchImport.Item] {
+        (prepared?.plan.items ?? []).filter(isIncluded)
+    }
+
+    private var footer: some View {
+        HStack(spacing: 12) {
+            if importedCount == nil, prepared != nil {
+                Text(L10n.t("导入方式"))
+                    .foregroundStyle(.secondary)
+                SettingsGlassMenuPicker(selection: $mode, options: LyricsBatchImport.Mode.allCases, label: \.title, compact: true)
+                    .fixedSize()
+                Text(mode.explanation)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if importFailed {
+                Label(L10n.t("导入失败，请重试"), systemImage: "exclamationmark.triangle.fill")
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            }
+            Spacer(minLength: 8)
+            if importedCount != nil || prepared == nil {
+                Button(L10n.t("完成")) { dismiss() }
+                    .keyboardShortcut(.defaultAction)
+                    .settingsGlassButtons(inSheet: true)
+            } else {
+                Button(L10n.t("取消")) { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                    .settingsGlassButtons(inSheet: true)
+                let count = selectedItems.count
+                Button(importing ? L10n.t("正在导入…")
+                                 : String(format: L10n.plural("导入 %@ 首", count: count), "\(count)")) {
+                    Task { await runImport() }
+                }
+                .keyboardShortcut(.defaultAction)
+                .settingsProminentGlassButton(tint: .accentColor)
+                .disabled(count == 0 || importing)
+            }
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+    }
+
+    // MARK: - 动作
+
+    private func load() async {
+        guard prepared == nil, prepareError == nil else { return }
+        switch await LyricsBatchImport.prepare(folder: folder) {
+        case .success(let p): prepared = p
+        case .failure(let e): prepareError = e
+        }
+    }
+
+    private func runImport() async {
+        guard let prepared, !importing else { return }
+        let items: [[String: Any]] = selectedItems.compactMap { item in
+            guard let key = target(item)?.key else { return nil }
+            var entry: [String: Any] = ["id": item.id, "key": key]
+            if forced.contains(item.id) { entry["force"] = true }
+            return entry
+        }
+        importing = true
+        importFailed = false
+        let changed = await EnrichCacheStore.shared.importLyricsBatch(staging: prepared.staging, mode: mode.rawValue, items: items)
+        importing = false
+        if let changed {
+            importedCount = changed
+        } else {
+            importFailed = true
+        }
+    }
+}

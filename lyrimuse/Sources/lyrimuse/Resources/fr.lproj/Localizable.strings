@@ -341,6 +341,7 @@
 "与 %@ 正文相同" = "Mêmes paroles que %@";
 "与 Apple Music 目录中的曲名吻合" = "Correspond à un titre du catalogue Apple Music";
 "与 Spotify 的连接已过期，Spotify 上播放的歌曲未记录到 Last.fm" = "La connexion à Spotify a expiré : les morceaux lus sur Spotify ne sont pas scrobblés";
+"与其他文件对应同一首歌曲，未使用 %@" = "Même morceau qu’un autre fichier, non utilisé %@";
 "与其他用户交流，也可在此提问或提出建议" = "Discutez avec d’autres utilisateurs, posez vos questions ou proposez des idées";
 "与同曲条目共用" = "Partagé avec d’autres entrées du même morceau";
 "与当前使用的歌词文字一致，仅分行不同" = "Mêmes paroles que celles utilisées, découpées autrement en lignes";
@@ -456,6 +457,7 @@
 "从文件导入…" = "Importer depuis un fichier…";
 "从暂停恢复播放时展开歌词；播放中切歌不展开，手动收起后保持收起" = "Affiche les paroles à la reprise après une pause. Changer de morceau pendant la lecture ne les développe pas, et les paroles réduites manuellement le restent";
 "从本机文件导入，未参与评分；采用后不会被自动匹配替换" = "Importées d’un fichier de ce Mac, sans score. Une fois adoptées, la correspondance automatique ne les remplacera pas";
+"从歌词文件夹导入的歌词优先使用（+300），其他来源提供带逐字时间轴等明显更好的版本时仍可胜出" = "Les paroles importées d’un dossier sont privilégiées (+300) ; une autre source peut l’emporter avec une version nettement meilleure, par exemple synchronisée mot à mot";
 "从此句开始播放" = "Lire à partir de cette ligne";
 "从自动备份恢复" = "Restaurer depuis la sauvegarde auto";
 "从资料库删除" = "Supprimer de la bibliothèque";
@@ -468,6 +470,7 @@
 "仿 Winamp 的本地音乐播放器" = "Un lecteur de musique local façon Winamp";
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "Bot de groupe WeCom. Les bilans sont publiés dans le groupe ; collez son URL pour l’utiliser";
+"优先使用" = "Privilégier";
 "优先在本机翻译，无法翻译时再联网翻译" = "Traduit d’abord sur ce Mac, puis en ligne si ce n’est pas possible";
 "优先用歌曲文件自带的歌词" = "Privilégier les paroles du fichier";
 "伴奏版，不采用人声歌词" = "Version instrumentale ; paroles chantées non utilisées";
@@ -736,6 +739,8 @@
 "另一时长" = "Autre durée";
 "另一轮扫描正在进行，请在完成后再试" = "Une autre analyse est en cours. Réessayez quand elle sera terminée";
 "另外两项均开启时不显示" = "Masqué si les deux autres sont activés";
+"另有 %@ 个文件" = "%@ autres fichiers";
+"另有 %@ 个文件#one" = "%@ autre fichier";
 "另有 %@ 条记录过旧，Last.fm 不再接受" = "%@ autres sont trop anciennes pour Last.fm";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配" = "%@ autres morceaux sans réponse des sources · Tout associer";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配#one" = "%@ autre morceau sans réponse des sources · Tout associer";
@@ -744,6 +749,7 @@
 "只显示歌词源自带的读音" = "N’affiche que la romanisation fournie par la source de paroles";
 "只有播放次数、时长和新听了几位歌手" = "Seulement les écoutes, le temps d’écoute et le nombre de nouveaux artistes";
 "只给汉字标注平假名" = "Hiragana sur les kanji seulement";
+"只补没有歌词的歌曲" = "Seulement les morceaux sans paroles";
 "可以直接粘贴完整地址，会自动识别是哪个平台" = "Collez l’URL complète, la plateforme est reconnue automatiquement";
 "可同时开启多项" = "Vous pouvez en activer plusieurs";
 "可在任意 App 中触发，需包含 ⌘、⌥ 或 ⌃ 之一" = "Fonctionne dans toute app ; doit inclure ⌘, ⌥ ou ⌃";
@@ -943,8 +949,12 @@
 "宽度" = "Largeur";
 "宽度模式" = "Mode de largeur";
 "密钥或地址有误" = "Secret ou URL incorrect";
+"对应多首歌曲，请选择 %@" = "Correspond à plusieurs morceaux, choisissez-en un %@";
 "对齐方式" = "Alignement";
 "导入" = "Importer";
+"导入 %@ 首" = "Importer %@ morceaux";
+"导入 %@ 首#one" = "Importer %@ morceau";
+"导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "La bibliothèque de paroles a été sauvegardée automatiquement avant l’importation. Vous pouvez la restaurer depuis le menu ⋯ du gestionnaire de paroles";
 "导入失败，请重试" = "Échec de l’importation. Réessayez";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Échec de l’import : fichier de police .ttf / .otf non valide";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Échec de l’importation : impossible de lire le fichier sélectionné. Il n’est peut-être pas téléchargé sur ce Mac, ou Lyrimuse n’y a pas accès";
@@ -953,8 +963,11 @@
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "L’importation reprend vos comptes et tous vos réglages personnels, puis redémarre Lyrimuse";
 "导入并重启" = "Importer et redémarrer";
 "导入文件…" = "Importer un fichier…";
+"导入方式" = "Importer en mode";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importer un fichier de paroles de ce Mac (LRC, TTML, YRC, QRC, KRC ou texte brut), ou le glisser dans la fenêtre";
 "导入歌词文件…" = "Importer un fichier de paroles…";
+"导入歌词文件夹" = "Importer un dossier de paroles";
+"导入歌词文件夹…" = "Importer un dossier de paroles…";
 "导入的文件" = "Fichier importé";
 "导入的歌词" = "Paroles importées";
 "导出…" = "Exporter…";
@@ -975,10 +988,12 @@
 "将听歌报告推送到手机、群聊或自建服务" = "Envoie les bilans d’écoute sur votre téléphone, dans des groupes ou sur votre propre service";
 "将在退出 Lyrimuse 时安装" = "Installation à la fermeture de Lyrimuse";
 "将完整的决策记录拷贝到剪贴板（纯文本）" = "Copier tout l’historique de décision dans le presse-papiers en texte brut";
+"将导入 %@" = "Seront importés %@";
 "将当前播放状态推送到网页小组件和状态徽章" = "Envoie l’état de lecture actuel au widget web et au badge d’état";
 "将打开 Last.fm 授权页，点按「Yes, allow access」后自动返回此处" = "Ouvre la page d’autorisation de Last.fm. Cliquez sur « Yes, allow access » pour revenir ici automatiquement";
 "将播放记录同步到 Last.fm" = "Synchronise vos écoutes avec Last.fm";
 "将播放记录同步到 ListenBrainz" = "Synchronise vos écoutes avec ListenBrainz";
+"将文件夹中的歌词文件对应到歌词库中的歌曲，导入前可预览" = "Associe les fichiers de paroles d’un dossier aux morceaux de votre bibliothèque, avec un aperçu avant l’importation";
 "将此句恢复为编辑前的内容" = "Rétablir cette ligne telle qu’elle était avant la modification";
 "将消息转发到微信的服务：使用微信扫码登录获取 SendKey，报告将显示在微信「方糖」服务号中" = "Service qui transfère les messages vers WeChat. Scannez le QR code avec WeChat pour obtenir une SendKey ; les bilans arrivent dans le compte officiel Fangtang";
 "将清除 %d 首歌曲的手动时间轴校准，此操作无法撤销。歌词内容和设置中的「时间轴偏移」不受影响。清除后，这些歌曲将恢复自动更新歌词源" = "Efface le calibrage manuel du minutage de %d morceaux. Action irréversible. Les paroles et le réglage « Décalage du minutage » ne changent pas. Ces morceaux reprendront ensuite la mise à jour auto de leur source de paroles";
@@ -1034,6 +1049,7 @@
 "已下载，可安装" = "Téléchargée, prête à installer";
 "已中断：%@" = "Arrêté : %@";
 "已人工修正" = "Modifié manuellement";
+"已人工修正，默认不导入 %@" = "Modifiés manuellement, non importés par défaut %@";
 "已从此歌曲拆分：作为独立歌曲单独统计播放次数，歌词不再关联。如拆分有误，可恢复合并" = "Séparée de ce morceau : elle compte comme un morceau distinct avec ses propres écoutes, et ses paroles ne sont plus liées. Fusionnez-la à nouveau en cas d’erreur";
 "已保存" = "Enregistré";
 "已保存为纯文本歌词，仅在歌词窗口中显示" = "Enregistré en paroles texte brut, affichées seulement dans la fenêtre des paroles";
@@ -1069,6 +1085,8 @@
 "已安装但未运行" = "Installé mais inactif";
 "已安装但未运行（上次退出码 %d）" = "Installé mais inactif (dernier code de sortie %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ sur %2$@ terminés";
+"已导入 %@ 首歌曲的歌词" = "Paroles importées pour %@ morceaux";
+"已导入 %@ 首歌曲的歌词#one" = "Paroles importées pour %@ morceau";
 "已导入，另有 %@ 个文件未使用" = "Importées. %@ autres fichiers n’ont pas été utilisés";
 "已导入，另有 %@ 个文件未使用#one" = "Importées. %@ autre fichier n’a pas été utilisé";
 "已导出的歌词文件将一并删除。再次播放这首歌曲时会重新匹配，结果可能不同" = "Son fichier de paroles exporté est aussi supprimé. Le morceau sera réassocié à sa prochaine lecture, avec un résultat qui peut différer";
@@ -1116,6 +1134,8 @@
 "已更新 %@ 首" = "%@ mis à jour";
 "已更新到 %@" = "Mis à jour vers %@";
 "已有歌词的歌曲也会重新匹配；人工修正、已校准时间轴和纯音乐的歌曲除外" = "Réassocie aussi les morceaux qui ont déjà des paroles, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux";
+"已有歌词的歌曲保持不变，其余同「优先使用」" = "Les morceaux qui ont déjà des paroles restent inchangés ; les autres fonctionnent comme Privilégier";
+"已有歌词，将跳过 %@" = "Ont déjà des paroles, seront ignorés %@";
 "已标为纯音乐" = "Marqué comme instrumental";
 "已标为纯音乐：不显示歌词，也不自动搜索。采用任一候选将取消标记" = "Marqué comme instrumental : les paroles sont masquées et ne sont pas recherchées automatiquement. Utiliser un résultat retire la marque";
 "已校准" = "Calibré";
@@ -1469,6 +1489,8 @@
 "整行时间轴" = "Minutage par ligne";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "Le fichier contient les identifiants et clés de vos comptes en clair. Conservez-le en lieu sûr et ne le partagez pas. La bibliothèque de paroles est enregistrée dans un second fichier au nom correspondant ; copiez les deux pour passer à un nouveau Mac";
 "文件中尚无歌词，未保存" = "Le fichier ne contient pas encore de paroles ; non enregistré";
+"文件夹中没有可识别的歌词文件" = "Aucun fichier de paroles reconnaissable dans ce dossier";
+"文件过多（上限 %@ 个、200 MB），请分批导入" = "Trop de fichiers (limite de %@ fichiers, 200 Mo). Importez-les en plusieurs fois";
 "文件过大，不像是歌词，未保存" = "Fichier trop volumineux pour des paroles ; non enregistré";
 "文件过大，无法导入" = "Le fichier est trop volumineux pour être importé";
 "文字" = "Texte";
@@ -1516,6 +1538,7 @@
 "无法获取「那年今日」：Last.fm 未响应" = "Impossible de charger ce jour les années passées : Last.fm n’a pas répondu";
 "无法获取当天的收听记录：Last.fm 未响应" = "Impossible de charger les scrobbles de ce jour : Last.fm n’a pas répondu";
 "无法获取末句时间" = "Pas d’horodatage sur la dernière ligne";
+"无法识别歌词 %@" = "Paroles non reconnues %@";
 "无法识别的链接" = "Lien non reconnu";
 "无法读取 %@ 的歌词缓存" = "Impossible de lire le cache de paroles de %@";
 "无法读取 %@ 的歌词缓存，点按查看处理方法" = "Impossible de lire le cache de paroles de %@ : cliquez pour savoir quoi faire";
@@ -1642,6 +1665,8 @@
 "更新时间 旧→新" = "Mis à jour : ancien→récent";
 "更新设置" = "Réglages de mise à jour";
 "更早的记录尚未加载，这些行暂不编号" = "Les écoutes plus anciennes ne sont pas encore chargées, ces lignes ne sont donc pas numérotées";
+"替换现有歌词并锁定，自动匹配不再更换" = "Remplace les paroles actuelles et les verrouille pour que la correspondance automatique ne les change pas";
+"替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Remplace les paroles actuelles. Elles peuvent encore changer automatiquement si une autre source propose une version nettement meilleure, par exemple synchronisée mot à mot";
 "最后一句晚于歌曲结束 5 秒以上，可能是完整版歌词对应了精简版曲目" = "La dernière ligne tombe plus de 5 secondes après la fin du morceau ; sans doute les paroles complètes d’une version abrégée";
 "最后一句的时间与曲长相差 25% 以上，可能是其他版本" = "L’écart entre la dernière ligne et la durée du morceau dépasse 25 % ; sans doute une autre version";
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "L’écart entre la dernière ligne et la durée du morceau dépasse 25 % ; utilisable, mais classé après tous les résultats de durée concordante";
@@ -1868,6 +1893,7 @@
 "歌词布局" = "Disposition des paroles";
 "歌词库" = "Bibliothèque de paroles";
 "歌词库中尚无这首歌曲的记录，可先通过「搜索歌词」查找" = "Ce morceau n’est pas encore dans la bibliothèque de paroles. Utilisez d’abord « Rechercher les paroles »";
+"歌词库中没有对应的歌曲 %@" = "Aucun morceau correspondant dans la bibliothèque %@";
 "歌词库正在刷新，请稍后重试" = "La bibliothèque de paroles s’actualise. Réessayez dans un instant";
 "歌词延后" = "Retarder les paroles";
 "歌词引擎" = "Moteur de paroles";
@@ -1937,6 +1963,7 @@
 "正在启用…" = "Démarrage…";
 "正在备份歌词…" = "Sauvegarde des paroles…";
 "正在安装…" = "Installation…";
+"正在导入…" = "Importation…";
 "正在应用到歌词引擎…" = "Application au moteur de paroles…";
 "正在搜索歌词…" = "Recherche des paroles…";
 "正在搜索：%@" = "Recherche : %@";
@@ -1964,6 +1991,7 @@
 "正在解析收听次数" = "Nombre d’écoutes en cours de calcul";
 "正在记录" = "Scrobble en cours";
 "正在读取其余歌曲…" = "Chargement du reste…";
+"正在读取并匹配歌词文件…" = "Lecture et association des fichiers de paroles…";
 "正在连接 Discord…" = "Connexion à Discord…";
 "正在连接 Lyrimuse…" = "Connexion à Lyrimuse…";
 "正在采用…" = "Adoption…";
@@ -2321,6 +2349,7 @@
 "自动匹配的歌词与当前条目同步：更换歌词时一并更新，手动修改也会同步" = "Les paroles associées automatiquement restent synchronisées avec l’entrée actuelle : remplacements et modifications manuelles s’appliquent aux deux";
 "自动匹配缺失歌词" = "Associer les paroles manquantes";
 "自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试" = "La sauvegarde automatique a échoué : rien n’a été supprimé, pour que tout reste récupérable. Vérifiez l’espace disque et l’accès en écriture au dossier de configuration, puis réessayez";
+"自动备份失败，为避免数据无法恢复，本次未执行导入。请检查磁盘空间和配置文件夹的写入权限后重试" = "La sauvegarde automatique a échoué ; rien n’a été importé pour que vos données restent récupérables. Vérifiez l’espace disque et l’accès en écriture au dossier de configuration, puis réessayez";
 "自动对齐" = "Alignement auto";
 "自动展开" = "Développement auto";
 "自动检查" = "Vérifier automatiquement";
@@ -2483,6 +2512,7 @@
 "请求系统授权" = "Demander l’accès";
 "请确认已登录 Discord；如仍无法连接，请退出 Discord 后重新打开" = "Vérifiez que vous êtes connecté à Discord. Si la connexion échoue encore, quittez Discord puis rouvrez-le";
 "请稍后重试" = "Réessayez plus tard";
+"读取失败，请重试" = "Impossible de lire le dossier. Réessayez";
 "读取播放状态，获取歌词和封面" = "Lit l’état de lecture et récupère paroles et illustrations";
 "读取本地记录文件失败" = "Impossible de lire le fichier d’historique local";
 "读音" = "Romanisation";
@@ -2633,10 +2663,12 @@
 "选择 Lyrimuse 应视为播放器的 App" = "Choisissez une app que Lyrimuse traitera comme lecteur";
 "选择…" = "Choisir…";
 "选择一个会自动同步的文件夹（如 Dropbox、坚果云、OneDrive），在新 Mac 上选择同一文件夹即可恢复" = "Choisissez un dossier synchronisé automatiquement, comme Dropbox ou OneDrive. Sur un nouveau Mac, choisissez le même dossier pour restaurer";
+"选择存放歌词文件的文件夹" = "Choisissez le dossier qui contient vos fichiers de paroles";
 "选择左侧或表格中的其他条目，可与当前条目逐项对比" = "Sélectionnez une autre entrée à gauche ou dans le tableau pour la comparer à l’entrée actuelle";
 "选择左侧的设置分类" = "Sélectionnez une catégorie de réglages à gauche";
 "选择播放器" = "Choisir les lecteurs";
 "选择本机的歌词文件，预览后再决定是否采用" = "Choisissez un fichier de paroles de ce Mac et prévisualisez-le avant de l’adopter";
+"选择歌曲" = "Choisir un morceau";
 "选择歌词文件，可同时选择同名的译文、读音文件" = "Choisissez un fichier de paroles. Vous pouvez aussi sélectionner ses fichiers de traduction et de prononciation du même nom";
 "选择歌词显示方式" = "Choisir où afficher les paroles";
 "选择用于播放此网站的浏览器" = "Choisissez le navigateur utilisé pour ce site";
@@ -2722,6 +2754,7 @@
 "链接无效或已失效" = "Ce lien n’est pas valide ou a expiré";
 "链接需以 http:// 或 https:// 开头" = "Le lien doit commencer par http:// ou https://";
 "锁定/解锁位置" = "Verrouiller/déverrouiller la position";
+"锁定为手动修改" = "Verrouiller comme modification manuelle";
 "锁定位置" = "Verrouiller la position";
 "锁定位置仅对悬浮歌词有效" = "Le verrouillage de la position ne s’applique qu’aux paroles flottantes";
 "锁定后无法拖动，悬停时也不显示播放控制" = "Une fois verrouillées, les paroles ne peuvent pas être déplacées et les commandes au survol restent masquées";

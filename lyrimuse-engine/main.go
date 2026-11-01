@@ -101,6 +101,11 @@ func main() {
 		runSearchLyricsCLI(os.Args[2:])
 		return
 	}
+	// `lyrimuse-engine plan-lyrics-import`:歌词管理「导入歌词文件夹…」的预览清单(见 importbatch.go)。
+	if len(os.Args) > 1 && os.Args[1] == "plan-lyrics-import" {
+		runPlanLyricsImportCLI(os.Args[2:])
+		return
+	}
 	// `lyrimuse-engine parse-lyrics-files`:「搜索候选歌词」面板导入歌词文件时解析成一条候选(见 importlyrics.go)。
 	if len(os.Args) > 1 && os.Args[1] == "parse-lyrics-files" {
 		runParseLyricsFilesCLI(os.Args[2:])

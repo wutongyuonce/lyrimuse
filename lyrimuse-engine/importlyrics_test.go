@@ -25,7 +25,7 @@ func TestImportLyricsPlainLRCWithCompanions(t *testing.T) {
 	if c == nil || r.Error != "" {
 		t.Fatalf("应解析出候选: %+v", r)
 	}
-	if c.Source != lyricsImportSource || c.Title != "晴天" || c.Artist != "周杰伦" || c.Album != "叶惠美" {
+	if c.Source != importLyricsSource || c.Title != "晴天" || c.Artist != "周杰伦" || c.Album != "叶惠美" {
 		t.Errorf("来源和身份不对: %+v", c)
 	}
 	if c.Lyrics != "[offset:200]\n[00:01.00]故事的小黄花\n[00:03.50]从出生那年就飘着" {

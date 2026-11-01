@@ -4227,6 +4227,13 @@ func preferredLocalFileCandidate(scored []scoredLyricCandidateResult, usable fun
 
 // priorityPick:「顺序优先」按 priorityTiers 的先后,取第一个有 ok 候选的名次里分数最高的那条(scored 已按分数从高到低排)。
 func priorityPick(scored []scoredLyricCandidateResult, ok func(scoredLyricCandidateResult) bool) *scoredLyricCandidateResult {
+	// 用户导入的歌词(importstore.go)排在各源前面。别把它做成 priorityTiers 里的一个名次:它不像各源那样「回话」,
+	// 早定和重试会一直等它。
+	for i := range scored {
+		if scored[i].Source == importLyricsSource && ok(scored[i]) {
+			return &scored[i]
+		}
+	}
 	for _, tier := range priorityTiers() {
 		for i := range scored {
 			if slices.Contains(tier, scored[i].Source) && ok(scored[i]) {
@@ -5296,7 +5303,8 @@ var lyricSourceNames = []string{"netease", "qq", "kugou", "lrclib", "musixmatch"
 // 跟着改(lyrictieorder_test.go 用源码扫描钉着两边一致)。
 var lyricCandidateTieOrder = []string{
 	"netease", "qq", "kugou", "musixmatch", "lrclib", "lyricfind", "kuwo", "migu", "deezer", "applemusic", "soda", "vibe", "genie", "petitlyrics",
-	kkboxLocalLyricsSource, amazonLocalLyricsSource, lxMusicLocalLyricsSource, localFileLyricsSource, spotifyLocalLyricsSource,
+	kkboxLocalLyricsSource, amazonLocalLyricsSource, lxMusicLocalLyricsSource, localFileLyricsSource, importLyricsSource,
+	spotifyLocalLyricsSource,
 	"amll",
 }
 
@@ -5432,6 +5440,7 @@ func rankLyricSourceResults(artist, title, album string, durationSecs float64, r
 	amz := raw[amazonLocalLyricsSource]
 	localLRC := raw[localFileLyricsSource]
 	lxm := raw[lxMusicLocalLyricsSource]
+	imp := raw[importLyricsSource]
 	sodaLyr, sodaYRC, sodaTr, sodaTitle, sodaArtist, sodaAlbum, sodaCover, sodaDur := soda.lyr, soda.yrc, soda.tr, soda.matchTitle, soda.matchArtist, soda.matchAlbum, soda.matchCover, soda.srcDur
 	amll := raw["amll"].amll
 	// 候选的封面只用它自己那个源给的,没有就空着(「搜索候选歌词」弹窗显示占位图,「解析决策」全空时整列不出现);
@@ -5621,6 +5630,16 @@ func rankLyricSourceResults(artist, title, album string, durationSecs float64, r
 			sourceReportedDurationSecs: localLRC.srcDur,
 			title:                      localLRC.matchTitle, artist: localLRC.matchArtist,
 			identityFromLocalClient: localLRC.identityFromLocalClient, plainTextOnly: localLRC.plainOnly,
+		})
+	}
+	if imp.lyr != "" {
+		// 导入库里这首的那份(importstore.go)。身份就是本地这首;译文语言没标时按目标语言。
+		impUsableTr, impUsableRoma := usableValueAdd(imp.lyr, imp.tr, importedTrLang(imp.trLang), imp.roma, features().LyricsTranslationLanguage)
+		candidates = append(candidates, lyricCandidate{
+			source: importLyricsSource, lyrics: imp.lyr,
+			wordTimingYRC: usableYRC(imp.lyr, imp.yrc), hasWordTiming: usableWordTiming(imp.lyr, imp.yrc),
+			hasUsableTranslation: impUsableTr, hasUsableRomanization: impUsableRoma,
+			title: imp.matchTitle, artist: imp.matchArtist, album: imp.matchAlbum,
 		})
 	}
 	if spl.lyr != "" {
@@ -5863,6 +5882,15 @@ func rankLyricSourceResults(artist, title, album string, durationSecs float64, r
 				r.LyricsTr = localLRC.tr
 				r.LyricsTrLang = "zh"
 			}
+		case importLyricsSource:
+			if c.hasUsableTranslation {
+				r.LyricsTr = imp.tr
+				r.LyricsTrLang = importedTrLang(imp.trLang)
+			}
+			if usableRomaForResult(c.lyrics, imp.roma) {
+				r.LyricsRoma = imp.roma
+			}
+			r.LyricsBG = imp.bg
 		case lxMusicLocalLyricsSource:
 			// 洛雪存下的是平台原版的译文 / 音译轨(国内平台的译文固定中文),口径同 qq。
 			if c.hasUsableTranslation {
@@ -6360,6 +6388,10 @@ func fetchScoredLyricCandidatesStreaming(ctx context.Context, artist, title, alb
 		// 洛雪存下的原版歌词同 KKBOX:正用洛雪放这首时读(见 lxmusic.go)。
 		if r, ok := lxMusicLocalLyricsFor(ctx, idArtist, idTitle, durationSecs); ok {
 			raw[lxMusicLocalLyricsSource] = r
+		}
+		// 导入库里这首的那份(importstore.go),不看播放器。
+		if r, ok := importedLyricsFor(idArtist, idTitle, idAlbum); ok {
+			raw[importLyricsSource] = r
 		}
 		for s, r := range raw {
 			raw[s] = withoutPlayerIdentity(ctx, r)

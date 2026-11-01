@@ -51,7 +51,7 @@ func TestEarlyLyricsPenaltyTermsCoverEveryDeduction(t *testing.T) {
 	bonuses := map[string]bool{
 		scoreTermDuration: true, scoreTermCorroborated: true, scoreTermWordTiming: true, scoreTermNativeSource: true,
 		scoreTermLines: true, scoreTermAlbum: true, scoreTermTitleMatch: true, scoreTermConsensus: true,
-		scoreTermTranslation: true, scoreTermRoma: true,
+		scoreTermTranslation: true, scoreTermRoma: true, scoreTermImported: true,
 	}
 	kinds := lyricScoreTermKinds()
 	for _, kind := range kinds {

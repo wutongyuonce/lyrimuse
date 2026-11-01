@@ -655,7 +655,7 @@ func resolveLyricsSources(list []string) map[string]bool {
 func lyricSourceEnabled(source string) bool {
 	// KKBOX 本地歌词不是歌词源、设置里没有它的开关:用 KKBOX 放歌时读它自己缓存里的那份,跟着播放器走(见 kkboxlyrics.go)。
 	// Spotify 本地歌词、Amazon Music 本地歌词同理(见 spotifylyrics.go、amazonlibrary.go)。
-	if isPlayerLocalLyricSource(source) {
+	if isPlayerLocalLyricSource(source) || source == importLyricsSource {
 		return true
 	}
 	enabled := currentLyricSources()

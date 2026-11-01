@@ -791,6 +791,8 @@ struct LyricsManagerView: View {
     // 反应——短暂切换成对勾,1 秒后自动变回去。
     @State private var showRefreshedFeedback = false
     @State private var showClearAllConfirm = false
+    /// 「导入歌词文件夹…」选好的文件夹,有值时弹预览面板(LyricsBatchImportSheet)。
+    @State private var batchImportRequest: LyricsBatchImportRequest?
     /// 「清理无效记录」确认框开着时要删的那几条,点菜单那一刻拍下来(确认框开着期间列表可能重读)。
     @State private var pendingCleanupKeys: [String] = []
     @State private var showCleanupConfirm = false
@@ -1284,6 +1286,14 @@ struct LyricsManagerView: View {
         // 列表滚到底时别把行画到侧栏圆角外面。
         .clipShape(RoundedRectangle(cornerRadius: Self.panelCornerRadius, style: .continuous))
         .settingsCardBackground(cornerRadius: Self.panelCornerRadius)
+        .sheet(item: $batchImportRequest) { request in
+            LyricsBatchImportSheet(folder: request.folder)
+        }
+        // lyrimuse://debug/import-lyrics-folder:窗口开着时直接弹预览面板。
+        .onReceive(AppActions.shared.lyricsFolderImportRequests) { url in
+            guard batchImportRequest == nil, !windowFrame.hasAttachedSheet else { return }
+            batchImportRequest = LyricsBatchImportRequest(folder: url)
+        }
         .confirmationDialog(
             L10n.t("确定要清空全部歌词缓存吗？"),
             isPresented: $showClearAllConfirm,
@@ -2720,7 +2730,27 @@ struct LyricsManagerView: View {
     @ViewBuilder
     private var libraryMenu: some View {
         autoMatchMenuSections
+        Section {
+            Button {
+                chooseBatchImportFolder()
+            } label: {
+                Label(L10n.t("导入歌词文件夹…"), systemImage: "square.and.arrow.down.on.square")
+            }
+            .help(L10n.t("将文件夹中的歌词文件对应到歌词库中的歌曲，导入前可预览"))
+        }
         storageMenuSections
+    }
+
+    /// 「导入歌词文件夹…」:选一个文件夹(含子文件夹),弹预览面板。
+    private func chooseBatchImportFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.prompt = L10n.t("导入")
+        panel.message = L10n.t("选择存放歌词文件的文件夹")
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        batchImportRequest = LyricsBatchImportRequest(folder: url)
     }
 
     /// 「自动匹配缺失歌词」:让引擎现在就把没歌词的存量条目重新匹配一遍,不用等每首歌各自再被播到(补空路径设计上

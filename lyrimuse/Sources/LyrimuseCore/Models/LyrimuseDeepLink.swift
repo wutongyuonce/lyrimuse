@@ -162,6 +162,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 把这几个文件交给「搜索歌词…」窗口导入,跟点「导入文件…」选完文件走同一条路(`debug/import-lyrics?path=<绝对路径>&path=…`)。
         /// 不开窗:窗口没开着时请求留 60 秒,开窗时取走(先 `lyrics-search?background=1`)。
         case importLyrics(paths: [String])
+        /// 歌词管理弹「导入歌词文件夹」预览面板,读这个文件夹(`debug/import-lyrics-folder?path=<绝对路径>`)。歌词管理窗口要开着
+        /// (先 `lyrics-manager?background=1`)。
+        case importLyricsFolder(path: String)
     }
 
     /// `debug/stall` 的上限(毫秒)。再长就是把 App 卡死了。
@@ -275,6 +278,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             self = .debug(.stall(ms: ms))
         case ("debug", "/milestone-preview"):
             self = .debug(.milestonePreview)
+        case ("debug", "/import-lyrics-folder"):
+            guard let path = value("path"), path.hasPrefix("/") else { return nil }
+            self = .debug(.importLyricsFolder(path: path))
         case ("debug", "/import-lyrics"):
             let paths = query.filter { $0.name.lowercased() == "path" }.compactMap(\.value).filter { $0.hasPrefix("/") }
             guard !paths.isEmpty else { return nil }
@@ -483,6 +489,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case let .importLyrics(paths):
                 components.path = "/import-lyrics"
                 components.queryItems = paths.map { URLQueryItem(name: "path", value: $0) }
+            case let .importLyricsFolder(path):
+                components.path = "/import-lyrics-folder"
+                components.queryItems = [URLQueryItem(name: "path", value: path)]
             case let .knockout(leg, on):
                 components.path = "/knockout"
                 components.queryItems = [URLQueryItem(name: "leg", value: leg.rawValue), URLQueryItem(name: "on", value: on ? "1" : "0")]

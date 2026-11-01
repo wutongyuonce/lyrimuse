@@ -341,6 +341,7 @@
 "与 %@ 正文相同" = "Same lyrics as %@";
 "与 Apple Music 目录中的曲名吻合" = "Matches a title in the Apple Music catalog";
 "与 Spotify 的连接已过期，Spotify 上播放的歌曲未记录到 Last.fm" = "The connection to Spotify has expired, so songs played on Spotify aren’t being scrobbled";
+"与其他文件对应同一首歌曲，未使用 %@" = "Same song as another file, not used %@";
 "与其他用户交流，也可在此提问或提出建议" = "Chat with other users, ask questions or suggest features";
 "与同曲条目共用" = "Shared with other entries of the same song";
 "与当前使用的歌词文字一致，仅分行不同" = "Same words as the lyrics in use, split into lines differently";
@@ -456,6 +457,7 @@
 "从文件导入…" = "Import from File…";
 "从暂停恢复播放时展开歌词；播放中切歌不展开，手动收起后保持收起" = "Shows the lyrics when playback resumes from pause. Switching songs during playback doesn’t expand them, and lyrics you collapsed stay collapsed";
 "从本机文件导入，未参与评分；采用后不会被自动匹配替换" = "Imported from a file on this Mac and not scored. Once applied, automatic matching won’t replace it";
+"从歌词文件夹导入的歌词优先使用（+300），其他来源提供带逐字时间轴等明显更好的版本时仍可胜出" = "Lyrics imported from a folder are preferred (+300); another source can still win with a clearly better version, such as one with word timing";
 "从此句开始播放" = "Play from this line";
 "从自动备份恢复" = "Restore from Auto Backup";
 "从资料库删除" = "Delete from Library";
@@ -468,6 +470,7 @@
 "仿 Winamp 的本地音乐播放器" = "A Winamp-style local music player";
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "A WeCom group bot. Reports are posted to the group chat; paste its URL to use it";
+"优先使用" = "Prefer";
 "优先在本机翻译，无法翻译时再联网翻译" = "Translates on this Mac first, and online when that isn’t possible";
 "优先用歌曲文件自带的歌词" = "Prefer Lyrics from the Song File";
 "伴奏版，不采用人声歌词" = "Instrumental version; vocal lyrics not used";
@@ -736,6 +739,8 @@
 "另一时长" = "Other length";
 "另一轮扫描正在进行，请在完成后再试" = "Another scan is in progress. Try again when it finishes";
 "另外两项均开启时不显示" = "Hidden when the other two are on";
+"另有 %@ 个文件" = "%@ more files";
+"另有 %@ 个文件#one" = "%@ more file";
 "另有 %@ 条记录过旧，Last.fm 不再接受" = "%@ more are too old for Last.fm to accept";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配" = "%@ more songs had no source response · Auto-Match All";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配#one" = "%@ more song had no source response · Auto-Match All";
@@ -744,6 +749,7 @@
 "只显示歌词源自带的读音" = "Shows only romanization supplied by the lyrics source";
 "只有播放次数、时长和新听了几位歌手" = "Just plays, listening time and how many new artists";
 "只给汉字标注平假名" = "Hiragana for kanji only";
+"只补没有歌词的歌曲" = "Only Songs Without Lyrics";
 "可以直接粘贴完整地址，会自动识别是哪个平台" = "Paste the full URL and the platform is recognized automatically";
 "可同时开启多项" = "You can turn on more than one";
 "可在任意 App 中触发，需包含 ⌘、⌥ 或 ⌃ 之一" = "Works in any app; must include ⌘, ⌥ or ⌃";
@@ -943,8 +949,12 @@
 "宽度" = "Width";
 "宽度模式" = "Width Mode";
 "密钥或地址有误" = "Incorrect secret or URL";
+"对应多首歌曲，请选择 %@" = "Matches several songs, choose one %@";
 "对齐方式" = "Alignment";
 "导入" = "Import";
+"导入 %@ 首" = "Import %@ Songs";
+"导入 %@ 首#one" = "Import %@ Song";
+"导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复" = "The lyrics library was backed up automatically before importing. You can restore it from the ⋯ menu in Lyrics Manager";
 "导入失败，请重试" = "Couldn’t import. Try again";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Import failed: not a valid .ttf / .otf font file";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Import failed: couldn’t read the selected file. It may not be downloaded to this Mac, or Lyrimuse can’t read it";
@@ -953,8 +963,11 @@
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Importing brings over your accounts and every personal setting, then restarts Lyrimuse";
 "导入并重启" = "Import and Restart";
 "导入文件…" = "Import File…";
+"导入方式" = "Import as";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Import a lyrics file from this Mac (LRC, TTML, YRC, QRC, KRC or plain text), or drag it into the window";
 "导入歌词文件…" = "Import Lyrics File…";
+"导入歌词文件夹" = "Import Lyrics Folder";
+"导入歌词文件夹…" = "Import Lyrics Folder…";
 "导入的文件" = "Imported file";
 "导入的歌词" = "Imported Lyrics";
 "导出…" = "Export…";
@@ -975,10 +988,12 @@
 "将听歌报告推送到手机、群聊或自建服务" = "Sends listening reports to your phone, group chats or your own service";
 "将在退出 Lyrimuse 时安装" = "Will install when Lyrimuse quits";
 "将完整的决策记录拷贝到剪贴板（纯文本）" = "Copy the whole decision record to the clipboard as plain text";
+"将导入 %@" = "Will import %@";
 "将当前播放状态推送到网页小组件和状态徽章" = "Pushes the current playback status to the web widget and status badge";
 "将打开 Last.fm 授权页，点按「Yes, allow access」后自动返回此处" = "Opens the Last.fm authorization page. Click “Yes, allow access” to return here automatically";
 "将播放记录同步到 Last.fm" = "Syncs what you play to Last.fm";
 "将播放记录同步到 ListenBrainz" = "Syncs what you play to ListenBrainz";
+"将文件夹中的歌词文件对应到歌词库中的歌曲，导入前可预览" = "Matches the lyrics files in a folder to songs in your library, with a preview before importing";
 "将此句恢复为编辑前的内容" = "Revert this line to how it was when editing began";
 "将消息转发到微信的服务：使用微信扫码登录获取 SendKey，报告将显示在微信「方糖」服务号中" = "A service that forwards messages to WeChat. Scan the QR code with WeChat to get a SendKey; reports arrive in the Fangtang official account";
 "将清除 %d 首歌曲的手动时间轴校准，此操作无法撤销。歌词内容和设置中的「时间轴偏移」不受影响。清除后，这些歌曲将恢复自动更新歌词源" = "This clears the manual timing calibration for %d songs and can’t be undone. The lyrics and the Timing Offset setting are unaffected. Afterwards these songs resume automatic lyrics source updates";
@@ -1034,6 +1049,7 @@
 "已下载，可安装" = "Downloaded and ready to install";
 "已中断：%@" = "Stopped: %@";
 "已人工修正" = "Manually edited";
+"已人工修正，默认不导入 %@" = "Manually edited, not imported by default %@";
 "已从此歌曲拆分：作为独立歌曲单独统计播放次数，歌词不再关联。如拆分有误，可恢复合并" = "Split from this song: it counts as a separate song with its own plays, and its lyrics are no longer linked. Merge it back if this was a mistake";
 "已保存" = "Saved";
 "已保存为纯文本歌词，仅在歌词窗口中显示" = "Saved as plain-text lyrics, shown only in the Lyrics Window";
@@ -1069,6 +1085,8 @@
 "已安装但未运行" = "Installed but not running";
 "已安装但未运行（上次退出码 %d）" = "Installed but not running (last exit code %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ of %2$@ done";
+"已导入 %@ 首歌曲的歌词" = "Imported lyrics for %@ songs";
+"已导入 %@ 首歌曲的歌词#one" = "Imported lyrics for %@ song";
 "已导入，另有 %@ 个文件未使用" = "Imported. %@ other files weren’t used";
 "已导入，另有 %@ 个文件未使用#one" = "Imported. %@ other file wasn’t used";
 "已导出的歌词文件将一并删除。再次播放这首歌曲时会重新匹配，结果可能不同" = "Its exported lyrics file is deleted too. The song is matched again the next time it plays, and the result may differ";
@@ -1116,6 +1134,8 @@
 "已更新 %@ 首" = "%@ updated";
 "已更新到 %@" = "Updated to %@";
 "已有歌词的歌曲也会重新匹配；人工修正、已校准时间轴和纯音乐的歌曲除外" = "Re-matches songs that already have lyrics too, except manually edited, timing-calibrated and instrumental songs";
+"已有歌词的歌曲保持不变，其余同「优先使用」" = "Songs that already have lyrics stay unchanged; the rest work like Prefer";
+"已有歌词，将跳过 %@" = "Already have lyrics, will skip %@";
 "已标为纯音乐" = "Marked as Instrumental";
 "已标为纯音乐：不显示歌词，也不自动搜索。采用任一候选将取消标记" = "Marked as instrumental: lyrics are hidden and aren’t searched for automatically. Using a candidate removes the mark";
 "已校准" = "Calibrated";
@@ -1469,6 +1489,8 @@
 "整行时间轴" = "Line timing";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "The file contains your account credentials and keys in plain text. Keep it safe and don’t share it. The lyrics library is saved as a second file with a matching name; copy both when moving to a new Mac";
 "文件中尚无歌词，未保存" = "The file has no lyrics yet; not saved";
+"文件夹中没有可识别的歌词文件" = "No recognizable lyrics files in this folder";
+"文件过多（上限 %@ 个、200 MB），请分批导入" = "Too many files (limit %@ files, 200 MB). Import them in batches";
 "文件过大，不像是歌词，未保存" = "The file is too large to be lyrics; not saved";
 "文件过大，无法导入" = "The file is too large to import";
 "文字" = "Text";
@@ -1516,6 +1538,7 @@
 "无法获取「那年今日」：Last.fm 未响应" = "Couldn’t load this day in past years — Last.fm didn’t respond";
 "无法获取当天的收听记录：Last.fm 未响应" = "Couldn’t load this day’s scrobbles: Last.fm didn’t respond";
 "无法获取末句时间" = "No timestamp on the last line";
+"无法识别歌词 %@" = "Lyrics not recognized %@";
 "无法识别的链接" = "Unrecognized link";
 "无法读取 %@ 的歌词缓存" = "Can’t read %@’s lyrics cache";
 "无法读取 %@ 的歌词缓存，点按查看处理方法" = "Can’t read %@’s lyrics cache — click to see what to do";
@@ -1642,6 +1665,8 @@
 "更新时间 旧→新" = "Updated Oldest→Newest";
 "更新设置" = "Update Settings";
 "更早的记录尚未加载，这些行暂不编号" = "Older plays aren’t loaded yet, so those rows aren’t numbered";
+"替换现有歌词并锁定，自动匹配不再更换" = "Replaces current lyrics and locks them so automatic matching won’t change them";
+"替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Replaces current lyrics. They can still be switched automatically when another source offers a clearly better version, such as one with word timing";
 "最后一句晚于歌曲结束 5 秒以上，可能是完整版歌词对应了精简版曲目" = "The last line falls more than 5 seconds after the track ends; likely full-version lyrics for an edited track";
 "最后一句的时间与曲长相差 25% 以上，可能是其他版本" = "The last line’s time differs from the track length by more than 25%; likely a different version";
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "The last line’s time differs from the track length by more than 25%; still usable, but ranked below every candidate whose length matches";
@@ -1868,6 +1893,7 @@
 "歌词布局" = "Lyrics Layout";
 "歌词库" = "Lyrics Library";
 "歌词库中尚无这首歌曲的记录，可先通过「搜索歌词」查找" = "This song isn’t in the lyrics library yet. Use Search Lyrics to find lyrics first";
+"歌词库中没有对应的歌曲 %@" = "No matching song in the library %@";
 "歌词库正在刷新，请稍后重试" = "The lyrics library is refreshing. Try again in a moment";
 "歌词延后" = "Delay Lyrics";
 "歌词引擎" = "Lyrics Engine";
@@ -1937,6 +1963,7 @@
 "正在启用…" = "Starting…";
 "正在备份歌词…" = "Backing up lyrics…";
 "正在安装…" = "Installing…";
+"正在导入…" = "Importing…";
 "正在应用到歌词引擎…" = "Applying to the lyrics engine…";
 "正在搜索歌词…" = "Searching for lyrics…";
 "正在搜索：%@" = "Searching: %@";
@@ -1964,6 +1991,7 @@
 "正在解析收听次数" = "Play count is still being resolved";
 "正在记录" = "Scrobbling now";
 "正在读取其余歌曲…" = "Loading the rest…";
+"正在读取并匹配歌词文件…" = "Reading and matching lyrics files…";
 "正在连接 Discord…" = "Connecting to Discord…";
 "正在连接 Lyrimuse…" = "Connecting to Lyrimuse…";
 "正在采用…" = "Applying…";
@@ -2321,6 +2349,7 @@
 "自动匹配的歌词与当前条目同步：更换歌词时一并更新，手动修改也会同步" = "Automatically matched lyrics stay in sync with the current entry: replacements and manual edits apply to both";
 "自动匹配缺失歌词" = "Auto-Match Missing Lyrics";
 "自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试" = "The automatic backup couldn’t be written, so nothing was deleted this time to keep it recoverable. Check your disk space and write access to the config folder, then try again";
+"自动备份失败，为避免数据无法恢复，本次未执行导入。请检查磁盘空间和配置文件夹的写入权限后重试" = "The automatic backup failed, so nothing was imported to keep your data recoverable. Check disk space and write access to the configuration folder, then try again";
 "自动对齐" = "Auto Align";
 "自动展开" = "Auto-Expand";
 "自动检查" = "Check Automatically";
@@ -2483,6 +2512,7 @@
 "请求系统授权" = "Request Access";
 "请确认已登录 Discord；如仍无法连接，请退出 Discord 后重新打开" = "Make sure you’re signed in to Discord. If it still won’t connect, quit Discord and open it again";
 "请稍后重试" = "Try again later";
+"读取失败，请重试" = "Couldn’t read the folder. Try again";
 "读取播放状态，获取歌词和封面" = "Reads playback state and fetches lyrics and artwork";
 "读取本地记录文件失败" = "Couldn’t read the local records file";
 "读音" = "Romanization";
@@ -2633,10 +2663,12 @@
 "选择 Lyrimuse 应视为播放器的 App" = "Choose an app for Lyrimuse to treat as a player";
 "选择…" = "Choose…";
 "选择一个会自动同步的文件夹（如 Dropbox、坚果云、OneDrive），在新 Mac 上选择同一文件夹即可恢复" = "Choose a folder that syncs automatically, such as Dropbox or OneDrive. On a new Mac, choose the same folder to restore";
+"选择存放歌词文件的文件夹" = "Choose the folder that contains your lyrics files";
 "选择左侧或表格中的其他条目，可与当前条目逐项对比" = "Select another entry on the left or in the table to compare it with the current entry";
 "选择左侧的设置分类" = "Select a Settings Category on the Left";
 "选择播放器" = "Choose Players";
 "选择本机的歌词文件，预览后再决定是否采用" = "Choose a lyrics file on this Mac and preview it before applying";
+"选择歌曲" = "Choose Song";
 "选择歌词文件，可同时选择同名的译文、读音文件" = "Choose a lyrics file. You can also select its translation and romanization files with the same name";
 "选择歌词显示方式" = "Choose Where Lyrics Appear";
 "选择用于播放此网站的浏览器" = "Pick the browser you use for this site";
@@ -2722,6 +2754,7 @@
 "链接无效或已失效" = "This link is invalid or has expired";
 "链接需以 http:// 或 https:// 开头" = "The link must start with http:// or https://";
 "锁定/解锁位置" = "Lock/Unlock Position";
+"锁定为手动修改" = "Lock as Manual Edit";
 "锁定位置" = "Lock Position";
 "锁定位置仅对悬浮歌词有效" = "Locking the position only applies to Floating Lyrics";
 "锁定后无法拖动，悬停时也不显示播放控制" = "When locked, the lyrics can’t be dragged and the hover controls stay hidden";

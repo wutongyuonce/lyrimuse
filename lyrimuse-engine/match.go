@@ -631,6 +631,8 @@ const (
 	scoreTermTimelineIntrusion = "timelineIntrusion" // 时长对得上的几家都空着的间奏里多出一段复制来的歌词,重扣(lyrictimelineintrusion.go)
 	// v30.1 新增:
 	scoreTermSourceDurationNearMiss = "sourceDurationNearMiss" // 别的源报出了本地曲长时,自报曲长差 5% 以上,重扣(sourcedurationanchor.go)
+	// 只给导入库里的那份(importstore.go),不改别的候选的分,不换版本号:
+	scoreTermImported = "imported" // 用户导入的歌词
 )
 
 // lyricScoreTermKinds 是**会出现在 score_terms 里**的全部 kind。存在的唯一理由是给
@@ -647,7 +649,7 @@ func lyricScoreTermKinds() []string {
 		scoreTermTitleMatch, scoreTermConsensus, scoreTermTranslation,
 		scoreTermRoma, scoreTermSourceDurationOff, scoreTermWordTimingOverride,
 		scoreTermLiveAlbumConflict, scoreTermTimelineOffset, scoreTermTimelineIntrusion,
-		scoreTermSourceDurationNearMiss,
+		scoreTermSourceDurationNearMiss, scoreTermImported,
 	}
 }
 
@@ -981,6 +983,9 @@ func scoreLyricCandidateDetailed(
 	}
 	if c.hasWordTiming {
 		add(scoreTermWordTiming, wordTimingPoints)
+	}
+	if c.source == importLyricsSource {
+		add(scoreTermImported, importedLyricsPoints)
 	}
 	if isNativeLyricSource(c.source) && c.identityFromLocalClient {
 		// 跟当前播放器同源、**且身份由那个播放器的本地数据给定**的歌词加分。

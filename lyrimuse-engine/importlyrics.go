@@ -17,8 +17,8 @@ import (
 // 格式认后缀、认不出再看内容:TTML、QRC / KRC(加密或明文)、YRC、增强 LRC(带逐字)、LRC、纯文本;同名的
 // .tr.lrc / .roma.lrc 当译文 / 读音配上。编码按 decodeLyricBytes 的规矩转。见 11 章决策 149。
 
-// lyricsImportSource:导入的那份候选、以及采用后条目的来源名。
-const lyricsImportSource = "import"
+// importLyricsSource:导入的那份候选、以及采用后条目的来源名。
+const importLyricsSource = "import"
 
 // lyricsImportMaxBytes:一个文件大过这个不读(不是歌词)。
 const lyricsImportMaxBytes = 4 << 20
@@ -26,6 +26,8 @@ const lyricsImportMaxBytes = 4 << 20
 // importLyricsFile:App 交来的一个文件。Data 在 JSON 里是 base64。
 type importLyricsFile struct {
 	Name string `json:"name"`
+	// Path:批量导入时这个文件在所选文件夹里的相对路径(含文件名),分组看它的目录;单首导入不带。
+	Path string `json:"path,omitempty"`
 	Data []byte `json:"data"`
 }
 
@@ -187,7 +189,7 @@ func parseImportedLyrics(files []importLyricsFile, trTarget string) importLyrics
 		return res
 	}
 
-	c := scoredLyricCandidateResult{Source: lyricsImportSource}
+	c := scoredLyricCandidateResult{Source: importLyricsSource}
 	var tagText string
 	var own parsedLyricsFile
 	switch main.kind {

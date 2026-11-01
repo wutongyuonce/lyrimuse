@@ -1415,16 +1415,25 @@ public final class EnrichCacheStore: ObservableObject {
         return true
     }
 
+    /// 「导入歌词文件夹」:先打自动快照(一次改写很多首),再交给引擎按预览表写入(import_lyrics_batch,见
+    /// LyricsBatchImport)。返回写了几首;nil = 备份没成或引擎没执行。
+    func importLyricsBatch(staging: URL, mode: String, items: [[String: Any]]) async -> Int? {
+        guard await takeAutoSnapshot(reason: "import", abortMessage: L10n.t("自动备份失败，为避免数据无法恢复，本次未执行导入。请检查磁盘空间和配置文件夹的写入权限后重试"))
+        else { return nil }
+        let result = await commit("import_lyrics_batch", ["staging": staging.path, "mode": mode, "items": items])
+        return result.ok ? result.changed : nil
+    }
+
     /// 批量删除到几条起,值得先打一份自动快照。见 delete(keys:) 里那段注释。
     static let autoSnapshotDeleteThreshold = 5
 
     /// 破坏性操作前打自动快照。返回 false = 有歌词文件却没备份成(打包失败、盘满),调用方就此停手:
     /// 确认框承诺了「会先自动备份」,备份没成还照删,出了事就没有可恢复层。歌词文件夹里本来就没有
     /// 可打包的文件时不算失败(没有东西可丢)。
-    private func takeAutoSnapshot(reason: String) async -> Bool {
+    private func takeAutoSnapshot(reason: String, abortMessage: String? = nil) async -> Bool {
         lastAutoSnapshotURL = await LyricsBackupStore.writeAutoSnapshot(reason: reason)
         guard lastAutoSnapshotURL == nil, !LyricsBackupStore.hasNoLyricsFiles() else { return true }
-        editError = L10n.t("自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试")
+        editError = abortMessage ?? L10n.t("自动备份失败，为避免数据无法恢复，本次未执行删除。请检查磁盘空间和配置文件夹的写入权限后重试")
         logger.error("autoSnapshot(\(reason, privacy: .public)) failed, destructive edit aborted")
         return false
     }
