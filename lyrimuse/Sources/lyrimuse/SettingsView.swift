@@ -639,8 +639,9 @@ struct SettingsView: View {
         // 下限来定,要顶到那张总开关卡整张露出来之上才算数。
         //
         // 侧栏比设计宽度(205)宽出来多少(英文),窗口的默认宽度就加多少,右边内容区的宽度不跟着变窄。最窄宽度是侧栏
-        // 拉到最宽再加 540(SettingsSidebarWidth.windowMinWidth):灵动岛编辑台的舞台在窗口最窄时还要有 499。
-        .frame(minWidth: SettingsSidebarWidth.windowMinWidth(sidebarWidth), idealWidth: 860 + sidebarExtraWidth,
+        // 拉到最宽再加 540(SettingsSidebarWidth.windowMinWidth):灵动岛编辑台的舞台在窗口最窄时还要有 499;西语、法语这类
+        // 文字长的语言加到 640,整页按正常尺寸排,不靠收窄控件塞进去。
+        .frame(minWidth: windowMinWidth, idealWidth: max(860 + sidebarExtraWidth, windowMinWidth),
                minHeight: 690, idealHeight: 720)
         // 设置搜索的两路信号只在这扇窗口的子树里有值;别处复用行组件拿到的是默认值,不受影响。
         .environment(\.settingsSearchHighlightedTitles, searchRouter.highlightedTitles)
@@ -767,6 +768,7 @@ struct SettingsView: View {
 
     /// 侧栏比设计宽度宽出来的部分。
     private var sidebarExtraWidth: CGFloat { sidebarWidth - SettingsSidebarWidth.designWidth }
+    private var windowMinWidth: CGFloat { SettingsSidebarWidth.windowMinWidth(sidebarWidth, language: L10n.current) }
 
     private var selectedCategoryTitle: String {
         switch selection {

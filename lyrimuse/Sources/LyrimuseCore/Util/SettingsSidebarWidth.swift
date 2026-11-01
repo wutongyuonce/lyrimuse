@@ -29,14 +29,25 @@ public enum SettingsSidebarWidth {
     /// 侧栏拉到最宽时右边内容区至少留这么宽:灵动岛编辑台的舞台 = 内容区 − 40,要 ≥ 499(NotchEditorStage 工具栏那段
     /// 横向账是按 499 量的,再窄四个入口的标题会被截)。
     public static let minDetailWidth: CGFloat = 540
+    /// 文字本身就长的界面语言(西语、法语):内容区至少留这么宽,卡片列撑满 600(`SettingsPage.maxCardColumnWidth` + 两侧
+    /// 各 20),窗口跟着变宽,不在窄列里把页头 tab 收成下拉、把工具栏摘要压成一两个字母。
+    public static let roomyDetailWidth: CGFloat = 640
+    public static let roomyLanguages: Set<String> = ["es", "fr"]
+
+    /// 这种界面语言(`L10n.current` 的取值)下内容区至少多宽。
+    public static func minDetailWidth(language: String) -> CGFloat {
+        roomyLanguages.contains(language.lowercased()) ? roomyDetailWidth : minDetailWidth
+    }
     /// 系统「侧栏图标大小」的全局偏好:1 小 / 2 中 / 3 大,没设过读到 0(中档)。
     public static let sizeModeDefaultsKey = "NSTableViewDefaultSizeMode"
 
     /// 侧栏能拖到的最宽:fitting 的结果比 designMaxWidth 还宽时就是它本身。
     public static func maxWidth(_ width: CGFloat) -> CGFloat { max(width, designMaxWidth) }
 
-    /// 设置窗最窄多宽:侧栏拉到最宽 + minDetailWidth(中文 780、英文 790)。
-    public static func windowMinWidth(_ width: CGFloat) -> CGFloat { maxWidth(width) + minDetailWidth }
+    /// 设置窗最窄多宽:侧栏拉到最宽 + 这种语言的内容区下限(中文 780、英文 790;西语、法语按 640 算)。
+    public static func windowMinWidth(_ width: CGFloat, language: String = "") -> CGFloat {
+        maxWidth(width) + minDetailWidth(language: language)
+    }
 
     /// 侧栏上一次按哪个默认宽度排的。不用 `np:` 前缀:那是配置导出的白名单,这是这台机器上的界面状态,不该跟着配置搬家。
     public static let lastDefaultWidthKey = "settings:sidebarDefaultWidth"

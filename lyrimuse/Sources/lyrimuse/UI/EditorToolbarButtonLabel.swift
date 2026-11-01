@@ -52,14 +52,19 @@ struct EditorToolbarButtonLabel: View {
             Text(title)
                 .lineLimit(1)
             if beta { SettingsBetaBadge() }
-            Text("·")
-                .foregroundStyle(.tertiary)
-            Text(summary)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .frame(idealWidth: fitsContent ? nil : Self.summaryWidth, maxWidth: Self.summaryWidth, alignment: .leading)
-                .layoutPriority(-1)
+            EditorToolbarSummarySlot {
+                HStack(spacing: 5) {
+                    Text("·")
+                        .foregroundStyle(.tertiary)
+                    Text(summary)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+            }
+            .frame(idealWidth: fitsContent ? nil : Self.summaryWidth, maxWidth: Self.summaryWidth, alignment: .leading)
+            .clipped()
+            .layoutPriority(-1)
         }
         // 悬停给出整句:摘要被压短或只报了数量时,不用点开浮层也知道是什么。
         .help(title + " · " + (detail ?? summary))
@@ -111,9 +116,31 @@ struct EditorToolbarSummarySlack: LayoutValueKey {
     static let defaultValue: CGFloat = 0
 }
 
+/// 「· 当前值」那一截:分到的宽度连几个字都放不下时整截不画(宽度报 0、外面 `.clipped()` 裁掉),按钮只剩图标和标题,
+/// 别露一两个字母或半个省略号。
+struct EditorToolbarSummarySlot: Layout {
+    /// 低于这个宽度就藏:间隔点、间距、省略号之外还能露两三个字母。
+    static let hideBelow: CGFloat = 34
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let child = subviews.first else { return .zero }
+        if let width = proposal.width, width < Self.hideBelow {
+            return CGSize(width: 0, height: child.sizeThatFits(.unspecified).height)
+        }
+        return child.sizeThatFits(proposal)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard let child = subviews.first else { return }
+        let width = bounds.width < Self.hideBelow ? 0 : bounds.width
+        child.place(at: CGPoint(x: bounds.minX, y: bounds.midY), anchor: .leading,
+                    proposal: ProposedViewSize(width: width, height: bounds.height))
+    }
+}
+
 extension EditorToolbarButtonLabel {
-    /// 压到底时摘要还留的宽度,够放下一个省略号(12pt 下约 10pt)。再窄 SwiftUI 不画省略号,只露半个字。
-    static let summaryFloor: CGFloat = 14
+    /// 压到底时摘要那一截全让出来(连间隔点和它前面的间距,`EditorToolbarSummarySlot` 整截藏掉)。
+    static let summaryFloor: CGFloat = -10
 
     /// 按工具栏的字号量摘要的宽,估出它能让出多少。字号跟各工具栏外层的 `.font(.system(size: 12))` 一致,改一处要一起改。
     static func summarySlack(_ summary: String) -> CGFloat {

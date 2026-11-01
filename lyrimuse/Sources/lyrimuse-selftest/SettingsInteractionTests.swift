@@ -1142,6 +1142,10 @@ func runSettingsInteractionTests() {
         expectEqual(W.windowMinWidth(enWidth), enWidth + 540, "设置窗最窄: 英文 = 侧栏 + 540")
         expectEqual([W.designWidth, enWidth].allSatisfy { W.windowMinWidth($0) - W.maxWidth($0) - 40 >= 499 }, true,
                     "设置窗最窄: 侧栏拉到最宽时灵动岛编辑台的舞台仍有 499")
+        expectEqual(["fr", "es", "FR"].map { W.windowMinWidth(enWidth, language: $0) - W.maxWidth(enWidth) }
+                        + ["en", "zh-hans", "zh-hant", "ja", "ko"].map { W.windowMinWidth(enWidth, language: $0) - W.maxWidth(enWidth) },
+                    [640, 640, 640, 540, 540, 540, 540, 540],
+                    "设置窗最窄: 西语、法语内容区按 640(卡片列撑满 600),别的语言 540")
         expectEqual(W.widthToRestore(lastDefault: nil, currentDefault: W.designWidth), nil,
                     "设置侧栏宽度: 没记过上次的默认宽度时不动")
         expectEqual(W.widthToRestore(lastDefault: W.designWidth, currentDefault: W.designWidth), nil,
@@ -1163,8 +1167,9 @@ func runSettingsInteractionTests() {
         let widthAt = settingsView.range(of: ".navigationSplitViewColumnWidth(min: sidebarWidth, ideal: sidebarWidth,")?.lowerBound
         expectEqual(toolbarAt.flatMap { t in widthAt.map { t < $0 } }, true,
                     "设置侧栏宽度(契约): 宽度修饰符排在 .toolbar(removing: .sidebarToggle) 后面,排在前面整个失效")
-        expectEqual(settingsView.contains("minWidth: SettingsSidebarWidth.windowMinWidth(sidebarWidth), idealWidth: 860 + sidebarExtraWidth"),
-                    true, "设置侧栏宽度(契约): 窗口最窄 = 侧栏最宽 + 540、默认宽度跟着侧栏加宽")
+        expectEqual(settingsView.contains("minWidth: windowMinWidth, idealWidth: max(860 + sidebarExtraWidth, windowMinWidth)")
+                        && settingsView.contains("SettingsSidebarWidth.windowMinWidth(sidebarWidth, language: L10n.current)"),
+                    true, "设置侧栏宽度(契约): 窗口最窄 = 侧栏最宽 + 这种语言的内容区下限、默认宽度跟着侧栏加宽")
         expectEqual(settingsView.contains("max: SettingsSidebarWidth.maxWidth(sidebarWidth))"), true,
                     "设置侧栏宽度(契约): 侧栏最宽跟窗口最窄用同一个 maxWidth")
         expectEqual(settingsView.contains("sidebarGuard.attach(to: window)"), true, "设置侧栏(契约): 窗口挂上来时装上「收不起来」")
