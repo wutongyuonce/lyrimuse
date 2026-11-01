@@ -152,6 +152,9 @@ public enum Romanizer {
             switch scalar.value {
             case 0x09, 0x0A, 0x0D, 0x20...0x7E: continue
             case 0x3041...0x3096, 0x30A1...0x30FA, 0xAC00...0xD7A3, 0x4E00...0x9FFF: return true
+            // 僧伽罗文:系统 ICU 没有它的音译(原样返回),下面那道比对会判成不要读音;读音由 IndicRomanization 自带的表出。
+            // 见 10 章决策 67。
+            case 0x0D80...0x0DFF: return true
             default: onlyASCII = false
             }
         }

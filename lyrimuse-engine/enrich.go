@@ -245,6 +245,15 @@ type enrichEntry struct {
 	// LyricsKanaRomaFor:kanabackfill.go 按借来的标注核过罗马音时,那一刻标注、正文、罗马音的指纹(kanaRomaFingerprint)。
 	// 三样都没变就不再起 helper 核一遍。
 	LyricsKanaRomaFor string `json:"lyrics_kana_roma_for,omitempty"`
+	// LyricsRomaExport:导出成 .roma.lrc 的那份读音,按屏上同一套规则算(exportroma.go)。nil = 照 LyricsRoma 原样导出;
+	// 非 nil 时空串表示屏上整首不显示读音、不导出 .roma.lrc。只在跟原样逐行不同时才有值。
+	LyricsRomaExport *string `json:"lyrics_roma_export,omitempty"`
+	// LyricsRomaExportSrc:算 LyricsRomaExport 那一刻的输入指纹(exportRomaSource),跟现在对不上就照原样导出、等重算。
+	// 0 = 没算过。
+	LyricsRomaExportSrc uint32 `json:"lyrics_roma_export_src,omitempty"`
+	// LyricsRomaExportRules:那一次 helper 的规则版本(LyricsExportRomanization.rulesVersion);exportRomaPinned = 读音是在
+	// 歌词文件夹里手改的,照原样导出、不重算(输入一变就作废)。
+	LyricsRomaExportRules int `json:"lyrics_roma_export_rules,omitempty"`
 	// SongLanguage 是这首歌的语种真值(songLanguageMandarin/songLanguageCantonese 之一,
 	// 见 lyricCandidate.language),取自**全部**候选里第一个给出这个信号的那个(见
 	// songLanguageFromScored),不是只看最终拿到歌词正文的那个候选——目前只有 QQ/酷狗

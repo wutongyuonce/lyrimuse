@@ -777,7 +777,24 @@ func importedWordFileUnchanged(w importedWordFile, f lyricsWordFormat, key strin
 	if !hasFileForm {
 		fileYRC = e.LyricsYRC.String()
 	}
-	return w.plain == encodeLyricsWordText(f, lyricsWordInputOf(key, e, fileYRC))
+	in := lyricsWordInputOf(key, e, fileYRC)
+	if w.plain == encodeLyricsWordText(f, in) {
+		return true
+	}
+	// 只有 TTML 带读音:文件里可能是原样或上次写出的导出读音(exportRomaFileForms),都算这边写出的那份。
+	if f != lyricsWordTTML {
+		return false
+	}
+	for _, roma := range exportRomaFileForms(e) {
+		if roma == in.roma {
+			continue
+		}
+		in.roma = roma
+		if w.plain == encodeLyricsWordText(f, in) {
+			return true
+		}
+	}
+	return false
 }
 
 // lyricsWordInputOf:按缓存条目拼导出逐字文件要用的内容,fileYRC 是写进文件的逐字(括号背景人声接回之后的)。
@@ -785,7 +802,7 @@ func lyricsWordInputOf(key string, e enrichEntry, fileYRC string) lyricsWordFile
 	artist, title, album := splitEnrichKey(key)
 	return lyricsWordFileInput{artist: artist, title: title, album: album, source: e.LyricsSource, manual: e.ManualLyrics,
 		yrc: fileYRC, nativeYRC: e.LyricsYRC.String(), bg: e.LyricsBG.String(), durationSecs: e.DurationSecs,
-		lrc: e.Lyrics.String(), tr: e.LyricsTr.String(), roma: e.LyricsRoma.String(), trLang: e.LyricsTrLang}
+		lrc: e.Lyrics.String(), tr: e.LyricsTr.String(), roma: exportedRoma(key, e), trLang: e.LyricsTrLang}
 }
 
 // lyricsFileIdentity:按后缀把一份歌词文件的头部读出来(逐字各格式先解开)。

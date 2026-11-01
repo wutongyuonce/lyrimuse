@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -422,10 +423,10 @@ func importLyricsFromOpts(dir string, persist, cleanTemps bool) []string {
 				e.LyricsTrLang = ""
 			}
 		}
-		if v, ok := variantBody(".roma.lrc"); ok {
-			if !e.LyricsRoma.EqualString(v) {
-				e.LyricsRoma, changed = bt(v), true
-			}
+		// 文件是这边写出去的那份(原样,或屏上规则算出的导出读音)就是没改;别的是在文件夹里手改的,读进来,照原样导出。
+		romaFromFile := false
+		if v, ok := variantBody(".roma.lrc"); ok && !slices.Contains(exportRomaFileForms(e), v) {
+			e.LyricsRoma, changed, romaFromFile = bt(v), true, true
 		}
 		if lrcReplacedParenBG && !hasWordFile && fileYRC != "" && !e.LyricsYRC.EqualString(fileYRC) {
 			e.LyricsYRC, changed = bt(fileYRC), true
@@ -476,6 +477,9 @@ func importLyricsFromOpts(dir string, persist, cleanTemps bool) []string {
 		if e.LyricsDecisionApplied != nil && !restoreAll && !restoreKeys[key] &&
 			(!e.Lyrics.Equal(prevLyrics) || !e.LyricsYRC.Equal(prevYRC) || e.LyricsSource != prevSource) {
 			e.LyricsDecisionApplied, changed = nil, true
+		}
+		if romaFromFile && !e.LyricsRoma.IsZero() {
+			pinExportRoma(key, &e)
 		}
 		if changed {
 			enrichCache[key] = e

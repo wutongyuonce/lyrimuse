@@ -99,6 +99,8 @@ func exportLyricsFilesFor(keys ...string) {
 		folds[lyricsFileFold(k)] = true
 	}
 	exportLyricsFilesMatching(folds)
+	// 这几条的正文或读音可能刚换过:按屏上规则核一遍导出读音,变了会再导出这几条(exportroma.go)。
+	requestExportRoma(keys...)
 }
 
 // lyricsDisambiguatedBase 碰撞组里这个 key 用的文件名(不含后缀):确定性哈希后缀,见下面碰撞消歧那段。
@@ -154,11 +156,15 @@ func exportLyricsFilesMatching(onlyFolds map[string]bool) {
 		variants             [4]string // 对应 lyricsFileSuffixes,空串表示这个变体没有内容
 		bodies               [4]bodyText
 		bg                   bodyText
-		// cached:缓存里原样的正文 / 逐字。背景人声接回去之后跟 variants 不同(parenBGFileForm)。
+		// cached:缓存里原样的正文 / 逐字,读音是导出用的那份(exportedRomaOf)。背景人声接回去之后跟 variants 不同(parenBGFileForm)。
 		cached       [4]string
 		bgText       string
 		durationSecs float64
 		trLang       string
+		// 算导出读音那一格要用的(exportedRomaOf)。
+		kana, songLanguage string
+		romaExport         *string
+		romaExportSrc      uint32
 	}
 	// 只导出几个分组时,不在 onlyFolds 里的条目连拷都不拷:碰撞分组只对要导出的分组有意义,而同一分组的 key 分组键相同、
 	// 必然都在 onlyFolds 里,整组照样算全。只遍历 key,条目约 1.4 KB,按值遍历会把整个缓存拷一遍。见 15 章决策 53。
@@ -188,6 +194,7 @@ func exportLyricsFilesMatching(onlyFolds map[string]bool) {
 			source: e.LyricsSource, manual: e.ManualLyrics,
 			bodies: [4]bodyText{e.Lyrics, e.LyricsTr, e.LyricsRoma, e.LyricsYRC}, bg: e.LyricsBG,
 			durationSecs: e.DurationSecs, trLang: e.LyricsTrLang,
+			kana: e.LyricsKana, songLanguage: e.SongLanguage, romaExport: e.LyricsRomaExport, romaExportSrc: e.LyricsRomaExportSrc,
 		})
 	}
 	enrichMu.Unlock()
@@ -210,6 +217,10 @@ func exportLyricsFilesMatching(onlyFolds map[string]bool) {
 			slog.Error("lyrics export: skipped this round, a lyrics body could not be read back", "key", jobs[i].key)
 			return
 		}
+		// 读音那一格写屏上规则算出的那份(指纹对得上时),.roma.lrc 和 TTML 里的读音都用它。
+		j := &jobs[i]
+		j.variants[2] = exportedRomaOf(j.key, j.variants[0], j.variants[2], j.variants[3], bg, j.kana, j.songLanguage,
+			j.manual, j.romaExport, j.romaExportSrc)
 		jobs[i].cached = jobs[i].variants
 		jobs[i].bgText = bg
 	}

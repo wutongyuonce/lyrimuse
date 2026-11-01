@@ -41,18 +41,75 @@ import LyrimuseCore
 //        {"ok":true,"stale_checked":true,"stale_cleared":true}
 //        {"ok":false,"reason":"not-stale"}
 //        每个回包都多带 "world_readings":<版本>(这个 helper 会出读音的那套日 / 韩 / 中以外文字的版本)。
+//   导出读音(批量,见 LyricsExportRomanization、10 章决策 66):
+//   入:  {"export_items":[{"lyrics":…,"roma":…,"yrc":…,"bg":…,"kana_donor":…,"title":…,"artist":…,
+//                          "aliases":[["歌名","歌手"],…],"cantonese":false,"hokkien":false},…]}
+//        "export_items" 为空数组时只回版本号。
+//   出:  {"ok":true,"export_results":[{"same":true},{"roma":"[00:12.34]…"},{"roma":""},…],"export_rules":<版本>}
+//        跟入参逐条对应;"roma":"" = 整首屏上不显示读音。
 
 struct Input: Decodable {
-    let lyrics: String
+    let lyrics: String?
     let kanaDonor: String?
     let legacyKoreanRoma: String?
     let staleRoma: String?
+    let exportItems: [ExportItem]?
 
     enum CodingKeys: String, CodingKey {
         case lyrics
         case kanaDonor = "kana_donor"
         case legacyKoreanRoma = "legacy_korean_roma"
         case staleRoma = "stale_roma"
+        case exportItems = "export_items"
+    }
+}
+
+struct ExportItem: Decodable {
+    var lyrics: String = ""
+    var roma: String = ""
+    var yrc: String = ""
+    var bg: String = ""
+    var kanaDonor: String = ""
+    var title: String = ""
+    var artist: String = ""
+    var aliases: [[String]] = []
+    var cantonese = false
+    var hokkien = false
+
+    enum CodingKeys: String, CodingKey {
+        case lyrics, roma, yrc, bg, title, artist, aliases, cantonese, hokkien
+        case kanaDonor = "kana_donor"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        lyrics = try c.decodeIfPresent(String.self, forKey: .lyrics) ?? ""
+        roma = try c.decodeIfPresent(String.self, forKey: .roma) ?? ""
+        yrc = try c.decodeIfPresent(String.self, forKey: .yrc) ?? ""
+        bg = try c.decodeIfPresent(String.self, forKey: .bg) ?? ""
+        kanaDonor = try c.decodeIfPresent(String.self, forKey: .kanaDonor) ?? ""
+        title = try c.decodeIfPresent(String.self, forKey: .title) ?? ""
+        artist = try c.decodeIfPresent(String.self, forKey: .artist) ?? ""
+        aliases = try c.decodeIfPresent([[String]].self, forKey: .aliases) ?? []
+        cantonese = try c.decodeIfPresent(Bool.self, forKey: .cantonese) ?? false
+        hokkien = try c.decodeIfPresent(Bool.self, forKey: .hokkien) ?? false
+    }
+}
+
+struct ExportResult: Encodable {
+    var same: Bool?
+    var roma: String?
+}
+
+struct ExportOutput: Encodable {
+    var ok = true
+    var exportResults: [ExportResult]
+    var exportRules = LyricsExportRomanization.rulesVersion
+
+    enum CodingKeys: String, CodingKey {
+        case ok
+        case exportResults = "export_results"
+        case exportRules = "export_rules"
     }
 }
 
@@ -89,12 +146,31 @@ let data = FileHandle.standardInput.readDataToEndOfFile()
 guard let input = try? JSONDecoder().decode(Input.self, from: data) else {
     emit(Output(ok: false, reason: "bad-input"))
 }
-guard !input.lyrics.isEmpty else {
+if let items = input.exportItems {
+    let results = items.map { item -> ExportResult in
+        let aliases = item.aliases.compactMap { pair in
+            pair.count == 2 ? LRCParser.HeaderIdentity(title: pair[0], artist: pair[1]) : nil
+        }
+        let result = LyricsExportRomanization.compute(.init(
+            lyrics: item.lyrics, roma: item.roma, yrc: item.yrc, bg: item.bg, kanaDonor: item.kanaDonor,
+            title: item.title, artist: item.artist, headerAliases: aliases,
+            cantonese: item.cantonese, hokkien: item.hokkien))
+        switch result {
+        case .sameAsStored: return ExportResult(same: true)
+        case let .final(roma): return ExportResult(roma: roma)
+        }
+    }
+    if let data = try? JSONEncoder().encode(ExportOutput(exportResults: results)), let s = String(data: data, encoding: .utf8) {
+        print(s)
+    }
+    exit(0)
+}
+guard let lyrics = input.lyrics, !lyrics.isEmpty else {
     emit(Output(ok: false, reason: "empty-input"))
 }
 if let stored = input.staleRoma {
     guard let roma = LyricsRomanization.refreshedGeneratedRomanization(
-        stored, lyrics: input.lyrics, kanaDonor: input.kanaDonor ?? "")
+        stored, lyrics: lyrics, kanaDonor: input.kanaDonor ?? "")
     else {
         emit(Output(ok: false, reason: "not-stale"))
     }
@@ -105,12 +181,12 @@ if let stored = input.staleRoma {
 }
 var legacyChecked: Bool?
 if let stored = input.legacyKoreanRoma {
-    guard LyricsRomanization.isLegacyKoreanRomanization(stored, lyrics: input.lyrics) else {
+    guard LyricsRomanization.isLegacyKoreanRomanization(stored, lyrics: lyrics) else {
         emit(Output(ok: false, reason: "not-legacy"))
     }
     legacyChecked = true
 }
-guard let roma = LyricsRomanization.romanizeLRC(input.lyrics, kanaDonor: input.kanaDonor ?? "") else {
+guard let roma = LyricsRomanization.romanizeLRC(lyrics, kanaDonor: input.kanaDonor ?? "") else {
     emit(Output(ok: false, reason: "no-romanization"))
 }
 emit(Output(ok: true, roma: roma, legacyChecked: legacyChecked))

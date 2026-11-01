@@ -7,6 +7,7 @@ import Foundation
 
 @MainActor
 func runRomanizationTests() {
+    runExportRomanizationChecks()
     // ---- Romanizer: 罗马音客户端兜底(服务端没给 lyrics_roma 时用系统 ICU 音译现算一份) ----
 
     expectEqual(Romanizer.romanize(""), nil, "Romanizer: 空输入返回 nil")
