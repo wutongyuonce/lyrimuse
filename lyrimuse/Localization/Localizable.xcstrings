@@ -57958,13 +57958,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ reproducción"
+                  "value" : "%@ escucha"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ reproducciones"
+                  "value" : "%@ escuchas"
                 }
               }
             }

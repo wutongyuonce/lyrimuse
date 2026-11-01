@@ -65,8 +65,8 @@
 "%@ 条状态未知，稍后将自动与 Last.fm 核对" = "%@ con estado desconocido; se comprobarán automáticamente con Last.fm";
 "%@ 条被 Last.fm 拒绝" = "%@ rechazados por Last.fm";
 "%@ 次" = "×%@";
-"%@ 次收听" = "%@ reproducciones";
-"%@ 次收听#one" = "%@ reproducción";
+"%@ 次收听" = "%@ escuchas";
+"%@ 次收听#one" = "%@ escucha";
 "%@ 点" = "%@:00";
 "%@ 的播放队列位于受保护的目录中。授权后可预先解析即将播放的歌曲；未授权时改为预先解析同一专辑中的其他歌曲" = "%@ guarda su cola de reproducción en una carpeta protegida. Con acceso, se prepara por adelantado la letra de las próximas canciones; sin él, la de otras canciones del mismo álbum";
 "%@ 的歌词缓存位于受系统保护的目录中。授予「完全磁盘访问权限」后，可直接使用本机已有的逐字歌词，无需每次联网搜索" = "%@ guarda su caché de letras en una carpeta protegida por el sistema. Concede «Acceso total al disco» y podrás usar al momento la letra palabra por palabra que ya está en este Mac, sin buscarla en internet";
