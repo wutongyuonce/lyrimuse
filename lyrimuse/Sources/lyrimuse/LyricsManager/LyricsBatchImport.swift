@@ -17,17 +17,17 @@ enum LyricsBatchImport {
 
         var title: String {
             switch self {
-            case .prefer: L10n.t("优先使用")
-            case .manual: L10n.t("锁定为手动修改")
+            case .prefer: L10n.t("替换现有歌词")
+            case .manual: L10n.t("替换并锁定")
             case .fill: L10n.t("只补没有歌词的歌曲")
             }
         }
 
         var explanation: String {
             switch self {
-            case .prefer: L10n.t("替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换")
-            case .manual: L10n.t("替换现有歌词并锁定，自动匹配不再更换")
-            case .fill: L10n.t("已有歌词的歌曲保持不变，其余同「优先使用」")
+            case .prefer: L10n.t("以后找到明显更好的版本（如带逐字时间轴）时仍会自动更换")
+            case .manual: L10n.t("记为手动调整，不再被自动更换")
+            case .fill: L10n.t("已有歌词的歌曲保持不变")
             }
         }
     }

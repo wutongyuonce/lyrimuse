@@ -469,12 +469,12 @@
 "代理服务器" = "Proxy Server";
 "以下播放器尚未安装，可提前选择，安装后自动生效" = "These players aren’t installed yet. Select one now and it takes effect once installed";
 "以下条目已识别为同一首歌，播放次数合并统计；如有误识别，可将其拆分" = "These entries are identified as the same song and their plays are combined. Split any that were misidentified";
+"以后找到明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Lyrics can still switch automatically later if a clearly better version turns up, such as one with word timing";
 "以文本方式编辑" = "Edit as Text";
 "以系统通知显示封面、歌名、歌手与专辑" = "Shows the artwork, title, artist and album in a system notification";
 "仿 Winamp 的本地音乐播放器" = "A Winamp-style local music player";
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "A WeCom group bot. Reports are posted to the group chat; paste its URL to use it";
-"优先使用" = "Prefer";
 "优先在本机翻译，无法翻译时再联网翻译" = "Translates on this Mac first, and online when that isn’t possible";
 "优先用歌曲文件自带的歌词" = "Prefer Lyrics from the Song File";
 "伴奏版，不采用人声歌词" = "Instrumental version; vocal lyrics not used";
@@ -981,7 +981,6 @@
 "导入库…" = "Import Library…";
 "导入库是空的" = "The import library is empty";
 "导入文件…" = "Import File…";
-"导入文件夹时的默认方式，预览中可更改" = "Used by default when importing a folder; you can change it in the preview";
 "导入方式" = "Import as";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Import a lyrics file from this Mac (LRC, TTML, YRC, QRC, KRC or plain text), or drag it into the window";
 "导入歌词文件…" = "Import Lyrics File…";
@@ -1156,7 +1155,7 @@
 "已更新 %@ 首" = "%@ updated";
 "已更新到 %@" = "Updated to %@";
 "已有歌词的歌曲也会重新匹配；人工修正、已校准时间轴和纯音乐的歌曲除外" = "Re-matches songs that already have lyrics too, except manually edited, timing-calibrated and instrumental songs";
-"已有歌词的歌曲保持不变，其余同「优先使用」" = "Songs that already have lyrics stay unchanged; the rest work like Prefer";
+"已有歌词的歌曲保持不变" = "Songs that already have lyrics stay unchanged";
 "已有歌词，将跳过 %@" = "Already have lyrics, will skip %@";
 "已标为纯音乐" = "Marked as Instrumental";
 "已标为纯音乐：不显示歌词，也不自动搜索。采用任一候选将取消标记" = "Marked as instrumental: lyrics are hidden and aren’t searched for automatically. Using a candidate removes the mark";
@@ -1361,7 +1360,6 @@
 "扫描中 %1$@/%2$@" = "Scanning %1$@/%2$@";
 "扫描间隔" = "Scan Interval";
 "批量匹配" = "Batch Matching";
-"批量导入方式" = "Folder Import Mode";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Chat not found (incorrect Chat ID, or you haven’t messaged the bot yet)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Found %1$@ · Not found %2$@ · Skipped %3$@";
 "找到 %@ 首" = "%@ Found";
@@ -1518,6 +1516,7 @@
 "文件中尚无歌词，未保存" = "The file has no lyrics yet; not saved";
 "文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "New or changed lyrics files in the folder are imported automatically: songs without lyrics get them right away, songs with lyrics stay unchanged";
 "文件夹中没有可识别的歌词文件" = "No recognizable lyrics files in this folder";
+"文件夹导入方式" = "Folder Import";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Too many files (limit %@ files, 200 MB). Import them in batches";
 "文件过大，不像是歌词，未保存" = "The file is too large to be lyrics; not saved";
 "文件过大，无法导入" = "The file is too large to import";
@@ -1695,8 +1694,8 @@
 "更新时间 旧→新" = "Updated Oldest→Newest";
 "更新设置" = "Update Settings";
 "更早的记录尚未加载，这些行暂不编号" = "Older plays aren’t loaded yet, so those rows aren’t numbered";
-"替换现有歌词并锁定，自动匹配不再更换" = "Replaces current lyrics and locks them so automatic matching won’t change them";
-"替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Replaces current lyrics. They can still be switched automatically when another source offers a clearly better version, such as one with word timing";
+"替换并锁定" = "Replace and Lock";
+"替换现有歌词" = "Replace Current Lyrics";
 "最后一句晚于歌曲结束 5 秒以上，可能是完整版歌词对应了精简版曲目" = "The last line falls more than 5 seconds after the track ends; likely full-version lyrics for an edited track";
 "最后一句的时间与曲长相差 25% 以上，可能是其他版本" = "The last line’s time differs from the track length by more than 25%; likely a different version";
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "The last line’s time differs from the track length by more than 25%; still usable, but ranked below every candidate whose length matches";
@@ -2468,6 +2467,7 @@
 "触控栏歌词" = "Touch Bar Lyrics";
 "触控栏歌词仅适用于配备触控栏的 MacBook Pro" = "Touch Bar Lyrics works only on MacBook Pro models with a Touch Bar";
 "认不出的占位符会原样发送：%@" = "Unrecognized placeholders are sent as typed: %@";
+"记为手动调整，不再被自动更换" = "Marked as manually adjusted and no longer changed automatically";
 "设为默认" = "Default Channel";
 "设备控制和数据访问" = "Device Control and Data Access";
 "设置" = "Settings";
@@ -2798,7 +2798,6 @@
 "链接无效或已失效" = "This link is invalid or has expired";
 "链接需以 http:// 或 https:// 开头" = "The link must start with http:// or https://";
 "锁定/解锁位置" = "Lock/Unlock Position";
-"锁定为手动修改" = "Lock as Manual Edit";
 "锁定位置" = "Lock Position";
 "锁定位置仅对悬浮歌词有效" = "Locking the position only applies to Floating Lyrics";
 "锁定后无法拖动，悬停时也不显示播放控制" = "When locked, the lyrics can’t be dragged and the hover controls stay hidden";

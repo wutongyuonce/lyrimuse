@@ -21,16 +21,8 @@ struct LyricsImportSettingsCard: View {
                     .fixedSize()
             }
             CardDivider()
-            SettingsRow(
-                icon: "lock",
-                title: L10n.t("批量导入方式"),
-                subtitle: L10n.t("导入文件夹时的默认方式，预览中可更改"),
-                footer: AnyView(
-                    Text(mode.explanation)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true))
-            ) {
+            // 副标题只说明选中的那一档。
+            SettingsRow(icon: "lock", title: L10n.t("文件夹导入方式"), subtitle: mode.explanation) {
                 SettingsGlassMenuPicker(selection: $mode, options: LyricsBatchImport.Mode.allCases, label: \.title, compact: true)
                     .fixedSize()
             }

@@ -469,12 +469,12 @@
 "代理服务器" = "Serveur proxy";
 "以下播放器尚未安装，可提前选择，安装后自动生效" = "Ces lecteurs ne sont pas encore installés. Sélectionnez-en un maintenant : il s’appliquera une fois installé";
 "以下条目已识别为同一首歌，播放次数合并统计；如有误识别，可将其拆分" = "Ces entrées sont identifiées comme le même morceau et leurs écoutes sont combinées. Séparez celles mal identifiées";
+"以后找到明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Les paroles peuvent encore changer automatiquement plus tard si une version nettement meilleure apparaît, par exemple synchronisée mot à mot";
 "以文本方式编辑" = "Modifier en texte";
 "以系统通知显示封面、歌名、歌手与专辑" = "Affiche l’illustration, le titre, l’artiste et l’album dans une notification système";
 "仿 Winamp 的本地音乐播放器" = "Un lecteur de musique local façon Winamp";
 "企业微信" = "WeCom";
 "企业微信群机器人：报告将发送到群聊，粘贴地址即可使用" = "Bot de groupe WeCom. Les bilans sont publiés dans le groupe ; collez son URL pour l’utiliser";
-"优先使用" = "Privilégier";
 "优先在本机翻译，无法翻译时再联网翻译" = "Traduit d’abord sur ce Mac, puis en ligne si ce n’est pas possible";
 "优先用歌曲文件自带的歌词" = "Privilégier les paroles du fichier";
 "伴奏版，不采用人声歌词" = "Version instrumentale ; paroles chantées non utilisées";
@@ -981,7 +981,6 @@
 "导入库…" = "Bibliothèque d’importation…";
 "导入库是空的" = "La bibliothèque d’importation est vide";
 "导入文件…" = "Importer un fichier…";
-"导入文件夹时的默认方式，预览中可更改" = "Utilisé par défaut lors de l’importation d’un dossier ; modifiable dans l’aperçu";
 "导入方式" = "Importer en mode";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importer un fichier de paroles de ce Mac (LRC, TTML, YRC, QRC, KRC ou texte brut), ou le glisser dans la fenêtre";
 "导入歌词文件…" = "Importer un fichier de paroles…";
@@ -1156,7 +1155,7 @@
 "已更新 %@ 首" = "%@ mis à jour";
 "已更新到 %@" = "Mis à jour vers %@";
 "已有歌词的歌曲也会重新匹配；人工修正、已校准时间轴和纯音乐的歌曲除外" = "Réassocie aussi les morceaux qui ont déjà des paroles, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux";
-"已有歌词的歌曲保持不变，其余同「优先使用」" = "Les morceaux qui ont déjà des paroles restent inchangés ; les autres fonctionnent comme « Privilégier »";
+"已有歌词的歌曲保持不变" = "Les morceaux qui ont déjà des paroles restent inchangés";
 "已有歌词，将跳过 %@" = "Ont déjà des paroles, seront ignorés %@";
 "已标为纯音乐" = "Marqué comme instrumental";
 "已标为纯音乐：不显示歌词，也不自动搜索。采用任一候选将取消标记" = "Marqué comme instrumental : les paroles sont masquées et ne sont pas recherchées automatiquement. Utiliser un résultat retire la marque";
@@ -1361,7 +1360,6 @@
 "扫描中 %1$@/%2$@" = "Analyse %1$@/%2$@";
 "扫描间隔" = "Intervalle d’analyse";
 "批量匹配" = "Association par lot";
-"批量导入方式" = "Mode d’importation des dossiers";
 "找不到该会话（Chat ID 有误，或尚未向机器人发送过消息）" = "Discussion introuvable (Chat ID incorrect, ou vous n’avez pas encore écrit au bot)";
 "找到 %1$@ · 未找到 %2$@ · 跳过 %3$@" = "Trouvés %1$@ · Introuvables %2$@ · Ignorés %3$@";
 "找到 %@ 首" = "Trouvés : %@";
@@ -1518,6 +1516,7 @@
 "文件中尚无歌词，未保存" = "Le fichier ne contient pas encore de paroles ; non enregistré";
 "文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "Les fichiers de paroles ajoutés ou modifiés dans le dossier sont importés automatiquement : les morceaux sans paroles les reçoivent aussitôt, les autres restent inchangés";
 "文件夹中没有可识别的歌词文件" = "Aucun fichier de paroles reconnaissable dans ce dossier";
+"文件夹导入方式" = "Importation de dossiers";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Trop de fichiers (limite de %@ fichiers, 200 Mo). Importez-les en plusieurs fois";
 "文件过大，不像是歌词，未保存" = "Fichier trop volumineux pour des paroles ; non enregistré";
 "文件过大，无法导入" = "Le fichier est trop volumineux pour être importé";
@@ -1695,8 +1694,8 @@
 "更新时间 旧→新" = "Mis à jour : ancien→récent";
 "更新设置" = "Réglages de mise à jour";
 "更早的记录尚未加载，这些行暂不编号" = "Les écoutes plus anciennes ne sont pas encore chargées, ces lignes ne sont donc pas numérotées";
-"替换现有歌词并锁定，自动匹配不再更换" = "Remplace les paroles actuelles et les verrouille pour que l’association automatique ne les change pas";
-"替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" = "Remplace les paroles actuelles. Elles peuvent encore changer automatiquement si une autre source propose une version nettement meilleure, par exemple synchronisée mot à mot";
+"替换并锁定" = "Remplacer et verrouiller";
+"替换现有歌词" = "Remplacer les paroles actuelles";
 "最后一句晚于歌曲结束 5 秒以上，可能是完整版歌词对应了精简版曲目" = "La dernière ligne tombe plus de 5 secondes après la fin du morceau ; sans doute les paroles complètes d’une version abrégée";
 "最后一句的时间与曲长相差 25% 以上，可能是其他版本" = "L’écart entre la dernière ligne et la durée du morceau dépasse 25 % ; sans doute une autre version";
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "L’écart entre la dernière ligne et la durée du morceau dépasse 25 % ; utilisable, mais classé après tous les résultats de durée concordante";
@@ -2468,6 +2467,7 @@
 "触控栏歌词" = "Paroles Touch Bar";
 "触控栏歌词仅适用于配备触控栏的 MacBook Pro" = "Les paroles Touch Bar ne fonctionnent que sur les MacBook Pro avec Touch Bar";
 "认不出的占位符会原样发送：%@" = "Variables non reconnues envoyées telles quelles : %@";
+"记为手动调整，不再被自动更换" = "Les paroles sont marquées comme ajustées manuellement et ne changent plus automatiquement";
 "设为默认" = "Canal par défaut";
 "设备控制和数据访问" = "Contrôle de l’appareil et accès aux données";
 "设置" = "Réglages";
@@ -2798,7 +2798,6 @@
 "链接无效或已失效" = "Ce lien n’est pas valide ou a expiré";
 "链接需以 http:// 或 https:// 开头" = "Le lien doit commencer par http:// ou https://";
 "锁定/解锁位置" = "Verrouiller/déverrouiller la position";
-"锁定为手动修改" = "Verrouiller comme modification manuelle";
 "锁定位置" = "Verrouiller la position";
 "锁定位置仅对悬浮歌词有效" = "Le verrouillage de la position ne s’applique qu’aux paroles flottantes";
 "锁定后无法拖动，悬停时也不显示播放控制" = "Une fois verrouillées, les paroles ne peuvent pas être déplacées et les commandes au survol restent masquées";

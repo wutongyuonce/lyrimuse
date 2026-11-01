@@ -143938,108 +143938,108 @@
         }
       }
     },
-    "优先使用" : {
+    "替换现有歌词" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bevorzugen"
+            "value" : "Aktuellen Liedtext ersetzen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prefer"
+            "value" : "Replace Current Lyrics"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preferir"
+            "value" : "Sustituir la letra actual"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Privilégier"
+            "value" : "Remplacer les paroles actuelles"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "優先して使用"
+            "value" : "今の歌詞を置き換える"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "우선 사용"
+            "value" : "현재 가사 대체"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "优先使用"
+            "value" : "替换现有歌词"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "優先使用"
+            "value" : "取代現有歌詞"
           }
         }
       }
     },
-    "锁定为手动修改" : {
+    "替换并锁定" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Als manuell bearbeitet sperren"
+            "value" : "Ersetzen und sperren"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lock as Manual Edit"
+            "value" : "Replace and Lock"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bloquear como edición manual"
+            "value" : "Sustituir y bloquear"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verrouiller comme modification manuelle"
+            "value" : "Remplacer et verrouiller"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手動修正としてロック"
+            "value" : "置き換えてロック"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "수동 수정으로 잠금"
+            "value" : "대체하고 잠금"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "锁定为手动修改"
+            "value" : "替换并锁定"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鎖定為手動修改"
+            "value" : "取代並鎖定"
           }
         }
       }
@@ -144097,161 +144097,161 @@
         }
       }
     },
-    "替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换" : {
+    "以后找到明显更好的版本（如带逐字时间轴）时仍会自动更换" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ersetzt den aktuellen Liedtext. Bietet eine andere Quelle eine deutlich bessere Version, etwa mit Wort-Timing, wird weiterhin automatisch gewechselt"
+            "value" : "Der Liedtext kann später weiterhin automatisch wechseln, wenn eine deutlich bessere Version auftaucht, etwa mit Wort-Timing"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Replaces current lyrics. They can still be switched automatically when another source offers a clearly better version, such as one with word timing"
+            "value" : "Lyrics can still switch automatically later if a clearly better version turns up, such as one with word timing"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sustituye la letra actual. Puede cambiarse automáticamente si otra fuente ofrece una versión claramente mejor, como una con tiempos por palabra"
+            "value" : "La letra aún puede cambiar automáticamente más adelante si aparece una versión claramente mejor, como una con tiempos por palabra"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Remplace les paroles actuelles. Elles peuvent encore changer automatiquement si une autre source propose une version nettement meilleure, par exemple synchronisée mot à mot"
+            "value" : "Les paroles peuvent encore changer automatiquement plus tard si une version nettement meilleure apparaît, par exemple synchronisée mot à mot"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今の歌詞を置き換えます。ほかのソースに明らかに良い版（単語ごとのタイミング付きなど）があれば自動で切り替わります"
+            "value" : "あとで明らかに良い版（単語ごとのタイミング付きなど）が見つかれば自動で切り替わります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "현재 가사를 대체합니다. 다른 소스에 확실히 더 나은 버전(단어별 타이밍 포함 등)이 있으면 자동으로 바뀔 수 있습니다"
+            "value" : "나중에 확실히 더 나은 버전(단어별 타이밍 포함 등)을 찾으면 자동으로 바뀔 수 있습니다"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "替换现有歌词；其他来源提供明显更好的版本（如带逐字时间轴）时仍会自动更换"
+            "value" : "以后找到明显更好的版本（如带逐字时间轴）时仍会自动更换"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取代現有歌詞；其他來源提供明顯更好的版本（如帶逐字時間軸）時仍會自動更換"
+            "value" : "以後找到明顯更好的版本（如帶逐字時間軸）時仍會自動更換"
           }
         }
       }
     },
-    "替换现有歌词并锁定，自动匹配不再更换" : {
+    "记为手动调整，不再被自动更换" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ersetzt den aktuellen Liedtext und sperrt ihn, damit die automatische Zuordnung ihn nicht mehr ändert"
+            "value" : "Wird als „Manuell angepasst“ markiert und nicht mehr automatisch geändert"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Replaces current lyrics and locks them so automatic matching won’t change them"
+            "value" : "Marked as manually adjusted and no longer changed automatically"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sustituye la letra actual y la bloquea para que la búsqueda automática no la cambie"
+            "value" : "Se marca como «Ajustada manualmente» y ya no cambia automáticamente"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Remplace les paroles actuelles et les verrouille pour que l’association automatique ne les change pas"
+            "value" : "Les paroles sont marquées comme ajustées manuellement et ne changent plus automatiquement"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今の歌詞を置き換えてロックし、自動マッチングで変更されなくなります"
+            "value" : "「手動で調整済み」になり、自動で変更されなくなります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "현재 가사를 대체하고 잠가 자동 매칭으로 바뀌지 않게 합니다"
+            "value" : "‘수동 조정’으로 표시되어 더 이상 자동으로 바뀌지 않습니다"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "替换现有歌词并锁定，自动匹配不再更换"
+            "value" : "记为手动调整，不再被自动更换"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取代現有歌詞並鎖定，自動配對不再更換"
+            "value" : "記為手動調整，不再被自動更換"
           }
         }
       }
     },
-    "已有歌词的歌曲保持不变，其余同「优先使用」" : {
+    "已有歌词的歌曲保持不变" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titel mit Liedtext bleiben unverändert, alle anderen wie bei „Bevorzugen“"
+            "value" : "Titel mit Liedtext bleiben unverändert"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Songs that already have lyrics stay unchanged; the rest work like Prefer"
+            "value" : "Songs that already have lyrics stay unchanged"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las canciones que ya tienen letra no cambian; el resto funciona como «Preferir»"
+            "value" : "Las canciones que ya tienen letra no cambian"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les morceaux qui ont déjà des paroles restent inchangés ; les autres fonctionnent comme « Privilégier »"
+            "value" : "Les morceaux qui ont déjà des paroles restent inchangés"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "歌詞がある曲はそのまま、それ以外は「優先して使用」と同じです"
+            "value" : "歌詞がある曲はそのままです"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "가사가 있는 곡은 그대로 두고, 나머지는 ‘우선 사용’과 같습니다"
+            "value" : "가사가 있는 곡은 그대로 둡니다"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已有歌词的歌曲保持不变，其余同「优先使用」"
+            "value" : "已有歌词的歌曲保持不变"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已有歌詞的歌曲保持不變，其餘同「優先使用」"
+            "value" : "已有歌詞的歌曲保持不變"
           }
         }
       }
@@ -147724,108 +147724,55 @@
         }
       }
     },
-    "批量导入方式" : {
+    "文件夹导入方式" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ordner-Importmodus"
+            "value" : "Ordner-Import"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Folder Import Mode"
+            "value" : "Folder Import"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modo de importación de carpetas"
+            "value" : "Importación de carpetas"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mode d’importation des dossiers"
+            "value" : "Importation de dossiers"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一括読み込みの方法"
+            "value" : "フォルダの読み込み方法"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "일괄 가져오기 방식"
+            "value" : "폴더 가져오기 방식"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量导入方式"
+            "value" : "文件夹导入方式"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批次匯入方式"
-          }
-        }
-      }
-    },
-    "导入文件夹时的默认方式，预览中可更改" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard beim Importieren eines Ordners, in der Vorschau änderbar"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Used by default when importing a folder; you can change it in the preview"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se usa por defecto al importar una carpeta; puedes cambiarlo en la vista previa"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilisé par défaut lors de l’importation d’un dossier ; modifiable dans l’aperçu"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "フォルダを読み込むときの既定の方法。プレビューで変更できます"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "폴더를 가져올 때 기본으로 쓰는 방식으로, 미리 보기에서 바꿀 수 있음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导入文件夹时的默认方式，预览中可更改"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "匯入資料夾時的預設方式，預覽中可更改"
+            "value" : "資料夾匯入方式"
           }
         }
       }

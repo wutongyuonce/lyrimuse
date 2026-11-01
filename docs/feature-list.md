@@ -179,10 +179,10 @@ From the lyrics window's ⋯ menu, search for other lyrics, run matching again, 
 
 ### Import your own lyrics files
 
-Import LRC, enhanced LRC, TTML, QRC, KRC, YRC or plain-text lyrics for one song, or a whole folder at once: files are matched to songs in your library and shown in a preview before anything is written. Choose whether imported lyrics are locked, preferred, or only fill songs without lyrics. Files for songs you have not played yet are kept and used when they first play. A watched folder imports new files automatically.
+Import LRC, enhanced LRC, TTML, QRC, KRC, YRC or plain-text lyrics for one song, or a whole folder at once: files are matched to songs in your library and shown in a preview before anything is written. Choose whether imported lyrics replace the current ones, replace and lock them, or only fill songs without lyrics. Files for songs you have not played yet are kept and used when they first play. A watched folder imports new files automatically.
 
 - Settings: Lyrics › Lyrics Library › Import Lyrics Folder
-- Settings: Lyrics › Lyrics Library › Folder Import Mode
+- Settings: Lyrics › Lyrics Library › Folder Import
 - Settings: Lyrics › Lyrics Library › Watched Folder
 - Settings: Lyrics › Lyrics Library › Import Library
 
@@ -923,7 +923,7 @@ Every setting in the Settings window, by where it lives: 305 in all. Type a name
 - **Lyrics Folder**: Existing files stay where they are when you change the location
 - **Word-by-Word Lyrics Format**
 - **Import Lyrics Folder**: Matches the lyrics files in a folder to songs in your library, with a preview before importing
-- **Folder Import Mode**: Used by default when importing a folder; you can change it in the preview
+- **Folder Import**
 - **Watched Folder**: New or changed lyrics files in the folder are imported automatically: songs without lyrics get them right away, songs with lyrics stay unchanged
 - **Import Library**: View and delete imported lyrics
 
