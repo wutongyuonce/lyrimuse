@@ -680,6 +680,7 @@
 "动态封面缓存" = "Cache für animierte Cover";
 "勾选后需退出并重新打开浏览器才能生效，此选项仅在浏览器启动时读取" = "Beende den Browser nach dem Aktivieren und öffne ihn erneut. Die Option wird nur beim Start des Browsers gelesen";
 "勾选的播放器全部退出 5 秒后，Lyrimuse 随之退出；期间如有播放器重新打开则取消。设置、歌词管理或歌词窗口打开时，会等其关闭后再退出" = "Sobald alle ausgewählten Player beendet sind, beendet sich Lyrimuse nach 5 Sekunden; öffnet sich einer davon in der Zwischenzeit, wird das abgebrochen. Sind Einstellungen, Liedtext-Verwaltung oder Liedtextfenster offen, wartet Lyrimuse, bis sie geschlossen sind";
+"勾选的文件存入导入库，播放到对应歌曲时使用" = "Markierte Dateien werden in der Import-Bibliothek gespeichert und beim Abspielen des passenden Titels verwendet";
 "勾选的渠道都已停用" = "Alle ausgewählten Kanäle sind aus";
 "包括已有歌词的歌曲，手动修改、已校准和纯音乐除外" = "Inklusive Titel mit Liedtext, außer bearbeiteten, kalibrierten und instrumentalen";
 "北马其顿官方证件写法，如 Ѓорѓи → Gjorgji" = "Schreibweise in amtlichen Dokumenten Nordmazedoniens, z. B. Ѓорѓи → Gjorgji";
@@ -741,6 +742,8 @@
 "另外两项均开启时不显示" = "Ausgeblendet, wenn die anderen beiden aktiv sind";
 "另有 %@ 个文件" = "%@ weitere Dateien";
 "另有 %@ 个文件#one" = "%@ weitere Datei";
+"另有 %@ 个文件存入导入库，播放到对应歌曲时使用" = "%@ weitere Dateien wurden in der Import-Bibliothek gespeichert und beim Abspielen der passenden Titel verwendet";
+"另有 %@ 个文件存入导入库，播放到对应歌曲时使用#one" = "%@ weitere Datei wurde in der Import-Bibliothek gespeichert und beim Abspielen des passenden Titels verwendet";
 "另有 %@ 条记录过旧，Last.fm 不再接受" = "%@ weitere sind zu alt für Last.fm";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配" = "%@ weitere Titel ohne Antwort der Quellen · Alle zuordnen";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配#one" = "%@ weiterer Titel ohne Antwort der Quellen · Alle zuordnen";
@@ -1082,6 +1085,8 @@
 "已在播放但未显示歌词？请检查所选的播放器" = "Musik läuft, aber kein Text? Prüfe den ausgewählten Player";
 "已在浏览器中打开 Last.fm 授权页面。请点按「Yes, allow access」完成授权，完成后将自动返回 Lyrimuse；如浏览器未自动跳转，也可返回此处点按下方按钮" = "Die Autorisierungsseite von Last.fm ist im Browser geöffnet. Klicke dort auf „Yes, allow access“, dann kehrst du automatisch zu Lyrimuse zurück. Springt der Browser nicht von selbst zurück, nutze die Taste unten";
 "已在设置中关闭「同曲条目共用歌词」，各条目分别匹配歌词" = "„Liedtext für gleiche Titel teilen“ ist in den Einstellungen deaktiviert, daher wird jeder Eintrag einzeln zugeordnet";
+"已存入导入库 %@ 个文件" = "%@ Dateien in der Import-Bibliothek gespeichert";
+"已存入导入库 %@ 个文件#one" = "%@ Datei in der Import-Bibliothek gespeichert";
 "已安装但未运行" = "Installiert, aber nicht aktiv";
 "已安装但未运行（上次退出码 %d）" = "Installiert, aber nicht aktiv (letzter Exit-Code %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ von %2$@ fertig";
@@ -1532,6 +1537,7 @@
 "无法打开「%1$@」：%2$@" = "„%1$@“ kann nicht geöffnet werden: %2$@";
 "无法打开此文件夹：%@" = "Ordner kann nicht geöffnet werden: %@";
 "无法添加" = "Hinzufügen nicht möglich";
+"无法确定歌手，不存入" = "Künstler unbekannt, nicht gespeichert";
 "无法确认状态（无法读取该浏览器的配置文件）" = "Status unbekannt (Einstellungsdatei des Browsers nicht lesbar)";
 "无法移动损坏的配置文件：%@" = "Die beschädigte Konfigurationsdatei konnte nicht verschoben werden: %@";
 "无法获取 Apple Music 接口的公共访问令牌（无法连接 music.apple.com），可能是网络问题，稍后重试通常可恢复" = "Öffentliches Zugriffstoken für die Apple Music-API nicht erhalten (music.apple.com nicht erreichbar) – meist ein Netzwerkproblem; ein späterer Versuch hilft normalerweise";

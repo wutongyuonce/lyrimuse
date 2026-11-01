@@ -218,11 +218,11 @@ func TestImportedLyricsCandidateInRanking(t *testing.T) {
 	if err := saveImportedLyrics(importedLyricsRecord{Key: enrichKey("A", "Song", "Album"), Lyrics: lyr}); err != nil {
 		t.Fatal(err)
 	}
-	imp, ok := importedLyricsFor("A", "Song", "Album")
+	imp, ok := importedLyricsFor("A", "Song", "Album", 0)
 	if !ok {
 		t.Fatal("应找到导入库里那份")
 	}
-	if _, ok := importedLyricsFor("a", "song", "ALBUM"); !ok {
+	if _, ok := importedLyricsFor("a", "song", "ALBUM", 0); !ok {
 		t.Error("宽松 key 应对得上")
 	}
 	plain := lyricSourceResult{source: "lrclib", lyr: lyr, matchTitle: "Song", matchArtist: "A", matchAlbum: "Album"}
@@ -247,7 +247,7 @@ func TestImportedLyricsCandidateInRanking(t *testing.T) {
 		t.Errorf("顺序优先里导入的应排在各源前面: %+v", p)
 	}
 	dropImportedLyrics(enrichKey("A", "Song", "Album"))
-	if _, ok := importedLyricsFor("A", "Song", "Album"); ok {
+	if _, ok := importedLyricsFor("A", "Song", "Album", 0); ok {
 		t.Error("作废后不该再找到")
 	}
 }
@@ -277,5 +277,45 @@ func TestPlanLyricsImportCLIWiring(t *testing.T) {
 		if strings.Contains(body, banned) {
 			t.Errorf("预览子命令应只读,不该出现 %s", banned)
 		}
+	}
+}
+
+// 库里没有对应歌曲的文件按身份存进导入库:认得出歌手歌名才能存;放到这首时按歌名 + 歌手认(文件名两种顺序都认),
+// 歌手不对、时长对不上不认;用户在这首上采用了别的歌词后作废。
+func TestImportStoreUnmatched(t *testing.T) {
+	files := []importLyricsFile{
+		pathFile("Nobody Here - No Such Song.lrc", lrcBodyEn(4, 6)),
+		pathFile("OnlyTitle.lrc", lrcBodyEn(4, 6)),
+	}
+	staging := setUpImportBatch(t, files)
+	setUpEnrichEditTest(t, importTestCache())
+	plan := planLyricsImport(files, "en", importTestCache())
+	ids := map[string]importPlanItem{}
+	for _, it := range plan.Items {
+		ids[it.Files[0]] = it
+	}
+	if !ids["Nobody Here - No Such Song.lrc"].CanStore || ids["OnlyTitle.lrc"].CanStore {
+		t.Fatalf("有歌手歌名的才能存: %+v", plan.Items)
+	}
+	items := []importBatchItem{{ID: ids["Nobody Here - No Such Song.lrc"].ID, Store: true}, {ID: ids["OnlyTitle.lrc"].ID, Store: true}}
+	res := applyEnrichEdit(enrichEditRequest{Op: "import_lyrics_batch", Staging: staging, Mode: importModePrefer, ImportItems: items})
+	if !res.OK || res.Changed != 1 {
+		t.Fatalf("应存一份(只有歌名的不存): %+v", res)
+	}
+	if _, ok := importedLyricsFor("Nobody Here", "No Such Song", "Some Album", 0); !ok {
+		t.Error("按歌名 + 歌手应认出")
+	}
+	if _, ok := importedLyricsFor("No Such Song", "Nobody Here", "", 20); !ok {
+		t.Error("文件名两种顺序都应认,时长吻合也认")
+	}
+	if _, ok := importedLyricsFor("Somebody Else", "No Such Song", "", 0); ok {
+		t.Error("歌手不对不该认")
+	}
+	if _, ok := importedLyricsFor("Nobody Here", "No Such Song", "", 300); ok {
+		t.Error("时长对不上(同名的另一个版本)不该认")
+	}
+	applyEnrichEdit(enrichEditRequest{Op: "save_edit", Key: enrichKey("Nobody Here", "No Such Song", "Some Album"), Lyrics: "[00:01.00]other", Source: "qq"})
+	if _, ok := importedLyricsFor("Nobody Here", "No Such Song", "", 0); ok {
+		t.Error("采用别的歌词后按身份存的那份应作废")
 	}
 }

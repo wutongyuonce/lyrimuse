@@ -7,7 +7,8 @@ private let logger = Logger(subsystem: "me.yudaotor.lyrimuse", category: "lyrics
 
 /// 歌词管理「导入歌词文件夹…」(11 章决策 150)。App 读文件夹里的歌词文件(文件夹可能在受保护的目录里,常驻引擎读不到),
 /// 写一份暂存请求,交引擎 `plan-lyrics-import` 认出每组文件是哪首歌、出预览清单;用户在预览表里挑定、选好导入方式之后,
-/// 交引擎 `import_lyrics_batch` 写入(`EnrichCacheStore.importLyricsBatch`,写之前打自动快照)。
+/// 交引擎 `import_lyrics_batch` 写入(`EnrichCacheStore.importLyricsBatch`,写之前打自动快照)。歌词库里没有对应歌曲、认得出歌手
+/// 歌名的文件默认按身份存进导入库,以后放到这首时用(11 章决策 151)。
 enum LyricsBatchImport {
     /// 导入方式,rawValue 跟引擎 importModeManual / importModePrefer / importModeFill 一致。
     enum Mode: String, CaseIterable, Identifiable {
@@ -80,9 +81,12 @@ enum LyricsBatchImport {
         let status: Status
         let key: String?
         let options: [Option]?
+        /// 歌词库里没有对应歌曲、认得出歌手和歌名,可以存进导入库。
+        let canStore: Bool?
 
         enum CodingKeys: String, CodingKey {
             case id, files, format, lines, artist, title, album, status, key, options
+            case canStore = "can_store"
             case hasWordTiming = "has_word_timing"
             case hasTranslation = "has_translation"
             case hasRomanization = "has_romanization"
@@ -199,11 +203,15 @@ struct LyricsBatchImportSheet: View {
     @State private var excluded: Set<Int> = []
     /// 用户勾上的手改过的组(引擎按 force 写)。
     @State private var forced: Set<Int> = []
+    /// 歌词库里没有对应歌曲的组里,用户取消「存入导入库」的。
+    @State private var notStored: Set<Int> = []
     /// 对得上好几首时用户挑的那一首。
     @State private var choices: [Int: String] = [:]
     /// 导入进行到哪一步(先打整库快照,歌词库大时要几十秒,再写入);nil = 没在导入。
     @State private var importPhase: EnrichCacheStore.BatchImportPhase?
     @State private var importedCount: Int?
+    /// 这次存进导入库的个数(结果页分开说)。
+    @State private var storedCount = 0
     @State private var importFailed = false
 
     var body: some View {
@@ -240,11 +248,20 @@ struct LyricsBatchImportSheet: View {
     @ViewBuilder
     private var content: some View {
         if let importedCount {
+            let songs = max(0, importedCount - storedCount)
             ContentUnavailableView {
-                Label(String(format: L10n.plural("已导入 %@ 首歌曲的歌词", count: importedCount), "\(importedCount)"),
+                Label(songs == 0 && storedCount > 0
+                      ? String(format: L10n.plural("已存入导入库 %@ 个文件", count: storedCount), "\(storedCount)")
+                      : String(format: L10n.plural("已导入 %@ 首歌曲的歌词", count: songs), "\(songs)"),
                       systemImage: "checkmark.circle")
             } description: {
-                Text(L10n.t("导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复"))
+                VStack(spacing: 4) {
+                    if songs > 0, storedCount > 0 {
+                        Text(String(format: L10n.plural("另有 %@ 个文件存入导入库，播放到对应歌曲时使用", count: storedCount),
+                                    "\(storedCount)"))
+                    }
+                    Text(L10n.t("导入前已自动备份歌词库，可在歌词管理的「⋯」菜单中恢复"))
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let prepareError {
@@ -311,6 +328,7 @@ struct LyricsBatchImportSheet: View {
         switch bucket(item) {
         case .ready: !excluded.contains(item.id)
         case .manual: forced.contains(item.id)
+        case .unmatched: item.canStore == true && !notStored.contains(item.id)
         default: false
         }
     }
@@ -320,8 +338,16 @@ struct LyricsBatchImportSheet: View {
         return List {
             ForEach(Bucket.allCases, id: \.self) { b in
                 if let items = grouped[b], !items.isEmpty {
-                    Section(bucketTitle(b, count: items.count)) {
+                    Section {
                         ForEach(items) { item in row(item, bucket: b) }
+                    } header: {
+                        Text(bucketTitle(b, count: items.count))
+                    } footer: {
+                        if b == .unmatched, items.contains(where: { $0.canStore == true }) {
+                            Text(L10n.t("勾选的文件存入导入库，播放到对应歌曲时使用"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -331,12 +357,14 @@ struct LyricsBatchImportSheet: View {
 
     private func row(_ item: LyricsBatchImport.Item, bucket b: Bucket) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
-            if b == .ready || b == .manual {
+            if b == .ready || b == .manual || (b == .unmatched && item.canStore == true) {
                 Toggle("", isOn: Binding(
                     get: { isIncluded(item) },
                     set: { on in
                         if b == .manual {
                             if on { forced.insert(item.id) } else { forced.remove(item.id) }
+                        } else if b == .unmatched {
+                            if on { notStored.remove(item.id) } else { notStored.insert(item.id) }
                         } else if on {
                             excluded.remove(item.id)
                         } else {
@@ -401,10 +429,17 @@ struct LyricsBatchImportSheet: View {
             }
             .help(optionLabel(t))
         } else {
-            Text(guessText(item))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(guessText(item))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                if b == .unmatched, item.canStore != true {
+                    Text(L10n.t("无法确定歌手，不存入"))
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            }
         }
     }
 
@@ -496,17 +531,20 @@ struct LyricsBatchImportSheet: View {
     private func runImport() async {
         guard let prepared, importPhase == nil else { return }
         let items: [[String: Any]] = selectedItems.compactMap { item in
+            if item.status == .unmatched { return ["id": item.id, "key": "", "store": true] }
             guard let key = target(item)?.key else { return nil }
             var entry: [String: Any] = ["id": item.id, "key": key]
             if forced.contains(item.id) { entry["force"] = true }
             return entry
         }
+        let storing = selectedItems.filter { $0.status == .unmatched }.count
         importPhase = .backingUp
         importFailed = false
         let changed = await EnrichCacheStore.shared.importLyricsBatch(
             staging: prepared.staging, mode: mode.rawValue, items: items) { importPhase = $0 }
         importPhase = nil
         if let changed {
+            storedCount = min(storing, changed)
             importedCount = changed
             LyricsBatchImport.discard(prepared.staging)
         } else {

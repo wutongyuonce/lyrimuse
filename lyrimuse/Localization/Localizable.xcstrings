@@ -145724,6 +145724,314 @@
           }
         }
       }
+    },
+    "勾选的文件存入导入库，播放到对应歌曲时使用" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markierte Dateien werden in der Import-Bibliothek gespeichert und beim Abspielen des passenden Titels verwendet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked files are saved to the import library and used when you play the matching song"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los archivos marcados se guardan en la biblioteca de importación y se usan al reproducir la canción correspondiente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les fichiers cochés sont enregistrés dans la bibliothèque d’importation et utilisés à la lecture du morceau correspondant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チェックしたファイルは読み込みライブラリに保存され、該当する曲を再生したときに使われます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "체크한 파일은 가져오기 보관함에 저장되어 해당 곡을 재생할 때 사용됩니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "勾选的文件存入导入库，播放到对应歌曲时使用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "勾選的檔案存入匯入庫，播放到對應歌曲時使用"
+          }
+        }
+      }
+    },
+    "无法确定歌手，不存入" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Künstler unbekannt, nicht gespeichert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artist unknown, not saved"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artista desconocido, no se guarda"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artiste inconnu, non enregistré"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーティスト不明のため保存しません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아티스트를 알 수 없어 저장하지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法确定歌手，不存入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法確定歌手，不存入"
+          }
+        }
+      }
+    },
+    "另有 %@ 个文件存入导入库，播放到对应歌曲时使用" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ weitere Datei wurde in der Import-Bibliothek gespeichert und beim Abspielen des passenden Titels verwendet"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ weitere Dateien wurden in der Import-Bibliothek gespeichert und beim Abspielen der passenden Titel verwendet"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ more file was saved to the import library and will be used when you play the matching song"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ more files were saved to the import library and will be used when you play the matching songs"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se guardó %@ archivo más en la biblioteca de importación; se usará al reproducir la canción correspondiente"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se guardaron %@ archivos más en la biblioteca de importación; se usarán al reproducir las canciones correspondientes"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ autre fichier a été enregistré dans la bibliothèque d’importation et sera utilisé à la lecture du morceau correspondant"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ autres fichiers ont été enregistrés dans la bibliothèque d’importation et seront utilisés à la lecture des morceaux correspondants"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ほか %@ 個のファイルを読み込みライブラリに保存しました。該当する曲を再生したときに使われます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 %@개를 가져오기 보관함에 더 저장했습니다. 해당 곡을 재생할 때 사용됩니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另有 %@ 个文件存入导入库，播放到对应歌曲时使用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "另有 %@ 個檔案存入匯入庫，播放到對應歌曲時使用"
+          }
+        }
+      }
+    },
+    "已存入导入库 %@ 个文件" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ Datei in der Import-Bibliothek gespeichert"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ Dateien in der Import-Bibliothek gespeichert"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Saved %@ file to the import library"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Saved %@ files to the import library"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se guardó %@ archivo en la biblioteca de importación"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se guardaron %@ archivos en la biblioteca de importación"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ fichier enregistré dans la bibliothèque d’importation"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%@ fichiers enregistrés dans la bibliothèque d’importation"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 個のファイルを読み込みライブラリに保存しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 %@개를 가져오기 보관함에 저장했습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已存入导入库 %@ 个文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已存入匯入庫 %@ 個檔案"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

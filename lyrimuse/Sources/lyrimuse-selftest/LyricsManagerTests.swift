@@ -1988,7 +1988,9 @@ func runLyricsManagerTests() {
                     && view.contains("LyricsBatchImportSheet(folder: request.folder)") && view.contains("chooseBatchImportFolder()")
                     && batchSource.contains("[\"plan-lyrics-import\", staging.path]")
                     && batchSource.contains("environment: LyrimusePaths.engineProcessEnvironment()")
-                    && batchSource.contains("case prefer, manual, fill"), true,
+                    && batchSource.contains("case prefer, manual, fill")
+                    && batchSource.contains("case .unmatched: item.canStore == true && !notStored.contains(item.id)")
+                    && batchSource.contains("[\"id\": item.id, \"key\": \"\", \"store\": true]"), true,
                     "导入歌词文件夹: 歌词管理「⋯」里的入口弹预览面板,预览走引擎 plan-lyrics-import,写入前先打自动快照")
         expectEqual(sheet.contains("let groups = LyricsCandidateGroups.groups(")
                     && sheet.contains("if layout.sameExpanded {") && sheet.contains("if layout.excludedExpanded {")

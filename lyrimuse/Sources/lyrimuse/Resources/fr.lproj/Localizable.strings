@@ -680,6 +680,7 @@
 "动态封面缓存" = "Cache des illustrations animées";
 "勾选后需退出并重新打开浏览器才能生效，此选项仅在浏览器启动时读取" = "Après l’avoir cochée, quittez et rouvrez le navigateur. Cette option n’est lue qu’au lancement du navigateur";
 "勾选的播放器全部退出 5 秒后，Lyrimuse 随之退出；期间如有播放器重新打开则取消。设置、歌词管理或歌词窗口打开时，会等其关闭后再退出" = "Quand tous les lecteurs cochés sont fermés, Lyrimuse quitte après 5 secondes ; si l’un d’eux se rouvre entre-temps, c’est annulé. Si les Réglages, le Gestionnaire de paroles ou la fenêtre des paroles sont ouverts, Lyrimuse attend leur fermeture";
+"勾选的文件存入导入库，播放到对应歌曲时使用" = "Les fichiers cochés sont enregistrés dans la bibliothèque d’importation et utilisés à la lecture du morceau correspondant";
 "勾选的渠道都已停用" = "Les canaux cochés sont désactivés";
 "包括已有歌词的歌曲，手动修改、已校准和纯音乐除外" = "Inclut les morceaux qui ont déjà des paroles, sauf ceux modifiés, calibrés ou instrumentaux";
 "北马其顿官方证件写法，如 Ѓорѓи → Gjorgji" = "Graphie des documents officiels de Macédoine du Nord, ex. Ѓорѓи → Gjorgji";
@@ -741,6 +742,8 @@
 "另外两项均开启时不显示" = "Masqué si les deux autres sont activés";
 "另有 %@ 个文件" = "%@ autres fichiers";
 "另有 %@ 个文件#one" = "%@ autre fichier";
+"另有 %@ 个文件存入导入库，播放到对应歌曲时使用" = "%@ autres fichiers ont été enregistrés dans la bibliothèque d’importation et seront utilisés à la lecture des morceaux correspondants";
+"另有 %@ 个文件存入导入库，播放到对应歌曲时使用#one" = "%@ autre fichier a été enregistré dans la bibliothèque d’importation et sera utilisé à la lecture du morceau correspondant";
 "另有 %@ 条记录过旧，Last.fm 不再接受" = "%@ autres sont trop anciennes pour Last.fm";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配" = "%@ autres morceaux sans réponse des sources · Tout associer";
 "另有 %@ 首歌曲无源应答 · 全部自动匹配#one" = "%@ autre morceau sans réponse des sources · Tout associer";
@@ -1082,6 +1085,8 @@
 "已在播放但未显示歌词？请检查所选的播放器" = "Lecture en cours mais pas de paroles ? Vérifiez le lecteur sélectionné";
 "已在浏览器中打开 Last.fm 授权页面。请点按「Yes, allow access」完成授权，完成后将自动返回 Lyrimuse；如浏览器未自动跳转，也可返回此处点按下方按钮" = "La page d’autorisation de Last.fm est ouverte dans votre navigateur. Cliquez sur « Yes, allow access » pour terminer : vous reviendrez automatiquement dans Lyrimuse. Si le navigateur ne revient pas seul, utilisez le bouton ci-dessous";
 "已在设置中关闭「同曲条目共用歌词」，各条目分别匹配歌词" = "« Partager les paroles entre entrées d’un morceau » est désactivé dans Réglages : chaque entrée est associée séparément";
+"已存入导入库 %@ 个文件" = "%@ fichiers enregistrés dans la bibliothèque d’importation";
+"已存入导入库 %@ 个文件#one" = "%@ fichier enregistré dans la bibliothèque d’importation";
 "已安装但未运行" = "Installé mais inactif";
 "已安装但未运行（上次退出码 %d）" = "Installé mais inactif (dernier code de sortie %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ sur %2$@ terminés";
@@ -1532,6 +1537,7 @@
 "无法打开「%1$@」：%2$@" = "Impossible d’ouvrir « %1$@ » : %2$@";
 "无法打开此文件夹：%@" = "Impossible d’ouvrir ce dossier : %@";
 "无法添加" = "Ajout impossible";
+"无法确定歌手，不存入" = "Artiste inconnu, non enregistré";
 "无法确认状态（无法读取该浏览器的配置文件）" = "État inconnu (impossible de lire le fichier de préférences de ce navigateur)";
 "无法移动损坏的配置文件：%@" = "Impossible de déplacer le fichier de configuration endommagé : %@";
 "无法获取 Apple Music 接口的公共访问令牌（无法连接 music.apple.com），可能是网络问题，稍后重试通常可恢复" = "Impossible d’obtenir le jeton d’accès public de l’API Apple Music (music.apple.com injoignable). Souvent un problème réseau : réessayer plus tard suffit en général";

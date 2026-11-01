@@ -251,7 +251,7 @@ func applyEnrichEditLocked(req enrichEditRequest) enrichEditOutcome {
 		cancelInFlightEnrichLocked(req.Key)
 		// 用户在这首上采用了别的歌词:导入库里那份作废,不然下一轮选词又把它挑回来(importstore.go)。
 		if req.Source != importLyricsSource {
-			dropImportedLyrics(req.Key)
+			dropImportedLyricsForSong(req.Key)
 		}
 		exports := []string{req.Key}
 		if songEntitySharing() {
@@ -279,7 +279,7 @@ func applyEnrichEditLocked(req enrichEditRequest) enrichEditOutcome {
 		enrichCache[req.Key] = e
 		cancelInFlightEnrichLocked(req.Key)
 		if req.PlainLyricsSource != importLyricsSource {
-			dropImportedLyrics(req.Key)
+			dropImportedLyricsForSong(req.Key)
 		}
 		return enrichEditOutcome{changed: 1}
 	case "set_instrumental":

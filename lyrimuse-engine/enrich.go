@@ -6390,7 +6390,7 @@ func fetchScoredLyricCandidatesStreaming(ctx context.Context, artist, title, alb
 			raw[lxMusicLocalLyricsSource] = r
 		}
 		// 导入库里这首的那份(importstore.go),不看播放器。
-		if r, ok := importedLyricsFor(idArtist, idTitle, idAlbum); ok {
+		if r, ok := importedLyricsFor(idArtist, idTitle, idAlbum, durationSecs); ok {
 			raw[importLyricsSource] = r
 		}
 		for s, r := range raw {

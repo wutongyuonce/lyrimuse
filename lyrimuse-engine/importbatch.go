@@ -257,6 +257,8 @@ type importPlanItem struct {
 	Key             string             `json:"key,omitempty"`
 	Options         []importPlanOption `json:"options,omitempty"`
 	DuplicateOf     int                `json:"duplicate_of,omitempty"`
+	// CanStore:库里没有对应的歌曲时,认得出歌手和歌名、可以按身份存进导入库(importStoreIdentities)。
+	CanStore bool `json:"can_store,omitempty"`
 }
 
 type importPlan struct {
@@ -329,6 +331,7 @@ func planLyricsImport(files []importLyricsFile, trTarget string, cache map[strin
 		switch {
 		case len(hits) == 0:
 			item.Status = importStatusUnmatched
+			item.CanStore = len(importStoreIdentities(g.Stem, c)) > 0
 		case len(hits) == 1:
 			item.Status, item.Key = importStatusMatched, item.Options[0].Key
 		default:
@@ -367,6 +370,21 @@ func planLyricsImport(files []importLyricsFile, trTarget string, cache map[strin
 		}
 	}
 	return plan
+}
+
+// importStoreIdentities:按身份存进导入库时认哪几种「歌手 + 歌名」。文件里写了歌手和歌名就只认它;否则用文件名里歌手、歌名
+// 都有的猜测(两种顺序都记)。只有歌名的不存:放到同名的别的歌时会借错。
+func importStoreIdentities(stem string, c *scoredLyricCandidateResult) []importedIdentity {
+	if c != nil && strings.TrimSpace(c.Title) != "" && strings.TrimSpace(c.Artist) != "" {
+		return []importedIdentity{{Artist: c.Artist, Title: c.Title}}
+	}
+	var out []importedIdentity
+	for _, g := range importIdentityGuesses(stem, nil) {
+		if g.artist != "" && g.title != "" {
+			out = append(out, importedIdentity{Artist: g.artist, Title: g.title})
+		}
+	}
+	return out
 }
 
 func importDurationGap(dur, last float64) float64 {
@@ -427,11 +445,13 @@ func runPlanLyricsImportCLI(args []string) {
 	fmt.Println(string(out))
 }
 
-// importBatchItem:预览表里定下的一组 → 哪个 key。Force:这首是手改过的也换(预览表里默认不勾)。
+// importBatchItem:预览表里定下的一组 → 哪个 key。Force:这首是手改过的也换(预览表里默认不勾)。Store:库里没有对应的歌曲,
+// 按身份存进导入库(Key 为空)。
 type importBatchItem struct {
 	ID    int    `json:"id"`
 	Key   string `json:"key"`
 	Force bool   `json:"force,omitempty"`
+	Store bool   `json:"store,omitempty"`
 }
 
 // applyImportBatchLocked:import_lyrics_batch 改动请求。只写缓存里已有的条目;手改过的不 Force 不动;「只补没有歌词的歌」
@@ -451,8 +471,18 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 	now := time.Now()
 	var exports, dropped []string
 	var recs []importedLyricsRecord
+	stored := 0
 	for _, it := range req.ImportItems {
-		if it.ID < 0 || it.ID >= len(groups) || it.Key == "" {
+		if it.ID < 0 || it.ID >= len(groups) {
+			continue
+		}
+		if it.Key == "" {
+			if it.Store {
+				if rec, ok := importStoreRecord(groups[it.ID], trTarget, now); ok {
+					recs = append(recs, rec)
+					stored++
+				}
+			}
 			continue
 		}
 		e, ok := enrichCache[it.Key]
@@ -507,5 +537,25 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 			noteFileErr("write", importedLyricsDir(), err)
 		}
 	}
-	return enrichEditOutcome{changed: len(exports), exports: exports}
+	return enrichEditOutcome{changed: len(exports) + stored, exports: exports}
+}
+
+// importStoreRecord:库里没有对应歌曲的一组,做成按身份存的导入库记录。纯文本、认不出歌手歌名的不存。
+func importStoreRecord(g importFileGroup, trTarget string, now time.Time) (importedLyricsRecord, bool) {
+	c := parseImportedLyrics(g.Files, trTarget).Candidate
+	if c == nil || c.PlainTextOnly {
+		return importedLyricsRecord{}, false
+	}
+	ids := importStoreIdentities(g.Stem, c)
+	if len(ids) == 0 {
+		return importedLyricsRecord{}, false
+	}
+	var names []string
+	for _, f := range g.Files {
+		names = append(names, f.Name)
+	}
+	return importedLyricsRecord{
+		Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC, BG: c.LyricsBG,
+		Title: ids[0].Title, Artist: ids[0].Artist, Album: c.Album, Files: names, ImportedAt: now.Unix(), Identities: ids,
+	}, true
 }
