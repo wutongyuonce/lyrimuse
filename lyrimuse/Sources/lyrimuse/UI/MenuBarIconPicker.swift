@@ -5,16 +5,15 @@ import SwiftUI
 /// 选哪张就是哪一种样子:点图标卡 = 用这款、不用封面;点封面卡 = 用封面,没有封面时退回上次选的那款
 /// (`menuBarIconStyle` 不动,卡上写出来是哪一款)。所以没有单独的「图标换成专辑封面」开关。
 ///
-/// 每张卡上半截是一小段菜单栏:垫屏幕顶上那一条真实壁纸(`DesktopWallpaperTopBand`),按真菜单栏的明暗
-/// 着色(`MenuBarAppearanceStore`),图标画在中间。指针停在卡上、且「图标动画」开着时换成
-/// `MenuBarLiveIconView` 演这一款的动画;平时都是静止帧,12 张一起动太吵。
+/// 每张卡上半截是一小段菜单栏:中性灰底,深浅跟设置窗口走,图标画在中间。
+/// 指针停在卡上、且「图标动画」开着时换成 `MenuBarLiveIconView` 演这一款的动画;平时都是静止帧,
+/// 12 张一起动太吵。
 ///
 /// 用写死的 `HStack` / `VStack` 排,不用 LazyHGrid / LazyVGrid:Lazy 容器在窗口不可见时不铺格子,
 /// 表现是整块空白。选中样式跟播放器页方块格的强调色那一档一致(`CompactTileChrome` 的 `accent`)。
 @MainActor
 struct MenuBarIconPicker: View {
     @ObservedObject private var settings = AppSettings.shared
-    @ObservedObject private var menuBarAppearance = MenuBarAppearanceStore.shared
 
     static let columns = 4
     private static let spacing: CGFloat = 8
@@ -52,8 +51,7 @@ struct MenuBarIconPicker: View {
             settings.menuBarIconShowsArtwork = false
         } label: {
             MenuBarIconStyleCard(style: style, selected: selected,
-                                 animatesOnHover: settings.menuBarIconAnimates,
-                                 isDark: menuBarAppearance.isDark)
+                                 animatesOnHover: settings.menuBarIconAnimates)
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
@@ -67,8 +65,7 @@ struct MenuBarIconPicker: View {
         return Button {
             settings.menuBarIconShowsArtwork = true
         } label: {
-            MenuBarArtworkCard(selected: selected, fallback: settings.menuBarIconStyle,
-                               isDark: menuBarAppearance.isDark)
+            MenuBarArtworkCard(selected: selected, fallback: settings.menuBarIconStyle)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L10n.t("专辑封面"))
@@ -101,22 +98,21 @@ private struct MenuBarIconCardChrome: ViewModifier {
     }
 }
 
-/// 一小段菜单栏:屏幕右上角那一块壁纸,按真菜单栏的明暗渲染里面的图标。macOS 26 起真菜单栏全透明、
-/// 直接透出壁纸;更早的系统真菜单栏自带一层半透明底,这里同样铺 `.ultraThinMaterial`(同 `MenuBarPreviewBar`)。
+/// 一小段菜单栏:中性灰底,跟设置页分段控件、输入框同一层灰,深浅跟设置窗口自己的外观走。
+/// 别垫壁纸、别跟真菜单栏的明暗(06 章决策 78)。
 /// 图标两边摆几个系统状态栏图标当参照物,画法同 `MenuBarPreviewBar` 的右簇(菜单栏字体、0.55 明度)。
 private struct MenuBarMiniStrip<Content: View>: View {
-    let isDark: Bool
     var showsClock = false
     @ViewBuilder var content: () -> Content
+    @Environment(\.colorScheme) private var colorScheme
 
     static var height: CGFloat { 24 }
 
     var body: some View {
+        let dark = colorScheme == .dark
         ZStack {
-            wallpaper
-            if !Self.bareWallpaper {
-                Rectangle().fill(.ultraThinMaterial)
-            }
+            (dark ? Color(red: 0.227, green: 0.227, blue: 0.239) : Color(red: 0.922, green: 0.922, blue: 0.937))
+                .accessibilityHidden(true)
             HStack(spacing: 9) {
                 Image(systemName: "wifi")
                     .foregroundStyle(Color(nsColor: .labelColor).opacity(0.55))
@@ -134,30 +130,6 @@ private struct MenuBarMiniStrip<Content: View>: View {
         .frame(maxWidth: .infinity)
         .frame(height: Self.height)
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        .environment(\.colorScheme, isDark ? .dark : .light)
-    }
-
-    private var wallpaper: some View {
-        Group {
-            if let band = DesktopWallpaperTopBand.image {
-                GeometryReader { geo in
-                    Image(nsImage: band)
-                        .resizable()
-                        .frame(width: band.size.width, height: band.size.height)
-                        .frame(width: geo.size.width, height: geo.size.height, alignment: .topTrailing)
-                        .clipped()
-                }
-            } else {
-                Color(nsColor: .textColor).opacity(0.14)
-            }
-        }
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-
-    private static var bareWallpaper: Bool {
-        if #available(macOS 26.0, *) { return true }
-        return false
     }
 }
 
@@ -166,7 +138,7 @@ private struct MenuBarIconStyleCard: View {
     let style: MenuBarIconStyle
     let selected: Bool
     let animatesOnHover: Bool
-    let isDark: Bool
+    @Environment(\.colorScheme) private var colorScheme
     @State private var hovering = false
 
     private var live: Bool {
@@ -175,10 +147,10 @@ private struct MenuBarIconStyleCard: View {
 
     var body: some View {
         VStack(spacing: 5) {
-            MenuBarMiniStrip(isDark: isDark) {
+            MenuBarMiniStrip {
                 let image = MenuBarIconStyle.cachedImage(for: style)
                 if live {
-                    MenuBarLiveIconPreview(style: style, isDark: isDark)
+                    MenuBarLiveIconPreview(style: style, isDark: colorScheme == .dark)
                         .frame(width: image.size.width, height: image.size.height)
                 } else {
                     // `.template` 跟在菜单栏上一样只按 alpha 上色。
@@ -202,11 +174,11 @@ private struct MenuBarIconStyleCard: View {
     }
 }
 
-/// 「专辑封面」卡:左边名字和「没有封面时显示哪一款」,右边一小段菜单栏摆正在放的封面。
+/// 「专辑封面」卡:左边名字和「没有封面时显示哪一款」,右边一小段菜单栏摆正在放的封面,
+/// 没在放歌时摆那一款图标,跟真菜单栏上的退回一致。
 private struct MenuBarArtworkCard: View {
     let selected: Bool
     let fallback: MenuBarIconStyle
-    let isDark: Bool
     @ObservedObject private var playback = PlaybackCoordinator.shared
     @State private var hovering = false
 
@@ -229,7 +201,7 @@ private struct MenuBarArtworkCard: View {
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            MenuBarMiniStrip(isDark: isDark, showsClock: true) { tile }
+            MenuBarMiniStrip(showsClock: true) { tile }
                 .frame(width: 150)
         }
         .padding(.horizontal, 10)
@@ -238,34 +210,24 @@ private struct MenuBarArtworkCard: View {
         .onHover { hovering = $0 }
     }
 
-    /// 封面方块,大小和圆角同菜单栏上那一枚(`MenuBarIconArtwork.side` / `cornerRadius`)。没在放歌时画一张示意封面
-    /// (渐变底 + 音符),不画所选款式:这张卡演的是「封面」这一档,空方块看着像坏了。
+    /// 封面方块,大小和圆角同菜单栏上那一枚(`MenuBarIconArtwork.side` / `cornerRadius`)。
     @ViewBuilder private var tile: some View {
-        let shape = RoundedRectangle(cornerRadius: MenuBarIconArtwork.cornerRadius, style: .continuous)
         if let artwork {
             Image(decorative: artwork, scale: 1)
                 .resizable()
                 .interpolation(.high)
                 .frame(width: MenuBarIconArtwork.side, height: MenuBarIconArtwork.side)
-                .clipShape(shape)
+                .clipShape(RoundedRectangle(cornerRadius: MenuBarIconArtwork.cornerRadius, style: .continuous))
         } else {
-            shape
-                .fill(LinearGradient(colors: [Color(red: 0.85, green: 0.35, blue: 0.29),
-                                              Color(red: 0.95, green: 0.65, blue: 0.35),
-                                              Color(red: 0.36, green: 0.44, blue: 0.84)],
-                                     startPoint: .topLeading, endPoint: .bottomTrailing))
-                .overlay {
-                    Image(systemName: "music.note")
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.9))
-                }
-                .frame(width: MenuBarIconArtwork.side, height: MenuBarIconArtwork.side)
+            Image(nsImage: MenuBarIconStyle.cachedImage(for: fallback))
+                .renderingMode(.template)
+                .foregroundStyle(.primary)
         }
     }
 }
 
 /// 卡上演动画的那一枚:直接用菜单栏上同一个 `MenuBarLiveIconView`。它按自己的 effectiveAppearance 着色,
-/// 所以 appearance 要显式钉成真菜单栏的明暗,SwiftUI 的 colorScheme 传不到 NSView 上。
+/// 所以 appearance 要显式钉成小菜单栏的深浅,SwiftUI 的 colorScheme 传不到 NSView 上。
 private struct MenuBarLiveIconPreview: NSViewRepresentable {
     let style: MenuBarIconStyle
     let isDark: Bool
