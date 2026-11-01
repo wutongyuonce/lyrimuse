@@ -26,7 +26,7 @@ struct WhatsNewWindow: View {
             footer
         }
         .frame(width: 520, height: 600)
-        .background { LastfmGlassGlow() }
+        .background { LastfmGlassGlow().ignoresSafeArea() }
         .navigationTitle(String(format: L10n.t("%@ 更新内容"), version))
         .task(id: L10n.current) { sections = WhatsNewCenter.currentNotes() }
     }
@@ -42,7 +42,7 @@ struct WhatsNewWindow: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 24)
-        .padding(.top, 20)
+        .padding(.top, 4)
         .padding(.bottom, 12)
     }
 

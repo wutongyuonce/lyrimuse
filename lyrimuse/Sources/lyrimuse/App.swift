@@ -64,6 +64,8 @@ struct LyrimuseApp: App {
         Window(String(format: L10n.t("%@ 更新内容"), SparkleUpdaterManager.appVersionString), id: WhatsNewWindow.sceneID) {
             WhatsNewWindow()
         }
+        // 标题只在卡片里写一遍:标题栏透明、不显示文字,红绿灯浮在背景上。
+        .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
         .commandsRemoved()
         // 正经的标题栏窗口(不是悬浮歌词/灵动岛那种无边框浮层),展示完整歌词并跟随
