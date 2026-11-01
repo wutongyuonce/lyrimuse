@@ -1390,10 +1390,14 @@ func runSourceContractTests() {
                         && guardAt! < writeAt! && sourceHas(apply, "return } } features.lyricsWordFormats"), true,
                         "逐字歌词格式: 备份没写成、又有歌词文件时要在改设置之前返回")
             // 换格式的反馈:备份没写成时撤掉「正在备份」;设置写下之后才开始等引擎(状态文件按这一刻判新旧);进度只重画这一行。
-            expectEqual(sourceHas(apply, "monitor.beginBackup(to: formats)")
+            expectEqual(sourceHas(apply, "monitor.beginBackup(to: formats, removing: deletingCopies)")
                         && sourceHas(apply, "monitor.cancel() let alert = NSAlert()")
-                        && sourceHas(apply, "await features.save() monitor.requested(formats)"), true,
+                        && sourceHas(apply, "await features.save() monitor.requested(formats, removing: deletingCopies)"), true,
                         "逐字歌词格式: 备份 / 撤回 / 写下设置后开始等引擎,三处都接上进度")
+            // 「删除副本…」那一趟要把删的格式带给进度那一行,不然显示的是「正在改存为 主格式」。
+            expectEqual(sourceHas(sourceBody("private func confirmDeleteLyricsWordFormatCopies", in: view),
+                                  "backup: true, deletingCopies: copies)"), true,
+                        "逐字歌词副本: 删除副本把删的格式交给进度那一行")
             expectEqual(sourceHas(view, "@ObservedObject private var monitor = LyricsWordFormatSwitchMonitor.shared")
                         && sourceHas(view, ".disabled(monitor.isBusy)")
                         && !sourceHas(sourceBody("private struct LyricsSettingsTab: View {", in: view), "@ObservedObject private var monitor"), true,

@@ -645,6 +645,7 @@
 "删除「%@」？删除后无法恢复" = "¿Eliminar «%@»? No se puede deshacer";
 "删除中…" = "Eliminando…";
 "删除前会先自动备份" = "Se hace una copia de seguridad antes de eliminar";
+"删除前先备份歌词…" = "Haciendo copia de seguridad de la letra antes de eliminar…";
 "删除副本" = "Eliminar copias";
 "删除副本…" = "Eliminar copias…";
 "删除原文件" = "Eliminar originales";
@@ -1079,6 +1080,7 @@
 "已减少推荐" = "Se sugerirá menos";
 "已分享的链接将失效" = "Los enlaces que ya compartiste dejarán de funcionar";
 "已删除" = "Eliminado";
+"已删除 %@ 副本" = "Copias %@ eliminadas";
 "已刷新" = "Actualizado";
 "已匹配曲目 · 无歌词文本" = "Canción encontrada · sin texto de letra";
 "已匹配，无歌词" = "Encontrada, sin letra";
@@ -1921,6 +1923,7 @@
 "歌词库正在刷新，请稍后重试" = "La biblioteca de letras se está actualizando. Vuelve a intentarlo en un momento";
 "歌词延后" = "Retrasar letra";
 "歌词引擎" = "Motor de letras";
+"歌词引擎下次启动时删除" = "Se eliminarán la próxima vez que se inicie el motor de letras";
 "歌词引擎下次启动时改存" = "Se guardará la próxima vez que se inicie el motor de letras";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "El motor de letras aún no está activado, así que la configuración no se ha completado. Se te volverá a preguntar en el próximo inicio";
 "歌词引擎已停用，更改将在下次启用时生效" = "El motor de letras está desactivado. El cambio se aplicará cuando se vuelva a activar";
@@ -1977,6 +1980,8 @@
 "正在从 iCloud 下载此备份，完成后请再次点按「恢复此备份」" = "Descargando esta copia de iCloud. Cuando termine, vuelve a hacer clic en «Restaurar esta copia»";
 "正在准备安装…" = "Preparando la instalación…";
 "正在准备自动匹配…" = "Preparando la búsqueda automática…";
+"正在删除 %1$@ 副本… %2$@ / %3$@ 首" = "Eliminando las copias %1$@… %2$@ de %3$@ canciones";
+"正在删除 %@ 副本…" = "Eliminando las copias %@…";
 "正在加载…" = "Cargando…";
 "正在发送测试消息…" = "Enviando mensaje de prueba…";
 "正在取真实数据…" = "Obteniendo datos reales…";
@@ -1985,7 +1990,6 @@
 "正在同步历史" = "Sincronizando historial";
 "正在同步历史（%1$@/%2$@ 页）" = "Sincronizando historial (página %1$@ de %2$@)";
 "正在启用…" = "Iniciando…";
-"正在备份歌词…" = "Haciendo copia de seguridad de la letra…";
 "正在备份歌词库…" = "Haciendo copia de la biblioteca…";
 "正在安装…" = "Instalando…";
 "正在导入…" = "Importando…";

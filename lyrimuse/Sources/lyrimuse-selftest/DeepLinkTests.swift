@@ -246,6 +246,9 @@ func runDeepLinkTests() {
                     .debug(.wordFormatSwitch(state: "converting", format: "qrc", done: 30, total: 100)), "debug: 逐字格式切换摆到改存中")
         expectEqual(link("lyrimuse://debug/word-format-switch?state=backup&done=-3"),
                     .debug(.wordFormatSwitch(state: "backup", format: nil, done: nil, total: nil)), "debug: 负数、缺的参数按没带")
+        expectEqual(link("lyrimuse://debug/word-format-switch?state=finished&remove=yrc,qrc"),
+                    .debug(.wordFormatSwitch(state: "finished", format: nil, done: nil, total: nil, removing: ["yrc", "qrc"])),
+                    "debug: 逐字格式切换摆成删副本那一趟")
         expectEqual(link("lyrimuse://debug/word-format-switch"), nil, "debug: 逐字格式切换不带 state 不认")
         expectEqual(link("lyrimuse://debug/move-window?title=%E6%90%9C%E7%B4%A2&x=-200&y=-1200.5"),
                     .debug(.moveWindow(title: "搜索", x: -200, y: -1200.5)), "debug: 按标题挪窗口")

@@ -645,6 +645,7 @@
 "删除「%@」？删除后无法恢复" = "Delete “%@”? This can’t be undone";
 "删除中…" = "Removing…";
 "删除前会先自动备份" = "A backup is made before deleting";
+"删除前先备份歌词…" = "Backing up lyrics before deleting…";
 "删除副本" = "Delete Copies";
 "删除副本…" = "Delete Copies…";
 "删除原文件" = "Delete Old Files";
@@ -1079,6 +1080,7 @@
 "已减少推荐" = "Suggested Less";
 "已分享的链接将失效" = "Links you’ve already shared will stop working";
 "已删除" = "Deleted";
+"已删除 %@ 副本" = "Deleted the %@ copies";
 "已刷新" = "Refreshed";
 "已匹配曲目 · 无歌词文本" = "Track matched · no lyrics text";
 "已匹配，无歌词" = "Matched, no lyrics";
@@ -1921,6 +1923,7 @@
 "歌词库正在刷新，请稍后重试" = "The lyrics library is refreshing. Try again in a moment";
 "歌词延后" = "Delay Lyrics";
 "歌词引擎" = "Lyrics Engine";
+"歌词引擎下次启动时删除" = "Will be deleted when the lyrics engine next starts";
 "歌词引擎下次启动时改存" = "Will be saved when the lyrics engine next starts";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "The lyrics engine isn’t enabled yet, so this doesn’t count as finishing setup — you’ll be asked again next launch";
 "歌词引擎已停用，更改将在下次启用时生效" = "The lyrics engine is turned off. The change takes effect when it is turned on again";
@@ -1977,6 +1980,8 @@
 "正在从 iCloud 下载此备份，完成后请再次点按「恢复此备份」" = "Downloading this backup from iCloud. Click Restore This Backup again when it finishes";
 "正在准备安装…" = "Preparing to install…";
 "正在准备自动匹配…" = "Preparing to auto-match…";
+"正在删除 %1$@ 副本… %2$@ / %3$@ 首" = "Deleting the %1$@ copies… %2$@ of %3$@ songs";
+"正在删除 %@ 副本…" = "Deleting the %@ copies…";
 "正在加载…" = "Loading…";
 "正在发送测试消息…" = "Sending a test message…";
 "正在取真实数据…" = "Fetching real data…";
@@ -1985,7 +1990,6 @@
 "正在同步历史" = "Syncing history";
 "正在同步历史（%1$@/%2$@ 页）" = "Syncing history (page %1$@ of %2$@)";
 "正在启用…" = "Starting…";
-"正在备份歌词…" = "Backing up lyrics…";
 "正在备份歌词库…" = "Backing Up Lyrics Library…";
 "正在安装…" = "Installing…";
 "正在导入…" = "Importing…";

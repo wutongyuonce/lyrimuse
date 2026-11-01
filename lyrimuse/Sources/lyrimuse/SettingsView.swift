@@ -822,30 +822,37 @@ private struct LyricsWordFormatRow: View {
     @ViewBuilder
     private func status(_ display: LyricsWordFormatSwitchMonitor.Display) -> some View {
         let name = LyricsSettingsTab.lyricsWordFormatName(monitor.formats.first ?? primary)
+        // 删副本那一趟说「删除」,别说「改存为主格式」:用户点的是「删除副本…」。
+        let removed = monitor.removing.isEmpty ? nil : L10n.list(monitor.removing.map(LyricsSettingsTab.lyricsWordFormatName))
         VStack(alignment: .leading, spacing: 5) {
             switch display {
             case .idle:
                 EmptyView()
             case .backingUp:
-                statusText(L10n.t("正在备份歌词…"))
+                statusText(L10n.t("删除前先备份歌词…"))
                 bar(ProgressView())
             case .phase(.waiting):
-                statusText(String(format: L10n.t("正在改存为 %@…"), name))
+                statusText(removed.map { String(format: L10n.t("正在删除 %@ 副本…"), $0) }
+                           ?? String(format: L10n.t("正在改存为 %@…"), name))
                 bar(ProgressView())
             case let .phase(.converting(done, total)):
-                statusText(String(format: L10n.t("正在改存为 %1$@… %2$@ / %3$@ 首"), name,
-                                  done.formatted(.number), total.formatted(.number)))
+                statusText(removed.map {
+                    String(format: L10n.t("正在删除 %1$@ 副本… %2$@ / %3$@ 首"), $0,
+                           done.formatted(.number), total.formatted(.number))
+                } ?? String(format: L10n.t("正在改存为 %1$@… %2$@ / %3$@ 首"), name,
+                            done.formatted(.number), total.formatted(.number)))
                 bar(ProgressView(value: Double(done), total: Double(total)))
             case let .phase(.finished(total)):
                 HStack(spacing: 4) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 11))
                         .foregroundStyle(.green)
-                    statusText(total > 0 ? String(format: L10n.t("已改存为 %1$@，共 %2$@ 首"), name, total.formatted(.number))
-                                         : String(format: L10n.t("已改存为 %@"), name))
+                    statusText(removed.map { String(format: L10n.t("已删除 %@ 副本"), $0) }
+                               ?? (total > 0 ? String(format: L10n.t("已改存为 %1$@，共 %2$@ 首"), name, total.formatted(.number))
+                                             : String(format: L10n.t("已改存为 %@"), name)))
                 }
             case .phase(.queued):
-                statusText(L10n.t("歌词引擎下次启动时改存"))
+                statusText(removed == nil ? L10n.t("歌词引擎下次启动时改存") : L10n.t("歌词引擎下次启动时删除"))
             }
         }
     }
@@ -2596,16 +2603,17 @@ private struct LyricsSettingsTab: View {
         alert.addButton(withTitle: L10n.t("删除副本"))
         alert.addButton(withTitle: L10n.t("取消"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
-        applyLyricsWordFormats(Array(features.lyricsWordFormats.prefix(1)), backup: true)
+        applyLyricsWordFormats(Array(features.lyricsWordFormats.prefix(1)), backup: true, deletingCopies: copies)
     }
 
     /// 写进 features.json,引擎热重读后先按旧格式导入、再整份按新格式导出(lyricsdirswitch.go 的 switchLyricsWordFormats)。
     /// backup:会删掉文件时先打一份自动快照;有歌词文件却没备份成就不改,同歌词管理的 takeAutoSnapshot。
-    private func applyLyricsWordFormats(_ formats: [LyricsWordFormat], backup: Bool) {
+    /// deletingCopies:「删除副本…」删掉的那几种,进度那一行据此说「删除」而不是「改存」。
+    private func applyLyricsWordFormats(_ formats: [LyricsWordFormat], backup: Bool, deletingCopies: [LyricsWordFormat] = []) {
         let monitor = LyricsWordFormatSwitchMonitor.shared
         Task {
             if backup {
-                monitor.beginBackup(to: formats)
+                monitor.beginBackup(to: formats, removing: deletingCopies)
                 if await LyricsBackupStore.writeAutoSnapshot(reason: "word-format") == nil,
                    !LyricsBackupStore.hasNoLyricsFiles() {
                     monitor.cancel()
@@ -2618,7 +2626,7 @@ private struct LyricsSettingsTab: View {
             }
             features.lyricsWordFormats = formats
             await features.save()
-            monitor.requested(formats)
+            monitor.requested(formats, removing: deletingCopies)
         }
     }
 

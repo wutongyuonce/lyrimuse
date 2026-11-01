@@ -108,7 +108,7 @@ enum DebugDeepLinks {
                 }
             }
             logger.notice("debug notch style style=\(style ?? "nil", privacy: .public) expanded=\(expanded ?? "nil", privacy: .public)")
-        case let .wordFormatSwitch(state, format, done, total):
+        case let .wordFormatSwitch(state, format, done, total, removing):
             let formats = format.flatMap(LyricsWordFormat.init(rawValue:)).map { [$0] }
                 ?? Array(FeatureSettingsStore.shared.lyricsWordFormats.prefix(1))
             let display: LyricsWordFormatSwitchMonitor.Display? = switch state {
@@ -120,7 +120,10 @@ enum DebugDeepLinks {
             case "queued": .phase(.queued)
             default: nil
             }
-            if let display { LyricsWordFormatSwitchMonitor.shared.simulate(display, formats: formats) }
+            if let display {
+                LyricsWordFormatSwitchMonitor.shared.simulate(display, formats: formats,
+                                                              removing: removing.compactMap(LyricsWordFormat.init(rawValue:)))
+            }
             logger.notice("debug word format switch state=\(state, privacy: .public)")
         case let .notchPassThrough(x, y):
             NotchLyricsWindowController.shared.simulatePassThrough(at: CGPoint(x: x, y: y))

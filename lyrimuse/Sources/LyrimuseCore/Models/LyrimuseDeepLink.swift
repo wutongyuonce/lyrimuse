@@ -157,8 +157,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         case notchPassThroughOff
         /// 把设置页「逐字歌词格式」那一行摆到换格式的某一步,不真换、不碰歌词文件:
         /// `debug/word-format-switch?state=backup|waiting|converting|finished|queued|idle&format=qrc&done=3214&total=17564`
-        /// (`format` 是 `LyricsWordFormat` 的 rawValue,缺省 = 当前主格式;`done` / `total` 只在 converting / finished 时用)。
-        case wordFormatSwitch(state: String, format: String?, done: Int?, total: Int?)
+        /// (`format` 是 `LyricsWordFormat` 的 rawValue,缺省 = 当前主格式;`done` / `total` 只在 converting / finished 时用;
+        /// `remove=yrc,qrc` 摆成「删除副本…」那一趟,文案说删除哪几种)。
+        case wordFormatSwitch(state: String, format: String?, done: Int?, total: Int?, removing: [String] = [])
         /// 把这几个文件交给「搜索歌词…」窗口导入,跟点「导入文件…」选完文件走同一条路(`debug/import-lyrics?path=<绝对路径>&path=…`)。
         /// 不开窗:窗口没开着时请求留 60 秒,开窗时取走(先 `lyrics-search?background=1`)。
         case importLyrics(paths: [String])
@@ -358,7 +359,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             guard let state = value("state"), !state.isEmpty else { return nil }
             let nonNegative = { (s: String?) in s.flatMap(Int.init).flatMap { $0 >= 0 ? $0 : nil } }
             self = .debug(.wordFormatSwitch(state: state, format: value("format").flatMap { $0.isEmpty ? nil : $0 },
-                                            done: nonNegative(value("done")), total: nonNegative(value("total"))))
+                                            done: nonNegative(value("done")), total: nonNegative(value("total")),
+                                            removing: (value("remove") ?? "").split(separator: ",").map(String.init)))
         case ("debug", "/notch-pass-through"):
             if value("off").flatMap(Self.parseBool) == true {
                 self = .debug(.notchPassThroughOff)
@@ -561,12 +563,13 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case .notchPassThroughOff:
                 components.path = "/notch-pass-through"
                 components.queryItems = [URLQueryItem(name: "off", value: "1")]
-            case let .wordFormatSwitch(state, format, done, total):
+            case let .wordFormatSwitch(state, format, done, total, removing):
                 components.path = "/word-format-switch"
                 components.queryItems = [URLQueryItem(name: "state", value: state)]
                     + (format.map { [URLQueryItem(name: "format", value: $0)] } ?? [])
                     + (done.map { [URLQueryItem(name: "done", value: String($0))] } ?? [])
                     + (total.map { [URLQueryItem(name: "total", value: String($0))] } ?? [])
+                    + (removing.isEmpty ? [] : [URLQueryItem(name: "remove", value: removing.joined(separator: ","))])
             case let .japaneseReading(style):
                 components.path = "/japanese-reading"
                 components.queryItems = [URLQueryItem(name: "style", value: style.rawValue)]

@@ -18,6 +18,8 @@ final class LyricsWordFormatSwitchMonitor: ObservableObject {
     @Published private(set) var display: Display = .idle
     /// 这一趟换成的格式(第一个是主格式),行里的文案用它。
     @Published private(set) var formats: [LyricsWordFormat] = []
+    /// 这一趟删掉的副本格式(「同时存为」那行的「删除副本…」);空 = 换主格式。行里按它说「删除」还是「改存」。
+    @Published private(set) var removing: [LyricsWordFormat] = []
 
     /// 「已改存」停多久再回到格式说明。
     static let finishedHold: TimeInterval = 4
@@ -39,9 +41,10 @@ final class LyricsWordFormatSwitchMonitor: ObservableObject {
 
     private init() {}
 
-    func beginBackup(to formats: [LyricsWordFormat]) {
+    func beginBackup(to formats: [LyricsWordFormat], removing: [LyricsWordFormat] = []) {
         stop()
         self.formats = formats
+        self.removing = removing
         display = .backingUp
     }
 
@@ -52,9 +55,10 @@ final class LyricsWordFormatSwitchMonitor: ObservableObject {
     }
 
     /// 设置已写进 features.json,开始等引擎。
-    func requested(_ formats: [LyricsWordFormat]) {
+    func requested(_ formats: [LyricsWordFormat], removing: [LyricsWordFormat] = []) {
         stop()
         self.formats = formats
+        self.removing = removing
         requestedAt = Date()
         display = .phase(.waiting)
         timer = Timer.scheduledTimer(withTimeInterval: Self.pollInterval, repeats: true) { _ in
@@ -63,9 +67,10 @@ final class LyricsWordFormatSwitchMonitor: ObservableObject {
     }
 
     /// `debug/word-format-switch`:把那一行摆到某一步,不读状态文件、不自己回到平常的样子。
-    func simulate(_ display: Display, formats: [LyricsWordFormat]) {
+    func simulate(_ display: Display, formats: [LyricsWordFormat], removing: [LyricsWordFormat] = []) {
         stop()
         self.formats = formats
+        self.removing = removing
         self.display = display
     }
 

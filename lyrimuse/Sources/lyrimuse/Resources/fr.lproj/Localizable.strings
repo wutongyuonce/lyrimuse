@@ -645,6 +645,7 @@
 "删除「%@」？删除后无法恢复" = "Supprimer « %@ » ? Cette action est irréversible";
 "删除中…" = "Suppression…";
 "删除前会先自动备份" = "Une sauvegarde est faite avant suppression";
+"删除前先备份歌词…" = "Sauvegarde des paroles avant suppression…";
 "删除副本" = "Supprimer les copies";
 "删除副本…" = "Supprimer les copies…";
 "删除原文件" = "Supprimer les anciens";
@@ -1079,6 +1080,7 @@
 "已减少推荐" = "Moins suggéré";
 "已分享的链接将失效" = "Les liens déjà partagés cesseront de fonctionner";
 "已删除" = "Supprimé";
+"已删除 %@ 副本" = "Copies %@ supprimées";
 "已刷新" = "Actualisé";
 "已匹配曲目 · 无歌词文本" = "Morceau trouvé · pas de texte";
 "已匹配，无歌词" = "Trouvé, sans paroles";
@@ -1921,6 +1923,7 @@
 "歌词库正在刷新，请稍后重试" = "La bibliothèque de paroles s’actualise. Réessayez dans un instant";
 "歌词延后" = "Retarder les paroles";
 "歌词引擎" = "Moteur de paroles";
+"歌词引擎下次启动时删除" = "Seront supprimées au prochain lancement du moteur de paroles";
 "歌词引擎下次启动时改存" = "Sera enregistré au prochain lancement du moteur de paroles";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "Le moteur de paroles n’est pas encore activé, la configuration n’est donc pas terminée : elle vous sera reproposée au prochain lancement";
 "歌词引擎已停用，更改将在下次启用时生效" = "Le moteur de paroles est désactivé. La modification prendra effet à sa réactivation";
@@ -1977,6 +1980,8 @@
 "正在从 iCloud 下载此备份，完成后请再次点按「恢复此备份」" = "Téléchargement de cette sauvegarde depuis iCloud. Cliquez à nouveau sur « Restaurer cette sauvegarde » une fois terminé";
 "正在准备安装…" = "Préparation de l’installation…";
 "正在准备自动匹配…" = "Préparation de l’association automatique…";
+"正在删除 %1$@ 副本… %2$@ / %3$@ 首" = "Suppression des copies %1$@… %2$@ sur %3$@ morceaux";
+"正在删除 %@ 副本…" = "Suppression des copies %@…";
 "正在加载…" = "Chargement…";
 "正在发送测试消息…" = "Envoi d’un message de test…";
 "正在取真实数据…" = "Récupération des données réelles…";
@@ -1985,7 +1990,6 @@
 "正在同步历史" = "Synchronisation de l’historique";
 "正在同步历史（%1$@/%2$@ 页）" = "Synchronisation de l’historique (page %1$@ sur %2$@)";
 "正在启用…" = "Démarrage…";
-"正在备份歌词…" = "Sauvegarde des paroles…";
 "正在备份歌词库…" = "Sauvegarde de la bibliothèque…";
 "正在安装…" = "Installation…";
 "正在导入…" = "Importation…";

@@ -645,6 +645,7 @@
 "删除「%@」？删除后无法恢复" = "„%@“ löschen? Das kann nicht widerrufen werden";
 "删除中…" = "Wird entfernt …";
 "删除前会先自动备份" = "Vor dem Löschen wird ein Backup erstellt";
+"删除前先备份歌词…" = "Backup der Liedtexte vor dem Löschen …";
 "删除副本" = "Kopien löschen";
 "删除副本…" = "Kopien löschen …";
 "删除原文件" = "Alte Dateien löschen";
@@ -1079,6 +1080,7 @@
 "已减少推荐" = "Weniger vorgeschlagen";
 "已分享的链接将失效" = "Bereits geteilte Links funktionieren dann nicht mehr";
 "已删除" = "Gelöscht";
+"已删除 %@ 副本" = "%@-Kopien gelöscht";
 "已刷新" = "Aktualisiert";
 "已匹配曲目 · 无歌词文本" = "Titel gefunden · kein Liedtext";
 "已匹配，无歌词" = "Gefunden, kein Liedtext";
@@ -1921,6 +1923,7 @@
 "歌词库正在刷新，请稍后重试" = "Die Liedtext-Bibliothek wird aktualisiert. Versuche es gleich noch einmal";
 "歌词延后" = "Text später";
 "歌词引擎" = "Liedtext-Engine";
+"歌词引擎下次启动时删除" = "Werden beim nächsten Start der Liedtext-Engine gelöscht";
 "歌词引擎下次启动时改存" = "Wird beim nächsten Start der Liedtext-Engine gesichert";
 "歌词引擎尚未启用，本次引导未完成，下次启动时将再次显示" = "Die Liedtext-Engine ist noch nicht aktiviert, daher ist die Einrichtung nicht abgeschlossen – du wirst beim nächsten Start erneut gefragt";
 "歌词引擎已停用，更改将在下次启用时生效" = "Die Liedtext-Engine ist aus. Die Änderung wird wirksam, sobald sie wieder eingeschaltet ist";
@@ -1977,6 +1980,8 @@
 "正在从 iCloud 下载此备份，完成后请再次点按「恢复此备份」" = "Dieses Backup wird aus iCloud geladen. Klicke danach erneut auf „Dieses Backup wiederherstellen“";
 "正在准备安装…" = "Installation wird vorbereitet …";
 "正在准备自动匹配…" = "Automatische Zuordnung wird vorbereitet …";
+"正在删除 %1$@ 副本… %2$@ / %3$@ 首" = "%1$@-Kopien werden gelöscht … %2$@ von %3$@ Titeln";
+"正在删除 %@ 副本…" = "%@-Kopien werden gelöscht …";
 "正在加载…" = "Wird geladen …";
 "正在发送测试消息…" = "Testnachricht wird gesendet …";
 "正在取真实数据…" = "Echte Daten werden geladen …";
@@ -1985,7 +1990,6 @@
 "正在同步历史" = "Verlauf wird synchronisiert";
 "正在同步历史（%1$@/%2$@ 页）" = "Verlauf wird synchronisiert (Seite %1$@ von %2$@)";
 "正在启用…" = "Wird gestartet …";
-"正在备份歌词…" = "Backup der Liedtexte wird erstellt …";
 "正在备份歌词库…" = "Bibliothek wird gesichert …";
 "正在安装…" = "Wird installiert …";
 "正在导入…" = "Wird importiert …";
