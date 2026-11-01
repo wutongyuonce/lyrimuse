@@ -103,8 +103,10 @@ private struct MenuBarIconCardChrome: ViewModifier {
 
 /// 一小段菜单栏:屏幕右上角那一块壁纸,按真菜单栏的明暗渲染里面的图标。macOS 26 起真菜单栏全透明、
 /// 直接透出壁纸;更早的系统真菜单栏自带一层半透明底,这里同样铺 `.ultraThinMaterial`(同 `MenuBarPreviewBar`)。
+/// 图标两边摆几个系统状态栏图标当参照物,画法同 `MenuBarPreviewBar` 的右簇(菜单栏字体、0.55 明度)。
 private struct MenuBarMiniStrip<Content: View>: View {
     let isDark: Bool
+    var showsClock = false
     @ViewBuilder var content: () -> Content
 
     static var height: CGFloat { 24 }
@@ -115,7 +117,19 @@ private struct MenuBarMiniStrip<Content: View>: View {
             if !Self.bareWallpaper {
                 Rectangle().fill(.ultraThinMaterial)
             }
-            content()
+            HStack(spacing: 9) {
+                Image(systemName: "wifi")
+                    .foregroundStyle(Color(nsColor: .labelColor).opacity(0.55))
+                content()
+                Image(systemName: "battery.100")
+                    .foregroundStyle(Color(nsColor: .labelColor).opacity(0.55))
+                if showsClock {
+                    Text(Date(), style: .time)
+                        .foregroundStyle(Color(nsColor: .labelColor).opacity(0.55))
+                }
+            }
+            .font(Font(MenuBarMarqueeRenderer.font))
+            .fixedSize()
         }
         .frame(maxWidth: .infinity)
         .frame(height: Self.height)
@@ -215,8 +229,8 @@ private struct MenuBarArtworkCard: View {
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            MenuBarMiniStrip(isDark: isDark) { tile }
-                .frame(width: 104)
+            MenuBarMiniStrip(isDark: isDark, showsClock: true) { tile }
+                .frame(width: 150)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
@@ -224,8 +238,8 @@ private struct MenuBarArtworkCard: View {
         .onHover { hovering = $0 }
     }
 
-    /// 封面方块,大小和圆角同菜单栏上那一枚(`MenuBarIconArtwork.side` / `cornerRadius`)。没在放歌时画一块
-    /// 淡色方块占位,不画所选款式:这张卡演的是「封面」这一档。
+    /// 封面方块,大小和圆角同菜单栏上那一枚(`MenuBarIconArtwork.side` / `cornerRadius`)。没在放歌时画一张示意封面
+    /// (渐变底 + 音符),不画所选款式:这张卡演的是「封面」这一档,空方块看着像坏了。
     @ViewBuilder private var tile: some View {
         let shape = RoundedRectangle(cornerRadius: MenuBarIconArtwork.cornerRadius, style: .continuous)
         if let artwork {
@@ -236,7 +250,15 @@ private struct MenuBarArtworkCard: View {
                 .clipShape(shape)
         } else {
             shape
-                .fill(Color.primary.opacity(0.35))
+                .fill(LinearGradient(colors: [Color(red: 0.85, green: 0.35, blue: 0.29),
+                                              Color(red: 0.95, green: 0.65, blue: 0.35),
+                                              Color(red: 0.36, green: 0.44, blue: 0.84)],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+                .overlay {
+                    Image(systemName: "music.note")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                }
                 .frame(width: MenuBarIconArtwork.side, height: MenuBarIconArtwork.side)
         }
     }
