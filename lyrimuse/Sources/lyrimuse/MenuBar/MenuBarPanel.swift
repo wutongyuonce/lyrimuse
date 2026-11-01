@@ -413,8 +413,8 @@ private final class FirstMouseHostingView<Content: View>: NSHostingView<Content>
 
 // MARK: - 「已更新」横条
 
-/// 升级后面板顶部那一条:点「看看新功能」去设置的「软件更新」页(本版更新内容在那里),点 ✕ 这一版不再出。
-/// 只在主版本或次版本升级后出(NewSettingsMarks.bannerVersion)。
+/// 升级后第一次打开面板时顶部那一条(`WhatsNewCenter.bannerVersion`):点它开「本次更新」卡片,点 ✕ 收起。
+/// 摆出来就记下这一版出过了,下次打开面板不再出。
 private struct WhatsNewBanner: View {
     let version: String
     let open: () -> Void
@@ -422,17 +422,8 @@ private struct WhatsNewBanner: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Color.accentColor)
-                .accessibilityHidden(true)
-            Text(String(format: L10n.t("已更新到 %@"), version))
-                .font(.system(size: 12.5, weight: .medium))
-                .lineLimit(1)
-            Spacer(minLength: 4)
-            Button(L10n.t("看看新功能"), action: open)
-                .buttonStyle(.link)
-                .font(.system(size: 12.5, weight: .semibold))
+            Button(action: open) { label }
+                .buttonStyle(.plain)
             Button(action: dismiss) {
                 Image(systemName: "xmark")
                     .font(.system(size: 10, weight: .semibold))
@@ -447,6 +438,24 @@ private struct WhatsNewBanner: View {
         .padding(.trailing, 8)
         .padding(.vertical, 8)
         .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.accentColor.opacity(0.14)))
+        .onAppear { WhatsNewCenter.shared.bannerShown() }
+    }
+
+    private var label: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+            Text(String(format: L10n.t("已更新到 %@"), version))
+                .font(.system(size: 12.5, weight: .medium))
+                .lineLimit(1)
+            Spacer(minLength: 4)
+            Text(L10n.t("看看新功能"))
+                .font(.system(size: 12.5, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
+        }
+        .contentShape(Rectangle())
     }
 }
 
@@ -465,8 +474,8 @@ private struct MenuBarPanelView: View {
     /// 点了歌名 / 歌手名 / 专辑名之后,面板下半部分换成那一类简介(`PanelEditorialPage`);nil = 没翻到简介。
     @State private var editorialKind: EditorialCard.Kind?
     @ObservedObject private var editorial = EditorialNotesStore.shared
-    /// 面板顶部「已更新到 X」(见 WhatsNewBanner)。
-    @ObservedObject private var whatsNew = NewSettingsMarks.shared
+    /// 面板顶部「已更新到 X」(见 WhatsNewBanner):开面板那一刻取一次,这次开着期间一直在,✕ 收起。
+    @State private var whatsNewVersion = WhatsNewCenter.shared.bannerVersion
 
     init(close: @escaping () -> Void, initialQuickTarget: PanelQuickTarget? = nil) {
         self.close = close
@@ -486,12 +495,11 @@ private struct MenuBarPanelView: View {
 
     var body: some View {
         VStack(spacing: 9) {
-            if let version = whatsNew.bannerVersion {
+            if let version = whatsNewVersion {
                 WhatsNewBanner(version: version, open: {
-                    whatsNew.dismissBanner()
                     close()
-                    AppActions.shared.requestSettings(.softwareUpdate)
-                }, dismiss: { whatsNew.dismissBanner() })
+                    AppActions.shared.openWhatsNew?()
+                }, dismiss: { whatsNewVersion = nil })
             }
             nowPlayingCard
             // 「正在播放」卡不参与切换 —— 它是这张面板的身份,连它一起换掉就像换了一扇窗;

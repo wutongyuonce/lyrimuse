@@ -1116,30 +1116,6 @@ struct SettingsBetaBadge: View {
     }
 }
 
-/// 「这里有新东西」的小蓝点:设置侧栏分类、设置行和卡头标题后面用(NewSettingsMarks),看过就撤。
-struct SettingsUnseenDot: View {
-    var body: some View {
-        Circle()
-            .fill(Color.accentColor)
-            .frame(width: 7, height: 7)
-            .accessibilityHidden(true)
-    }
-}
-
-extension View {
-    /// 至少一半滚进所在滚动区时调一次 `action`。macOS 14 没有滚动可见回调,出现即算。
-    @ViewBuilder
-    func onScrolledIntoView(_ action: @escaping () -> Void) -> some View {
-        if #available(macOS 15.0, *) {
-            onScrollVisibilityChange(threshold: 0.5) { visible in
-                if visible { action() }
-            }
-        } else {
-            onAppear(perform: action)
-        }
-    }
-}
-
 /// 几组 `SettingsRowGroup` 摞在一起:浮层里组与组之间留 10pt,卡片里紧贴(组名那行小标题自己隔开)。
 struct SettingsRowGroupStack<Content: View>: View {
     @ViewBuilder let content: () -> Content
@@ -1185,7 +1161,6 @@ struct SettingsCardHeader<Trailing: View>: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .tracking(0.5)
-                NewSettingDot(title: title)
                 if let help { HelpButton(text: help) }
                 Spacer(minLength: 0)
                 trailing()
@@ -1274,8 +1249,6 @@ struct SettingsRow<Trailing: View>: View {
                         .font(.system(size: 13))
                         .settingsTitleFit(title)
                     if beta { SettingsBetaBadge() }
-                    // 这次更新新加的设置挂小蓝点,看到就撤(NewSettingsMarks)。
-                    NewSettingDot(title: title)
                     if let help { HelpButton(text: help) }
                 }
                 // 对齐基准取标题这一行,不取整块文字:有副标题时控件对着标题,副标题往下排。

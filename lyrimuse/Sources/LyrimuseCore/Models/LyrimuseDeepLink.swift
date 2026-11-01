@@ -13,6 +13,7 @@ import Foundation
 ///     lyrics-window/search          歌词窗口 + 「搜索歌词…」窗口(同 lyrics-search 那扇)
 ///     lyrics-search                 「搜索歌词…」小窗(当前这首)
 ///     lyrics-share                  「分享歌词」窗口(当前这首)
+///     whats-new                     「本次更新」卡片(当前版本的更新内容)
 ///     menubar-panel[?quick=<格子>]   开 / 关菜单栏左键面板,带 quick 时翻到那一格的快捷设置
 ///     menubar-menu                  弹出菜单栏右键菜单(同右键点状态栏图标)
 ///     onboarding                    欢迎引导
@@ -25,7 +26,7 @@ import Foundation
 ///     lastfm-auth-callback          Last.fm 浏览器授权回跳(内部用)
 ///     debug/<命令>                  本机验证用(见 `DebugCommand`),只在本机偏好 `debug:deepLinks` 打开时才执行
 ///
-/// 开窗类的链接(settings、lyrics-manager、lyrics-window、lyrics-search、onboarding、action/open-*)可以再带
+/// 开窗类的链接(settings、lyrics-manager、lyrics-window、lyrics-search、lyrics-share、whats-new、onboarding、action/open-*)可以再带
 /// `background=1`:窗口摆出来,但不激活 App、不抢键盘焦点(`wantsBackground(_:)`)。
 /// host 和路径大小写不敏感;scheme 由调用方给(正式 `lyrimuse`,Dev `lyrimuse-dev`,`LyrimuseIdentity.urlScheme`)。
 /// 改名、删除任何一条都要先看对外说过没有(CHANGELOG、README、支持回复),说过的保持能用。对外开放的链接都写在
@@ -50,6 +51,7 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
     case lyricsWindowSearch
     case lyricsSearch
     case lyricsShare
+    case whatsNew
     /// `quick` 是原样的取值(App 侧 `PanelQuickTarget(deepLinkValue:)` 认),认不出时 App 当没带。
     case menuBarPanel(quick: String?)
     case menuBarMenu
@@ -195,6 +197,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             self = .lyricsSearch
         case ("lyrics-share", ""), ("lyrics-share", "/"):
             self = .lyricsShare
+        case ("whats-new", ""), ("whats-new", "/"):
+            self = .whatsNew
         case ("menubar-panel", ""), ("menubar-panel", "/"):
             self = .menuBarPanel(quick: value("quick")?.lowercased())
         case ("menubar-menu", ""), ("menubar-menu", "/"):
@@ -388,6 +392,8 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             components.host = "lyrics-search"
         case .lyricsShare:
             components.host = "lyrics-share"
+        case .whatsNew:
+            components.host = "whats-new"
         case let .menuBarPanel(quick):
             components.host = "menubar-panel"
             if let quick { components.queryItems = [URLQueryItem(name: "quick", value: quick)] }

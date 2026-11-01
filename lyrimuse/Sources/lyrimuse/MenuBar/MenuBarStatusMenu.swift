@@ -177,6 +177,8 @@ final class MenuBarStatusMenu: NSObject, NSMenuDelegate {
             menu.addItem(action(L10n.t("检查更新…"), symbol: "arrow.triangle.2.circlepath",
                                 selector: #selector(checkForUpdates)))
         }
+        menu.addItem(action(L10n.t("查看本次更新…"), symbol: "newspaper",
+                            selector: #selector(openWhatsNew)))
         menu.addItem(action(L10n.t("关于 Lyrimuse"), symbol: "info.circle",
                             selector: #selector(openAbout)))
         let help = NSMenu()
@@ -285,6 +287,7 @@ final class MenuBarStatusMenu: NSObject, NSMenuDelegate {
 
     @objc private func checkForUpdates() { AppMenuActions.checkForUpdates() }
     @objc private func openSoftwareUpdate() { AppMenuActions.openSoftwareUpdate() }
+    @objc private func openWhatsNew() { AppActions.shared.openWhatsNew?() }
 
     @objc private func quit() {
         // 经 AppExit 登记原因再终止:所有主动退出都从那一个出口走,见 AppExit 头注。

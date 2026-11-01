@@ -44,6 +44,8 @@ final class AppActions {
 
     /// 把「分享歌词」窗口叫出来(`Window(id: "lyrics-share")`,见 App.swift),在 MenuBarSceneActions.swift 的锚点视图里捕获。
     var presentLyricShareWindow: (() -> Void)?
+    /// 把「本次更新」卡片叫出来(`Window(id: "whats-new")`,见 App.swift),在 MenuBarSceneActions.swift 的锚点视图里捕获。
+    var openWhatsNew: (() -> Void)?
     /// 窗口已经开着时再点「分享歌词…」只会把它带到前台,靠这一下按正在放的那首重取(同 `quickSearchRefreshRequests`)。
     let lyricShareRefreshRequests = PassthroughSubject<Void, Never>()
 

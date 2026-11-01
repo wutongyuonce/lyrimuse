@@ -1,0 +1,64 @@
+import Foundation
+import LyrimuseCore
+
+/// 更新之后的提示(判据在 Core `WhatsNew`):主版本或次版本升级后,第一次打开菜单栏面板时顶部出一条「已更新到 X」,
+/// 摆出来一次就记下、之后不再出;点它开「本次更新」卡片(`WhatsNewWindow`)。菜单栏右键菜单「查看本次更新…」和深链
+/// `whats-new` 随时开同一张卡片。
+///
+/// 启动时 `start()` 定这次的基准版本并记下当前版本。几个键都是机器专属的(ConfigPortability.machineLocalDefaultsKeys)。
+/// 见 14 章决策 155。
+@MainActor
+final class WhatsNewCenter {
+    static let shared = WhatsNewCenter()
+
+    enum Keys {
+        static let lastLaunchedVersion = "np:lastLaunchedVersion"
+        static let baseline = "np:whatsNewBaseline"
+        /// 面板顶部「已更新」出过的是哪一版。
+        static let bannerShown = "np:whatsNewShownVersion"
+    }
+
+    /// 面板顶部该出「已更新到 X」时是当前版本,否则 nil。
+    private(set) var bannerVersion: String?
+
+    private let defaults = UserDefaults.standard
+    private var started = false
+
+    private init() {}
+
+    func start() {
+        guard !started else { return }
+        started = true
+        let current = SparkleUpdaterManager.appVersionString
+        let baseline = WhatsNew.baseline(current: current, lastLaunched: defaults.string(forKey: Keys.lastLaunchedVersion),
+                                         stored: defaults.string(forKey: Keys.baseline),
+                                         hasCompletedOnboarding: AppSettings.shared.hasCompletedOnboarding)
+        defaults.set(baseline, forKey: Keys.baseline)
+        defaults.set(current, forKey: Keys.lastLaunchedVersion)
+        bannerVersion = WhatsNew.bannerPending(current: current, baseline: baseline,
+                                               shownVersion: defaults.string(forKey: Keys.bannerShown)) ? current : nil
+    }
+
+    /// 面板把横条摆出来了:这一版不再出。正开着的面板自己留着那一条到收起。
+    func bannerShown() {
+        guard let bannerVersion else { return }
+        defaults.set(bannerVersion, forKey: Keys.bannerShown)
+        self.bannerVersion = nil
+    }
+
+    /// 当前版本的更新内容:包里那份 CHANGELOG.md(build.sh 拷进 Resources)里这一版那一节。
+    /// 界面是中文取中文(繁体界面由简体转写),别的语言取英文;找不到这一节为空。
+    static func currentNotes() -> [ReleaseNotes.Section] {
+        guard let url = Bundle.main.url(forResource: "CHANGELOG", withExtension: "md"),
+              let data = FileIO.read(url), let text = String(data: data, encoding: .utf8),
+              let section = ReleaseNotes.section(version: SparkleUpdaterManager.appVersionString, in: text) else { return [] }
+        let language = L10n.current
+        let sections = ReleaseNotes.parse(section, chinese: language == "zh-hans" || language == "zh-hant")
+        guard language == "zh-hant" else { return sections }
+        let hant = StringTransform("Hans-Hant")
+        return sections.map { section in
+            ReleaseNotes.Section(title: section.title.applyingTransform(hant, reverse: false) ?? section.title,
+                                 items: section.items.map { $0.applyingTransform(hant, reverse: false) ?? $0 })
+        }
+    }
+}

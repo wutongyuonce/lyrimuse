@@ -26,6 +26,7 @@ The common ones can be copied from **Deep Links** at the bottom of Settings › 
 | `lyrimuse://menubar-panel?quick=overlay` | Opens the menu bar panel on one tile's quick settings (only opens, never closes). `quick` is one of `overlay`, `notch`, `menubar`, `touchbar`, `lyrics-window`, `lyrics-manager` |
 | `lyrimuse://menubar-menu` | Pops up the menu bar icon's menu |
 | `lyrimuse://onboarding` | Opens the welcome guide |
+| `lyrimuse://whats-new` | Shows what’s new in the installed version |
 
 ## Opening settings
 

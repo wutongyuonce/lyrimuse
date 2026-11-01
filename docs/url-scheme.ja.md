@@ -26,6 +26,7 @@
 | `lyrimuse://menubar-panel?quick=overlay` | メニューバーパネルを、いずれかのタイルのクイック設定を表示した状態で開きます（開くだけで、閉じることはありません）。`quick` には `overlay`、`notch`、`menubar`、`touchbar`、`lyrics-window`、`lyrics-manager` のいずれかを指定します |
 | `lyrimuse://menubar-menu` | メニューバーアイコンのメニューを表示します |
 | `lyrimuse://onboarding` | ようこそガイドを開きます |
+| `lyrimuse://whats-new` | インストール中のバージョンの新機能を表示します |
 
 ## 設定を開く
 

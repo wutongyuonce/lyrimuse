@@ -432,52 +432,6 @@ def render_markdown(model: dict, lang: str) -> str:
     return "\n".join(out) + "\n"
 
 
-NEW_SETTINGS_SWIFT = "lyrimuse/Sources/LyrimuseCore/Models/NewSettings+Generated.swift"
-
-
-def _version_key(v: str) -> tuple:
-    return tuple(int(x) if x.isdigit() else 0 for x in v.split("."))
-
-
-def new_settings_swift(root: Path = ROOT) -> tuple[str, list[str]]:
-    """feature-list.json 的 new_settings(每一版新加了哪些设置)→ Swift 名单,外加问题清单。
-
-    设置按标题认(App 里的设置行、卡头只知道自己的标题),所以标题在设置目录里必须只出现一次,不然同名的几行会一起挂点。
-    """
-    features = json.loads((root / "shared/feature-list.json").read_text(encoding="utf-8"))
-    catalog = json.loads((root / "shared/settings-catalog.json").read_text(encoding="utf-8"))["entries"]
-    in_catalog = {tuple(e["path"] + [e["title"]]) for e in catalog}
-    title_count: dict[str, int] = {}
-    for e in catalog:
-        title_count[e["title"]] = title_count.get(e["title"], 0) + 1
-    problems = []
-    releases = []
-    for version in sorted(features.get("new_settings", {}), key=_version_key):
-        keys = []
-        for path in features["new_settings"][version]:
-            if tuple(path) not in in_catalog:
-                problems.append(f"new_settings {version} 里的设置不在目录里:{' › '.join(path)}")
-                continue
-            if title_count.get(path[-1], 0) > 1:
-                problems.append(f"new_settings {version} 里的「{path[-1]}」在设置目录里不止一处,按标题挂点会一起亮,换一个或去掉")
-                continue
-            keys.append(path[-1])
-        releases.append((version, keys))
-    lines = [
-        "// 由 scripts/gen-feature-list.py 按 shared/feature-list.json 的 new_settings 生成,别手改。",
-        "",
-        "/// 每一版新加的设置:设置搜索目录里的 titleKey,按版本从旧到新。App 在这些设置的标题后面挂小蓝点(`NewSettingsMarks`)。",
-        "public enum NewSettingsCatalog {",
-        "    public static let releases: [(version: String, titleKeys: [String])] = [",
-    ]
-    for version, keys in releases:
-        lines.append(f'        ("{version}", [')
-        lines += [f"            {json.dumps(k, ensure_ascii=False)}," for k in keys]
-        lines.append("        ]),")
-    lines += ["    ]", "}", ""]
-    return "\n".join(lines), problems
-
-
 def main(argv: list[str]) -> int:
     check = "--check" in argv
     try:
@@ -497,15 +451,7 @@ def main(argv: list[str]) -> int:
         else:
             path.write_text(text, encoding="utf-8")
             print(f"写入 {path.relative_to(ROOT)}")
-    swift, swift_problems = new_settings_swift(ROOT)
-    swift_path = ROOT / NEW_SETTINGS_SWIFT
-    if (swift_path.read_text(encoding="utf-8") if swift_path.exists() else None) != swift:
-        if check:
-            stale.append(NEW_SETTINGS_SWIFT)
-        else:
-            swift_path.write_text(swift, encoding="utf-8")
-            print(f"写入 {NEW_SETTINGS_SWIFT}")
-    problems = coverage_problems(ROOT) + swift_problems
+    problems = coverage_problems(ROOT)
     for p in problems:
         print(f"!! {p}", file=sys.stderr)
     if stale:

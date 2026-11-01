@@ -80,6 +80,7 @@ REQUIRED_CONTENTS=(
   "Resources/zh-hant.lproj/InfoPlist.strings"
   "Resources/en.lproj/InfoPlist.strings"
   "Resources/THIRD_PARTY_LICENSES"
+  "Resources/CHANGELOG.md"
   "Frameworks/Sparkle.framework"
 )
 

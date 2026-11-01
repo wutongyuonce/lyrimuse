@@ -26,6 +26,7 @@
 | `lyrimuse://menubar-panel?quick=overlay` | 打开菜单栏面板，并翻到某一格的快捷设置（只打开、不关闭）。`quick` 可选 `overlay`、`notch`、`menubar`、`touchbar`、`lyrics-window`、`lyrics-manager` |
 | `lyrimuse://menubar-menu` | 弹出菜单栏图标的菜单 |
 | `lyrimuse://onboarding` | 打开欢迎引导 |
+| `lyrimuse://whats-new` | 打开「本次更新」卡片，列出当前版本的更新内容 |
 
 ## 打开设置
 

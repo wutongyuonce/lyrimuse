@@ -135,6 +135,10 @@ private struct SceneActionRegistrar: View {
                     openWindowAction(id: "lyrics-share")
                     AppActions.shared.lyricShareRefreshRequests.send()
                 }
+                AppActions.shared.openWhatsNew = {
+                    WindowActivation.activateApp()
+                    openWindowAction(id: WhatsNewWindow.sceneID)
+                }
                 AppActions.shared.openOnboarding = {
                     WindowActivation.activateApp()
                     openWindowAction(id: "onboarding")

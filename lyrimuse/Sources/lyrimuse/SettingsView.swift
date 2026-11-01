@@ -261,7 +261,6 @@ struct SettingsView: View {
     @AppStorage(SettingsTab.lastTabStorageKey) private var lastTabRaw = SettingsTab.lyrics.rawValue
     /// 侧栏「播放器」项的警告徽标数据源,随设置窗口出现/消失启停。
     @StateObject private var playerHealth = PlayerHealthMonitor()
-    @ObservedObject private var newSettings = NewSettingsMarks.shared
     /// 这扇窗口看不看得见。「歌词显示」页的几块预览靠它在被遮住 / 最小化时停表,
     /// 见 PreviewHostVisibility.swift。
     @StateObject private var windowSurface = SettingsWindowSurface()
@@ -730,8 +729,6 @@ struct SettingsView: View {
         Label {
             HStack(spacing: 6) {
                 Text(tab.title)
-                // 这个分类里有这次更新新加、还没看过的设置(NewSettingsMarks)。
-                if newSettings.pendingTabs.contains(tab.rawValue) { SettingsUnseenDot() }
                 if tab == .player, let warning = playerHealth.warningText {
                     Spacer(minLength: 4)
                     SidebarCountBadge(count: max(1, playerHealth.warnings.count))
@@ -8405,7 +8402,7 @@ private struct AboutSettingsTab: View {
                 .buttonBorderShape(.capsule)
             }
             CardDivider()
-            // 发什么见 Core Telemetry 头注;引导欢迎页有同一个开关。升级上来的用户看到的蓝点走 NewSettingsMarks(1.12.0 新加)。
+            // 发什么见 Core Telemetry 头注;引导欢迎页有同一个开关。
             SettingsRow(
                 icon: "chart.bar",
                 title: L10n.t("发送匿名使用数据"),

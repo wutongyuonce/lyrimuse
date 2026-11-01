@@ -159,11 +159,30 @@ def split_notes(text: str):
     return en_lines, zh_lines
 
 
-CJKISH = re.compile(r"[^\x00-\x7f]")
+def _is_ideograph(c: str) -> bool:
+    return "\u4e00" <= c <= "\u9fff"
+
+
+def _is_cjk(c: str) -> bool:
+    return _is_ideograph(c) or "\u3000" <= c <= "\u303f" or "\uff00" <= c <= "\uffef"
+
+
+def _is_ascii_alnum(c: str) -> bool:
+    return c.isascii() and c.isalnum()
+
+
+def _needs_space(a: str, b: str) -> bool:
+    """接缝两侧的字符之间要不要补空格。跟 App 里 ReleaseNotes.join(Swift)同一条规则。"""
+    if _is_cjk(a) and _is_cjk(b):
+        return False
+    if not _is_cjk(a) and not _is_cjk(b):
+        return True
+    return (_is_ideograph(a) and _is_ascii_alnum(b)) or (_is_ascii_alnum(a) and _is_ideograph(b))
 
 
 def join_wrapped(parts: list[str]) -> str:
-    """合并硬换行：相邻两段的接缝任一侧是非 ASCII（CJK/全角标点）就直接拼，否则补空格。"""
+    """合并硬换行：两侧都不是 CJK 补空格；都是 CJK 直接拼；一侧是 CJK 时，汉字挨着英文字母或数字补空格
+    （「下发」+「DNS」→「下发 DNS」），挨着标点直接拼。"""
     out = ""
     for p in parts:
         p = p.strip()
@@ -172,10 +191,10 @@ def join_wrapped(parts: list[str]) -> str:
         if not out:
             out = p
             continue
-        if CJKISH.match(out[-1]) or CJKISH.match(p[0]):
-            out += p
-        else:
+        if _needs_space(out[-1], p[0]):
             out += " " + p
+        else:
+            out += p
     return out
 
 

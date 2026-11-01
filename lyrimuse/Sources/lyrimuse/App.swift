@@ -60,6 +60,12 @@ struct LyrimuseApp: App {
         }
         .defaultSize(width: 860, height: 640)
         .commandsRemoved()
+        // 「本次更新」卡片:面板顶部「已更新到 X」、右键菜单「查看本次更新…」和深链 whats-new 开它(见 WhatsNewWindow 头注)。
+        Window(String(format: L10n.t("%@ 更新内容"), SparkleUpdaterManager.appVersionString), id: WhatsNewWindow.sceneID) {
+            WhatsNewWindow()
+        }
+        .windowResizability(.contentSize)
+        .commandsRemoved()
         // 正经的标题栏窗口(不是悬浮歌词/灵动岛那种无边框浮层),展示完整歌词并跟随
         // 播放自动滚动——见 UI/LyricsWindowView.swift 顶部注释。不加
         // .windowResizability:跟"歌词管理"这个 Window 一样,让它跟着默认的
