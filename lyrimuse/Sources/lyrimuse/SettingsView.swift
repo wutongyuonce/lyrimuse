@@ -3275,6 +3275,7 @@ private struct AppearanceSettingsTab: View {
                 summary: SettingsToggleSummary.text([
                     (title: L10n.t("悬停时淡化"), isOn: settings.lyricsWindowMiniFadeOnHover),
                     (title: L10n.t("暂停时隐藏"), isOn: settings.lyricsWindowMiniHideWhenNotPlaying),
+                    (title: L10n.t("纯音乐/无歌词时隐藏"), isOn: settings.lyricsWindowMiniHideWhenNoLyrics),
                     (title: L10n.t("全屏时隐藏"), isOn: settings.lyricsWindowMiniHideInFullScreen),
                 ]))
         case .layout:
@@ -3411,6 +3412,9 @@ private struct AppearanceSettingsTab: View {
             SettingsToggleTile(icon: "pause.circle", title: L10n.t("暂停时隐藏"),
                                help: L10n.t("迷你尺寸下，暂停或未播放时隐藏，开始播放后重新显示"),
                                isOn: $settings.lyricsWindowMiniHideWhenNotPlaying)
+            SettingsToggleTile(icon: "text.badge.xmark", title: L10n.t("纯音乐/无歌词时隐藏"),
+                               help: L10n.t("迷你尺寸下，搜索确认无歌词后才隐藏，搜索期间照常显示"),
+                               isOn: $settings.lyricsWindowMiniHideWhenNoLyrics)
             SettingsToggleTile(icon: "arrow.up.left.and.arrow.down.right", title: L10n.t("全屏时隐藏"),
                                help: L10n.t("迷你尺寸下，所在屏幕有 App 全屏时隐藏"),
                                isOn: $settings.lyricsWindowMiniHideInFullScreen)
@@ -4692,6 +4696,7 @@ enum LyricsWindowStyleDefaults {
             s.lyricsWindowMiniFadeClickThrough = false
             s.lyricsWindowMiniHideWhenNotPlaying = false
             s.lyricsWindowMiniHideInFullScreen = false
+            s.lyricsWindowMiniHideWhenNoLyrics = false
             s.lyricsWindowMiniLyricsKaraoke = true
             s.lyricsWindowMiniFontWeight = .bold
             s.lyricsWindowMiniKaraokeFill = .text

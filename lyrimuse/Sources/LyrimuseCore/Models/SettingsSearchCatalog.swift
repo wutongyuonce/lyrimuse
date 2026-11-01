@@ -113,7 +113,7 @@ public enum SettingsSearchCatalog {
     /// 「行为」「顶部信息」两组也只在迷你装配。设置页加了这类行要来这里登记。
     public static let lyricsWindowMiniOnlyTitles: Set<String> = [
         "字号", "歌词布局", "长句处理", "悬停时淡化", "淡化时点按穿透", "暂停时隐藏",
-        "全屏时隐藏", "歌名", "歌手", "专辑", "封面", "时间", "宽度", "高度", "进度条",
+        "纯音乐/无歌词时隐藏", "全屏时隐藏", "歌名", "歌手", "专辑", "封面", "时间", "宽度", "高度", "进度条",
     ]
     /// 只在完整预览下才有的行:「封面」那一组、「布局」里的对齐方式、「文字」里的 HDR 高亮、「背景」里的 Spotify Canvas。
     public static let lyricsWindowFullOnlyTitles: Set<String> = ["动态封面", "动态封面缓存", "对齐方式", "HDR 高亮", "Spotify Canvas"]
@@ -592,6 +592,8 @@ public enum SettingsSearchCatalog {
                      kw: ["穿透", "点击穿透", "透明", "点不到", "下面的窗口", "option", "迷你"], group: "行为"),
         // 跟悬浮歌词、灵动岛那两条同名、不同段,各自跳到自己那一段。
         lyricsWindow("暂停时隐藏", kw: ["自动隐藏", "暂停", "没在播放", "迷你"], group: "行为"),
+        lyricsWindow("纯音乐/无歌词时隐藏", kw: ["自动隐藏", "纯音乐", "无歌词", "没有歌词", "伴奏", "instrumental", "迷你"],
+                     group: "行为"),
         lyricsWindow("全屏时隐藏", kw: ["全屏", "隐藏", "自动隐藏", "遮挡", "看视频", "fullscreen", "迷你"], group: "行为"),
         lyricsWindow("卡拉OK效果", kw: ["逐字", "染色", "karaoke", "迷你", "完整"], group: "颜色"),
         // 跟悬浮歌词那条「字体」同名、不同段:搜「字体」会同时列出两处,各自跳到自己那一段。

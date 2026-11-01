@@ -1656,14 +1656,14 @@
             "de": "Bei Instrumentals und Titeln ohne Liedtext ausblenden"
           },
           "desc": {
-            "en": "When a song is instrumental, or the search is done and found no lyrics, floating lyrics can hide, and the notch and the Touch Bar can fold their lyric row away. Nothing hides while the search is still running. Each has its own switch.",
-            "zh-Hans": "当前歌曲为纯音乐，或搜索确认无歌词时，悬浮歌词可隐藏，灵动岛和触控栏可收起歌词行；搜索期间照常显示。三处各有独立开关。",
-            "zh-Hant": "目前歌曲為純音樂，或搜尋確認無歌詞時，浮動歌詞可隱藏，動態島和觸控列可收起歌詞行；搜尋期間照常顯示。三處各有獨立開關。",
-            "ja": "再生中の曲がインストゥルメンタルの場合や、検索の結果歌詞がないと確定した場合、フローティング歌詞は非表示に、ノッチとTouch Barは歌詞の行を折りたたむことができます。検索中は通常どおり表示されます。3か所それぞれ個別にオン/オフできます。",
-            "ko": "현재 노래가 연주곡이거나 검색 결과 가사가 없다고 확인되면 플로팅 가사는 숨길 수 있고, 노치와 Touch Bar는 가사 행을 접을 수 있습니다. 검색하는 동안에는 평소처럼 표시합니다. 세 곳 모두 따로 켜고 끌 수 있습니다.",
-            "es": "Si la canción es instrumental, o la búsqueda confirma que no hay letra, la letra flotante puede ocultarse y el notch y la Touch Bar pueden contraer su fila de letra; mientras se busca, se muestra como siempre. Cada uno tiene su propio interruptor.",
-            "fr": "Quand un morceau est instrumental, ou que la recherche est terminée sans trouver de paroles, les paroles flottantes peuvent se masquer, et l’encoche et la Touch Bar peuvent replier leur ligne de paroles. Rien ne se masque tant que la recherche est en cours. Chacune a sa propre option.",
-            "de": "Ist ein Titel instrumental oder hat die Suche keinen Liedtext gefunden, kann sich der schwebende Text ausblenden, und Notch und Touch Bar können ihre Textzeile einklappen. Solange die Suche läuft, wird nichts ausgeblendet. Jede Anzeige hat einen eigenen Schalter."
+            "en": "When a song is instrumental, or the search is done and found no lyrics, floating lyrics and the mini lyrics window can hide, and the notch and the Touch Bar can fold their lyric row away. Nothing hides while the search is still running. Each has its own switch.",
+            "zh-Hans": "当前歌曲为纯音乐，或搜索确认无歌词时，悬浮歌词和迷你歌词窗口可隐藏，灵动岛和触控栏可收起歌词行；搜索期间照常显示。四处各有独立开关。",
+            "zh-Hant": "目前歌曲為純音樂，或搜尋確認無歌詞時，浮動歌詞和迷你歌詞視窗可隱藏，動態島和觸控列可收起歌詞行；搜尋期間照常顯示。四處各有獨立開關。",
+            "ja": "再生中の曲がインストゥルメンタルの場合や、検索の結果歌詞がないと確定した場合、フローティング歌詞とミニ歌詞ウインドウは非表示に、ノッチとTouch Barは歌詞の行を折りたたむことができます。検索中は通常どおり表示されます。4か所それぞれ個別にオン/オフできます。",
+            "ko": "현재 노래가 연주곡이거나 검색 결과 가사가 없다고 확인되면 플로팅 가사와 미니 가사 윈도우는 숨길 수 있고, 노치와 Touch Bar는 가사 행을 접을 수 있습니다. 검색하는 동안에는 평소처럼 표시합니다. 네 곳 모두 따로 켜고 끌 수 있습니다.",
+            "es": "Si la canción es instrumental, o la búsqueda confirma que no hay letra, la letra flotante y la ventana de letra mini pueden ocultarse y el notch y la Touch Bar pueden contraer su fila de letra; mientras se busca, se muestra como siempre. Cada uno tiene su propio interruptor.",
+            "fr": "Quand un morceau est instrumental, ou que la recherche est terminée sans trouver de paroles, les paroles flottantes et la fenêtre des paroles mini peuvent se masquer, et l’encoche et la Touch Bar peuvent replier leur ligne de paroles. Rien ne se masque tant que la recherche est en cours. Chacune a sa propre option.",
+            "de": "Ist ein Titel instrumental oder hat die Suche keinen Liedtext gefunden, können sich der schwebende Text und das Mini-Liedtextfenster ausblenden, und Notch und Touch Bar können ihre Textzeile einklappen. Solange die Suche läuft, wird nichts ausgeblendet. Jede Anzeige hat einen eigenen Schalter."
           },
           "default": "off",
           "check": {
@@ -1673,6 +1673,12 @@
             [
               "歌词显示",
               "悬浮歌词",
+              "行为",
+              "纯音乐/无歌词时隐藏"
+            ],
+            [
+              "歌词显示",
+              "歌词窗口",
               "行为",
               "纯音乐/无歌词时隐藏"
             ],

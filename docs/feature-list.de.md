@@ -476,10 +476,11 @@ Schwebender Text und Notch verschwinden bei Pause oder Leerlauf; die Notch kann 
 
 ### Bei Instrumentals und Titeln ohne Liedtext ausblenden
 
-Ist ein Titel instrumental oder hat die Suche keinen Liedtext gefunden, kann sich der schwebende Text ausblenden, und Notch und Touch Bar können ihre Textzeile einklappen. Solange die Suche läuft, wird nichts ausgeblendet. Jede Anzeige hat einen eigenen Schalter.
+Ist ein Titel instrumental oder hat die Suche keinen Liedtext gefunden, können sich der schwebende Text und das Mini-Liedtextfenster ausblenden, und Notch und Touch Bar können ihre Textzeile einklappen. Solange die Suche läuft, wird nichts ausgeblendet. Jede Anzeige hat einen eigenen Schalter.
 
 - Standardmäßig aus
 - Einstellungen: Liedtext-Anzeige › Schwebender Text › Verhalten › Bei Instrumental & ohne Text ausblenden
+- Einstellungen: Liedtext-Anzeige › Liedtextfenster › Verhalten › Bei Instrumental & ohne Text ausblenden
 - Einstellungen: Liedtext-Anzeige › Notch › Verhalten › Bei Instrumental & ohne Text einklappen
 - Einstellungen: Liedtext-Anzeige › Touch Bar › Verhalten › Bei Instrumental & ohne Text einklappen
 
@@ -886,7 +887,7 @@ Sendet höchstens einmal täglich Version, macOS, aktivierte Funktionen und Abst
 
 ## Alle Einstellungen
 
-Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 304. Gib einen Namen in das Suchfeld oben in der Seitenleiste der Einstellungen ein, um direkt dorthin zu springen.
+Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 305. Gib einen Namen in das Suchfeld oben in der Seitenleiste der Einstellungen ein, um direkt dorthin zu springen.
 
 ### Liedtext › Quelle
 
@@ -1202,6 +1203,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 304. Gib einen N
 - **Beim Überfahren abblenden** (nur Mini)
 - **Verblasst durchklickbar** (nur Mini): Im verblassten Zustand gehen Klicks an das Fenster darunter. Halte ⌥ gedrückt, um es deckend zu machen und zu bedienen
 - **Bei Pause ausblenden** (nur Mini)
+- **Bei Instrumental & ohne Text ausblenden** (nur Mini)
 - **Im Vollbild ausblenden** (nur Mini)
 
 ### Liedtext-Anzeige › Liedtextfenster › Farbe

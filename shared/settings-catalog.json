@@ -1654,6 +1654,16 @@
         "歌词窗口",
         "行为"
       ],
+      "title" : "纯音乐/无歌词时隐藏"
+    },
+    {
+      "dest" : "tab:appearance",
+      "lyricsWindowMini" : true,
+      "path" : [
+        "歌词显示",
+        "歌词窗口",
+        "行为"
+      ],
       "title" : "全屏时隐藏"
     },
     {

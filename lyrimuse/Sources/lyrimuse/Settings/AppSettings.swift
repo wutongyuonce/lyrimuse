@@ -498,6 +498,7 @@ final class AppSettings: ObservableObject {
         static let lyricsWindowMiniFadeClickThrough = "np:lyricsWindowMiniFadeClickThrough"
         static let lyricsWindowMiniHideWhenNotPlaying = "np:lyricsWindowMiniHideWhenNotPlaying"
         static let lyricsWindowMiniHideInFullScreen = "np:lyricsWindowMiniHideInFullScreen"
+        static let lyricsWindowMiniHideWhenNoLyrics = "np:lyricsWindowMiniHideWhenNoLyrics"
         static let lyricsWindowTextColorMode = "np:lyricsWindowTextColorMode"
         static let lyricsWindowTextColorHex = "np:lyricsWindowTextColorHex"
         static let lyricsWindowMiniTextColorMode = "np:lyricsWindowMiniTextColorMode"
@@ -1882,6 +1883,10 @@ final class AppSettings: ObservableObject {
     @Published var lyricsWindowMiniHideInFullScreen: Bool {
         didSet { defaults.set(lyricsWindowMiniHideInFullScreen, forKey: Keys.lyricsWindowMiniHideInFullScreen) }
     }
+    /// 迷你窗「纯音乐/无歌词时隐藏」(07 章决策 190),默认关;判据同悬浮歌词那颗 `hideWhenNoLyrics`,开关各管各的。
+    @Published var lyricsWindowMiniHideWhenNoLyrics: Bool {
+        didSet { defaults.set(lyricsWindowMiniHideWhenNoLyrics, forKey: Keys.lyricsWindowMiniHideWhenNoLyrics) }
+    }
     /// 歌词文字色怎么定(完整 / 迷你各一套,同这一族其余外观设置)。判据与边界见
     /// `LyricsWindowTextColorMode`;`.custom` 档才读下面那个 hex。
     @Published var lyricsWindowTextColorMode: LyricsWindowTextColorMode {
@@ -2838,6 +2843,8 @@ final class AppSettings: ObservableObject {
             (defaults.object(forKey: Keys.lyricsWindowMiniHideWhenNotPlaying) as? Bool) ?? false
         lyricsWindowMiniHideInFullScreen =
             (defaults.object(forKey: Keys.lyricsWindowMiniHideInFullScreen) as? Bool) ?? false
+        lyricsWindowMiniHideWhenNoLyrics =
+            (defaults.object(forKey: Keys.lyricsWindowMiniHideWhenNoLyrics) as? Bool) ?? false
         lyricsWindowTextColorMode = defaults.string(forKey: Keys.lyricsWindowTextColorMode)
             .flatMap(LyricsWindowTextColorMode.init(rawValue:)) ?? .auto
         lyricsWindowTextColorHex = defaults.string(forKey: Keys.lyricsWindowTextColorHex)

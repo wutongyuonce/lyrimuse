@@ -147935,6 +147935,59 @@
           }
         }
       }
+    },
+    "迷你尺寸下，搜索确认无歌词后才隐藏，搜索期间照常显示" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Mini-Modus erst ausgeblendet, wenn die Suche keinen Liedtext bestätigt; während der Suche sichtbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In mini size, hides only once the search confirms there are no lyrics; stays visible while searching"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En tamaño mini, solo se oculta cuando la búsqueda confirma que no hay letra; sigue visible mientras busca"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En taille Mini, se masque seulement quand la recherche confirme l’absence de paroles ; reste visible pendant la recherche"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ミニサイズでは、検索で歌詞がないと確認できたときだけ非表示にします。検索中は通常どおり表示します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미니 크기에서는 검색 결과 가사가 없다고 확인된 후에만 가리며, 검색하는 동안에는 그대로 표시합니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "迷你尺寸下，搜索确认无歌词后才隐藏，搜索期间照常显示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "迷你尺寸下，搜尋確認無歌詞後才隱藏，搜尋期間照常顯示"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

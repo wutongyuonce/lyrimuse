@@ -476,10 +476,11 @@ En pausa o sin reproducción, la letra flotante y el notch se ocultan; el notch 
 
 ### Ocultar o contraer en instrumentales y sin letra
 
-Si la canción es instrumental, o la búsqueda confirma que no hay letra, la letra flotante puede ocultarse y el notch y la Touch Bar pueden contraer su fila de letra; mientras se busca, se muestra como siempre. Cada uno tiene su propio interruptor.
+Si la canción es instrumental, o la búsqueda confirma que no hay letra, la letra flotante y la ventana de letra mini pueden ocultarse y el notch y la Touch Bar pueden contraer su fila de letra; mientras se busca, se muestra como siempre. Cada uno tiene su propio interruptor.
 
 - Desactivada por omisión
 - Ajustes: Mostrar letra › Letra flotante › Comportamiento › Ocultar en instrumentales y sin letra
+- Ajustes: Mostrar letra › Ventana de letra › Comportamiento › Ocultar en instrumentales y sin letra
 - Ajustes: Mostrar letra › Notch › Comportamiento › Contraer fila de letra en instrumentales y sin letra
 - Ajustes: Mostrar letra › Touch Bar › Comportamiento › Contraer en instrumentales y sin letra
 
@@ -886,7 +887,7 @@ Como máximo una vez al día, envía al servidor del propio autor la versión, e
 
 ## Todos los ajustes
 
-Todos los ajustes de la ventana Ajustes, según dónde están: 304 en total. Escribe un nombre en el campo de búsqueda de la parte superior de la barra lateral de Ajustes para ir directamente a él.
+Todos los ajustes de la ventana Ajustes, según dónde están: 305 en total. Escribe un nombre en el campo de búsqueda de la parte superior de la barra lateral de Ajustes para ir directamente a él.
 
 ### Letra › Fuente
 
@@ -1202,6 +1203,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 304 en total. Esc
 - **Atenuar al pasar el puntero** (solo tamaño mini)
 - **Dejar pasar clics al atenuarse** (solo tamaño mini): Al atenuarse, los clics pasan a la ventana de abajo. Mantén pulsada ⌥ para volverla opaca e interactuar
 - **Ocultar en pausa** (solo tamaño mini)
+- **Ocultar en instrumentales y sin letra** (solo tamaño mini)
 - **Ocultar en pantalla completa** (solo tamaño mini)
 
 ### Mostrar letra › Ventana de letra › Color

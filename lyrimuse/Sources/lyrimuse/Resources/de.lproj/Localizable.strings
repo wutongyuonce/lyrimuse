@@ -2684,6 +2684,7 @@
 "连续混音版，与原版编排不同" = "Durchgehender Mix, anders arrangiert als das Original";
 "迷你尺寸" = "Mini";
 "迷你尺寸下，所在屏幕有 App 全屏时隐藏" = "Im Mini-Modus ausgeblendet, solange eine App auf diesem Display im Vollbild ist";
+"迷你尺寸下，搜索确认无歌词后才隐藏，搜索期间照常显示" = "Im Mini-Modus erst ausgeblendet, wenn die Suche keinen Liedtext bestätigt; während der Suche sichtbar";
 "迷你尺寸下，暂停或未播放时隐藏，开始播放后重新显示" = "Im Mini-Modus bei Pause oder ohne Wiedergabe ausgeblendet, bei Wiedergabe wieder sichtbar";
 "迷你尺寸中一行显示不下时换行或滚动" = "Ob lange Zeilen in der Mini-Größe umbrechen oder scrollen";
 "迷你尺寸仅显示当前句、显示当前句与下一句，或与完整尺寸相同整页滚动" = "Ob die Mini-Größe nur die aktuelle Zeile, die aktuelle und nächste Zeile oder wie die Vollgröße eine scrollende Seite zeigt";

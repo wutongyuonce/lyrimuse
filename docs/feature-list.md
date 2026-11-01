@@ -476,10 +476,11 @@ Floating lyrics and the notch disappear while paused or idle; the notch can inst
 
 ### Hide for instrumentals and songs without lyrics
 
-When a song is instrumental, or the search is done and found no lyrics, floating lyrics can hide, and the notch and the Touch Bar can fold their lyric row away. Nothing hides while the search is still running. Each has its own switch.
+When a song is instrumental, or the search is done and found no lyrics, floating lyrics and the mini lyrics window can hide, and the notch and the Touch Bar can fold their lyric row away. Nothing hides while the search is still running. Each has its own switch.
 
 - Off by default
 - Settings: Lyrics Display › Floating Lyrics › Behavior › Hide for Instrumentals & No Lyrics
+- Settings: Lyrics Display › Lyrics Window › Behavior › Hide for Instrumentals & No Lyrics
 - Settings: Lyrics Display › Notch › Behavior › Collapse Lyric Row for Instrumentals & No Lyrics
 - Settings: Lyrics Display › Touch Bar › Behavior › Collapse for Instrumentals & No Lyrics
 
@@ -886,7 +887,7 @@ At most once a day, sends the version, macOS, which features are on and crash su
 
 ## Every setting
 
-Every setting in the Settings window, by where it lives: 304 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
+Every setting in the Settings window, by where it lives: 305 in all. Type a name into the search field at the top of the Settings sidebar to jump straight to it.
 
 ### Lyrics › Source
 
@@ -1202,6 +1203,7 @@ Every setting in the Settings window, by where it lives: 304 in all. Type a name
 - **Fade on Hover** (mini size only)
 - **Click Through While Faded** (mini size only): While faded, clicks pass through to the window below. Hold ⌥ to make it opaque and interact with it
 - **Hide When Paused** (mini size only)
+- **Hide for Instrumentals & No Lyrics** (mini size only)
 - **Hide in Full Screen** (mini size only)
 
 ### Lyrics Display › Lyrics Window › Color
