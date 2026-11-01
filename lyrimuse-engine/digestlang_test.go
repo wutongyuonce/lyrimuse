@@ -42,7 +42,7 @@ func TestDigestWordsMatchShared(t *testing.T) {
 }
 
 func TestParseDigestLang(t *testing.T) {
-	for in, want := range map[string]digestLang{"": digestLangHans, "zh-hans": digestLangHans, " ZH-HANT ": digestLangHant, "en": digestLangEn, "ja": digestLangJa, "ko": digestLangKo, "es": digestLangEs, "fr": digestLangFr, "de": digestLangHans} {
+	for in, want := range map[string]digestLang{"": digestLangHans, "zh-hans": digestLangHans, " ZH-HANT ": digestLangHant, "en": digestLangEn, "ja": digestLangJa, "ko": digestLangKo, "es": digestLangEs, "fr": digestLangFr, "de": digestLangDe, "pl": digestLangHans} {
 		if got := parseDigestLang(in); got != want {
 			t.Errorf("parseDigestLang(%q) = %q, want %q", in, got, want)
 		}
@@ -133,6 +133,19 @@ func TestDigestReportInOtherLanguages(t *testing.T) {
 	if got := []string{w.count("plays", 0), w.count("plays", 1), w.count("plays", 2)}; strings.Join(got, "|") != "0 écoute|1 écoute|2 écoutes" {
 		t.Errorf("法语单复数: %q", got)
 	}
+
+	// 德语:月名取表里的 month_names,0 用复数。
+	useDigestFeatures(t, featureFlags{DigestTopN: 2, ReportLanguage: digestLangDe})
+	w = dw()
+	if got := calendarDigestTitle(w, calendarDigestMonthly, now); got != "📅 Hörrückblick Oktober 2026" {
+		t.Errorf("德语月报标题: %q", got)
+	}
+	if got := calendarDigestPeriod(calendarDigestMonthly, now, now, false).prevLabel; got != "im September" {
+		t.Errorf("德语上一期: %q", got)
+	}
+	if got := []string{w.count("plays", 0), w.count("plays", 1), w.count("plays", 2)}; strings.Join(got, "|") != "0 Wiedergaben|1 Wiedergabe|2 Wiedergaben" {
+		t.Errorf("德语单复数: %q", got)
+	}
 }
 
 // 切成英文以后推的报告:标题是英文,推送记录里认「同一期」的键仍是简体标题,同一期再推一次认得出已经推过。
@@ -217,7 +230,7 @@ func TestDigestReportLangSample(t *testing.T) {
 	s := loadNotifyPreviewSample(t)
 	path := filepath.Join("..", "shared", "testdata", "notify", "report-lang.json")
 	var got []reportLangCase
-	for _, lang := range []digestLang{digestLangHans, digestLangHant, digestLangEn, digestLangJa, digestLangKo, digestLangEs, digestLangFr} {
+	for _, lang := range []digestLang{digestLangHans, digestLangHant, digestLangEn, digestLangJa, digestLangKo, digestLangEs, digestLangFr, digestLangDe} {
 		for _, kind := range []string{"daily", "weekly"} {
 			for _, style := range []string{digestStyleFull, digestStyleBrief, digestStyleOverview} {
 				got = append(got, reportLangCaseFor(t, s, lang, kind, style, 3))

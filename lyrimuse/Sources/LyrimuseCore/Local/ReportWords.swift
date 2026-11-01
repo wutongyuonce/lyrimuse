@@ -3,7 +3,7 @@ import Foundation
 /// 听歌报告用哪种语言写:App 的界面语言(`L10n.current`:zh-hans / zh-hant / en),写进 features.json 的
 /// `report_language` 给引擎(digestlang.go)。认不得的按简体。
 public enum ReportLanguage: String, CaseIterable, Sendable {
-    case zhHans = "zh-hans", zhHant = "zh-hant", en, ja, ko, es, fr
+    case zhHans = "zh-hans", zhHant = "zh-hant", en, ja, ko, es, fr, de
 
     /// features.json 里的键名,同引擎 featureFlagsFile.ReportLanguage 的 json 标签。
     public static let featuresKey = "report_language"
@@ -409,6 +409,56 @@ public struct ReportWords: Sendable {
             "value_hm": "{h} h {m} min",
             "value_m": "{m} min",
             "zero_is_one": "1",
+        ],
+        .de: [
+            "brief_line": "{label}: {name} · {n}",
+            "col_albums": "Alben",
+            "col_artists": "Künstler",
+            "col_tracks": "Titel",
+            "colon": ":",
+            "compare": " (gegenüber {prev} {label}, {change})",
+            "cover": "Cover",
+            "date": "{d}.{m}.",
+            "duration_hm": " · etwa {h} Std. {m} Min.",
+            "duration_m": " · etwa {m} Min.",
+            "flat": "unverändert",
+            "footer": "Lyrimuse · Daten von {source}",
+            "head_albums": "Top-Alben",
+            "head_artists": "Top-Künstler",
+            "head_tracks": "Top-Titel",
+            "item": "{i}. {name} ({n})",
+            "keyword": "Hör",
+            "label_album": "Album",
+            "label_artist": "Künstler",
+            "label_track": "Titel",
+            "link": "Gesamte Rangliste auf {source}",
+            "month_names": "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember",
+            "more": " und mehr",
+            "most_played": "Am meisten gehört",
+            "name_sep": ", ",
+            "names_lead": ": ",
+            "new_artists": "{n} neue Künstler",
+            "new_artists_one": "{n} neuer Künstler",
+            "pair": "{artist} - {name}",
+            "plays": "{n} Wiedergaben",
+            "plays_one": "{n} Wiedergabe",
+            "plays_truncated": "Über {n} Wiedergaben (zu viele, nur die neuesten wurden gezählt)",
+            "preset_brief": "{summary}\nTop-Künstler: {top_artist}\nTop-Album: {top_album}\nTop-Titel: {top_track}\nNeue Künstler ({new_artists}): {new_artist_names}",
+            "preset_full": "{summary}\n\nTop-Künstler:\n{top_artists}\n\nTop-Alben:\n{top_albums}\n\nTop-Titel:\n{top_tracks}\n\nNeue Künstler ({new_artists}): {new_artist_names}",
+            "preset_overview": "{summary}\nNeue Künstler: {new_artists}",
+            "prev_month": "im {month_name}",
+            "prev_month_year": "im {month_name} {year}",
+            "prev_week": "in der Vorwoche",
+            "prev_year": "im Jahr {year}",
+            "title_day": "🎧 Hörbericht ({date})",
+            "title_month": "📅 Hörrückblick {month_name} {year}",
+            "title_sample": "🎧 Beispiel-Hörbericht",
+            "title_today": "🎧 Hörbericht von heute ({date})",
+            "title_week": "🎵 Hörrückblick der letzten Woche ({from} – {to})",
+            "title_year": "🏆 Hörrückblick {year}",
+            "title_yesterday": "🎧 Hörbericht von gestern ({date})",
+            "value_hm": "{h} Std. {m} Min.",
+            "value_m": "{m} Min.",
         ],
     ]
 }

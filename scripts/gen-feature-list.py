@@ -29,11 +29,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko", "es", "fr")
-LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어", "es": "Español", "fr": "Français"}
+LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko", "es", "fr", "de")
+LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어", "es": "Español", "fr": "Français", "de": "Deutsch"}
 DOC_FILES = {"en": "feature-list.md", "zh-Hans": "feature-list.zh-CN.md", "zh-Hant": "feature-list.zh-Hant.md",
              "ja": "feature-list.ja.md", "ko": "feature-list.ko.md", "es": "feature-list.es.md",
-             "fr": "feature-list.fr.md"}
+             "fr": "feature-list.fr.md", "de": "feature-list.de.md"}
 BRANDS = {"ListenBrainz", "Last.fm", "Discord"}
 
 CHROME = {
@@ -177,6 +177,26 @@ CHROME = {
         "sep": "\u00a0: ",
         "generated": "Généré par scripts/gen-feature-list.py à partir de shared/feature-list.json et shared/settings-catalog.json\u00a0; pour modifier la liste, modifiez ces fichiers.",
     },
+    "de": {
+        "title": "Lyrimuse-Funktionsliste",
+        "intro": "Diese Liste führt jede Funktion von Lyrimuse auf: was sie macht, wo sie in den Einstellungen liegt und ob sie nach der Installation ein- oder ausgeschaltet ist; am Ende stehen alle Einstellungen des Einstellungsfensters. Sie wird mit dem Code gepflegt und bei jeder Änderung aktualisiert.",
+        "toc": "Inhalt",
+        "off_title": "Aus, bis du sie einschaltest",
+        "off_intro": "Diese Funktionen bleiben nach der Installation aus. Schalte sie zuerst in den Einstellungen ein (manche brauchen zusätzlich ein Konto oder eine Berechtigung):",
+        "col_feature": "Funktion",
+        "col_where": "Wo einschalten",
+        "default_on": "Standardmäßig ein",
+        "default_off": "Standardmäßig aus",
+        "where": "Einstellungen",
+        "index_title": "Alle Einstellungen",
+        "index_intro": "Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt {n}. Gib einen Namen in das Suchfeld oben in der Seitenleiste der Einstellungen ein, um direkt dorthin zu springen.",
+        "settings": "Einstellungen",
+        "labs": "Labor",
+        "mini_only": " (nur Mini)",
+        "full_only": " (nur Vollgröße)",
+        "sep": ": ",
+        "generated": "Erzeugt von scripts/gen-feature-list.py aus shared/feature-list.json und shared/settings-catalog.json; um die Liste zu ändern, bearbeite diese Dateien.",
+    },
 }
 
 CALL_RE = re.compile(r"\b(SettingsRow|SettingsSubRow|SettingsCardHeader|SettingsChipToggle|SettingsToggleTile|SettingsControlCell)\(")
@@ -306,7 +326,7 @@ def load_model(root: Path = ROOT) -> dict:
             joined = ""
             for line in lines:
                 if joined:
-                    if lang in ("en", "ko", "es", "fr"):
+                    if lang in ("en", "ko", "es", "fr", "de"):
                         joined += " "
                     elif lang == "ja":
                         joined += "" if joined[-1] in "。：！？" else "。"
