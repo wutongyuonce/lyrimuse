@@ -451,8 +451,11 @@
 "从左到右" = "De izquierda a derecha";
 "从应用程序中选择…" = "Elegir de Aplicaciones…";
 "从待补交清单中移除此条（无法撤销）" = "Quitar de la cola de envíos pendientes (no se puede deshacer)";
+"从文件导入 · %@ 行" = "Importada de un archivo · %@ líneas";
+"从文件导入 · %@ 行#one" = "Importada de un archivo · %@ línea";
 "从文件导入…" = "Importar desde archivo…";
 "从暂停恢复播放时展开歌词；播放中切歌不展开，手动收起后保持收起" = "Muestra la letra al reanudar tras una pausa. Cambiar de canción durante la reproducción no la expande, y la letra que contraigas sigue contraída";
+"从本机文件导入，未参与评分；采用后不会被自动匹配替换" = "Importada de un archivo de este Mac, sin puntuar. Una vez aplicada, la coincidencia automática no la sustituirá";
 "从此句开始播放" = "Reproducir desde esta línea";
 "从自动备份恢复" = "Restaurar desde copia automática";
 "从资料库删除" = "Eliminar de la biblioteca";
@@ -942,12 +945,18 @@
 "密钥或地址有误" = "Secreto o URL incorrectos";
 "对齐方式" = "Alineación";
 "导入" = "Importar";
+"导入失败，请重试" = "No se pudo importar. Inténtalo de nuevo";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Error al importar: no es un archivo de fuente .ttf / .otf válido";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Error al importar: no se pudo leer el archivo seleccionado. Puede que no esté descargado en este Mac o que Lyrimuse no pueda leerlo";
 "导入失败：该文件不是 Lyrimuse 的设置备份，或已损坏。当前设置未更改" = "Error al importar: este archivo no es una copia de los ajustes de Lyrimuse o está dañado. Tus ajustes actuales no han cambiado";
 "导入字体…" = "Importar fuente…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Al importar se traen tus cuentas y todos tus ajustes personales; después Lyrimuse se reinicia";
 "导入并重启" = "Importar y reiniciar";
+"导入文件…" = "Importar archivo…";
+"导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importa un archivo de letra de este Mac (LRC, TTML, YRC, QRC, KRC o texto sin formato), o arrástralo a la ventana";
+"导入歌词文件…" = "Importar archivo de letra…";
+"导入的文件" = "Archivo importado";
+"导入的歌词" = "Letra importada";
 "导出…" = "Exportar…";
 "导出失败：%@" = "Error al exportar: %@";
 "导出时间 %1$@，来自 %2$@" = "Exportado el %1$@ desde %2$@";
@@ -1060,6 +1069,8 @@
 "已安装但未运行" = "Instalado pero no en ejecución";
 "已安装但未运行（上次退出码 %d）" = "Instalado pero no en ejecución (último código de salida %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ de %2$@ completadas";
+"已导入，另有 %@ 个文件未使用" = "Importada. No se usaron %@ archivos más";
+"已导入，另有 %@ 个文件未使用#one" = "Importada. No se usó %@ archivo más";
 "已导出的歌词文件将一并删除。再次播放这首歌曲时会重新匹配，结果可能不同" = "También se elimina su archivo de letra exportado. La canción se volverá a buscar la próxima vez que suene y el resultado puede variar";
 "已导出的歌词文件将一并删除，此操作无法撤销。再次播放这些歌曲时会重新匹配，结果可能不同" = "También se eliminan sus archivos de letra exportados y no se puede deshacer. Estas canciones se volverán a buscar la próxima vez que suenen y el resultado puede variar";
 "已导出的歌词文件将一并删除，此操作无法撤销；其中 %@ 条经过人工修正。再次播放这些歌曲时会重新匹配，结果可能不同" = "También se eliminan sus archivos de letra exportados y no se puede deshacer; %@ de ellas se editaron manualmente. Estas canciones se volverán a buscar la próxima vez que suenen y el resultado puede variar";
@@ -1459,6 +1470,7 @@
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "El archivo contiene las credenciales y claves de tus cuentas en texto sin cifrar. Guárdalo en un lugar seguro y no lo compartas. La biblioteca de letras se guarda como un segundo archivo con el mismo nombre; copia ambos al pasar a un Mac nuevo";
 "文件中尚无歌词，未保存" = "El archivo aún no tiene letra; no se guardó";
 "文件过大，不像是歌词，未保存" = "El archivo es demasiado grande para ser una letra; no se guardó";
+"文件过大，无法导入" = "El archivo es demasiado grande para importarlo";
 "文字" = "Texto";
 "文字一致" = "Mismo texto";
 "文字描边" = "Contorno del texto";
@@ -1507,6 +1519,7 @@
 "无法识别的链接" = "Enlace no reconocido";
 "无法读取 %@ 的歌词缓存" = "No se puede leer la caché de letras de %@";
 "无法读取 %@ 的歌词缓存，点按查看处理方法" = "No se puede leer la caché de letras de %@. Haz clic para ver qué hacer";
+"无法读取所选文件" = "No se pudo leer el archivo seleccionado";
 "无法读取此备份：可能未开启 iCloud Drive，或该文件夹尚未同步" = "No se puede leer esta copia. Puede que iCloud Drive esté desactivado o que la carpeta aún no se haya sincronizado";
 "无法读取该应用的标识，请选择其他应用" = "No se pudo leer el identificador de esta app. Prueba con otra";
 "无法读取该文件（需保存为 UTF-8 文本），未保存" = "No se pudo leer el archivo (guárdalo como texto UTF-8); no se guardó";
@@ -1695,6 +1708,7 @@
 "未知歌手" = "Artista desconocido";
 "未知错误" = "sin motivo indicado";
 "未能获取最近记录" = "No se pudieron cargar los scrobbles recientes";
+"未能识别歌词内容" = "No se reconoció ninguna letra en el archivo";
 "未能跳过此广告" = "No se pudo omitir este anuncio";
 "未获取" = "No cargado";
 "未获得「辅助功能」权限，可能会盖住 App 菜单" = "Sin el permiso de Accesibilidad, la letra puede tapar los menús de las apps";
@@ -1758,6 +1772,7 @@
 "来自网易云音乐" = "De NetEase Cloud Music";
 "来自酷我音乐" = "De Kuwo Music";
 "来自酷狗音乐" = "De Kugou Music";
+"松开即可导入歌词文件" = "Suelta para importar el archivo de letra";
 "查找更优歌词" = "Buscar una letra mejor";
 "查看、编辑和重新搜索已缓存的歌词" = "Ver, editar y volver a buscar letras en caché";
 "查看「%@」" = "Mostrar «%@»";
@@ -2146,6 +2161,7 @@
 "社区人工校对的逐字歌词库" = "Letras palabra por palabra revisadas a mano por su comunidad";
 "秒" = "s";
 "移除" = "Quitar";
+"移除导入的歌词" = "Quitar la letra importada";
 "移除配对" = "Desvincular";
 "稍粗" = "Media";
 "窗口" = "Ventana";
@@ -2620,6 +2636,8 @@
 "选择左侧或表格中的其他条目，可与当前条目逐项对比" = "Selecciona otra entrada a la izquierda o en la tabla para compararla con la actual";
 "选择左侧的设置分类" = "Selecciona una categoría de ajustes a la izquierda";
 "选择播放器" = "Elegir reproductores";
+"选择本机的歌词文件，预览后再决定是否采用" = "Elige un archivo de letra de este Mac y previsualízalo antes de aplicarlo";
+"选择歌词文件，可同时选择同名的译文、读音文件" = "Elige un archivo de letra. También puedes seleccionar sus archivos de traducción y pronunciación con el mismo nombre";
 "选择歌词显示方式" = "Elige dónde aparece la letra";
 "选择用于播放此网站的浏览器" = "Elige el navegador que usas para este sitio";
 "选择要分享的句子" = "Elige las líneas que quieres compartir";

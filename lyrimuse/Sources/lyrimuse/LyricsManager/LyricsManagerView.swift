@@ -304,6 +304,8 @@ func sourceColor(_ source: String) -> Color {
     // 洛雪本地歌词(不是歌词源:用洛雪放歌时读它存下的那份原版,见 lyrimuse-engine/lxmusic.go)。品牌绿跟 QQ 音乐的 .green
     // 分不开,系统色也没有空位,取偏青的海绿。
     case "lxmusic": return Color(hue: 0.42, saturation: 0.55, brightness: 0.72)
+    // 用户导入的歌词文件(不是歌词源,见 lyrimuse-engine/importlyrics.go)。系统色都被占了,取偏蓝的石板灰,跟 localfile 的紫灰分得开。
+    case "import": return Color(hue: 0.6, saturation: 0.3, brightness: 0.62)
     default: return .secondary
     }
 }
@@ -356,6 +358,8 @@ func sourceDisplayName(_ source: String) -> String {
     case "localfile": return L10n.t("本地歌词文件")
     // 洛雪本地歌词——同 KKBOX,不在 LyricsSource 里,只在这份词确实来自洛雪存下的那份时显示。
     case "lxmusic": return L10n.t("洛雪音乐")
+    // 用户在「搜索候选歌词」里导入的文件。
+    case "import": return L10n.t("导入的文件")
     case "": return L10n.t("无来源")
     default: return source
     }
@@ -2133,6 +2137,13 @@ struct LyricsManagerView: View {
             album: summary.displayAlbum, durationSecs: summary.durationSecs))
     }
 
+    /// 「⋯」里的「导入歌词文件…」、把文件拖到详情页:开这首的「搜索歌词…」窗口,文件交给它导入(没给文件时窗口弹选文件框),
+    /// 在那边预览、采用。先放请求再开窗:窗口正开着别的歌时,换到这首才取走。
+    private func importLyricsFiles(_ urls: [URL], _ summary: EnrichCacheStore.Summary) {
+        AppActions.shared.requestLyricsImport(key: summary.key, urls: urls)
+        openSearchWindow(summary)
+    }
+
     private func openDecision(for key: String) {
         guard select(key) else { return }
         presentDecision(for: key)
@@ -3210,6 +3221,13 @@ struct LyricsManagerView: View {
     @ViewBuilder
     private func detailView(key: String, summary: EnrichCacheStore.Summary) -> some View {
         songPage(key: key, summary: summary)
+            // 歌词文件拖到详情页上:同「⋯」里的「导入歌词文件…」。编辑中、正在重新匹配时不收。
+            .dropDestination(for: URL.self) { urls, _ in
+                let files = urls.filter(\.isFileURL)
+                guard !files.isEmpty, editMode == .preview, rematchRunningKey == nil else { return false }
+                importLyricsFiles(files, summary)
+                return true
+            }
             // 详情页卸载再装回来(全选、多选之后又点回一首)时 onChange(of: key) 不触发,在这里收口:还是正在改的那首、
             // 又有没保存的改动,缓冲原样留着;换成了别的歌,loadDetail 会把上一首的编辑状态一起收掉。
             .onAppear {
@@ -3500,6 +3518,9 @@ struct LyricsManagerView: View {
                 .help(L10n.t("按纯音乐处理：不显示歌词，也不自动搜索；原有歌词将保留，取消标记即可恢复") + groupNote)
                 .disabled(editMode != .preview)
         }
+        Button(L10n.t("导入歌词文件…")) { importLyricsFiles([], summary) }
+            .disabled(rematchRunningKey != nil || editMode != .preview)
+            .help(L10n.t("选择本机的歌词文件，预览后再决定是否采用"))
         Button(L10n.t("拷贝歌名与歌手")) { copySongName(summary) }
         // 「同一首歌的其他写法」:这条写法有实体 id 才有(实体表开关关着、还没建过表时没有),见 18 章决策 28。
         if store.songMembership(forKey: summary.key) != nil {

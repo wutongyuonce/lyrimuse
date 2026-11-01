@@ -85,12 +85,13 @@ struct LyricsQuickSearchWindow: View {
                         // 都悄悄永久冻结这首歌。采纳要不要顺带冻结由 `manualPickLocksLyrics` 决定:关 = 之后的自动更新照常
                         // 调整这首歌、不限制源,开 = 定在这份歌词上不动。两种状态都不写 lyrics_source_choice(空串 = 显式
                         // 清掉),别加"记下选了哪个源、自愈只在该源内挑"的中间档:那是一条看不见的约束。直接编辑正文
-                        // (歌词管理的「保存修改」)永远置 manual_lyrics,不受这个开关影响。
+                        // (歌词管理的「保存修改」)永远置 manual_lyrics,不受这个开关影响;导入的文件同理,自动匹配搜不回它。
                         saved = await EnrichCacheStore.shared.saveEdit(
                             key: context.key,
                             lyrics: candidate.lyrics, tr: candidate.lyricsTr,
                             roma: candidate.lyricsRoma, yrc: candidate.lyricsYRC,
-                            source: candidate.source, markManual: AppSettings.shared.manualPickLocksLyrics,
+                            source: candidate.source,
+                            markManual: candidate.isImported || AppSettings.shared.manualPickLocksLyrics,
                             sourceChoice: "", fromManualPick: true, bg: candidate.lyricsBG, trLang: candidate.lyricsTrLang,
                             trFrom: candidate.lyricsTrFrom)
                     }

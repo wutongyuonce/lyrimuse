@@ -2,6 +2,7 @@ import AppKit
 import Combine
 import LyrimuseCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 // "联网搜索候选歌词"弹窗。左边一块浮起来的侧栏:查询词(歌名 / 歌手 / 专辑)、「重新搜索」和搜出来的
 // 候选(来源 + 分数 + 是否逐字);右边是选中候选的预览,"采用此候选"把内容交回调用方
@@ -131,6 +132,12 @@ struct LyricsSearchSheet: View {
     /// 「内容与其他候选相同」「不可用」两个折叠组展开了没有(LyricsCandidateGroups)。选中的那条落在收起的组里时自动展开。
     @State private var showsSameGroup = false
     @State private var showsExcludedGroup = false
+    /// 导入的歌词文件做成的那条候选(`importFiles`),摆在侧栏「导入的歌词」那一块。换歌时清掉,采用之后挪进「当前使用」。
+    @State private var importedCandidate: LyricsSearchService.Candidate?
+    /// 正在解析导入的文件(「导入文件…」按钮禁用)。
+    @State private var importing = false
+    /// 有文件拖到面板上方(画松手即导入的提示)。
+    @State private var importDropTargeted = false
 
     /// 一条候选在预览里要的东西,按候选内容和设置里开着读音的文字种类算一次。
     private struct PreviewRows {
@@ -576,7 +583,18 @@ struct LyricsSearchSheet: View {
             autoMatchLine = nil
             // 上一首那一轮还在跑也不挂在这一首上;按钮由 LyricsRematchActivity 挡着,等那一轮跑完。
             autoMatching = false
+            importedCandidate = nil
+            takePendingImport()
         }
+        .onAppear { takePendingImport() }
+        .onReceive(AppActions.shared.lyricsImportRequests) { takePendingImport() }
+        .dropDestination(for: URL.self) { urls, _ in
+            let files = urls.filter(\.isFileURL)
+            guard !files.isEmpty else { return false }
+            Task { await importFiles(files) }
+            return true
+        } isTargeted: { importDropTargeted = $0 }
+        .overlay { if importDropTargeted { importDropOverlay } }
         .onChange(of: currentSource) { _, value in
             host.source = value
             appliedSource = nil
@@ -630,6 +648,7 @@ struct LyricsSearchSheet: View {
                 .background(WindowDragHandle())
             queryCard
             searchActions
+            importedSection
             currentSection
             candidatesHeader
             candidatesSection
@@ -708,6 +727,14 @@ struct LyricsSearchSheet: View {
             .controlSize(.large)
             .settingsGlassButtons()
             .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+            Button { chooseImportFiles() } label: {
+                Label(L10n.t("导入文件…"), systemImage: "square.and.arrow.down")
+            }
+            .controlSize(.large)
+            .settingsGlassButtons()
+            .fixedSize()
+            .help(L10n.t("导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口"))
+            .disabled(importing)
             if isDirty {
                 Button(L10n.t("恢复原信息")) {
                     artist = originalArtist
@@ -746,6 +773,49 @@ struct LyricsSearchSheet: View {
         .frame(height: 24)
         .padding(.top, 6)
         .padding(.horizontal, 4)
+    }
+
+    /// 「导入的歌词」那一块:导入的文件做成的那条候选,摆在「当前使用」上面。右边的叉把它收掉。
+    @ViewBuilder
+    private var importedSection: some View {
+        if let imported = importedCandidate {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(L10n.t("导入的歌词"))
+                        .font(.headline)
+                    Spacer(minLength: 0)
+                    Button {
+                        importedCandidate = nil
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.secondary)
+                    .help(L10n.t("移除导入的歌词"))
+                    .accessibilityLabel(L10n.t("移除导入的歌词"))
+                }
+                .padding(.horizontal, 4)
+                candidateRow(imported)
+            }
+            .padding(.top, 6)
+        }
+    }
+
+    /// 文件拖到面板上方时盖在整张面板上的提示。
+    private var importDropOverlay: some View {
+        RoundedRectangle(cornerRadius: Self.panelCornerRadius, style: .continuous)
+            .strokeBorder(Color.accentColor, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
+            .background(Color.accentColor.opacity(0.08),
+                        in: RoundedRectangle(cornerRadius: Self.panelCornerRadius, style: .continuous))
+            .overlay {
+                Label(L10n.t("松开即可导入歌词文件"), systemImage: "square.and.arrow.down")
+                    .font(.title3.weight(.medium))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.regularMaterial, in: Capsule())
+            }
+            .padding(Self.panelInset)
+            .allowsHitTesting(false)
     }
 
     /// 「当前使用」那一块:这首现在用的那一版单独摆在候选表头上面,跟搜索结果分开。没有在用的歌词时整块不出。
@@ -886,6 +956,7 @@ struct LyricsSearchSheet: View {
     /// 侧栏的分组:「当前使用」那条,列表里正常的一组,两个折叠组(LyricsCandidateGroups)和它们展没展开。
     private struct SidebarLayout {
         var current: LyricsSearchService.Candidate?
+        var imported: LyricsSearchService.Candidate?
         var main: [LyricsSearchService.Candidate] = []
         var same: [LyricsSearchService.Candidate] = []
         var excluded: [LyricsSearchService.Candidate] = []
@@ -896,12 +967,13 @@ struct LyricsSearchSheet: View {
 
         /// 屏上看得见的,按屏上顺序。
         var visible: [LyricsSearchService.Candidate] {
-            (current.map { [$0] } ?? []) + main + (sameExpanded ? same : []) + (excludedExpanded ? excluded : [])
+            (imported.map { [$0] } ?? []) + (current.map { [$0] } ?? []) + main + (sameExpanded ? same : [])
+                + (excludedExpanded ? excluded : [])
         }
     }
 
     private var sidebarLayout: SidebarLayout {
-        var layout = SidebarLayout(current: currentShown)
+        var layout = SidebarLayout(current: currentShown, imported: importedCandidate)
         let groups = LyricsCandidateGroups.groups(
             candidates.map {
                 LyricsCandidateGroups.Traits(
@@ -917,14 +989,14 @@ struct LyricsSearchSheet: View {
             }
         }
         layout.sameExpanded = showsSameGroup
-        layout.excludedForced = layout.current == nil && layout.main.isEmpty && layout.same.isEmpty
+        layout.excludedForced = layout.current == nil && layout.imported == nil && layout.main.isEmpty && layout.same.isEmpty
         layout.excludedExpanded = showsExcludedGroup || layout.excludedForced
         return layout
     }
 
     /// 评分时被排除(分数 -1,`scoreTerms` 第一项是原因)。存着的那一版没有分数,不算。
     private static func isExcluded(_ c: LyricsSearchService.Candidate) -> Bool {
-        !c.isStored && (c.score < 0 || c.scoreTerms.first?.isRejection == true)
+        !c.isStored && !c.isImported && (c.score < 0 || c.scoreTerms.first?.isRejection == true)
     }
 
     /// 侧栏里看得见、能选的,按屏上的顺序:「当前使用」那条在前,搜索结果在后,收起的组不算。↑ / ↓ 换行按它。
@@ -936,7 +1008,8 @@ struct LyricsSearchSheet: View {
     /// 选中的是存着的那一版、而它已经换成搜到的同一份时,落到搜到的那一条上。
     private var previewedCandidate: LyricsSearchService.Candidate? {
         let current = currentShown
-        if let hit = ((current.map { [$0] } ?? []) + searchResults).first(where: { $0.id == selectedSource }) { return hit }
+        let candidates = (importedCandidate.map { [$0] } ?? []) + (current.map { [$0] } ?? []) + searchResults
+        if let hit = candidates.first(where: { $0.id == selectedSource }) { return hit }
         if selectedSource != nil, selectedSource == storedCandidate?.id, let current { return current }
         return shownCandidates.first
     }
@@ -1242,7 +1315,7 @@ struct LyricsSearchSheet: View {
             }
             // showsSource: false —— 这一处的来源标已经在上面的右上角了,别在标签排里再来一遍。
             characteristicBadges(c, source: c.source, showsSource: false, isCurrent: isCurrentCandidate(c),
-                                 duplicate: c.isStored ? nil : duplicates[c.source])
+                                 duplicate: c.isStored || c.isImported ? nil : duplicates[c.source])
         }
         .padding(.horizontal, 9)
         .padding(.vertical, 10)
@@ -1342,12 +1415,82 @@ struct LyricsSearchSheet: View {
             autoMatchLine = nil
             // 存进歌词时引擎顺带撤掉纯音乐标记(enrichedit.go 的 save_edit / save_plain_text)。
             instrumentalOverride = false
+            // 导入的那条挪进「当前使用」:宿主重读缓存之前先按刚存进去的这份摆着,宿主一重读就换成缓存里那一版。
+            if c.isImported {
+                var stored = c
+                stored.isStored = true
+                storedCandidate = stored
+                importedCandidate = nil
+                selectedSource = stored.id
+            }
         }
         if saved {
             let name = sourceDisplayName(c.source)
             showApplyFeedback(String(format: L10n.t("已采用 %@ 的歌词"), name), ok: true)
         } else {
             showApplyFeedback(L10n.t("保存失败，请重试"), ok: false)
+        }
+    }
+
+    /// 「导入文件…」:选歌词文件,可多选(同名的译文 `.tr.lrc`、读音 `.roma.lrc` 一起选上就一起配上)。
+    private func chooseImportFiles() {
+        guard !importing else { return }
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.allowedContentTypes = LyricsSearchService.importExtensions.compactMap { UTType(filenameExtension: $0) }
+        panel.prompt = L10n.t("导入")
+        panel.message = L10n.t("选择歌词文件，可同时选择同名的译文、读音文件")
+        guard panel.runModal() == .OK else { return }
+        let urls = panel.urls
+        Task { await importFiles(urls) }
+    }
+
+    /// 别处要这个窗口导入的文件(`AppActions.requestLyricsImport`):给的是这一首(或没指定哪一首)才取走,文件列表为空就弹选文件框。
+    private func takePendingImport() {
+        guard let pending = AppActions.shared.pendingLyricsImport else { return }
+        guard Date().timeIntervalSince(pending.at) < 60 else {
+            AppActions.shared.pendingLyricsImport = nil
+            return
+        }
+        guard pending.key == nil || pending.key == songKey else { return }
+        AppActions.shared.pendingLyricsImport = nil
+        if pending.urls.isEmpty {
+            // 不在视图更新的当口弹模态框。
+            DispatchQueue.main.async { chooseImportFiles() }
+        } else {
+            Task { await importFiles(pending.urls) }
+        }
+    }
+
+    /// 交引擎认格式、拆好,做成一条候选摆进「导入的歌词」并选中;没认出来在标题行说原因。等待期间换了歌就不摆。
+    private func importFiles(_ urls: [URL]) async {
+        guard !urls.isEmpty, !importing else { return }
+        let subject = subjectGeneration
+        importing = true
+        let result = await LyricsSearchService.shared.parseImportedFiles(urls)
+        importing = false
+        guard subject == subjectGeneration else { return }
+        guard let candidate = result.candidate else {
+            showApplyFeedback(Self.importErrorText(result.error ?? .unrecognized), ok: false)
+            return
+        }
+        importedCandidate = candidate
+        selectedSource = candidate.id
+        userPickedSource = true
+        if !result.ignored.isEmpty {
+            showApplyFeedback(String(format: L10n.plural("已导入，另有 %@ 个文件未使用", count: result.ignored.count),
+                                     "\(result.ignored.count)"), ok: true)
+        }
+    }
+
+    private static func importErrorText(_ error: LyricsSearchService.ImportError) -> String {
+        switch error {
+        case .empty, .unreadable: L10n.t("无法读取所选文件")
+        case .unrecognized: L10n.t("未能识别歌词内容")
+        case .tooLarge: L10n.t("文件过大，无法导入")
+        case .failed: L10n.t("导入失败，请重试")
         }
     }
 
@@ -1566,7 +1709,7 @@ struct LyricsSearchSheet: View {
             // 而这里永远只有一条候选,没有可对齐的对象;这一行的右上角又被「采用此候选」这颗主按钮占着,
             // 塞个胶囊进去只会跟它抢视线。
             characteristicBadges(c, source: c.source, showsSource: true, isCurrent: isCurrentCandidate(c),
-                                 duplicate: c.isStored ? nil : duplicates[c.source])
+                                 duplicate: c.isStored || c.isImported ? nil : duplicates[c.source])
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
             if c.isPlainTextOnly {
@@ -1910,6 +2053,8 @@ struct LyricsSearchSheet: View {
     private func scoreLine(_ c: LyricsSearchService.Candidate, font: Font) -> some View {
         let label = if c.isStored {
             Text(String(format: L10n.plural("已保存的版本 · %@ 行", count: c.lineCount), "\(c.lineCount)"))
+        } else if c.isImported {
+            Text(String(format: L10n.plural("从文件导入 · %@ 行", count: c.lineCount), "\(c.lineCount)"))
         } else if Self.isExcluded(c), let reason = c.scoreTerms.first, reason.isRejection {
             Text(String(format: L10n.t("不可用：%@"), reason.label)).foregroundStyle(.orange)
         } else {
@@ -1918,6 +2063,8 @@ struct LyricsSearchSheet: View {
         Group {
             if c.isStored {
                 QuickHelpLabel(text: L10n.t("这首歌曲当前使用的歌词，读取自本机缓存，未参与本轮评分。搜索结果中出现相同歌词时以该结果替代")) { label }
+            } else if c.isImported {
+                QuickHelpLabel(text: L10n.t("从本机文件导入，未参与评分；采用后不会被自动匹配替换")) { label }
             } else if c.scoreTerms.isEmpty {
                 // 没有可摊开的明细就别摆一个点了什么都没有的问号。
                 label

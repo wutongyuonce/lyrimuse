@@ -356,6 +356,8 @@ final class LyricsSearchService {
         var durationBorrowedFrom = ""
         /// 不是这一轮搜到的,是这首歌现在缓存里存着的那一版(搜索面板一打开就先摆出来,没有分数)。
         var isStored = false
+        /// 从本机文件导入的(`parseImportedFiles`),没有分数。
+        var isImported: Bool { source == LyricsSearchService.importSource && !isStored }
 
         static func countLines(of lyrics: String) -> Int {
             lyrics.replacingOccurrences(of: "\r\n", with: "\n")
@@ -827,5 +829,89 @@ extension LyricsSearchService {
         if hits.count > shown.count {
             logger.notice("search-lyrics: \(hits.count - shown.count, privacy: .public) more lines of the same signal not logged (cap 12 per run)")
         }
+    }
+}
+
+// MARK: - 导入歌词文件
+
+extension LyricsSearchService {
+    /// 导入的歌词文件做成的候选的来源名,跟引擎 `lyricsImportSource` 一致。
+    static let importSource = "import"
+    /// 单个文件最多读这么多字节,跟引擎 `lyricsImportMaxBytes` 一致;多读 1 字节,超了由引擎报 too-large。
+    static let importMaxBytes = 4 << 20
+    /// 选文件、拖文件认的后缀,跟引擎 `importLyricsKindOf` 认的一致。
+    static let importExtensions = ["lrc", "lrcx", "yrc", "ttml", "xml", "qrc", "krc", "txt"]
+
+    struct ImportResult {
+        let candidate: Candidate?
+        /// 用来做正文的那份是什么格式(lrc / elrc / yrc / ttml / qrc / krc / text)。
+        let format: String
+        /// 没用上的文件名(同时给了几份正文时只用一份)。
+        let ignored: [String]
+        let error: ImportError?
+    }
+
+    enum ImportError: String {
+        case empty
+        case unrecognized
+        case tooLarge = "too-large"
+        /// 一个文件都读不出来(没权限、是文件夹)。
+        case unreadable
+        /// 引擎没跑起来、超时或输出读不懂。
+        case failed
+    }
+
+    private struct ImportRequest: Encodable {
+        struct File: Encodable {
+            let name: String
+            let data: Data
+        }
+        let files: [File]
+    }
+
+    private struct RawImportResult: Decodable {
+        let candidate: RawCandidate?
+        let format: String?
+        let ignored: [String]?
+        let error: String?
+    }
+
+    /// 把选中 / 拖进来的歌词文件交给引擎 `parse-lyrics-files` 认格式、拆出正文 / 译文 / 读音 / 逐字,做成一条来源为
+    /// `importSource` 的候选(没有分数)。只读文件,不碰缓存。文件内容经临时请求文件交过去:几个文件合起来可能有几 MB,
+    /// 走标准输入会卡在管道缓冲区上(见 ProcessRunner.run 的 input 参数)。
+    func parseImportedFiles(_ urls: [URL]) async -> ImportResult {
+        await Task.detached(priority: .userInitiated) {
+            Self.parseImportedFilesBlocking(urls)
+        }.value
+    }
+
+    private static func parseImportedFilesBlocking(_ urls: [URL]) -> ImportResult {
+        let files: [ImportRequest.File] = urls.compactMap { url in
+            guard let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+            defer { try? handle.close() }
+            guard let data = try? handle.read(upToCount: importMaxBytes + 1) else { return nil }
+            return ImportRequest.File(name: url.lastPathComponent, data: data)
+        }
+        guard !urls.isEmpty else { return ImportResult(candidate: nil, format: "", ignored: [], error: .empty) }
+        guard !files.isEmpty else { return ImportResult(candidate: nil, format: "", ignored: [], error: .unreadable) }
+        let requestURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("lyrimuse-import-\(UUID().uuidString).json")
+        defer { _ = FileIO.remove(requestURL) }
+        guard let body = try? JSONEncoder().encode(ImportRequest(files: files)),
+              FileIO.write(body, to: requestURL),
+              let result = ProcessRunner.run(enginePath, ["parse-lyrics-files", requestURL.path], timeout: 20,
+                                             environment: LyrimusePaths.engineProcessEnvironment()),
+              result.succeeded,
+              let raw = try? JSONDecoder().decode(RawImportResult.self, from: result.stdout)
+        else {
+            logger.error("parse-lyrics-files failed for \(files.count, privacy: .public) files")
+            return ImportResult(candidate: nil, format: "", ignored: [], error: .failed)
+        }
+        guard let candidate = raw.candidate else {
+            return ImportResult(candidate: nil, format: "", ignored: raw.ignored ?? [],
+                                error: ImportError(rawValue: raw.error ?? "") ?? .unrecognized)
+        }
+        return ImportResult(candidate: Candidate(candidate), format: raw.format ?? "", ignored: raw.ignored ?? [],
+                            error: nil)
     }
 }

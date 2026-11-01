@@ -451,8 +451,11 @@
 "从左到右" = "Left to Right";
 "从应用程序中选择…" = "Choose from Applications…";
 "从待补交清单中移除此条（无法撤销）" = "Remove this from the backfill queue (cannot be undone)";
+"从文件导入 · %@ 行" = "Imported from file · %@ lines";
+"从文件导入 · %@ 行#one" = "Imported from file · %@ line";
 "从文件导入…" = "Import from File…";
 "从暂停恢复播放时展开歌词；播放中切歌不展开，手动收起后保持收起" = "Shows the lyrics when playback resumes from pause. Switching songs during playback doesn’t expand them, and lyrics you collapsed stay collapsed";
+"从本机文件导入，未参与评分；采用后不会被自动匹配替换" = "Imported from a file on this Mac and not scored. Once applied, automatic matching won’t replace it";
 "从此句开始播放" = "Play from this line";
 "从自动备份恢复" = "Restore from Auto Backup";
 "从资料库删除" = "Delete from Library";
@@ -942,12 +945,18 @@
 "密钥或地址有误" = "Incorrect secret or URL";
 "对齐方式" = "Alignment";
 "导入" = "Import";
+"导入失败，请重试" = "Couldn’t import. Try again";
 "导入失败：不是有效的 .ttf / .otf 字体文件" = "Import failed: not a valid .ttf / .otf font file";
 "导入失败：无法读取所选文件，可能尚未下载到本机或无读取权限" = "Import failed: couldn’t read the selected file. It may not be downloaded to this Mac, or Lyrimuse can’t read it";
 "导入失败：该文件不是 Lyrimuse 的设置备份，或已损坏。当前设置未更改" = "Import failed: this file is not a Lyrimuse settings backup, or it is corrupted. Your current settings were not changed";
 "导入字体…" = "Import Font…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Importing brings over your accounts and every personal setting, then restarts Lyrimuse";
 "导入并重启" = "Import and Restart";
+"导入文件…" = "Import File…";
+"导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Import a lyrics file from this Mac (LRC, TTML, YRC, QRC, KRC or plain text), or drag it into the window";
+"导入歌词文件…" = "Import Lyrics File…";
+"导入的文件" = "Imported file";
+"导入的歌词" = "Imported Lyrics";
 "导出…" = "Export…";
 "导出失败：%@" = "Export failed: %@";
 "导出时间 %1$@，来自 %2$@" = "Exported %1$@ from %2$@";
@@ -1060,6 +1069,8 @@
 "已安装但未运行" = "Installed but not running";
 "已安装但未运行（上次退出码 %d）" = "Installed but not running (last exit code %d)";
 "已完成 %1$@ / %2$@ 首" = "%1$@ of %2$@ done";
+"已导入，另有 %@ 个文件未使用" = "Imported. %@ other files weren’t used";
+"已导入，另有 %@ 个文件未使用#one" = "Imported. %@ other file wasn’t used";
 "已导出的歌词文件将一并删除。再次播放这首歌曲时会重新匹配，结果可能不同" = "Its exported lyrics file is deleted too. The song is matched again the next time it plays, and the result may differ";
 "已导出的歌词文件将一并删除，此操作无法撤销。再次播放这些歌曲时会重新匹配，结果可能不同" = "Their exported lyrics files are deleted too, and this can’t be undone. These songs are matched again the next time they play, and the results may differ";
 "已导出的歌词文件将一并删除，此操作无法撤销；其中 %@ 条经过人工修正。再次播放这些歌曲时会重新匹配，结果可能不同" = "Their exported lyrics files are deleted too, and this can’t be undone; %@ of these were edited manually. These songs are matched again the next time they play, and the results may differ";
@@ -1459,6 +1470,7 @@
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "The file contains your account credentials and keys in plain text. Keep it safe and don’t share it. The lyrics library is saved as a second file with a matching name; copy both when moving to a new Mac";
 "文件中尚无歌词，未保存" = "The file has no lyrics yet; not saved";
 "文件过大，不像是歌词，未保存" = "The file is too large to be lyrics; not saved";
+"文件过大，无法导入" = "The file is too large to import";
 "文字" = "Text";
 "文字一致" = "Same Wording";
 "文字描边" = "Text Outline";
@@ -1507,6 +1519,7 @@
 "无法识别的链接" = "Unrecognized link";
 "无法读取 %@ 的歌词缓存" = "Can’t read %@’s lyrics cache";
 "无法读取 %@ 的歌词缓存，点按查看处理方法" = "Can’t read %@’s lyrics cache — click to see what to do";
+"无法读取所选文件" = "Couldn’t read the selected file";
 "无法读取此备份：可能未开启 iCloud Drive，或该文件夹尚未同步" = "Can’t read this backup. iCloud Drive may be off, or the folder hasn’t synced yet";
 "无法读取该应用的标识，请选择其他应用" = "Couldn’t read this app’s identifier. Try another one";
 "无法读取该文件（需保存为 UTF-8 文本），未保存" = "Couldn’t read the file (save it as UTF-8 text); not saved";
@@ -1695,6 +1708,7 @@
 "未知歌手" = "Unknown Artist";
 "未知错误" = "no reason given";
 "未能获取最近记录" = "Couldn’t load recent scrobbles";
+"未能识别歌词内容" = "No lyrics recognized in the file";
 "未能跳过此广告" = "Couldn’t skip this ad";
 "未获取" = "Not loaded";
 "未获得「辅助功能」权限，可能会盖住 App 菜单" = "Without Accessibility permission, lyrics may cover app menus";
@@ -1758,6 +1772,7 @@
 "来自网易云音乐" = "From NetEase Cloud Music";
 "来自酷我音乐" = "From Kuwo Music";
 "来自酷狗音乐" = "From Kugou Music";
+"松开即可导入歌词文件" = "Drop to import the lyrics file";
 "查找更优歌词" = "Search for better lyrics";
 "查看、编辑和重新搜索已缓存的歌词" = "View, edit and re-search cached lyrics";
 "查看「%@」" = "Show “%@”";
@@ -2146,6 +2161,7 @@
 "社区人工校对的逐字歌词库" = "Word-by-word lyrics checked by hand by its community";
 "秒" = "s";
 "移除" = "Remove";
+"移除导入的歌词" = "Remove Imported Lyrics";
 "移除配对" = "Unpair";
 "稍粗" = "Medium";
 "窗口" = "Window";
@@ -2620,6 +2636,8 @@
 "选择左侧或表格中的其他条目，可与当前条目逐项对比" = "Select another entry on the left or in the table to compare it with the current entry";
 "选择左侧的设置分类" = "Select a Settings Category on the Left";
 "选择播放器" = "Choose Players";
+"选择本机的歌词文件，预览后再决定是否采用" = "Choose a lyrics file on this Mac and preview it before applying";
+"选择歌词文件，可同时选择同名的译文、读音文件" = "Choose a lyrics file. You can also select its translation and romanization files with the same name";
 "选择歌词显示方式" = "Choose Where Lyrics Appear";
 "选择用于播放此网站的浏览器" = "Pick the browser you use for this site";
 "选择要分享的句子" = "Pick the lines to share";

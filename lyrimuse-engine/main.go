@@ -101,6 +101,11 @@ func main() {
 		runSearchLyricsCLI(os.Args[2:])
 		return
 	}
+	// `lyrimuse-engine parse-lyrics-files`:「搜索候选歌词」面板导入歌词文件时解析成一条候选(见 importlyrics.go)。
+	if len(os.Args) > 1 && os.Args[1] == "parse-lyrics-files" {
+		runParseLyricsFilesCLI(os.Args[2:])
+		return
+	}
 	// `lyrimuse-engine artist-avatars ...`:同 search-lyrics 的形态,给 Last.fm 信息页解析
 	// 歌手头像(见 avatarcli.go)。
 	if len(os.Args) > 1 && os.Args[1] == "artist-avatars" {

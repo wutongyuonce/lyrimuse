@@ -60,6 +60,17 @@ final class AppActions {
         present()
     }
 
+    /// 要「搜索歌词…」窗口导入的歌词文件(`requestLyricsImport`)。`key` 是给哪一首导入(nil = 窗口正搜的那一首),`urls` 为空
+    /// 表示让窗口弹选文件框。同 `pendingSongVersions` 两条路:信箱管窗口还没建出来或还没换到那一首(换到之后取),subject 管
+    /// 已经开着;只认 60 秒以内的。
+    var pendingLyricsImport: (key: String?, urls: [URL], at: Date)?
+    let lyricsImportRequests = PassthroughSubject<Void, Never>()
+
+    func requestLyricsImport(key: String?, urls: [URL]) {
+        pendingLyricsImport = (key, urls, Date())
+        lyricsImportRequests.send()
+    }
+
     /// 「搜索歌词…」窗口里采纳成功(带写回的 key)、「重新自动匹配」有了结论。歌词管理开着同一首时据此重载编辑框、挂结论。
     let lyricsSearchApplied = PassthroughSubject<String, Never>()
     let lyricsSearchRematched = PassthroughSubject<LyricsSearchRematchResult, Never>()

@@ -1967,9 +1967,17 @@ func runLyricsManagerTests() {
             expectEqual(false, true, "搜索候选歌词: 侧栏要有「当前使用」那一块和候选表头")
         }
         expectEqual(sheet.contains("Text(\"\\(searchResults.count)\")"), true, "搜索候选歌词: 候选计数只算搜索结果")
+        let quickWindow = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("lyrimuse/LyricsManager/LyricsQuickSearchWindow.swift"),
+            encoding: .utf8)) ?? ""
+        expectEqual(sourceHas(sheet, "            importedSection\n            currentSection\n")
+                    && sourceHas(sheet, "            importedCandidate = nil\n            takePendingImport()\n")
+                    && sheet.contains("(importedCandidate.map { [$0] } ?? []) + (current.map { [$0] } ?? []) + searchResults")
+                    && quickWindow.contains("markManual: candidate.isImported || AppSettings.shared.manualPickLocksLyrics"), true,
+                    "导入歌词: 导入的那条单独一块摆在「当前使用」上面、换歌清掉、能预览,采用时一律按手改锁定")
         expectEqual(sheet.contains("let groups = LyricsCandidateGroups.groups(")
                     && sheet.contains("if layout.sameExpanded {") && sheet.contains("if layout.excludedExpanded {")
-                    && sheet.contains("layout.excludedForced = layout.current == nil && layout.main.isEmpty && layout.same.isEmpty")
+                    && sheet.contains("layout.excludedForced = layout.current == nil && layout.imported == nil && layout.main.isEmpty && layout.same.isEmpty")
                     && sourceHas(sheet, ".onChange(of: selectedSource) { _, _ in\n            revealSelection()"), true,
                     "搜索候选歌词: 内容相同、不可用的候选收进折叠组,只剩不可用时那一组一直展开,选中落在收起的组里时展开")
         expectEqual(sourceHas(sheet, "            revealSelection()\n            followPlayback = true\n        }"), true,

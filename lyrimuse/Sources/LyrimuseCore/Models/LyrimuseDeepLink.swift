@@ -159,6 +159,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// `debug/word-format-switch?state=backup|waiting|converting|finished|queued|idle&format=qrc&done=3214&total=17564`
         /// (`format` 是 `LyricsWordFormat` 的 rawValue,缺省 = 当前主格式;`done` / `total` 只在 converting / finished 时用)。
         case wordFormatSwitch(state: String, format: String?, done: Int?, total: Int?)
+        /// 把这几个文件交给「搜索歌词…」窗口导入,跟点「导入文件…」选完文件走同一条路(`debug/import-lyrics?path=<绝对路径>&path=…`)。
+        /// 不开窗:窗口没开着时请求留 60 秒,开窗时取走(先 `lyrics-search?background=1`)。
+        case importLyrics(paths: [String])
     }
 
     /// `debug/stall` 的上限(毫秒)。再长就是把 App 卡死了。
@@ -272,6 +275,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             self = .debug(.stall(ms: ms))
         case ("debug", "/milestone-preview"):
             self = .debug(.milestonePreview)
+        case ("debug", "/import-lyrics"):
+            let paths = query.filter { $0.name.lowercased() == "path" }.compactMap(\.value).filter { $0.hasPrefix("/") }
+            guard !paths.isEmpty else { return nil }
+            self = .debug(.importLyrics(paths: paths))
         case ("debug", "/settings-search"):
             guard let query = value("q")?.trimmingCharacters(in: .whitespaces), !query.isEmpty else { return nil }
             self = .debug(.settingsSearch(query: query))
@@ -473,6 +480,9 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
                 components.path = "/stall"
                 components.queryItems = [URLQueryItem(name: "ms", value: String(ms))]
             case .milestonePreview: components.path = "/milestone-preview"
+            case let .importLyrics(paths):
+                components.path = "/import-lyrics"
+                components.queryItems = paths.map { URLQueryItem(name: "path", value: $0) }
             case let .knockout(leg, on):
                 components.path = "/knockout"
                 components.queryItems = [URLQueryItem(name: "leg", value: leg.rawValue), URLQueryItem(name: "on", value: on ? "1" : "0")]
