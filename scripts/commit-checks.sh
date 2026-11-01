@@ -61,6 +61,10 @@ step "Localizable.xcstrings 能解析"
 step "generate-strings.py 自检"
 /usr/bin/python3 -B lyrimuse/Localization/generate-strings.py --selftest
 
+# 跟 CI 同一份:三份 .strings 的键对齐、英文译文用弯撇号。只读、不到一秒,放在 swift build 前面。
+step "Localizable.strings 一致性"
+/usr/bin/python3 -B lyrimuse/scripts/check_strings_parity.py
+
 step "swift build"
 (cd lyrimuse && swift build)
 if [ -n "${PRIVATE_COMMIT_COMPILED_MARK:-}" ] && [ -n "${PRIVATE_COMMIT_TREE:-}" ]; then
