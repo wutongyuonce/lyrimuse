@@ -3,7 +3,7 @@ import Foundation
 /// 听歌报告用哪种语言写:App 的界面语言(`L10n.current`:zh-hans / zh-hant / en),写进 features.json 的
 /// `report_language` 给引擎(digestlang.go)。认不得的按简体。
 public enum ReportLanguage: String, CaseIterable, Sendable {
-    case zhHans = "zh-hans", zhHant = "zh-hant", en, ja, ko, es
+    case zhHans = "zh-hans", zhHant = "zh-hant", en, ja, ko, es, fr
 
     /// features.json 里的键名,同引擎 featureFlagsFile.ReportLanguage 的 json 标签。
     public static let featuresKey = "report_language"
@@ -41,9 +41,10 @@ public struct ReportWords: Sendable {
         return out + rest
     }
 
-    /// 带数量 `{n}` 的那一句;数量是 1 且表里有 `key_one` 时用它(英文单复数)。
+    /// 带数量 `{n}` 的那一句;数量是 1 且表里有 `key_one` 时用它(英文单复数)。表里有 `zero_is_one` 的语言(法语)0 也用单数,同引擎 digestWords.count。
     public func count(_ key: String, _ n: Int, _ values: [(String, String)] = []) -> String {
-        f(n == 1 && table[key + "_one"] != nil ? key + "_one" : key, [("n", String(n))] + values)
+        let singular = n == 1 || (n == 0 && !self["zero_is_one"].isEmpty)
+        return f(singular && table[key + "_one"] != nil ? key + "_one" : key, [("n", String(n))] + values)
     }
 
     /// 标题里的日期,同引擎 digestWords.date。
@@ -357,6 +358,57 @@ public struct ReportWords: Sendable {
             "title_yesterday": "🎧 Informe de escucha de ayer ({date})",
             "value_hm": "{h} h {m} min",
             "value_m": "{m} min",
+        ],
+        .fr: [
+            "brief_line": "{label}\u{00A0}: {name} · {n}",
+            "col_albums": "Albums",
+            "col_artists": "Artistes",
+            "col_tracks": "Morceaux",
+            "colon": "\u{00A0}:",
+            "compare": " (contre {prev} {label}, {change})",
+            "cover": "Pochette",
+            "date": "{d}/{m}",
+            "duration_hm": " · environ {h} h {m} min",
+            "duration_m": " · environ {m} min",
+            "flat": "stable",
+            "footer": "Lyrimuse · Données de {source}",
+            "head_albums": "Top albums",
+            "head_artists": "Top artistes",
+            "head_tracks": "Top morceaux",
+            "item": "{i}. {name} ({n})",
+            "keyword": "écoute",
+            "label_album": "Album",
+            "label_artist": "Artiste",
+            "label_track": "Morceau",
+            "link": "Voir le classement complet sur {source}",
+            "month_names": "janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre",
+            "more": " et plus",
+            "most_played": "Les plus écoutés",
+            "name_sep": ", ",
+            "names_lead": "\u{00A0}: ",
+            "new_artists": "{n} nouveaux artistes",
+            "new_artists_one": "{n} nouvel artiste",
+            "pair": "{artist} - {name}",
+            "plays": "{n} écoutes",
+            "plays_one": "{n} écoute",
+            "plays_truncated": "Plus de {n} écoutes (trop d’écoutes, seules les plus récentes ont été comptées)",
+            "preset_brief": "{summary}\nArtiste principal\u{00A0}: {top_artist}\nAlbum principal\u{00A0}: {top_album}\nMorceau principal\u{00A0}: {top_track}\nNouveaux artistes ({new_artists})\u{00A0}: {new_artist_names}",
+            "preset_full": "{summary}\n\nTop artistes\u{00A0}:\n{top_artists}\n\nTop albums\u{00A0}:\n{top_albums}\n\nTop morceaux\u{00A0}:\n{top_tracks}\n\nNouveaux artistes ({new_artists})\u{00A0}: {new_artist_names}",
+            "preset_overview": "{summary}\nNouveaux artistes\u{00A0}: {new_artists}",
+            "prev_month": "en {month_name}",
+            "prev_month_year": "en {month_name} {year}",
+            "prev_week": "la semaine précédente",
+            "prev_year": "en {year}",
+            "title_day": "🎧 Bilan d’écoute ({date})",
+            "title_month": "📅 Récap d’écoute\u{00A0}: {month_name} {year}",
+            "title_sample": "🎧 Exemple de bilan d’écoute",
+            "title_today": "🎧 Bilan d’écoute du jour ({date})",
+            "title_week": "🎵 Récap d’écoute de la semaine dernière ({from} – {to})",
+            "title_year": "🏆 Récap d’écoute {year}",
+            "title_yesterday": "🎧 Bilan d’écoute d’hier ({date})",
+            "value_hm": "{h} h {m} min",
+            "value_m": "{m} min",
+            "zero_is_one": "1",
         ],
     ]
 }

@@ -29,10 +29,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko", "es")
-LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어", "es": "Español"}
+LANGS = ("en", "zh-Hans", "zh-Hant", "ja", "ko", "es", "fr")
+LANG_LABELS = {"en": "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "ja": "日本語", "ko": "한국어", "es": "Español", "fr": "Français"}
 DOC_FILES = {"en": "feature-list.md", "zh-Hans": "feature-list.zh-CN.md", "zh-Hant": "feature-list.zh-Hant.md",
-             "ja": "feature-list.ja.md", "ko": "feature-list.ko.md", "es": "feature-list.es.md"}
+             "ja": "feature-list.ja.md", "ko": "feature-list.ko.md", "es": "feature-list.es.md",
+             "fr": "feature-list.fr.md"}
 BRANDS = {"ListenBrainz", "Last.fm", "Discord"}
 
 CHROME = {
@@ -155,6 +156,26 @@ CHROME = {
         "full_only": " (solo tamaño completo)",
         "sep": ": ",
         "generated": "Generado por scripts/gen-feature-list.py a partir de shared/feature-list.json y shared/settings-catalog.json; para cambiar la lista, edita esos archivos.",
+    },
+    "fr": {
+        "title": "Liste des fonctionnalités de Lyrimuse",
+        "intro": "Cette liste recense chaque fonctionnalité de Lyrimuse\u00a0: ce qu’elle fait, où la trouver dans les Réglages et si elle est activée ou non après l’installation\u00a0; tous les réglages de la fenêtre Réglages figurent à la fin. Elle est tenue à jour avec le code à chaque changement de fonctionnalité.",
+        "toc": "Sommaire",
+        "off_title": "Désactivées tant que vous ne les activez pas",
+        "off_intro": "Ces fonctionnalités restent désactivées après l’installation. Activez-les d’abord dans les Réglages (certaines demandent aussi un compte ou une autorisation)\u00a0:",
+        "col_feature": "Fonctionnalité",
+        "col_where": "Où l’activer",
+        "default_on": "Activée par défaut",
+        "default_off": "Désactivée par défaut",
+        "where": "Réglages",
+        "index_title": "Tous les réglages",
+        "index_intro": "Tous les réglages de la fenêtre Réglages, classés par emplacement\u00a0: {n} au total. Tapez un nom dans le champ de recherche en haut de la barre latérale des Réglages pour y aller directement.",
+        "settings": "Réglages",
+        "labs": "Labo",
+        "mini_only": " (taille mini uniquement)",
+        "full_only": " (taille complète uniquement)",
+        "sep": "\u00a0: ",
+        "generated": "Généré par scripts/gen-feature-list.py à partir de shared/feature-list.json et shared/settings-catalog.json\u00a0; pour modifier la liste, modifiez ces fichiers.",
     },
 }
 
@@ -285,7 +306,7 @@ def load_model(root: Path = ROOT) -> dict:
             joined = ""
             for line in lines:
                 if joined:
-                    if lang in ("en", "ko", "es"):
+                    if lang in ("en", "ko", "es", "fr"):
                         joined += " "
                     elif lang == "ja":
                         joined += "" if joined[-1] in "。：！？" else "。"

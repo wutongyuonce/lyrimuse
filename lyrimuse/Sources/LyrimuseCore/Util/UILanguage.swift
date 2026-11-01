@@ -12,7 +12,7 @@ import Foundation
 public enum UILanguage {
     /// 界面有的语言包,顺序就是语言下拉里的顺序。加一种语言:这里加一项,`localeIdentifier(for:)`、`nativeName(of:)` 加映射,
     /// generate-strings.py 的 TARGETS 登记 catalog 语言码 → 目录名(目录名一律小写,SwiftPM 打包会把它转小写)。
-    public static let packs = ["zh-hans", "zh-hant", "en", "ja", "ko", "es"]
+    public static let packs = ["zh-hans", "zh-hant", "en", "ja", "ko", "es", "fr"]
 
     public static let traditionalRegions = ["-tw", "-hk", "-mo"]
 
@@ -60,6 +60,7 @@ public enum UILanguage {
         case "ja": return "日本語"
         case "ko": return "한국어"
         case "es": return "Español"
+        case "fr": return "Français"
         default: return pack
         }
     }
@@ -67,7 +68,12 @@ public enum UILanguage {
     /// 别的 App 的本地化目录名(「zh_CN」「zh-Hant」「English」「Japanese」这类)归哪个语言包,界面没有这种语言时为 nil。
     /// 老式的英文全称目录名先换成语言码,其余同 `pack(forTag:)`。
     public static func pack(forLocalization name: String) -> String? {
-        let legacyNames = ["english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko", "spanish": "es"]
+        let legacyNames = ["english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko", "spanish": "es", "french": "fr"]
         return pack(forTag: legacyNames[name.lowercased()] ?? name)
+    }
+
+    /// 这个数量在这种界面语言里用不用单数(`#one` 那条):多数语言只有 1,法语 0 和 1 都用单数(CLDR 法语 one = 0、1)。
+    public static func usesSingular(_ count: Int, pack: String) -> Bool {
+        count == 1 || (count == 0 && pack == "fr")
     }
 }

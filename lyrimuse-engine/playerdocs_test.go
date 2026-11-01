@@ -131,7 +131,7 @@ func TestDocsListEveryPlayer(t *testing.T) {
 		}
 	}
 
-	// 日文、韩文、西语 README 只核两个数量(播放器总数、不用「自动化」权限的个数);向导那一句的名单以英文、中文 README 为准。
+	// 日文、韩文、西语、法语 README 只核两个数量(播放器总数、不用「自动化」权限的个数);向导那一句的名单以英文、中文 README 为准。
 	// 日文的「残りの10のプレーヤー」是后一个数,总数的正则不收前面紧挨「の」的数字。
 	for _, r := range []struct {
 		path          string
@@ -140,6 +140,7 @@ func TestDocsListEveryPlayer(t *testing.T) {
 		{"../README.ja.md", regexp.MustCompile(`(?:^|[^の\d])(\d+)のプレーヤー`), regexp.MustCompile(`残りの(\d+)の`)},
 		{"../README.ko.md", regexp.MustCompile(`(\d+)개 플레이어`), regexp.MustCompile(`나머지 (\d+)개`)},
 		{"../README.es.md", regexp.MustCompile(`(?i)\b` + esNum + ` reproductores\b`), regexp.MustCompile(`(?i)\botros ` + esNum + `\b`)},
+		{"../README.fr.md", regexp.MustCompile(`\b(\d+) lecteurs\b`), regexp.MustCompile(`(?i)\bles (\d+) autres\b`)},
 	} {
 		text := readText(t, r.path)
 		for _, check := range []struct {

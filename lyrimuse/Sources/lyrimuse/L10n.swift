@@ -84,7 +84,7 @@ enum L10n {
     /// generate-strings.py 把 one 那条生成到「键#one」;没有单数变体的语言、别的数量都取键本身那条。
     /// 格式参数照旧由调用方 String(format:) 填。后缀跟 generate-strings.py 的 PLURAL_ONE_SUFFIX 必须一致。
     static func plural(_ key: String, count: Int) -> String {
-        if count == 1 {
+        if UILanguage.usesSingular(count, pack: current) {
             let one = bundle.localizedString(forKey: key + "#one", value: missingValue, table: nil)
             if one != missingValue { return one }
         }

@@ -565,8 +565,8 @@ func runSettingsInteractionTests() {
             expectEqual(ReportWords.table[lang] ?? [:], wordsJSON[lang.rawValue] ?? ["": "缺"], "报告语言: \(lang.rawValue) 用语表同引擎")
         }
         expectEqual([ReportLanguage(""), ReportLanguage(" ZH-HANT "), ReportLanguage("en"), ReportLanguage("ja"), ReportLanguage("ko"), ReportLanguage("es"),
-                     ReportLanguage("fr")],
-                    [.zhHans, .zhHant, .en, .ja, .ko, .es, .zhHans],
+                     ReportLanguage("fr"), ReportLanguage("de")],
+                    [.zhHans, .zhHant, .en, .ja, .ko, .es, .fr, .zhHans],
                     "报告语言: 认得的几种,其余按简体")
         expectEqual(ReportLanguage.featuresKey, "report_language", "报告语言: 键名同引擎 features.go 的 json 标签")
         expectEqual(ReportLanguage.zhHans.words.f("item", [("i", "1"), ("name", "Song {n} {name}"), ("n", "4")]), "1. Song {n} {name}（4）",
@@ -594,6 +594,11 @@ func runSettingsInteractionTests() {
         }
         expectEqual(ReportLanguage.es.words.month("title_month", year: 2026, month: 10), "📅 Resumen de escucha de octubre de 2026",
                     "报告语言: 表里有 month_names 的语言用自己的月名(同引擎 digestWords.monthName)")
+        expectEqual(ReportLanguage.fr.words.month("title_month", year: 2026, month: 10), "📅 Récap d’écoute\u{00A0}: octobre 2026",
+                    "报告语言: 法语月报标题")
+        expectEqual([0, 1, 2].map { ReportLanguage.fr.words.count("plays", $0) } + [0, 1].map { ReportLanguage.es.words.count("plays", $0) },
+                    ["0 écoute", "1 écoute", "2 écoutes", "0 reproducciones", "1 reproducción"],
+                    "报告语言: 法语 0 也用单数(同引擎 digestWords.count),别的语言只有 1")
         expectEqual(ReportLanguage.en.words.month("title_month", year: 2026, month: 10), "📅 October 2026 Listening Digest",
                     "报告语言: 没有 month_names 的用英文月名")
         expectEqual(DigestStyle.matching(DigestTemplate.preset(.brief, lang: .en) ?? DigestTemplate(), lang: .en), .brief,
