@@ -204,8 +204,7 @@ struct LyricsSearchSheet: View {
         let left = max(0, sourcesTotal - sourcesDone)
         // 这一轮都回完、兜底轮还没起的那几秒不写「还剩 0」(跟前面「仍在搜索中」自相矛盾),只留轮次。
         let remaining = left > 0 ? String(format: L10n.t("还剩 %@"), "\(left)") : nil
-        // 全角括号只配中文文案;英文界面用半角,前面空一格。
-        if L10n.current == "en" {
+        if !L10n.usesFullWidthBrackets {
             let roundSuffix = searchRound >= 2 ? " [\(searchRound)]" : ""
             return (remaining.map { " (\($0))" } ?? "") + roundSuffix
         }
@@ -2123,8 +2122,7 @@ struct LyricsSearchSheet: View {
         guard let diff = LyricsCandidateDuration.differenceSecs(candidate: c.sourceDurationSecs, song: durationSecs),
               abs(diff) >= LyricsCandidateDuration.negligibleSecs else { return clock }
         let signed = String(format: L10n.t("%@ 秒"), (diff > 0 ? "+" : "\u{2212}") + "\(abs(diff))")
-        // 全角括号只配中文文案,英文界面用半角、前面空一格。
-        return L10n.current == "en" ? "\(clock) (\(signed))" : "\(clock)（\(signed)）"
+        return L10n.usesFullWidthBrackets ? "\(clock)（\(signed)）" : "\(clock) (\(signed))"
     }
 
     /// 分数说明文案本体在 ScoreTerm.explanation(跟「解析决策」弹窗共用),这里只是转发。

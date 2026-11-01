@@ -176,6 +176,37 @@ func (s exportRomaSeen) matches(e enrichEntry, rules int) bool {
 		s.lyrics.Equal(e.Lyrics) && s.roma.Equal(e.LyricsRoma) && s.yrc.Equal(e.LyricsYRC) && s.bg.Equal(e.LyricsBG)
 }
 
+// exportRomaRulesSeen:上次问到的 helper 规则版本,0 = 还没问过。
+var exportRomaRulesSeen atomic.Int64
+
+// exportRomaRules:helper 的规则版本。全量那一轮(fresh)每次现问,换了 helper 也认得出;单首导出用上次问到的,没问过才问,
+// 别每导出一首就起一次 helper。
+func exportRomaRules(fresh bool) (int, error) {
+	if !fresh {
+		if r := exportRomaRulesSeen.Load(); r != 0 {
+			return int(r), nil
+		}
+	}
+	_, rules, err := exportRomaHelper(nil)
+	if err != nil {
+		return 0, err
+	}
+	exportRomaRulesSeen.Store(int64(rules))
+	return rules, nil
+}
+
+// hasExportRomaCandidate:这几条里有没有要核导出读音的,按 key 直接查,不扫整个缓存。
+func hasExportRomaCandidate(keys map[string]bool) bool {
+	enrichMu.Lock()
+	defer enrichMu.Unlock()
+	for k := range keys {
+		if e, ok := enrichCache[k]; ok && isExportRomaCandidate(e) {
+			return true
+		}
+	}
+	return false
+}
+
 func noteExportRomaSeen(key string, s exportRomaSeen) {
 	exportRomaSeenMu.Lock()
 	exportRomaSeenBy[key] = s
@@ -234,11 +265,15 @@ func requestExportRoma(keys ...string) {
 }
 
 // refreshExportRoma 核一遍(only 为 nil 时全部,否则只看这几条),返回导出内容变了的条数。锁里只挑候选、拷正文句柄,
-// 读正文、起 helper 都在锁外;写回时正文、读音、借来的假名、语种都还是当初那份才写。
+// 读正文、起 helper 都在锁外;写回时正文、读音、借来的假名、语种都还是当初那份才写。只看几条时按 key 查,
+// 不遍历整个缓存(单首导出每首歌都会排一次)。
 func refreshExportRoma(ctx context.Context, only map[string]bool) int {
 	exportRomaMu.Lock()
 	defer exportRomaMu.Unlock()
-	_, rules, err := exportRomaHelper(nil)
+	if only != nil && !hasExportRomaCandidate(only) {
+		return 0
+	}
+	rules, err := exportRomaRules(only == nil)
 	if err != nil {
 		if !errors.Is(err, errRomanizeHelperMissing) {
 			warnf("export romanization: helper unavailable: %v", err)
@@ -253,26 +288,45 @@ func refreshExportRoma(ctx context.Context, only map[string]bool) int {
 		song   string
 	}
 	var picked []pending
-	songKeys := map[string][]string{}
 	enrichMu.Lock()
 	exportRomaSeenMu.Lock()
-	for k, e := range enrichCache {
-		if e.Song != "" {
-			songKeys[e.Song] = append(songKeys[e.Song], k)
-		}
-		if only != nil && !only[k] {
-			continue
-		}
+	consider := func(k string, e enrichEntry) {
 		if !isExportRomaCandidate(e) {
-			continue
+			return
 		}
 		if s, ok := exportRomaSeenBy[k]; ok && s.matches(e, rules) {
-			continue
+			return
 		}
 		picked = append(picked, pending{key: k, manual: e.ManualLyrics, export: e.LyricsRomaExport, song: e.Song,
 			seen: exportRomaSeen{lyrics: e.Lyrics, roma: e.LyricsRoma, yrc: e.LyricsYRC, bg: e.LyricsBG,
 				kana: e.LyricsKana, songLanguage: e.SongLanguage, src: e.LyricsRomaExportSrc,
 				rules: e.LyricsRomaExportRules}})
+	}
+	if only != nil {
+		for k := range only {
+			if e, ok := enrichCache[k]; ok {
+				consider(k, e)
+			}
+		}
+	} else {
+		for k, e := range enrichCache {
+			consider(k, e)
+		}
+	}
+	// 同一首歌的其他写法(别名)只为挑中的那几首找;按 key 取 Song 字段,不按值拷整条。
+	songKeys := map[string][]string{}
+	wanted := map[string]bool{}
+	for _, p := range picked {
+		if p.song != "" {
+			wanted[p.song] = true
+		}
+	}
+	if len(wanted) > 0 {
+		for k := range enrichCache {
+			if s := enrichCache[k].Song; wanted[s] {
+				songKeys[s] = append(songKeys[s], k)
+			}
+		}
 	}
 	exportRomaSeenMu.Unlock()
 	enrichMu.Unlock()

@@ -55,6 +55,9 @@ enum L10n {
     /// 跟随**系统**语言,换成界面语言反而是 bug。
     static var locale: Locale { Locale(identifier: UILanguage.localeIdentifier(for: current)) }
 
+    /// 代码里拼进文案的括号用全角(中文、日文)还是半角(其余语言,前面空一格)。
+    static var usesFullWidthBrackets: Bool { current.hasPrefix("zh") || current == "ja" }
+
     // 轻量缓存——只在 current 真的变化时才重新构造 Bundle(path:),避免每次 L10n.t(_:)
     // 调用都重新命中磁盘路径查找(一次界面渲染里同一个 View 常常连续调好几十次)。语言
     // 没变时直接复用上一次解析好的 Bundle,观感上跟改动前的 `static let` 版本一样便宜。

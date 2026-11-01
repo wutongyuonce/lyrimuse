@@ -5,14 +5,27 @@ func runWhatsNewTests() {
     do {
         print("\n== 本次更新:基准版本 ==")
         typealias W = WhatsNew
-        expectEqual(W.baseline(current: "1.12.0", lastLaunched: nil, stored: nil, hasCompletedOnboarding: true),
+        expectEqual(W.baseline(current: "1.12.0", lastLaunched: nil, stored: nil, shownVersion: nil, hasCompletedOnboarding: true),
                     W.legacyBaseline, "基准: 老用户第一次跑到这套代码,按从上一个版本升上来算")
-        expectEqual(W.baseline(current: "1.12.0", lastLaunched: nil, stored: nil, hasCompletedOnboarding: false),
+        expectEqual(W.baseline(current: "1.12.0", lastLaunched: nil, stored: nil, shownVersion: nil, hasCompletedOnboarding: false),
                     "1.12.0", "基准: 新装的用户就是当前版本")
-        expectEqual(W.baseline(current: "1.13.0", lastLaunched: "1.12.0", stored: "1.11.0", hasCompletedOnboarding: true),
+        expectEqual(W.baseline(current: "1.13.0", lastLaunched: "1.12.0", stored: "1.11.0", shownVersion: "1.12.0", hasCompletedOnboarding: true),
                     "1.12.0", "基准: 刚升级,换成升级前那一版")
-        expectEqual(W.baseline(current: "1.12.0", lastLaunched: "1.12.0", stored: "1.11.0", hasCompletedOnboarding: true),
+        expectEqual(W.baseline(current: "1.12.0", lastLaunched: "1.12.0", stored: "1.11.0", shownVersion: nil, hasCompletedOnboarding: true),
                     "1.11.0", "基准: 没升级,沿用存着的")
+        expectEqual(W.baseline(current: "1.12.1", lastLaunched: "1.12.0", stored: "1.11.0", shownVersion: nil,
+                               hasCompletedOnboarding: true),
+                    "1.11.0", "基准: 上一版的横条没出过就又升了,沿用旧基准,大版本的提示照出")
+        expectEqual(W.baseline(current: "1.12.1", lastLaunched: "1.12.0", stored: "1.11.0", shownVersion: "1.12.0",
+                               hasCompletedOnboarding: true),
+                    "1.12.0", "基准: 上一版的横条出过了,换成上一版")
+        expectEqual(W.baseline(current: "1.13.0", lastLaunched: "1.13.0-beta.2", stored: "1.12.0", shownVersion: nil,
+                               hasCompletedOnboarding: true),
+                    "1.12.0", "基准: 从测试版升到正式版是升级,测试版没出过横条,沿用旧基准")
+        expectEqual(W.compare("1.13.0", "1.13.0-beta.2"), .orderedDescending, "版本: 正式版比它的测试版新")
+        expectEqual(W.compare("1.13.0-beta.2", "1.13.0-beta.10"), .orderedAscending, "版本: 测试版按后缀数字比")
+        expectEqual(W.compare("1.13.0-beta.1", "1.12.5"), .orderedDescending, "版本: 先比 X.Y.Z")
+        expectEqual(W.featureVersion("1.13.0-beta.1"), "1.13", "版本: 主次版本不带预发布后缀")
         expectEqual(W.compare("1.12.0", "1.9.0"), .orderedDescending, "版本: 按数字比,1.12 > 1.9")
         expectEqual(W.compare("1.12", "1.12.0"), .orderedSame, "版本: 缺的段当 0")
         expectEqual(W.featureVersion("1.12.3"), "1.12", "版本: 主次版本")
@@ -27,6 +40,10 @@ func runWhatsNewTests() {
         expectEqual(W.bannerPending(current: "1.12.0", baseline: "1.11.0", shownVersion: "1.12.0"), false, "横条: 这一版出过不再出")
         expectEqual(W.bannerPending(current: "1.13.0", baseline: "1.12.0", shownVersion: "1.12.0"), true, "横条: 出过的是旧版,新版照出")
         expectEqual(W.bannerPending(current: "1.12.0", baseline: "1.12.0", shownVersion: nil), false, "横条: 新装的不出")
+        expectEqual(W.bannerPending(current: "1.13.0-beta.1", baseline: "1.12.0", shownVersion: nil), false,
+                    "横条: 测试版不出(CHANGELOG 里没有它的节)")
+        expectEqual(W.bannerPending(current: "1.12.1", baseline: "1.11.0", shownVersion: "1.12.0"), false,
+                    "横条: 同一个大版本出过就不再出")
     }
 
     do {
@@ -67,6 +84,14 @@ func runWhatsNewTests() {
         let section = ReleaseNotes.section(version: "1.13.0", in: changelog) ?? ""
         expectEqual(section.contains("Old item"), false, "分节: 到下一个 ## v 为止")
         expectEqual(ReleaseNotes.section(version: "1.14.0", in: changelog), nil, "分节: 没有这一版为 nil")
+        let range = ReleaseNotes.sections(after: "1.11.0", through: "1.13.0", in: changelog)
+        expectEqual(range.count == 2 && range[0].contains("Added a thing") && range[1].contains("Old item"), true,
+                    "分节: 基准之后到当前的每一版都取,新的在前")
+        expectEqual(ReleaseNotes.sections(after: "1.13.0", through: "1.13.0", in: changelog).count, 1,
+                    "分节: 范围里一节都没有时退回当前那一节")
+        let merged = ReleaseNotes.merge(range.map { ReleaseNotes.parse($0, chinese: false) })
+        expectEqual(merged.map(\.title), ["New", "Fixed"], "合并: 同名小节并在一起")
+        expectEqual(merged.first?.items.last, "Old item", "合并: 条目新版在前")
         expectEqual(ReleaseNotes.parse(section, chinese: false), [
             .init(title: "New", items: ["Added a thing that wraps onto two lines", "English only", "Fixed DNS"]),
             .init(title: "Fixed", items: ["Fixed a 组曲 prefix"]),

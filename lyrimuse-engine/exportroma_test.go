@@ -12,10 +12,12 @@ import (
 
 func romaPtr(s string) *string { return &s }
 
-// exportRomaFixture:临时缓存 + 临时歌词文件夹 + 假 helper。helper 每次被问到的条目按正文记进 asked,规则版本按 rules。
+// exportRomaFixture:临时缓存 + 临时歌词文件夹 + 假 helper。helper 每次被问到的条目按正文记进 asked,规则版本按 rules,
+// 起了几次 helper(含只问规则版本的)记进 calls。
 type exportRomaFixture struct {
 	dir   string
 	asked []string
+	calls int
 	rules int
 	reply func(it exportRomaItem) exportRomaResult
 	fail  error
@@ -28,6 +30,7 @@ func withExportRomaFixture(t *testing.T, entries map[string]enrichEntry) *export
 	oldDir := lyricsDir()
 	setLyricsDir(fx.dir)
 	savedHelper := exportRomaHelper
+	exportRomaRulesSeen.Store(0)
 	exportRomaSeenMu.Lock()
 	savedSeen := exportRomaSeenBy
 	exportRomaSeenBy = map[string]exportRomaSeen{}
@@ -35,11 +38,13 @@ func withExportRomaFixture(t *testing.T, entries map[string]enrichEntry) *export
 	t.Cleanup(func() {
 		setLyricsDir(oldDir)
 		exportRomaHelper = savedHelper
+		exportRomaRulesSeen.Store(0)
 		exportRomaSeenMu.Lock()
 		exportRomaSeenBy = savedSeen
 		exportRomaSeenMu.Unlock()
 	})
 	exportRomaHelper = func(items []exportRomaItem) ([]exportRomaResult, int, error) {
+		fx.calls++
 		if fx.fail != nil {
 			return nil, 0, fx.fail
 		}
@@ -372,5 +377,24 @@ func TestExportRomaWiring(t *testing.T) {
 	exportRomaPendingMu.Unlock()
 	if n != 0 {
 		t.Error("补算没起时单首导出不该排补算")
+	}
+}
+
+// 单首导出排的那一轮:这几条都不是候选(没读音)就不起 helper;全量那一轮问过规则版本之后,只看几条且没变也不再起。
+func TestExportRomaOnlyModeSkipsHelper(t *testing.T) {
+	const plain, roma = "A|English|X", "A|日本語|X"
+	fx := withExportRomaFixture(t, map[string]enrichEntry{
+		plain: {Lyrics: bt("[00:01.00]hello")},
+		roma:  {Lyrics: bt("[00:01.00]君の名は"), LyricsRoma: bt("[00:01.00]kimi no na wa")},
+	})
+	refreshExportRoma(context.Background(), map[string]bool{plain: true, "A|missing|X": true})
+	if fx.calls != 0 {
+		t.Fatalf("没有候选不该起 helper,起了 %d 次", fx.calls)
+	}
+	refreshExportRoma(context.Background(), nil)
+	before := fx.calls
+	refreshExportRoma(context.Background(), map[string]bool{roma: true})
+	if fx.calls != before {
+		t.Errorf("规则版本问过、这条也没变,不该再起 helper,多起了 %d 次", fx.calls-before)
 	}
 }

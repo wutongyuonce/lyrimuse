@@ -428,9 +428,16 @@ func dropImportedLyricsForSong(key string) {
 }
 
 // importedLyricsFor:选词的候选池用。先按这首的 key、再按宽松 key、最后按身份找(importedLyricsRecordBySong)。身份按这首本地的
-// 歌名歌手专辑,不算「播放器给定」(不吃同源加权)。
+// 歌名歌手专辑,不算「播放器给定」(不吃同源加权)。传进来的歌名不带时长变体位,key 按时长换成这首真正的那条
+// (resolveEnrichKeyForDuration):现场版、剪辑版拿自己的那份,不拿同名另一个录音按原 key 存的。调用方别持 enrichMu。
 func importedLyricsFor(artist, title, album string, durationSecs float64) (lyricSourceResult, bool) {
-	rec, exact, ok := importedLyricsRecordLookup(enrichKey(artist, title, album))
+	key := enrichKey(artist, title, album)
+	if durationSecs > 0 {
+		enrichMu.Lock()
+		key, _, _ = resolveEnrichKeyForDuration(enrichCache, key, durationSecs)
+		enrichMu.Unlock()
+	}
+	rec, exact, ok := importedLyricsRecordLookup(key)
 	// 按宽松 key 对上的(存的是另一种写法)跟按身份存的一样,知道时长时末句要吻合。
 	if ok && !exact && !importedLyricsFitsDuration(rec, durationSecs) {
 		ok = false

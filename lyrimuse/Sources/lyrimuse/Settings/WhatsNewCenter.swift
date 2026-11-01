@@ -32,6 +32,7 @@ final class WhatsNewCenter {
         let current = SparkleUpdaterManager.appVersionString
         let baseline = WhatsNew.baseline(current: current, lastLaunched: defaults.string(forKey: Keys.lastLaunchedVersion),
                                          stored: defaults.string(forKey: Keys.baseline),
+                                         shownVersion: defaults.string(forKey: Keys.bannerShown),
                                          hasCompletedOnboarding: AppSettings.shared.hasCompletedOnboarding)
         defaults.set(baseline, forKey: Keys.baseline)
         defaults.set(current, forKey: Keys.lastLaunchedVersion)
@@ -46,14 +47,17 @@ final class WhatsNewCenter {
         self.bannerVersion = nil
     }
 
-    /// 当前版本的更新内容:包里那份 CHANGELOG.md(build.sh 拷进 Resources)里这一版那一节。
-    /// 界面是中文取中文(繁体界面由简体转写),别的语言取英文;找不到这一节为空。
+    /// 这次更新的内容:包里那份 CHANGELOG.md(build.sh 拷进 Resources)里基准版本之后到当前版本的各节,同名小节并在一起。
+    /// 界面是中文取中文(繁体界面由简体转写),别的语言取英文;一节都找不到为空。
     static func currentNotes() -> [ReleaseNotes.Section] {
         guard let url = Bundle.main.url(forResource: "CHANGELOG", withExtension: "md"),
-              let data = FileIO.read(url), let text = String(data: data, encoding: .utf8),
-              let section = ReleaseNotes.section(version: SparkleUpdaterManager.appVersionString, in: text) else { return [] }
+              let data = FileIO.read(url), let text = String(data: data, encoding: .utf8) else { return [] }
+        let current = SparkleUpdaterManager.appVersionString
+        let baseline = UserDefaults.standard.string(forKey: Keys.baseline) ?? current
         let language = L10n.current
-        let sections = ReleaseNotes.parse(section, chinese: language == "zh-hans" || language == "zh-hant")
+        let chinese = language == "zh-hans" || language == "zh-hant"
+        let sections = ReleaseNotes.merge(ReleaseNotes.sections(after: baseline, through: current, in: text)
+            .map { ReleaseNotes.parse($0, chinese: chinese) })
         guard language == "zh-hant" else { return sections }
         let hant = StringTransform("Hans-Hant")
         return sections.map { section in

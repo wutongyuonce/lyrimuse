@@ -175,17 +175,16 @@ private struct MenuBarIconStyleCard: View {
 }
 
 /// 「专辑封面」卡:左边名字和「没有封面时显示哪一款」,右边一小段菜单栏摆正在放的封面,
-/// 没在放歌时摆那一款图标,跟真菜单栏上的退回一致。
+/// 没在放歌或广告时摆那一款图标,跟真菜单栏上的退回一致(`MenuBarIconArtwork.playingSource`)。
+/// 只订阅封面那几项:别整个观察 PlaybackCoordinator,它播放时一直在变。
 private struct MenuBarArtworkCard: View {
     let selected: Bool
     let fallback: MenuBarIconStyle
-    @ObservedObject private var playback = PlaybackCoordinator.shared
     @State private var hovering = false
+    @State private var artwork: CGImage?
 
-    private var artwork: CGImage? {
-        guard let source = playback.highResArtworkThumbnail ?? playback.highResArtworkImage ?? playback.artworkImage
-        else { return nil }
-        return MenuBarIconArtwork.thumbnail(of: source)
+    private func refreshArtwork() {
+        artwork = MenuBarIconArtwork.playingSource().flatMap { MenuBarIconArtwork.thumbnail(of: $0) }
     }
 
     var body: some View {
@@ -208,6 +207,8 @@ private struct MenuBarArtworkCard: View {
         .padding(.vertical, 7)
         .modifier(MenuBarIconCardChrome(selected: selected, hovering: hovering))
         .onHover { hovering = $0 }
+        .onAppear(perform: refreshArtwork)
+        .onReceive(MenuBarIconArtwork.playingSourceChanges) { refreshArtwork() }
     }
 
     /// 封面方块,大小和圆角同菜单栏上那一枚(`MenuBarIconArtwork.side` / `cornerRadius`)。

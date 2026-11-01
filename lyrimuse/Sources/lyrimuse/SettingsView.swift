@@ -784,6 +784,18 @@ struct SettingsView: View {
 
 // 歌词相关设置的统一入口,也扛下原"播放"tab 的"数据源"设置(远程/本地+Relay 地址,
 // 现在叫"播放状态来源")。
+/// 「同时存为」那一行的「删除副本…」:换格式那一趟没做完时点不了(同下拉框)。
+private struct LyricsWordFormatDeleteCopiesButton: View {
+    let action: () -> Void
+    @ObservedObject private var monitor = LyricsWordFormatSwitchMonitor.shared
+
+    var body: some View {
+        Button(L10n.t("删除副本…"), action: action)
+            .buttonStyle(.link)
+            .disabled(monitor.isBusy)
+    }
+}
+
 /// 设置 › 歌词 › 管理 › 存储的「逐字歌词格式」:歌词文件夹里逐字歌词写成哪种格式。副标题只说当前选中的那种;换格式时换成备份 /
 /// 改存的进度,做完说一声「已改存」(`LyricsWordFormatSwitchMonitor`),这期间下拉框锁住。
 private struct LyricsWordFormatRow: View {
@@ -2441,8 +2453,7 @@ private struct LyricsSettingsTab: View {
                 CardDivider()
                 SettingsSubRow(title: String(format: L10n.t("同时存为：%@"),
                                              L10n.list(features.lyricsWordFormats.dropFirst().map(Self.lyricsWordFormatName)))) {
-                    Button(L10n.t("删除副本…")) { confirmDeleteLyricsWordFormatCopies() }
-                        .buttonStyle(.link)
+                    LyricsWordFormatDeleteCopiesButton { confirmDeleteLyricsWordFormatCopies() }
                 }
             }
             // 只在偏离默认位置时多出一条从属行:既说明了状态(你现在不在默认位置),又给出退路。
@@ -2612,6 +2623,8 @@ private struct LyricsSettingsTab: View {
     /// deletingCopies:「删除副本…」删掉的那几种,进度那一行据此说「删除」而不是「改存」。
     private func applyLyricsWordFormats(_ formats: [LyricsWordFormat], backup: Bool, deletingCopies: [LyricsWordFormat] = []) {
         let monitor = LyricsWordFormatSwitchMonitor.shared
+        // 上一趟还没做完时不起第二趟:两趟各写一次 features.json,后写的会把先写的悄悄盖掉。
+        guard !monitor.isBusy else { return }
         Task {
             if backup {
                 monitor.beginBackup(to: formats, removing: deletingCopies)

@@ -389,9 +389,10 @@ func importStoreIdentities(stem string, c *scoredLyricCandidateResult) []importe
 	if c != nil && strings.TrimSpace(c.Title) != "" && strings.TrimSpace(c.Artist) != "" {
 		return []importedIdentity{{Artist: c.Artist, Title: c.Title}}
 	}
+	// 纯数字的「歌手」多半是音轨号(「01 - 歌名」),存进去永远对不上;只留给 match 在歌词库里比对。
 	var out []importedIdentity
 	for _, g := range importIdentityGuesses(stem, nil) {
-		if g.artist != "" && g.title != "" {
+		if g.artist != "" && g.title != "" && !importTrackNumRe.MatchString(g.artist) {
 			out = append(out, importedIdentity{Artist: g.artist, Title: g.title})
 		}
 	}

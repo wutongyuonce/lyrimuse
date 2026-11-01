@@ -84,8 +84,11 @@ func runSettingsAuditContracts() {
     expectEqual(sourceHas(deleteCopies, "guard alert.runModal() == .alertFirstButtonReturn else { return }")
                 && (deleteCopies.range(of: "runModal")?.lowerBound ?? deleteCopies.endIndex)
                     < (deleteCopies.range(of: "applyLyricsWordFormats(")?.lowerBound ?? deleteCopies.startIndex)
-                && sourceHas(view, "Button(L10n.t(\"删除副本…\")) { confirmDeleteLyricsWordFormatCopies() }"), true,
+                && sourceHas(view, "LyricsWordFormatDeleteCopiesButton { confirmDeleteLyricsWordFormatCopies() }"), true,
                 "逐字歌词副本: 删除副本先确认再删")
+    expectEqual(sourceHas(sourceBody("private struct LyricsWordFormatDeleteCopiesButton: View", in: view), ".disabled(monitor.isBusy)")
+                && sourceHas(sourceBody("private func applyLyricsWordFormats(", in: view), "guard !monitor.isBusy else { return }"), true,
+                "逐字歌词副本: 换格式那一趟没做完时删不了副本、也不起第二趟")
     expectEqual(sourceHas(view, "help: automation.unauthorizedHelp([player])"), true,
                 "自动化权限: 每一行的「?」只说这一家")
     let iCloud = sourceBody("private func importFromICloud()", in: view)

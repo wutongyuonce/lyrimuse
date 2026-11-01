@@ -98,6 +98,14 @@ func runSourceContractTests() {
         }
         expectEqual(scanned > 15, true, "调度器: 菜单栏至少扫到 16 个源文件(实际 \(scanned)),少了说明路径不对")
         expectEqual(offenders, [], "调度器: 菜单栏的订阅挂 DispatchQueue.main,别 receive(on: RunLoop.main),菜单开着时状态栏歌词会停住")
+        let picker = (try? String(contentsOfFile: appSources.appendingPathComponent("UI/MenuBarIconPicker.swift").path, encoding: .utf8)) ?? ""
+        let artworkCard = sourceBody("private struct MenuBarArtworkCard: View", in: picker)
+        expectEqual(!sourceHas(artworkCard, "PlaybackCoordinator.shared") && sourceHas(artworkCard, "MenuBarIconArtwork.playingSource()")
+                    && sourceHas(artworkCard, ".onReceive(MenuBarIconArtwork.playingSourceChanges)"), true,
+                    "图标卡: 「专辑封面」卡只订阅封面那几项、跟真菜单栏同一套取图(广告时退回图标),不整个观察协调器")
+        let search = (try? String(contentsOfFile: appSources.appendingPathComponent("LyricsManager/LyricsSearchSheet.swift").path, encoding: .utf8)) ?? ""
+        expectEqual(!search.contains("L10n.current == \"en\"") && search.contains("L10n.usesFullWidthBrackets"), true,
+                    "括号: 搜索面板拼的括号按 L10n.usesFullWidthBrackets 选,法语德语这些不会夹全角括号")
         let item = (try? String(contentsOfFile: appSources.appendingPathComponent("MenuBar/MenuBarStatusItem.swift").path, encoding: .utf8)) ?? ""
         expectEqual(item.components(separatedBy: "scheduler: RunLoop.main").count - 1, 1, "调度器: 菜单栏只剩宽度滑杆那一条挂 RunLoop.main")
         expectEqual(sourceHas(item, "settings.$menuBarLyricsWidth.dropFirst()\n.debounce(for: .milliseconds(250), scheduler: RunLoop.main)"), true,

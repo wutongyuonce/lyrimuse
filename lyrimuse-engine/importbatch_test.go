@@ -381,7 +381,7 @@ func TestDropImportedLyricsFiles(t *testing.T) {
 	}
 }
 
-// 审查补的:时长变体位是另一个录音,不借;宽松 key(另一种写法)对上的要时长吻合;删的时候跟读的时候同一套找法。
+// 时长变体位是另一个录音,不借;宽松 key(另一种写法)对上的要时长吻合;删的时候跟读的时候同一套找法。
 func TestImportedLyricsLooseKeyRespectsVariantAndDuration(t *testing.T) {
 	t.Setenv("LYRIMUSE_CONFIG_DIR", t.TempDir())
 	setUpEnrichEditTest(t, importTestCache())
@@ -410,7 +410,42 @@ func TestImportedLyricsLooseKeyRespectsVariantAndDuration(t *testing.T) {
 	}
 }
 
-// 审查补的:只凭歌名对上的不自动认定;「311 - Amber」两种猜法都留;纯文本不给存入导入库。
+// 歌词库里同名两个录音(原 key 一条、「~dur2」一条):按时长换成真正的那条再查,各拿各的。
+func TestImportedLyricsForResolvesDurationVariant(t *testing.T) {
+	t.Setenv("LYRIMUSE_CONFIG_DIR", t.TempDir())
+	setUpEnrichEditTest(t, importTestCache())
+	enrichMu.Lock()
+	enrichCache["C|Live|Album"] = enrichEntry{DurationSecs: 200}
+	enrichCache["C|Live~dur2|Album"] = enrichEntry{DurationSecs: 300}
+	enrichMu.Unlock()
+	if err := saveImportedLyrics(importedLyricsRecord{Key: "C|Live|Album", Lyrics: lrcBodyEn(20, 9)}); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := importedLyricsFor("C", "Live", "Album", 300); ok {
+		t.Error("原 key 那份是另一个录音的,不该给 300 秒的这首")
+	}
+	if _, ok := importedLyricsFor("C", "Live", "Album", 200); !ok {
+		t.Error("200 秒的就是原 key 那条,应拿到")
+	}
+	if err := saveImportedLyrics(importedLyricsRecord{Key: "C|Live~dur2|Album", Lyrics: lrcBodyEn(28, 10)}); err != nil {
+		t.Fatal(err)
+	}
+	if r, ok := importedLyricsFor("C", "Live", "Album", 300); !ok || r.lyr != lrcBodyEn(28, 10) {
+		t.Error("300 秒的应拿到「~dur2」那条自己的")
+	}
+}
+
+// 「01 - 歌名」的音轨号不当歌手存进导入库。
+func TestImportStoreIdentitiesSkipsTrackNumber(t *testing.T) {
+	if ids := importStoreIdentities("01 - Amber", nil); len(ids) != 0 {
+		t.Errorf("音轨号不该当歌手: %+v", ids)
+	}
+	if ids := importStoreIdentities("Weezer - Island in the Sun", nil); len(ids) == 0 {
+		t.Error("正常的「歌手 - 歌名」应存")
+	}
+}
+
+// 只凭歌名对上的不自动认定;「311 - Amber」两种猜法都留;纯文本不给存入导入库。
 func TestPlanLyricsImportTitleOnlyAndPlainText(t *testing.T) {
 	if g := importIdentityGuesses("311 - Amber", nil); len(g) != 2 || g[0] != (importIdentity{artist: "311", title: "Amber"}) || g[1] != (importIdentity{title: "Amber"}) {
 		t.Errorf("数字开头的两段应同时猜歌手和只有歌名: %+v", g)
@@ -429,7 +464,7 @@ func TestPlanLyricsImportTitleOnlyAndPlainText(t *testing.T) {
 	}
 }
 
-// 审查补的:监视文件夹不写标了纯音乐、只有纯文本的歌;只补模式跳过纯音乐;纯文本盖不住已有的逐行歌词。
+// 监视文件夹不写标了纯音乐、只有纯文本的歌;只补模式跳过纯音乐;纯文本盖不住已有的逐行歌词。
 func TestImportBatchRespectsInstrumentalAndPlainText(t *testing.T) {
 	cache := importTestCache()
 	keyI, keyP, keyQ := enrichKey("I", "Inst", "X"), enrichKey("P", "Plain", "X"), enrichKey("周杰伦", "晴天", "叶惠美")

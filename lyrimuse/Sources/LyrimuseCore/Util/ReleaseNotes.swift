@@ -27,6 +27,36 @@ public enum ReleaseNotes {
         return lines[(start + 1)..<end].joined(separator: "\n")
     }
 
+    /// `baseline` 之后到 `current` 为止(含)各版的正文,按文件里的次序(新的在前);一节都没有时退回 `current` 那一节。
+    /// 跳过几个版本升上来的用户看到中间每一版的内容。
+    public static func sections(after baseline: String, through current: String, in changelog: String) -> [String] {
+        let versions = changelog.components(separatedBy: "\n").compactMap { line -> String? in
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard trimmed.hasPrefix("## v") else { return nil }
+            return String(trimmed.dropFirst(4))
+        }
+        let inRange = versions.filter {
+            WhatsNew.compare($0, baseline) == .orderedDescending && WhatsNew.compare($0, current) != .orderedDescending
+        }
+        let picked = inRange.isEmpty ? [current] : inRange
+        return picked.compactMap { section(version: $0, in: changelog) }
+    }
+
+    /// 几版拆好的小节并成一份:同名小节合在一起(按先出现的次序),条目新版在前。
+    public static func merge(_ versions: [[Section]]) -> [Section] {
+        var merged: [Section] = []
+        for sections in versions {
+            for section in sections {
+                if let i = merged.firstIndex(where: { $0.title == section.title }) {
+                    merged[i].items += section.items
+                } else {
+                    merged.append(section)
+                }
+            }
+        }
+        return merged
+    }
+
     /// 拆成单一语言。`chinese` 为假取英文;某一条没写中文时退回它的英文。
     public static func parse(_ section: String, chinese: Bool) -> [Section] {
         var sections: [Section] = []

@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 
 // 「封面当图标」(`AppSettings.menuBarIconShowsArtwork`):菜单栏图标换成正在放的这首的专辑封面。
 // 两处用到:图标独占那一格(`MenuBarStatusItem.showIcon`)和歌词旁那枚进度图标(`MenuBarProgressIcon`)。
@@ -20,9 +21,23 @@ enum MenuBarIconArtwork {
     /// 这一刻要画的封面原图;nil = 开关关着 / 没封面 / 广告。口径同面板小封面:高清替代优先、先取预缩小的那张。
     static func currentSource() -> NSImage? {
         guard AppSettings.shared.menuBarIconShowsArtwork else { return nil }
+        return playingSource()
+    }
+
+    /// 不看开关的那一半:正在放的封面,广告时 nil。设置页「专辑封面」卡也用它,两处退回一致。
+    static func playingSource() -> NSImage? {
         let p = PlaybackCoordinator.shared
         guard !p.isCurrentTrackAdBreak else { return nil }
         return p.highResArtworkThumbnail ?? p.highResArtworkImage ?? p.artworkImage
+    }
+
+    /// 上面几项任一变了就发一次(已经写进去之后,`@Published` 本身在写入前发)。
+    static var playingSourceChanges: AnyPublisher<Void, Never> {
+        let p = PlaybackCoordinator.shared
+        return Publishers.Merge4(p.$highResArtworkThumbnail.map { _ in () }, p.$highResArtworkImage.map { _ in () },
+                                 p.$artworkImage.map { _ in () }, p.$isCurrentTrackAdBreak.map { _ in () })
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     /// 图标那一格的尺寸。关着时就是款式图标自己的尺寸。
