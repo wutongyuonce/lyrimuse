@@ -28,8 +28,8 @@ func TestImportLyricsPlainLRCWithCompanions(t *testing.T) {
 	if c.Source != lyricsImportSource || c.Title != "晴天" || c.Artist != "周杰伦" || c.Album != "叶惠美" {
 		t.Errorf("来源和身份不对: %+v", c)
 	}
-	if !strings.Contains(c.Lyrics, "[offset:200]") || !strings.Contains(c.Lyrics, "[00:03.50]从出生那年就飘着") || strings.HasPrefix(c.Lyrics, "\ufeff") {
-		t.Errorf("正文应原样(去 BOM、留标签): %q", c.Lyrics)
+	if c.Lyrics != "[offset:200]\n[00:01.00]故事的小黄花\n[00:03.50]从出生那年就飘着" {
+		t.Errorf("正文应去 BOM、去身份标签行,留 [offset:]: %q", c.Lyrics)
 	}
 	if !strings.Contains(c.LyricsTr, "yellow flower") || !strings.Contains(c.LyricsRoma, "huáng") {
 		t.Errorf("译文 / 读音没配上: tr=%q roma=%q", c.LyricsTr, c.LyricsRoma)

@@ -64,6 +64,8 @@ var (
 	importLRCLineRe = regexp.MustCompile(`(?m)^\s*\[\d+:\d+(?:[.:]\d{1,3})?\]`)
 	// 正文开头别人家的身份标签:读出来当候选的歌名歌手专辑。
 	importTagRe = regexp.MustCompile(`(?m)^\s*\[(ar|ti|al):\s*(.*?)\s*\]\s*$`)
+	// importCreditLineRe:身份、署名这类标签行,读完身份就从正文里去掉(不显示,也别算进行数)。[offset:] 不在里面,显示层要用。
+	importCreditLineRe = regexp.MustCompile(`(?m)^[ \t]*\[(?:ar|ti|al|by|au|re|ve|length|tool):[^\]\n]*\][ \t]*(?:\r?\n|$)`)
 )
 
 // importLyricsKindOf 按后缀认,认不出(或后缀是 .txt / 没有)再看内容。
@@ -284,6 +286,7 @@ func parseImportedLyrics(files []importLyricsFile, trTarget string) importLyrics
 			}
 		}
 	}
+	c.Lyrics = strings.TrimSpace(importCreditLineRe.ReplaceAllString(c.Lyrics, ""))
 	if !c.PlainTextOnly {
 		if tr != nil {
 			text, _ := openPlainLyricsText(tr.file.Data)
