@@ -660,8 +660,8 @@ final class AppSettings: ObservableObject {
     /// (`LyricsWindowView.artworkCard`,视图环境值只能在视图里判);④ 之后唯一的
     /// 消费面是歌词窗口那张按需打开的卡,窗口没开就完全不存在这回事。
     static let defaultMotionCoverEnabled = true
-    /// Spotify Canvas 当背景:默认开。只有 Spotify 本机缓存里有短片的歌才换,别的照旧。
-    static let defaultSpotifyCanvasEnabled = true
+    /// Spotify Canvas 当背景:默认关。打开后只有 Spotify 本机缓存里有短片的歌才换,别的照旧。
+    static let defaultSpotifyCanvasEnabled = false
     /// 暂停时是否收起成一条:默认不收,暂停时卡片留在原地比缩回去更容易接着看。
     static let defaultNotchCollapsesWhenPaused = false
     static let defaultNotchShowsEqualizer = true
@@ -2522,7 +2522,7 @@ final class AppSettings: ObservableObject {
         // 继承来的值当场落盘(init 里的赋值不触发 didSet):不落的话之后只关网页歌词,下次启动 OBS 也跟着关了。
         if storedObs == nil { defaults.set(obsEnabled, forKey: Keys.obsLyricsEnabled) }
         obsLyricsAllowLAN = (defaults.object(forKey: Keys.obsLyricsAllowLAN) as? Bool) ?? false
-        obsSongCard = defaults.string(forKey: Keys.obsSongCard).flatMap(WebLyricsObsPayload.SongCard.init(rawValue:)) ?? .always
+        obsSongCard = defaults.string(forKey: Keys.obsSongCard).flatMap(WebLyricsObsPayload.SongCard.init(rawValue:)) ?? .off
         obsLyricsPort = WebLyricsPort.clamped((defaults.object(forKey: Keys.obsLyricsPort) as? Int) ?? WebLyricsPort.obsStandard,
                                               fallback: WebLyricsPort.obsStandard)
         if let token = defaults.string(forKey: Keys.obsLyricsToken), !token.isEmpty {

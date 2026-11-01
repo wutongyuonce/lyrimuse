@@ -1226,7 +1226,7 @@
             "fr": "Quand un morceau a une vidéo Canvas en boucle sur Spotify, la fenêtre des paroles en taille complète la lit en fond à la place de l’illustration floutée. Seules les vidéos déjà enregistrées par Spotify sur ce Mac sont utilisées : les morceaux que vous avez écoutés dans Spotify en ont une, même quand vous les écoutez dans un autre lecteur. La vidéo se met en pause en mode Économie d’énergie ou avec « Réduire les animations ».",
             "de": "Hat ein Titel auf Spotify ein Canvas-Video in Endlosschleife, spielt das Liedtextfenster in Vollgröße es statt des unscharfen Covers als Hintergrund ab. Verwendet werden nur Videos, die Spotify bereits auf diesem Mac gespeichert hat; Titel, die du in Spotify gehört hast, bekommen also eines, auch wenn du sie in einem anderen Player abspielst. Im Stromsparmodus oder mit „Bewegung reduzieren“ pausiert es."
           },
-          "default": "on",
+          "default": "off",
           "check": {
             "appSetting": "spotifyCanvasEnabled"
           },

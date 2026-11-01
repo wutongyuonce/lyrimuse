@@ -38,6 +38,7 @@ These features stay off after you install. Turn them on in Settings first (some 
 | [Touch Bar lyrics](#feature-touch-bar-lyrics) | Settings › Lyrics Display › Touch Bar › Touch Bar Lyrics |
 | [Lyrics window HDR highlight](#feature-lyrics-window-hdr) | Settings › Lyrics Display › Lyrics Window › Color › HDR Highlight |
 | [Mini window hides when paused or in full screen](#feature-mini-window-auto-hide) | Settings › Lyrics Display › Lyrics Window › Behavior › Hide When Paused |
+| [Spotify Canvas background](#feature-spotify-canvas) | Settings › Lyrics Display › Lyrics Window › Background › Spotify Canvas |
 | [Line transition](#feature-line-transition) | Settings › Lyrics Display › Floating Lyrics › Layout › Line Transition |
 | [Fade when the pointer is over it](#feature-fade-on-hover) | Settings › Lyrics Display › Floating Lyrics › Behavior › Fade on Hover |
 | [Lock position, long-press to drag](#feature-lock-position) | Settings › Lyrics Display › Floating Lyrics › Behavior › Lock Position |
@@ -373,7 +374,7 @@ Albums with animated artwork on Apple Music, QQ Music or NetEase Cloud Music mov
 
 When a song has a looping Canvas video on Spotify, the full-size lyrics window plays it as the background instead of the artwork blur. Only videos Spotify has already saved on this Mac are used, so songs you have played in Spotify get one, also when you play them in another player. It pauses in Low Power Mode or with Reduce Motion on.
 
-- On by default
+- Off by default
 - Settings: Lyrics Display › Lyrics Window › Background › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

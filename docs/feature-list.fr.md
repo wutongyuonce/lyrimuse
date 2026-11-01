@@ -38,6 +38,7 @@ Ces fonctionnalités restent désactivées après l’installation. Activez-les 
 | [Paroles Touch Bar](#feature-touch-bar-lyrics) | Réglages › Affichage des paroles › Touch Bar › Paroles Touch Bar |
 | [Surbrillance HDR de la fenêtre des paroles](#feature-lyrics-window-hdr) | Réglages › Affichage des paroles › Fenêtre des paroles › Couleur › Surbrillance HDR |
 | [Fenêtre mini masquée en pause ou en plein écran](#feature-mini-window-auto-hide) | Réglages › Affichage des paroles › Fenêtre des paroles › Comportement › Masquer en pause |
+| [Fond Spotify Canvas](#feature-spotify-canvas) | Réglages › Affichage des paroles › Fenêtre des paroles › Fond › Spotify Canvas |
 | [Transition des lignes](#feature-line-transition) | Réglages › Affichage des paroles › Paroles flottantes › Disposition › Transition des lignes |
 | [Estomper au survol](#feature-fade-on-hover) | Réglages › Affichage des paroles › Paroles flottantes › Comportement › Estomper au survol |
 | [Verrouiller la position, maintenir pour déplacer](#feature-lock-position) | Réglages › Affichage des paroles › Paroles flottantes › Comportement › Verrouiller la position |
@@ -373,7 +374,7 @@ Les albums avec une illustration animée sur Apple Music, QQ Music ou NetEase Cl
 
 Quand un morceau a une vidéo Canvas en boucle sur Spotify, la fenêtre des paroles en taille complète la lit en fond à la place de l’illustration floutée. Seules les vidéos déjà enregistrées par Spotify sur ce Mac sont utilisées : les morceaux que vous avez écoutés dans Spotify en ont une, même quand vous les écoutez dans un autre lecteur. La vidéo se met en pause en mode Économie d’énergie ou avec « Réduire les animations ».
 
-- Activée par défaut
+- Désactivée par défaut
 - Réglages : Affichage des paroles › Fenêtre des paroles › Fond › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

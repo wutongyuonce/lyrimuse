@@ -38,6 +38,7 @@ Lyrimuse のすべての機能について、何ができるか、設定のど�
 | [Touch Barの歌詞](#feature-touch-bar-lyrics) | 設定 › 歌詞の表示 › Touch Bar › Touch Barの歌詞 |
 | [歌詞ウインドウのHDRハイライト](#feature-lyrics-window-hdr) | 設定 › 歌詞の表示 › 歌詞ウインドウ › カラー › HDRハイライト |
 | [一時停止中やフルスクリーン時にミニウインドウを非表示](#feature-mini-window-auto-hide) | 設定 › 歌詞の表示 › 歌詞ウインドウ › 動作 › 一時停止中は非表示 |
+| [Spotify Canvasの背景](#feature-spotify-canvas) | 設定 › 歌詞の表示 › 歌詞ウインドウ › 背景 › Spotify Canvas |
 | [行の切り替えアニメーション](#feature-line-transition) | 設定 › 歌詞の表示 › フローティング歌詞 › レイアウト › 行の切り替えアニメーション |
 | [ポインタを重ねたときに薄くする](#feature-fade-on-hover) | 設定 › 歌詞の表示 › フローティング歌詞 › 動作 › ポインタを重ねたときに薄くする |
 | [位置をロック、長押ししてドラッグ](#feature-lock-position) | 設定 › 歌詞の表示 › フローティング歌詞 › 動作 › 位置をロック |
@@ -373,7 +374,7 @@ Apple Music、QQ Music、NetEase Cloud Musicでアニメーションアートワ
 
 Spotifyで曲にループ動画（Canvas）がある場合、フルサイズの歌詞ウインドウの背景がその動画に切り替わります。SpotifyがこのMacに保存済みの動画のみを使用するため、Spotifyで再生したことのある曲に限られますが、同じ曲をほかのプレーヤーで再生したときにも使えます。低電力モードや「視差効果を減らす」がオンのときは再生されません。
 
-- 初期設定でオン
+- 初期設定でオフ
 - 設定の場所：歌詞の表示 › 歌詞ウインドウ › 背景 › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

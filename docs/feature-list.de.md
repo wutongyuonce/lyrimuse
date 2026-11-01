@@ -38,6 +38,7 @@ Diese Funktionen bleiben nach der Installation aus. Schalte sie zuerst in den Ei
 | [Liedtext auf der Touch Bar](#feature-touch-bar-lyrics) | Einstellungen › Liedtext-Anzeige › Touch Bar › Touch Bar-Liedtext |
 | [HDR-Hervorhebung im Liedtextfenster](#feature-lyrics-window-hdr) | Einstellungen › Liedtext-Anzeige › Liedtextfenster › Farbe › HDR-Hervorhebung |
 | [Mini-Fenster blendet sich bei Pause oder Vollbild aus](#feature-mini-window-auto-hide) | Einstellungen › Liedtext-Anzeige › Liedtextfenster › Verhalten › Bei Pause ausblenden |
+| [Spotify Canvas als Hintergrund](#feature-spotify-canvas) | Einstellungen › Liedtext-Anzeige › Liedtextfenster › Hintergrund › Spotify Canvas |
 | [Zeilenwechsel](#feature-line-transition) | Einstellungen › Liedtext-Anzeige › Schwebender Text › Layout › Zeilenwechsel |
 | [Abblenden, wenn der Zeiger darauf zeigt](#feature-fade-on-hover) | Einstellungen › Liedtext-Anzeige › Schwebender Text › Verhalten › Beim Überfahren abblenden |
 | [Position sperren, zum Ziehen lange drücken](#feature-lock-position) | Einstellungen › Liedtext-Anzeige › Schwebender Text › Verhalten › Position sperren |
@@ -373,7 +374,7 @@ Alben mit animiertem Cover auf Apple Music, QQ Music oder NetEase Cloud Music be
 
 Hat ein Titel auf Spotify ein Canvas-Video in Endlosschleife, spielt das Liedtextfenster in Vollgröße es statt des unscharfen Covers als Hintergrund ab. Verwendet werden nur Videos, die Spotify bereits auf diesem Mac gespeichert hat; Titel, die du in Spotify gehört hast, bekommen also eines, auch wenn du sie in einem anderen Player abspielst. Im Stromsparmodus oder mit „Bewegung reduzieren“ pausiert es.
 
-- Standardmäßig ein
+- Standardmäßig aus
 - Einstellungen: Liedtext-Anzeige › Liedtextfenster › Hintergrund › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

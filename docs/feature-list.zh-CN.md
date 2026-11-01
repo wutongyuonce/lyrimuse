@@ -38,6 +38,7 @@ Lyrimuse 是一款开源（GPL-3.0）的 macOS 逐字歌词 App，支持 macOS 1
 | [触控栏歌词](#feature-touch-bar-lyrics) | 设置 › 歌词显示 › 触控栏 › 触控栏歌词 |
 | [歌词窗口 HDR 高亮](#feature-lyrics-window-hdr) | 设置 › 歌词显示 › 歌词窗口 › 颜色 › HDR 高亮 |
 | [迷你窗口在暂停或全屏时隐藏](#feature-mini-window-auto-hide) | 设置 › 歌词显示 › 歌词窗口 › 行为 › 暂停时隐藏 |
+| [Spotify Canvas 背景](#feature-spotify-canvas) | 设置 › 歌词显示 › 歌词窗口 › 背景 › Spotify Canvas |
 | [换句动画](#feature-line-transition) | 设置 › 歌词显示 › 悬浮歌词 › 排版 › 换句动画 |
 | [指针悬停时淡化](#feature-fade-on-hover) | 设置 › 歌词显示 › 悬浮歌词 › 行为 › 悬停时淡化 |
 | [锁定位置、长按拖动](#feature-lock-position) | 设置 › 歌词显示 › 悬浮歌词 › 行为 › 锁定位置 |
@@ -373,7 +374,7 @@ Apple Music、QQ 音乐或网易云音乐上带动态封面的专辑，在完整
 
 歌曲在 Spotify 上有循环短片（Canvas）时，完整尺寸歌词窗口的背景换成这段短片。只使用 Spotify 已保存在本机的短片，在 Spotify 中放过的歌曲才有，用其他播放器播放同一首歌时也能用上。低电量模式或开启「减弱动态效果」时不播放。
 
-- 默认开启
+- 默认关闭
 - 设置位置：歌词显示 › 歌词窗口 › 背景 › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

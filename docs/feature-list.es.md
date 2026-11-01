@@ -38,6 +38,7 @@ Estas funciones siguen desactivadas después de instalar. Actívalas primero en 
 | [Letra en la Touch Bar](#feature-touch-bar-lyrics) | Ajustes › Mostrar letra › Touch Bar › Letra en la Touch Bar |
 | [Resaltado HDR en la ventana de letra](#feature-lyrics-window-hdr) | Ajustes › Mostrar letra › Ventana de letra › Color › Resaltado HDR |
 | [Ocultar la ventana mini en pausa o pantalla completa](#feature-mini-window-auto-hide) | Ajustes › Mostrar letra › Ventana de letra › Comportamiento › Ocultar en pausa |
+| [Fondo de Spotify Canvas](#feature-spotify-canvas) | Ajustes › Mostrar letra › Ventana de letra › Fondo › Spotify Canvas |
 | [Transición de líneas](#feature-line-transition) | Ajustes › Mostrar letra › Letra flotante › Diseño › Transición de líneas |
 | [Atenuar al pasar el puntero](#feature-fade-on-hover) | Ajustes › Mostrar letra › Letra flotante › Comportamiento › Atenuar al pasar el puntero |
 | [Bloquear posición, mantener pulsado para arrastrar](#feature-lock-position) | Ajustes › Mostrar letra › Letra flotante › Comportamiento › Bloquear posición |
@@ -373,7 +374,7 @@ Los álbumes con ilustración animada en Apple Music, QQ Music o NetEase Cloud M
 
 Si una canción tiene un vídeo en bucle (Canvas) en Spotify, el fondo de la ventana de letra a tamaño completo pasa a ser ese vídeo. Solo se usan los vídeos que Spotify ya guardó en este Mac, así que solo lo tienen las canciones que hayas reproducido en Spotify, también al reproducirlas en otro reproductor. No se reproduce en modo de bajo consumo ni con «Reducir movimiento» activado.
 
-- Activada por omisión
+- Desactivada por omisión
 - Ajustes: Mostrar letra › Ventana de letra › Fondo › Spotify Canvas
 
 <a id="feature-idle-overview"></a>

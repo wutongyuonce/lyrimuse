@@ -902,8 +902,8 @@ func runWebLyricsTests() {
                             && sourceHas(app("WebLyrics/WebLyricsObsFeed.swift"), "for message in [lastStyle, lastTrack, lastPosition, lastSong] where !message.isEmpty"), true,
                         "网页歌词 歌名卡: 档位随 style 发、改了就重发;新连上的网页补发 song")
             expectEqual(sourceHas(app("Settings/AppSettings.swift"),
-                                  "obsSongCard = defaults.string(forKey: Keys.obsSongCard).flatMap(WebLyricsObsPayload.SongCard.init(rawValue:)) ?? .always"), true,
-                        "网页歌词 歌名卡: 默认一直显示")
+                                  "obsSongCard = defaults.string(forKey: Keys.obsSongCard).flatMap(WebLyricsObsPayload.SongCard.init(rawValue:)) ?? .off"), true,
+                        "网页歌词 歌名卡: 默认不显示")
         }
         // MediaSource 封装:从页面脚本里取出 viaMse 到 receiveMse 之前那段纯函数,在 JavaScriptCore 里拿 App 实际发出的 avcC 跑
         do {

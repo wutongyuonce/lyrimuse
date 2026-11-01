@@ -38,6 +38,7 @@ Lyrimuse의 모든 기능을 무엇을 하는지, 설정의 어디에 있는지,
 | [Touch Bar 가사](#feature-touch-bar-lyrics) | 설정 › 가사 표시 › Touch Bar › Touch Bar 가사 |
 | [가사 윈도우 HDR 강조](#feature-lyrics-window-hdr) | 설정 › 가사 표시 › 가사 윈도우 › 색상 › HDR 하이라이트 |
 | [일시 정지 또는 전체 화면일 때 미니 윈도우 가리기](#feature-mini-window-auto-hide) | 설정 › 가사 표시 › 가사 윈도우 › 동작 › 일시 정지 시 가리기 |
+| [Spotify Canvas 배경](#feature-spotify-canvas) | 설정 › 가사 표시 › 가사 윈도우 › 배경 › Spotify Canvas |
 | [줄 전환 애니메이션](#feature-line-transition) | 설정 › 가사 표시 › 플로팅 가사 › 레이아웃 › 줄 전환 애니메이션 |
 | [포인터를 올리면 흐리게](#feature-fade-on-hover) | 설정 › 가사 표시 › 플로팅 가사 › 동작 › 포인터를 올리면 흐리게 |
 | [위치 잠금, 길게 클릭하여 드래그](#feature-lock-position) | 설정 › 가사 표시 › 플로팅 가사 › 동작 › 위치 잠금 |
@@ -373,7 +374,7 @@ Apple Music, QQ Music 또는 NetEase Cloud Music에서 움직이는 아트워크
 
 노래에 Spotify의 반복 재생 짧은 영상(Canvas)이 있으면 전체 크기 가사 윈도우의 배경을 그 영상으로 바꿉니다. Spotify가 이 Mac에 이미 저장한 영상만 사용하므로 Spotify에서 재생한 적이 있는 노래에만 있으며, 같은 노래를 다른 플레이어로 재생할 때도 사용됩니다. 저전력 모드이거나 ‘동작 줄이기’가 켜져 있으면 재생하지 않습니다.
 
-- 기본으로 켜짐
+- 기본으로 꺼짐
 - 설정 위치: 가사 표시 › 가사 윈도우 › 배경 › Spotify Canvas
 
 <a id="feature-idle-overview"></a>
