@@ -42,6 +42,8 @@
 "%@ 个文件导入失败，其余已导入#one" = "%@ file failed to import; the rest were imported";
 "%@ 个歌词源无法连接" = "%@ lyrics sources could not be reached";
 "%@ 个歌词源无法连接#one" = "%@ lyrics source could not be reached";
+"%@ 份导入的歌词" = "%@ imported lyrics files";
+"%@ 份导入的歌词#one" = "%@ imported lyrics file";
 "%@ 分钟" = "%@ min";
 "%@ 分钟前更新" = "Updated %@ min ago";
 "%@ 句为新增或修改了时间戳，已按字数分配逐字时间" = "%@ new or retimed lines got their word timing split evenly by length";
@@ -304,6 +306,7 @@
 "上次检查：%@" = "Last checked: %@";
 "上次检测通过（%@）" = "Verified working (%@)";
 "上次自动匹配 %1$@ 首，找到 %2$@ 首" = "Last run: searched %1$@, found %2$@";
+"上次自动导入：%1$@，%2$@ 份" = "Last automatic import: %1$@, %2$@ files";
 "上次解析于 %@" = "Last looked up %@";
 "上次解析时无任何歌词源应答，可能是当时网络不可用，并不代表这首歌曲无歌词。重新自动匹配通常可找到歌词" = "No lyrics source responded during the last lookup, possibly because the network was unavailable; it doesn’t mean the song has no lyrics. Auto re-match usually finds them";
 "上次：检查 %1$@ 首后停止，更新 %2$@ 首" = "Last run: stopped after checking %1$@, updated %2$@";
@@ -447,6 +450,7 @@
 "从「应用程序」中选择，无需等待其开始播放" = "Pick one from Applications — no need to wait until it’s playing";
 "从上到下" = "Top to Bottom";
 "从备份恢复" = "Restore";
+"从导入库删除" = "Remove from Import Library";
 "从屏幕取色" = "Pick Color from Screen";
 "从左侧选择一首歌曲" = "Select a Song on the Left";
 "从左到右" = "Left to Right";
@@ -507,6 +511,7 @@
 "偏移" = "Offset";
 "停止" = "Stop";
 "停止搜索" = "Stop Searching";
+"停止监视" = "Stop Watching";
 "停止自动匹配" = "Stop Auto-Matching";
 "停止重新匹配" = "Stop Re-matching";
 "僧伽罗语" = "Sinhala";
@@ -529,6 +534,8 @@
 "全部专辑" = "All Albums";
 "全部关闭" = "All Off";
 "全部关闭时不显示歌词" = "With all of these off, no lyrics are shown";
+"全部删除" = "Delete All";
+"全部删除…" = "Delete All…";
 "全部功能、所在位置及默认状态" = "Every feature, where to find it in Settings, and its default state";
 "全部同步" = "All Synced";
 "全部屏幕" = "All Displays";
@@ -643,6 +650,7 @@
 "删除原文件" = "Delete Old Files";
 "删除后不再推送到这个渠道，推送记录会保留" = "Pushes to this channel stop after it’s deleted; the delivery history is kept";
 "删除失败" = "Couldn’t Remove";
+"删除失败，请重试" = "Couldn’t delete. Try again";
 "删除本地记录…" = "Delete Saved Lyrics…";
 "删除此导入的字体（不可恢复）" = "Remove this imported font (cannot be undone)";
 "删除语言包：系统设置 › 通用 › 语言与地区 › 翻译语言" = "To delete language packs: System Settings › General › Language & Region › Translation Languages";
@@ -953,6 +961,7 @@
 "宽度模式" = "Width Mode";
 "密钥或地址有误" = "Incorrect secret or URL";
 "对应多首歌曲，请选择 %@" = "Matches several songs, choose one %@";
+"对应歌词库中的歌曲" = "Matched to a library song";
 "对齐方式" = "Alignment";
 "导入" = "Import";
 "导入 %@ 首" = "Import %@ Songs";
@@ -965,6 +974,9 @@
 "导入字体…" = "Import Font…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Importing brings over your accounts and every personal setting, then restarts Lyrimuse";
 "导入并重启" = "Import and Restart";
+"导入库" = "Import Library";
+"导入库…" = "Import Library…";
+"导入库是空的" = "The import library is empty";
 "导入文件…" = "Import File…";
 "导入方式" = "Import as";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Import a lyrics file from this Mac (LRC, TTML, YRC, QRC, KRC or plain text), or drag it into the window";
@@ -1151,6 +1163,7 @@
 "已校准的歌曲不再自动更换歌词源，以免歌词变化后校准失效。将偏移设回 0 即可解除" = "Calibrated songs no longer switch lyrics sources automatically, so the calibration stays valid. Set the offset back to 0 to remove it";
 "已添加" = "Added";
 "已演唱部分的颜色，也用于歌词旁进度图标的已播放部分。默认跟随系统强调色（深色菜单栏下自动提亮）；自定义后按原色显示，不再自动提亮" = "The color of the sung part, and of the filled part of the progress icon beside the lyrics. Follows the system accent color by default (brightened on a dark menu bar); a custom color is used as-is, with no brightening";
+"已用在歌曲上的歌词保持不变，只是以后重新匹配时不再参与比较" = "Lyrics already applied to songs stay as they are; they just won’t be compared again when songs are rematched";
 "已由「自动识别」接管，取消「自动识别」后将仅识别勾选的播放器" = "Covered by Auto-detect. Turn it off to recognize only the selected players";
 "已缓存读音" = "Cached Romanization";
 "已自动跳过广告" = "Ad skipped automatically";
@@ -1384,6 +1397,7 @@
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@#one" = "Based on your top %1$@ artist, %2$@ of your plays in this period";
 "按收听最多的前 %@ 位歌手统计" = "Based on your top %@ artists";
 "按收听最多的前 %@ 位歌手统计#one" = "Based on your top %@ artist";
+"按歌名和歌手识别" = "Matched by title and artist";
 "按相关度" = "By Relevance";
 "按纯音乐处理：不显示歌词，也不自动搜索；原有歌词将保留，取消标记即可恢复" = "Treat as instrumental: lyrics are hidden and aren’t searched for automatically. Existing lyrics are kept and come back when you unmark it";
 "按翻唱者署名" = "Covering artist from the title";
@@ -1435,6 +1449,7 @@
 "搜索字体" = "Search fonts";
 "搜索时默认按相关度排序：歌名开头匹配的优先，其次是歌名、歌手、专辑中匹配的" = "While searching, results are ranked by relevance: titles that start with the query first, then matches in the title, artist and album";
 "搜索期间这首歌曲被修改过，本轮结果未采用" = "This song was edited while the search ran, so this round’s result wasn’t applied";
+"搜索歌名或歌手" = "Search title or artist";
 "搜索歌手/歌名/专辑" = "Search Artist/Title/Album";
 "搜索歌词" = "Search Lyrics";
 "搜索歌词…" = "Search Lyrics…";
@@ -1494,6 +1509,7 @@
 "整行时间轴" = "Line timing";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "The file contains your account credentials and keys in plain text. Keep it safe and don’t share it. The lyrics library is saved as a second file with a matching name; copy both when moving to a new Mac";
 "文件中尚无歌词，未保存" = "The file has no lyrics yet; not saved";
+"文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "New or changed lyrics files in the folder are imported automatically: songs without lyrics get them right away, songs with lyrics stay unchanged";
 "文件夹中没有可识别的歌词文件" = "No recognizable lyrics files in this folder";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Too many files (limit %@ files, 200 MB). Import them in batches";
 "文件过大，不像是歌词，未保存" = "The file is too large to be lyrics; not saved";
@@ -1653,6 +1669,7 @@
 "更多播放器（%d）" = "More players (%d)";
 "更多歌词操作" = "More Lyrics Actions";
 "更多设置…" = "More Settings…";
+"更换…" = "Change…";
 "更换备份文件夹…" = "Change Backup Folder…";
 "更换或手动修改歌词时，其他 %d 个条目一并更新" = "Replacements and manual edits also apply to the %d other entries";
 "更换或手动修改歌词时，其他 %d 个条目一并更新#one" = "Replacements and manual edits also apply to the %d other entry";
@@ -1808,6 +1825,7 @@
 "查看、编辑和重新搜索已缓存的歌词" = "View, edit and re-search cached lyrics";
 "查看「%@」" = "Show “%@”";
 "查看专辑简介" = "View Album Notes";
+"查看和删除导入的歌词，设置监视文件夹" = "Review and remove imported lyrics, and set a watched folder";
 "查看完整说明" = "Full Release Notes";
 "查看官方文档 →" = "View Official Docs →";
 "查看效果与教程 →" = "Preview & Setup Guide →";
@@ -1971,6 +1989,7 @@
 "正在备份歌词库…" = "Backing Up Lyrics Library…";
 "正在安装…" = "Installing…";
 "正在导入…" = "Importing…";
+"正在导入监视文件夹中的新文件…" = "Importing new files from the watched folder…";
 "正在应用到歌词引擎…" = "Applying to the lyrics engine…";
 "正在搜索歌词…" = "Searching for lyrics…";
 "正在搜索：%@" = "Searching: %@";
@@ -2106,6 +2125,7 @@
 "清空全部时间轴校准" = "Clear All Timing Calibrations";
 "清空全部电台校准" = "Clear All Radio Calibrations";
 "清空全部缓存" = "Clear All Cache";
+"清空导入库？" = "Clear the import library?";
 "清空搜索" = "Clear Search";
 "清除" = "Clear";
 "清除…" = "Erase…";
@@ -2157,6 +2177,7 @@
 "现在" = "now";
 "现场版场次不符" = "Live recording from a different show";
 "玻璃浓淡" = "Glass Density";
+"用「导入歌词文件夹…」导入，或在下方设置监视文件夹" = "Use Import Lyrics Folder… or set a watched folder below";
 "用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Helps improve Lyrimuse: version, system, features in use and crash reports. Never song titles or accounts";
 "用当前配色覆盖" = "Overwrite with Current Colors";
 "用户名下方显示" = "Shown Under Your Name";
@@ -2174,6 +2195,8 @@
 "白色" = "White";
 "白色、跟随封面、自定义颜色或彩虹" = "White, artwork color, a custom color or a rainbow";
 "皇家学术院转写（RTGS），如 สวัสดี → sawatdi" = "Royal Thai General System (RTGS), e.g. สวัสดี → sawatdi";
+"监视" = "Watch";
+"监视文件夹" = "Watched Folder";
 "直连失败时，经下方代理服务器重试" = "If a direct connection fails, retry through the proxy server below";
 "直连失败时，经系统代理或本机检测到的代理重试" = "If a direct connection fails, retry through the system proxy or a proxy detected on this Mac";
 "相邻短句可容纳于一行时合并显示" = "Adjacent short lines are merged when they fit on one line";
@@ -2680,6 +2703,7 @@
 "选择歌词显示方式" = "Choose Where Lyrics Appear";
 "选择用于播放此网站的浏览器" = "Pick the browser you use for this site";
 "选择要分享的句子" = "Pick the lines to share";
+"选择要监视的歌词文件夹" = "Choose the lyrics folder to watch";
 "透明" = "Transparent";
 "逐字" = "Word-by-Word";
 "逐字填色时已唱部分使用此颜色" = "The color of the sung part as lyrics fill word by word";

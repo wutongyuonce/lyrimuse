@@ -165,6 +165,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
         /// 歌词管理弹「导入歌词文件夹」预览面板,读这个文件夹(`debug/import-lyrics-folder?path=<绝对路径>`)。歌词管理窗口要开着
         /// (先 `lyrics-manager?background=1`)。
         case importLyricsFolder(path: String)
+        /// 歌词管理弹「导入库」面板(`debug/import-library`),歌词管理窗口要开着。
+        case importLibrary
+        /// 设监视文件夹(`debug/import-watch?path=<绝对路径>`),`debug/import-watch?off=1` 停止监视。
+        case importWatch(path: String?)
     }
 
     /// `debug/stall` 的上限(毫秒)。再长就是把 App 卡死了。
@@ -278,6 +282,15 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             self = .debug(.stall(ms: ms))
         case ("debug", "/milestone-preview"):
             self = .debug(.milestonePreview)
+        case ("debug", "/import-library"):
+            self = .debug(.importLibrary)
+        case ("debug", "/import-watch"):
+            if value("off").flatMap(Self.parseBool) == true {
+                self = .debug(.importWatch(path: nil))
+            } else {
+                guard let path = value("path"), path.hasPrefix("/") else { return nil }
+                self = .debug(.importWatch(path: path))
+            }
         case ("debug", "/import-lyrics-folder"):
             guard let path = value("path"), path.hasPrefix("/") else { return nil }
             self = .debug(.importLyricsFolder(path: path))
@@ -492,6 +505,10 @@ public enum LyrimuseDeepLink: Equatable, Sendable {
             case let .importLyricsFolder(path):
                 components.path = "/import-lyrics-folder"
                 components.queryItems = [URLQueryItem(name: "path", value: path)]
+            case .importLibrary: components.path = "/import-library"
+            case let .importWatch(path):
+                components.path = "/import-watch"
+                components.queryItems = [path.map { URLQueryItem(name: "path", value: $0) } ?? URLQueryItem(name: "off", value: "1")]
             case let .knockout(leg, on):
                 components.path = "/knockout"
                 components.queryItems = [URLQueryItem(name: "leg", value: leg.rawValue), URLQueryItem(name: "on", value: on ? "1" : "0")]

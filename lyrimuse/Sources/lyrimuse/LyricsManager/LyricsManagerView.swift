@@ -793,6 +793,8 @@ struct LyricsManagerView: View {
     @State private var showClearAllConfirm = false
     /// 「导入歌词文件夹…」选好的文件夹,有值时弹预览面板(LyricsBatchImportSheet)。
     @State private var batchImportRequest: LyricsBatchImportRequest?
+    /// 「导入库…」面板(LyricsImportLibrarySheet)。
+    @State private var showImportLibrary = false
     /// 「清理无效记录」确认框开着时要删的那几条,点菜单那一刻拍下来(确认框开着期间列表可能重读)。
     @State private var pendingCleanupKeys: [String] = []
     @State private var showCleanupConfirm = false
@@ -1288,6 +1290,14 @@ struct LyricsManagerView: View {
         .settingsCardBackground(cornerRadius: Self.panelCornerRadius)
         .sheet(item: $batchImportRequest) { request in
             LyricsBatchImportSheet(folder: request.folder)
+        }
+        .sheet(isPresented: $showImportLibrary) {
+            LyricsImportLibrarySheet()
+        }
+        // lyrimuse://debug/import-library:窗口开着时直接弹「导入库」面板。
+        .onReceive(AppActions.shared.importLibraryRequests) {
+            guard !showImportLibrary, !windowFrame.hasAttachedSheet else { return }
+            showImportLibrary = true
         }
         // lyrimuse://debug/import-lyrics-folder:窗口开着时直接弹预览面板。
         .onReceive(AppActions.shared.lyricsFolderImportRequests) { url in
@@ -2737,6 +2747,12 @@ struct LyricsManagerView: View {
                 Label(L10n.t("导入歌词文件夹…"), systemImage: "square.and.arrow.down.on.square")
             }
             .help(L10n.t("将文件夹中的歌词文件对应到歌词库中的歌曲，导入前可预览"))
+            Button {
+                showImportLibrary = true
+            } label: {
+                Label(L10n.t("导入库…"), systemImage: "tray.full")
+            }
+            .help(L10n.t("查看和删除导入的歌词，设置监视文件夹"))
         }
         storageMenuSections
     }

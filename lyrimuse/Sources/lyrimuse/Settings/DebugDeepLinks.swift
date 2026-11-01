@@ -131,6 +131,12 @@ enum DebugDeepLinks {
         case .notchPassThroughOff:
             NotchLyricsWindowController.shared.simulatePassThrough(at: nil)
             logger.notice("debug notch pass-through off")
+        case .importLibrary:
+            AppActions.shared.importLibraryRequests.send()
+            logger.notice("debug import library")
+        case let .importWatch(path):
+            LyricsImportWatcher.shared.setFolder(path.map { URL(fileURLWithPath: $0, isDirectory: true) })
+            logger.notice("debug import watch on=\(path != nil, privacy: .public)")
         case let .importLyricsFolder(path):
             AppActions.shared.lyricsFolderImportRequests.send(URL(fileURLWithPath: path, isDirectory: true))
             logger.notice("debug import lyrics folder")

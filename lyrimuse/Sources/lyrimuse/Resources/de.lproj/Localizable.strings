@@ -42,6 +42,8 @@
 "%@ 个文件导入失败，其余已导入#one" = "%@ Datei konnte nicht importiert werden, der Rest wurde importiert";
 "%@ 个歌词源无法连接" = "%@ Liedtextquellen nicht erreichbar";
 "%@ 个歌词源无法连接#one" = "%@ Liedtextquelle nicht erreichbar";
+"%@ 份导入的歌词" = "%@ importierte Liedtexte";
+"%@ 份导入的歌词#one" = "%@ importierter Liedtext";
 "%@ 分钟" = "%@ min";
 "%@ 分钟前更新" = "Vor %@ Min. aktualisiert";
 "%@ 句为新增或修改了时间戳，已按字数分配逐字时间" = "Neue oder neu getimte Zeilen: %@ – Wort-Timing gleichmäßig nach Länge verteilt";
@@ -304,6 +306,7 @@
 "上次检查：%@" = "Zuletzt geprüft: %@";
 "上次检测通过（%@）" = "Zuletzt erfolgreich geprüft (%@)";
 "上次自动匹配 %1$@ 首，找到 %2$@ 首" = "Zuletzt: %1$@ gesucht, %2$@ gefunden";
+"上次自动导入：%1$@，%2$@ 份" = "Letzter automatischer Import: %1$@, %2$@ Dateien";
 "上次解析于 %@" = "Zuletzt gesucht: %@";
 "上次解析时无任何歌词源应答，可能是当时网络不可用，并不代表这首歌曲无歌词。重新自动匹配通常可找到歌词" = "Bei der letzten Suche hat keine Liedtextquelle geantwortet, vielleicht war das Netzwerk nicht verfügbar; das heißt nicht, dass der Titel keinen Text hat. Eine neue automatische Zuordnung findet ihn meist";
 "上次：检查 %1$@ 首后停止，更新 %2$@ 首" = "Zuletzt: nach %1$@ geprüften gestoppt, %2$@ aktualisiert";
@@ -447,6 +450,7 @@
 "从「应用程序」中选择，无需等待其开始播放" = "Wähle eine aus „Programme“, ohne zu warten, bis sie abspielt";
 "从上到下" = "Von oben nach unten";
 "从备份恢复" = "Wiederherstellen";
+"从导入库删除" = "Aus der Import-Bibliothek entfernen";
 "从屏幕取色" = "Farbe vom Bildschirm wählen";
 "从左侧选择一首歌曲" = "Links einen Titel auswählen";
 "从左到右" = "Von links nach rechts";
@@ -507,6 +511,7 @@
 "偏移" = "Versatz";
 "停止" = "Stoppen";
 "停止搜索" = "Suche stoppen";
+"停止监视" = "Überwachung beenden";
 "停止自动匹配" = "Automatische Zuordnung stoppen";
 "停止重新匹配" = "Neuzuordnung stoppen";
 "僧伽罗语" = "Singhalesisch";
@@ -529,6 +534,8 @@
 "全部专辑" = "Alle Alben";
 "全部关闭" = "Alle aus";
 "全部关闭时不显示歌词" = "Sind alle aus, wird kein Liedtext angezeigt";
+"全部删除" = "Alle löschen";
+"全部删除…" = "Alle löschen …";
 "全部功能、所在位置及默认状态" = "Alle Funktionen, wo sie in den Einstellungen zu finden sind, und ihr Standardzustand";
 "全部同步" = "Alle synchron";
 "全部屏幕" = "Alle Displays";
@@ -643,6 +650,7 @@
 "删除原文件" = "Alte Dateien löschen";
 "删除后不再推送到这个渠道，推送记录会保留" = "Nach dem Löschen gehen keine Pushes mehr an diesen Kanal; der Sendeverlauf bleibt erhalten";
 "删除失败" = "Entfernen fehlgeschlagen";
+"删除失败，请重试" = "Löschen fehlgeschlagen. Versuch es erneut";
 "删除本地记录…" = "Gesicherten Liedtext löschen …";
 "删除此导入的字体（不可恢复）" = "Diese importierte Schrift entfernen (kann nicht widerrufen werden)";
 "删除语言包：系统设置 › 通用 › 语言与地区 › 翻译语言" = "Sprachpakete löschen: Systemeinstellungen › Allgemein › Sprache & Region › Übersetzungssprachen";
@@ -953,6 +961,7 @@
 "宽度模式" = "Breitenmodus";
 "密钥或地址有误" = "Schlüssel oder URL falsch";
 "对应多首歌曲，请选择 %@" = "Passt zu mehreren Titeln, bitte wählen %@";
+"对应歌词库中的歌曲" = "Einem Titel der Bibliothek zugeordnet";
 "对齐方式" = "Ausrichtung";
 "导入" = "Importieren";
 "导入 %@ 首" = "%@ Titel importieren";
@@ -965,6 +974,9 @@
 "导入字体…" = "Schrift importieren …";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Der Import übernimmt deine Accounts und alle persönlichen Einstellungen und startet Lyrimuse dann neu";
 "导入并重启" = "Importieren und neu starten";
+"导入库" = "Import-Bibliothek";
+"导入库…" = "Import-Bibliothek …";
+"导入库是空的" = "Die Import-Bibliothek ist leer";
 "导入文件…" = "Datei importieren …";
 "导入方式" = "Importieren als";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importiere eine Liedtextdatei von diesem Mac (LRC, TTML, YRC, QRC, KRC oder reiner Text) oder zieh sie ins Fenster";
@@ -1151,6 +1163,7 @@
 "已校准的歌曲不再自动更换歌词源，以免歌词变化后校准失效。将偏移设回 0 即可解除" = "Kalibrierte Titel wechseln die Liedtextquelle nicht mehr automatisch, damit die Kalibrierung gültig bleibt. Setze den Versatz auf 0, um sie aufzuheben";
 "已添加" = "Hinzugefügt";
 "已演唱部分的颜色，也用于歌词旁进度图标的已播放部分。默认跟随系统强调色（深色菜单栏下自动提亮）；自定义后按原色显示，不再自动提亮" = "Farbe des gesungenen Teils und des gefüllten Teils im Fortschrittssymbol neben dem Liedtext. Folgt standardmäßig der Akzentfarbe des Systems (bei dunkler Menüleiste aufgehellt); eine eigene Farbe wird unverändert ohne Aufhellung verwendet";
+"已用在歌曲上的歌词保持不变，只是以后重新匹配时不再参与比较" = "Bereits verwendete Liedtexte bleiben erhalten, werden bei einer neuen Zuordnung aber nicht mehr verglichen";
 "已由「自动识别」接管，取消「自动识别」后将仅识别勾选的播放器" = "Durch „Automatisch erkennen“ abgedeckt. Deaktiviere es, um nur die ausgewählten Player zu erkennen";
 "已缓存读音" = "Umschrift im Cache";
 "已自动跳过广告" = "Werbung automatisch übersprungen";
@@ -1384,6 +1397,7 @@
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@#one" = "Basierend auf deinem Top-%1$@-Künstler, %2$@ deiner Wiedergaben in diesem Zeitraum";
 "按收听最多的前 %@ 位歌手统计" = "Basierend auf deinen Top-%@-Künstlern";
 "按收听最多的前 %@ 位歌手统计#one" = "Basierend auf deinem Top-%@-Künstler";
+"按歌名和歌手识别" = "Nach Titel und Künstler erkannt";
 "按相关度" = "Nach Relevanz";
 "按纯音乐处理：不显示歌词，也不自动搜索；原有歌词将保留，取消标记即可恢复" = "Als instrumental behandeln: Liedtexte werden ausgeblendet und nicht automatisch gesucht. Vorhandene Texte bleiben erhalten und kehren zurück, wenn du die Markierung entfernst";
 "按翻唱者署名" = "Coverkünstler aus dem Titel";
@@ -1435,6 +1449,7 @@
 "搜索字体" = "Schriften suchen";
 "搜索时默认按相关度排序：歌名开头匹配的优先，其次是歌名、歌手、专辑中匹配的" = "Bei der Suche wird nach Relevanz sortiert: zuerst Titel, die mit dem Suchbegriff beginnen, dann Treffer in Titel, Künstler und Album";
 "搜索期间这首歌曲被修改过，本轮结果未采用" = "Der Titel wurde während der Suche bearbeitet, daher wurde das Ergebnis nicht übernommen";
+"搜索歌名或歌手" = "Titel oder Künstler suchen";
 "搜索歌手/歌名/专辑" = "Künstler/Titel/Album suchen";
 "搜索歌词" = "Liedtext suchen";
 "搜索歌词…" = "Liedtext suchen …";
@@ -1494,6 +1509,7 @@
 "整行时间轴" = "Zeilen-Timing";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "Die Datei enthält deine Zugangsdaten und Schlüssel im Klartext. Bewahre sie sicher auf und teile sie nicht. Die Liedtext-Bibliothek wird als zweite Datei mit passendem Namen gesichert; kopiere beide beim Umzug auf einen neuen Mac";
 "文件中尚无歌词，未保存" = "Die Datei enthält noch keinen Liedtext; nicht gesichert";
+"文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "Neue oder geänderte Liedtextdateien im Ordner werden automatisch importiert: Titel ohne Liedtext erhalten ihn sofort, Titel mit Liedtext bleiben unverändert";
 "文件夹中没有可识别的歌词文件" = "Keine erkennbaren Liedtextdateien in diesem Ordner";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Zu viele Dateien (höchstens %@ Dateien, 200 MB). Importiere sie in mehreren Durchgängen";
 "文件过大，不像是歌词，未保存" = "Die Datei ist zu groß für einen Liedtext; nicht gesichert";
@@ -1653,6 +1669,7 @@
 "更多播放器（%d）" = "Weitere Player (%d)";
 "更多歌词操作" = "Weitere Liedtext-Aktionen";
 "更多设置…" = "Weitere Einstellungen …";
+"更换…" = "Ändern …";
 "更换备份文件夹…" = "Backup-Ordner ändern …";
 "更换或手动修改歌词时，其他 %d 个条目一并更新" = "Ersetzungen und manuelle Änderungen gelten auch für die %d anderen Einträge";
 "更换或手动修改歌词时，其他 %d 个条目一并更新#one" = "Ersetzungen und manuelle Änderungen gelten auch für den %d anderen Eintrag";
@@ -1808,6 +1825,7 @@
 "查看、编辑和重新搜索已缓存的歌词" = "Gespeicherte Liedtexte ansehen, bearbeiten und neu suchen";
 "查看「%@」" = "„%@“ zeigen";
 "查看专辑简介" = "Albumnotizen ansehen";
+"查看和删除导入的歌词，设置监视文件夹" = "Importierte Liedtexte ansehen und entfernen, überwachten Ordner festlegen";
 "查看完整说明" = "Alle Versionshinweise";
 "查看官方文档 →" = "Offizielle Doku ansehen →";
 "查看效果与教程 →" = "Vorschau & Anleitung →";
@@ -1971,6 +1989,7 @@
 "正在备份歌词库…" = "Bibliothek wird gesichert …";
 "正在安装…" = "Wird installiert …";
 "正在导入…" = "Wird importiert …";
+"正在导入监视文件夹中的新文件…" = "Neue Dateien aus dem überwachten Ordner werden importiert …";
 "正在应用到歌词引擎…" = "Wird auf die Liedtext-Engine angewendet …";
 "正在搜索歌词…" = "Liedtext wird gesucht …";
 "正在搜索：%@" = "Suche: %@";
@@ -2106,6 +2125,7 @@
 "清空全部时间轴校准" = "Alle Timing-Kalibrierungen löschen";
 "清空全部电台校准" = "Alle Radio-Kalibrierungen löschen";
 "清空全部缓存" = "Gesamten Cache leeren";
+"清空导入库？" = "Import-Bibliothek leeren?";
 "清空搜索" = "Suche löschen";
 "清除" = "Leeren";
 "清除…" = "Löschen …";
@@ -2157,6 +2177,7 @@
 "现在" = "jetzt";
 "现场版场次不符" = "Liveaufnahme eines anderen Konzerts";
 "玻璃浓淡" = "Glasdichte";
+"用「导入歌词文件夹…」导入，或在下方设置监视文件夹" = "Nutze „Liedtext-Ordner importieren …“ oder lege unten einen überwachten Ordner fest";
 "用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Hilft, Lyrimuse zu verbessern: Version, System, genutzte Funktionen und Absturzberichte. Nie Titel oder Accounts";
 "用当前配色覆盖" = "Mit aktuellen Farben überschreiben";
 "用户名下方显示" = "Unter deinem Namen";
@@ -2174,6 +2195,8 @@
 "白色" = "Weiß";
 "白色、跟随封面、自定义颜色或彩虹" = "Weiß, Coverfarbe, eigene Farbe oder Regenbogen";
 "皇家学术院转写（RTGS），如 สวัสดี → sawatdi" = "Royal Thai General System (RTGS), z. B. สวัสดี → sawatdi";
+"监视" = "Überwachen";
+"监视文件夹" = "Überwachter Ordner";
 "直连失败时，经下方代理服务器重试" = "Wenn eine direkte Verbindung scheitert, erneut über den Proxyserver unten versuchen";
 "直连失败时，经系统代理或本机检测到的代理重试" = "Wenn eine direkte Verbindung scheitert, erneut über den System-Proxy oder einen auf diesem Mac erkannten Proxy versuchen";
 "相邻短句可容纳于一行时合并显示" = "Benachbarte kurze Zeilen werden zusammengefasst, wenn sie in eine Zeile passen";
@@ -2680,6 +2703,7 @@
 "选择歌词显示方式" = "Liedtext-Anzeige wählen";
 "选择用于播放此网站的浏览器" = "Wähle den Browser, den du für diese Website nutzt";
 "选择要分享的句子" = "Wähle die Zeilen zum Teilen";
+"选择要监视的歌词文件夹" = "Wähle den Liedtext-Ordner, der überwacht werden soll";
 "透明" = "Transparent";
 "逐字" = "Wort für Wort";
 "逐字填色时已唱部分使用此颜色" = "Farbe des gesungenen Teils beim wortweisen Füllen";

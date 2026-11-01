@@ -73,6 +73,8 @@ final class AppActions {
 
     /// 歌词管理弹「导入歌词文件夹」预览面板(调试深链 `debug/import-lyrics-folder` 用),歌词管理窗口要开着。
     let lyricsFolderImportRequests = PassthroughSubject<URL, Never>()
+    /// 歌词管理弹「导入库」面板(调试深链 `debug/import-library` 用),歌词管理窗口要开着。
+    let importLibraryRequests = PassthroughSubject<Void, Never>()
 
     /// 「搜索歌词…」窗口里采纳成功(带写回的 key)、「重新自动匹配」有了结论。歌词管理开着同一首时据此重载编辑框、挂结论。
     let lyricsSearchApplied = PassthroughSubject<String, Never>()

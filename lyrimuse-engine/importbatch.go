@@ -25,6 +25,9 @@ const (
 	importModeManual = "manual" // 锁定为手动修改,自动匹配不再换
 	importModePrefer = "prefer" // 优先使用,进导入库(importstore.go),别的源给出明显更好的还能换
 	importModeFill   = "fill"   // 只补没有歌词的歌,补上的同 prefer
+	// 监视文件夹自动导入用(App 侧 LyricsImportWatcher):对得上的歌进导入库,条目里没有歌词的才写进去,已有的不动、
+	// 等下一轮选词跟各源比;不用打快照。
+	importModeLibrary = "library"
 )
 
 func importStagingDir() string {
@@ -458,7 +461,7 @@ type importBatchItem struct {
 // 跳过已有逐行歌词的。调用方持 enrichMu。
 func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 	switch req.Mode {
-	case importModeManual, importModePrefer, importModeFill:
+	case importModeManual, importModePrefer, importModeFill, importModeLibrary:
 	default:
 		return enrichEditOutcome{err: fmt.Errorf("import_lyrics_batch: unknown mode %q", req.Mode)}
 	}
@@ -500,6 +503,17 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 		var names []string
 		for _, f := range g.Files {
 			names = append(names, f.Name)
+		}
+		// 监视文件夹:已有歌词的只进导入库,不动条目。
+		if req.Mode == importModeLibrary && e.Lyrics.Len() > 0 {
+			if !c.PlainTextOnly {
+				recs = append(recs, importedLyricsRecord{
+					Key: it.Key, Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC,
+					BG: c.LyricsBG, Title: c.Title, Artist: c.Artist, Album: c.Album, Files: names, ImportedAt: now.Unix(),
+				})
+				stored++
+			}
+			continue
 		}
 		if c.PlainTextOnly {
 			e.PlainLyrics, e.PlainLyricsSource = bt(c.Lyrics), importLyricsSource

@@ -1431,6 +1431,18 @@ public final class EnrichCacheStore: ObservableObject {
         return result.ok ? result.changed : nil
     }
 
+    /// 监视文件夹的自动导入(LyricsImportWatcher):按 `library` 方式交引擎,只补没有歌词的条目、其余进导入库,不打快照。
+    /// 返回写了几首加存了几份;nil = 引擎没执行。
+    func importLyricsLibrary(staging: URL, items: [[String: Any]]) async -> Int? {
+        let result = await commit("import_lyrics_batch", ["staging": staging.path, "mode": "library", "items": items])
+        return result.ok ? result.changed : nil
+    }
+
+    /// 「导入库」面板里删掉几份(记录文件名),`all` 为真时整个清空。已用在歌曲上的歌词不变。
+    func dropImportedLyrics(files: [String], all: Bool) async -> Bool {
+        await commit("drop_imported_lyrics", ["import_names": files, "value": all]).ok
+    }
+
     /// 批量删除到几条起,值得先打一份自动快照。见 delete(keys:) 里那段注释。
     static let autoSnapshotDeleteThreshold = 5
 

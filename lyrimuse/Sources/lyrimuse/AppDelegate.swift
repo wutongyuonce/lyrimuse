@@ -205,6 +205,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         TelemetryService.shared.start()
         // 这次启动的基准版本、面板顶部要不要出「已更新」(见 WhatsNewCenter)。
         WhatsNewCenter.shared.start()
+        // 清掉上次留下的导入暂存请求;设了监视文件夹就开始监视(LyricsImportLibrary.swift)。
+        LyricsImportWatcher.shared.start()
 
         // 这一句决定 App 是普通应用(占 Dock + 进 Cmd-Tab)还是菜单栏专属应用。build.sh 打包时写了
         // LSUIElement=true(plist 让它默认不占 Dock),这一行按用户的设置再决定要不要占:showInDock 的

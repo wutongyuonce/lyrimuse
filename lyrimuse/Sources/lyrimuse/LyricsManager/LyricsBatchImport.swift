@@ -166,9 +166,9 @@ enum LyricsBatchImport {
         FileIO.remove(staging)
     }
 
-    /// 一小时前的暂存请求:面板没走到 onDisappear 就没了(随窗口一起关、App 退出)时留下的。
-    private static func discardStaleStaging() {
-        let cutoff = Date().addingTimeInterval(-3600)
+    /// 早于 `age` 秒的暂存请求:面板没走到 onDisappear 就没了(随窗口一起关、App 退出)时留下的。App 启动时传 0 全部清掉。
+    static func discardStaleStaging(olderThan age: TimeInterval = 3600) {
+        let cutoff = Date().addingTimeInterval(-age)
         let names = (try? FileManager.default.contentsOfDirectory(
             at: stagingDirectory, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
         for url in names where url.pathExtension == "json" {

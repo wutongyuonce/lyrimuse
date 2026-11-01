@@ -243,6 +243,60 @@ func dropImportedLyrics(keys ...string) {
 	}
 }
 
+// dropImportedLyricsFiles:导入库管理界面删掉的那几份(按文件名);all 为真时整个导入库清空。返回删了几份。
+func dropImportedLyricsFiles(names []string, all bool) int {
+	dir := importedLyricsDir()
+	if dir == "" {
+		return 0
+	}
+	importedLyricsIndex.Lock()
+	defer importedLyricsIndex.Unlock()
+	loadImportedLyricsIndexLocked()
+	gone := map[string]bool{}
+	if all {
+		for _, name := range importedLyricsIndex.keys {
+			gone[name] = true
+		}
+		for _, list := range importedLyricsIndex.titles {
+			for _, name := range list {
+				gone[name] = true
+			}
+		}
+	} else {
+		for _, name := range names {
+			if name == filepath.Base(name) && strings.HasSuffix(name, ".json") && name != "index.json" {
+				gone[name] = true
+			}
+		}
+	}
+	removed := 0
+	for name := range gone {
+		err := os.Remove(filepath.Join(dir, name))
+		switch {
+		case err == nil:
+			removed++
+		case !errors.Is(err, fs.ErrNotExist):
+			noteFileErr("remove", filepath.Join(dir, name), err)
+		}
+	}
+	for k, name := range importedLyricsIndex.keys {
+		if gone[name] {
+			delete(importedLyricsIndex.keys, k)
+		}
+	}
+	for t, list := range importedLyricsIndex.titles {
+		kept := slices.DeleteFunc(slices.Clone(list), func(n string) bool { return gone[n] })
+		if len(kept) == 0 {
+			delete(importedLyricsIndex.titles, t)
+		} else {
+			importedLyricsIndex.titles[t] = kept
+		}
+	}
+	setImportedLyricsIndexLocked(dir, importedLyricsIndex.mtime, importedLyricsIndex.keys)
+	writeImportedLyricsIndexLocked(dir)
+	return removed
+}
+
 // importedLyricsRecordFor:这首有没有导入的歌词。先按原 key 找,找不到按宽松 key(繁简、大小写、空格、多歌手分隔符、
 // 时长变体位)找。
 func importedLyricsRecordFor(key string) (importedLyricsRecord, bool) {

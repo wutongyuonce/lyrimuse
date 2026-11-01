@@ -1992,6 +1992,21 @@ func runLyricsManagerTests() {
                     && batchSource.contains("case .unmatched: item.canStore == true && !notStored.contains(item.id)")
                     && batchSource.contains("[\"id\": item.id, \"key\": \"\", \"store\": true]"), true,
                     "导入歌词文件夹: 歌词管理「⋯」里的入口弹预览面板,预览走引擎 plan-lyrics-import,写入前先打自动快照")
+        let librarySource = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("lyrimuse/LyricsManager/LyricsImportLibrary.swift"),
+            encoding: .utf8)) ?? ""
+        let delegateSource = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("lyrimuse/AppDelegate.swift"), encoding: .utf8)) ?? ""
+        let librarySlice = storeSource.range(of: "func importLyricsLibrary(").map {
+            String(storeSource[$0.lowerBound...].prefix(400))
+        } ?? ""
+        expectEqual(delegateSource.contains("LyricsImportWatcher.shared.start()")
+                    && librarySlice.contains("\"mode\": \"library\"") && !librarySlice.contains("takeAutoSnapshot")
+                    && librarySource.contains("EnrichCacheStore.shared.importLyricsLibrary(")
+                    && librarySource.contains("EnrichCacheStore.shared.dropImportedLyrics(")
+                    && librarySource.contains("LyricsBatchImport.discardStaleStaging(olderThan: 0)")
+                    && view.contains("LyricsImportLibrarySheet()"), true,
+                    "导入库: 启动时开始监视并清掉残留暂存,监视按 library 方式写入、不打快照,删除走引擎改动请求")
         expectEqual(sheet.contains("let groups = LyricsCandidateGroups.groups(")
                     && sheet.contains("if layout.sameExpanded {") && sheet.contains("if layout.excludedExpanded {")
                     && sheet.contains("layout.excludedForced = layout.current == nil && layout.imported == nil && layout.main.isEmpty && layout.same.isEmpty")

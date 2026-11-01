@@ -319,3 +319,64 @@ func TestImportStoreUnmatched(t *testing.T) {
 		t.Error("采用别的歌词后按身份存的那份应作废")
 	}
 }
+
+// 监视文件夹那种:对得上、没歌词的写进条目;已有歌词的只进导入库,条目不动;库里没有的按身份存。
+func TestImportLyricsBatchLibraryMode(t *testing.T) {
+	files := []importLyricsFile{
+		pathFile("周杰伦 - 晴天.lrc", lrcBody(4, 60)),
+		pathFile("A - Song.lrc", lrcBody(5, 14)),
+		pathFile("Nobody Here - No Such Song.lrc", lrcBodyEn(4, 6)),
+	}
+	staging := setUpImportBatch(t, files)
+	setUpEnrichEditTest(t, importTestCache())
+	ids := map[string]int{}
+	for _, g := range groupImportFiles(files) {
+		ids[g.Stem] = g.ID
+	}
+	keyQ, keyA := enrichKey("周杰伦", "晴天", "叶惠美"), enrichKey("A", "Song", "Album One")
+	items := []importBatchItem{{ID: ids["周杰伦 - 晴天"], Key: keyQ}, {ID: ids["A - Song"], Key: keyA},
+		{ID: ids["Nobody Here - No Such Song"], Store: true}}
+	res := applyEnrichEdit(enrichEditRequest{Op: "import_lyrics_batch", Staging: staging, Mode: importModeLibrary, ImportItems: items})
+	if !res.OK || res.Changed != 3 {
+		t.Fatalf("应写一首、存两份: %+v", res)
+	}
+	if e, _ := cacheEntry(t, keyQ); e.LyricsSource != "qq" {
+		t.Errorf("已有歌词的条目不该动: %+v", e)
+	}
+	if _, ok := importedLyricsRecordFor(keyQ); !ok {
+		t.Error("已有歌词的应进导入库")
+	}
+	if e, _ := cacheEntry(t, keyA); e.LyricsSource != importLyricsSource || e.ManualLyrics {
+		t.Errorf("没歌词的应写进条目、不锁: %+v", e)
+	}
+	if _, ok := importedLyricsFor("Nobody Here", "No Such Song", "", 0); !ok {
+		t.Error("库里没有的应按身份存")
+	}
+}
+
+// 导入库管理:按文件名删、整个清空;不认导入库以外的名字。
+func TestDropImportedLyricsFiles(t *testing.T) {
+	t.Setenv("LYRIMUSE_CONFIG_DIR", t.TempDir())
+	setUpEnrichEditTest(t, importTestCache())
+	keyed := importedLyricsRecord{Key: enrichKey("A", "Song", "Album One"), Lyrics: lrcBodyEn(3, 5)}
+	byID := importedLyricsRecord{Lyrics: lrcBodyEn(3, 5), Identities: []importedIdentity{{Artist: "X", Title: "Y"}}}
+	if err := saveImportedLyrics(keyed, byID); err != nil {
+		t.Fatal(err)
+	}
+	res := applyEnrichEdit(enrichEditRequest{Op: "drop_imported_lyrics", ImportNames: []string{importedLyricsFileName(keyed.Key), "../escape.json", "index.json"}})
+	if !res.OK || res.Changed != 1 {
+		t.Fatalf("应只删那一份: %+v", res)
+	}
+	if _, ok := importedLyricsRecordFor(keyed.Key); ok {
+		t.Error("删掉的不该再找到")
+	}
+	if _, ok := importedLyricsFor("X", "Y", "", 0); !ok {
+		t.Error("没删的还在")
+	}
+	if res := applyEnrichEdit(enrichEditRequest{Op: "drop_imported_lyrics", Value: true}); !res.OK || res.Changed != 1 {
+		t.Fatalf("整个清空: %+v", res)
+	}
+	if _, ok := importedLyricsFor("X", "Y", "", 0); ok {
+		t.Error("清空后不该再找到")
+	}
+}

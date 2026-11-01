@@ -111,6 +111,8 @@ type enrichEditRequest struct {
 	Staging     string            `json:"staging,omitempty"`
 	Mode        string            `json:"mode,omitempty"`
 	ImportItems []importBatchItem `json:"items,omitempty"`
+	// drop_imported_lyrics(importstore.go):导入库里要删的记录文件名;Value 为真时整个导入库清空。
+	ImportNames []string `json:"import_names,omitempty"`
 }
 
 type enrichEditResult struct {
@@ -260,6 +262,8 @@ func applyEnrichEditLocked(req enrichEditRequest) enrichEditOutcome {
 		return enrichEditOutcome{changed: len(exports), exports: exports}
 	case "import_lyrics_batch":
 		return applyImportBatchLocked(req)
+	case "drop_imported_lyrics":
+		return enrichEditOutcome{changed: dropImportedLyricsFiles(req.ImportNames, req.Value)}
 	case "save_plain_text":
 		if req.Key == "" {
 			return enrichEditOutcome{err: fmt.Errorf("save_plain_text: empty key")}

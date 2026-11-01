@@ -42,6 +42,8 @@
 "%@ 个文件导入失败，其余已导入#one" = "%@ fichier non importé, les autres l’ont été";
 "%@ 个歌词源无法连接" = "%@ sources de paroles injoignables";
 "%@ 个歌词源无法连接#one" = "%@ source de paroles injoignable";
+"%@ 份导入的歌词" = "%@ paroles importées";
+"%@ 份导入的歌词#one" = "%@ paroles importées";
 "%@ 分钟" = "%@ min";
 "%@ 分钟前更新" = "Mis à jour il y a %@ min";
 "%@ 句为新增或修改了时间戳，已按字数分配逐字时间" = "Lignes nouvelles ou recalées : %@, minutage mot à mot réparti selon la longueur";
@@ -304,6 +306,7 @@
 "上次检查：%@" = "Dernière vérification : %@";
 "上次检测通过（%@）" = "Vérifié, fonctionnel (%@)";
 "上次自动匹配 %1$@ 首，找到 %2$@ 首" = "Dernière fois : %1$@ recherchés, %2$@ trouvés";
+"上次自动导入：%1$@，%2$@ 份" = "Dernière importation automatique : %1$@, %2$@ fichiers";
 "上次解析于 %@" = "Dernière recherche : %@";
 "上次解析时无任何歌词源应答，可能是当时网络不可用，并不代表这首歌曲无歌词。重新自动匹配通常可找到歌词" = "Aucune source de paroles n’a répondu lors de la dernière recherche, peut-être faute de réseau ; cela ne signifie pas que le morceau n’a pas de paroles. Une réassociation automatique les trouve généralement";
 "上次：检查 %1$@ 首后停止，更新 %2$@ 首" = "Dernière fois : arrêté après %1$@ vérifiés, %2$@ mis à jour";
@@ -447,6 +450,7 @@
 "从「应用程序」中选择，无需等待其开始播放" = "Choisissez-en une dans Applications, sans attendre qu’elle joue";
 "从上到下" = "De haut en bas";
 "从备份恢复" = "Restaurer";
+"从导入库删除" = "Retirer de la bibliothèque d’importation";
 "从屏幕取色" = "Prélever une couleur à l’écran";
 "从左侧选择一首歌曲" = "Sélectionnez un morceau à gauche";
 "从左到右" = "De gauche à droite";
@@ -507,6 +511,7 @@
 "偏移" = "Décalage";
 "停止" = "Arrêter";
 "停止搜索" = "Arrêter la recherche";
+"停止监视" = "Arrêter la surveillance";
 "停止自动匹配" = "Arrêter l’association automatique";
 "停止重新匹配" = "Arrêter la réassociation";
 "僧伽罗语" = "Cingalais";
@@ -529,6 +534,8 @@
 "全部专辑" = "Tous les albums";
 "全部关闭" = "Tout désactivé";
 "全部关闭时不显示歌词" = "Si tout est désactivé, aucune parole n’est affichée";
+"全部删除" = "Tout supprimer";
+"全部删除…" = "Tout supprimer…";
 "全部功能、所在位置及默认状态" = "Toutes les fonctionnalités, où les trouver dans Réglages et leur état par défaut";
 "全部同步" = "Toutes synchronisées";
 "全部屏幕" = "Tous les écrans";
@@ -643,6 +650,7 @@
 "删除原文件" = "Supprimer les anciens";
 "删除后不再推送到这个渠道，推送记录会保留" = "Les envois vers ce canal cessent après sa suppression ; l’historique d’envoi est conservé";
 "删除失败" = "Échec de la suppression";
+"删除失败，请重试" = "Échec de la suppression. Réessayez";
 "删除本地记录…" = "Supprimer les paroles enregistrées…";
 "删除此导入的字体（不可恢复）" = "Supprimer cette police importée (irréversible)";
 "删除语言包：系统设置 › 通用 › 语言与地区 › 翻译语言" = "Supprimer des langues : Réglages Système › Général › Langue et région › Langues de traduction";
@@ -953,6 +961,7 @@
 "宽度模式" = "Mode de largeur";
 "密钥或地址有误" = "Secret ou URL incorrect";
 "对应多首歌曲，请选择 %@" = "Correspond à plusieurs morceaux, choisissez-en un %@";
+"对应歌词库中的歌曲" = "Associées à un morceau de la bibliothèque";
 "对齐方式" = "Alignement";
 "导入" = "Importer";
 "导入 %@ 首" = "Importer %@ morceaux";
@@ -965,6 +974,9 @@
 "导入字体…" = "Importer une police…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "L’importation reprend vos comptes et tous vos réglages personnels, puis redémarre Lyrimuse";
 "导入并重启" = "Importer et redémarrer";
+"导入库" = "Bibliothèque d’importation";
+"导入库…" = "Bibliothèque d’importation…";
+"导入库是空的" = "La bibliothèque d’importation est vide";
 "导入文件…" = "Importer un fichier…";
 "导入方式" = "Importer en mode";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importer un fichier de paroles de ce Mac (LRC, TTML, YRC, QRC, KRC ou texte brut), ou le glisser dans la fenêtre";
@@ -1151,6 +1163,7 @@
 "已校准的歌曲不再自动更换歌词源，以免歌词变化后校准失效。将偏移设回 0 即可解除" = "Les morceaux calibrés ne changent plus de source de paroles automatiquement, pour que le calibrage reste valable. Remettez le décalage à 0 pour le supprimer";
 "已添加" = "Ajouté";
 "已演唱部分的颜色，也用于歌词旁进度图标的已播放部分。默认跟随系统强调色（深色菜单栏下自动提亮）；自定义后按原色显示，不再自动提亮" = "Couleur de la partie chantée, et de la partie remplie de l’icône de progression à côté des paroles. Suit par défaut la couleur d’accentuation du système (éclaircie sur une barre des menus sombre) ; une couleur personnalisée est utilisée telle quelle, sans éclaircissement";
+"已用在歌曲上的歌词保持不变，只是以后重新匹配时不再参与比较" = "Les paroles déjà appliquées aux morceaux restent inchangées ; elles ne seront simplement plus comparées lors des nouvelles correspondances";
 "已由「自动识别」接管，取消「自动识别」后将仅识别勾选的播放器" = "Pris en charge par « Détection auto ». Désactivez-la pour ne reconnaître que les lecteurs cochés";
 "已缓存读音" = "Romanisation en cache";
 "已自动跳过广告" = "Pub passée automatiquement";
@@ -1384,6 +1397,7 @@
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@#one" = "Selon votre top %1$@ des artistes, %2$@ de vos écoutes sur la période";
 "按收听最多的前 %@ 位歌手统计" = "Selon vos %@ artistes les plus écoutés";
 "按收听最多的前 %@ 位歌手统计#one" = "Selon votre top %@ des artistes";
+"按歌名和歌手识别" = "Identifiées par titre et artiste";
 "按相关度" = "Par pertinence";
 "按纯音乐处理：不显示歌词，也不自动搜索；原有歌词将保留，取消标记即可恢复" = "Traiter comme instrumental : les paroles sont masquées et ne sont pas recherchées automatiquement. Les paroles existantes sont conservées et reviennent si vous retirez la marque";
 "按翻唱者署名" = "Artiste de la reprise d’après le titre";
@@ -1435,6 +1449,7 @@
 "搜索字体" = "Rechercher une police";
 "搜索时默认按相关度排序：歌名开头匹配的优先，其次是歌名、歌手、专辑中匹配的" = "Pendant la recherche, les résultats sont triés par pertinence : d’abord les titres qui commencent par la requête, puis les correspondances dans le titre, l’artiste et l’album";
 "搜索期间这首歌曲被修改过，本轮结果未采用" = "Ce morceau a été modifié pendant la recherche : le résultat de ce tour n’a pas été appliqué";
+"搜索歌名或歌手" = "Rechercher un titre ou un artiste";
 "搜索歌手/歌名/专辑" = "Rechercher artiste/titre/album";
 "搜索歌词" = "Rechercher les paroles";
 "搜索歌词…" = "Rechercher les paroles…";
@@ -1494,6 +1509,7 @@
 "整行时间轴" = "Minutage par ligne";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "Le fichier contient les identifiants et clés de vos comptes en clair. Conservez-le en lieu sûr et ne le partagez pas. La bibliothèque de paroles est enregistrée dans un second fichier au nom correspondant ; copiez les deux pour passer à un nouveau Mac";
 "文件中尚无歌词，未保存" = "Le fichier ne contient pas encore de paroles ; non enregistré";
+"文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "Les fichiers de paroles ajoutés ou modifiés dans le dossier sont importés automatiquement : les morceaux sans paroles les reçoivent aussitôt, les autres restent inchangés";
 "文件夹中没有可识别的歌词文件" = "Aucun fichier de paroles reconnaissable dans ce dossier";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Trop de fichiers (limite de %@ fichiers, 200 Mo). Importez-les en plusieurs fois";
 "文件过大，不像是歌词，未保存" = "Fichier trop volumineux pour des paroles ; non enregistré";
@@ -1653,6 +1669,7 @@
 "更多播放器（%d）" = "Autres lecteurs (%d)";
 "更多歌词操作" = "Autres actions sur les paroles";
 "更多设置…" = "Plus de réglages…";
+"更换…" = "Changer…";
 "更换备份文件夹…" = "Changer de dossier de sauvegarde…";
 "更换或手动修改歌词时，其他 %d 个条目一并更新" = "Les remplacements et modifications manuelles s’appliquent aussi aux %d autres entrées";
 "更换或手动修改歌词时，其他 %d 个条目一并更新#one" = "Les remplacements et modifications manuelles s’appliquent aussi à %d autre entrée";
@@ -1808,6 +1825,7 @@
 "查看、编辑和重新搜索已缓存的歌词" = "Afficher, modifier et rechercher à nouveau les paroles en cache";
 "查看「%@」" = "Afficher « %@ »";
 "查看专辑简介" = "Voir les notes d’album";
+"查看和删除导入的歌词，设置监视文件夹" = "Consultez et retirez les paroles importées, et définissez un dossier surveillé";
 "查看完整说明" = "Notes de version complètes";
 "查看官方文档 →" = "Voir la documentation officielle →";
 "查看效果与教程 →" = "Aperçu et guide →";
@@ -1971,6 +1989,7 @@
 "正在备份歌词库…" = "Sauvegarde de la bibliothèque…";
 "正在安装…" = "Installation…";
 "正在导入…" = "Importation…";
+"正在导入监视文件夹中的新文件…" = "Importation des nouveaux fichiers du dossier surveillé…";
 "正在应用到歌词引擎…" = "Application au moteur de paroles…";
 "正在搜索歌词…" = "Recherche des paroles…";
 "正在搜索：%@" = "Recherche : %@";
@@ -2106,6 +2125,7 @@
 "清空全部时间轴校准" = "Effacer tous les calibrages du minutage";
 "清空全部电台校准" = "Effacer tous les calibrages radio";
 "清空全部缓存" = "Vider tout le cache";
+"清空导入库？" = "Vider la bibliothèque d’importation ?";
 "清空搜索" = "Effacer la recherche";
 "清除" = "Effacer";
 "清除…" = "Effacer…";
@@ -2157,6 +2177,7 @@
 "现在" = "maintenant";
 "现场版场次不符" = "Enregistrement live d’un autre concert";
 "玻璃浓淡" = "Densité du verre";
+"用「导入歌词文件夹…」导入，或在下方设置监视文件夹" = "Utilisez « Importer un dossier de paroles… » ou définissez un dossier surveillé ci-dessous";
 "用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Aide à améliorer Lyrimuse : version, système, fonctions utilisées et rapports de plantage. Jamais de titres ni de comptes";
 "用当前配色覆盖" = "Remplacer par les couleurs actuelles";
 "用户名下方显示" = "Sous votre nom";
@@ -2174,6 +2195,8 @@
 "白色" = "Blanc";
 "白色、跟随封面、自定义颜色或彩虹" = "Blanc, couleur de l’illustration, couleur personnalisée ou arc-en-ciel";
 "皇家学术院转写（RTGS），如 สวัสดี → sawatdi" = "Système général royal thaï (RTGS), ex. สวัสดี → sawatdi";
+"监视" = "Surveiller";
+"监视文件夹" = "Dossier surveillé";
 "直连失败时，经下方代理服务器重试" = "Si la connexion directe échoue, réessayer via le serveur proxy ci-dessous";
 "直连失败时，经系统代理或本机检测到的代理重试" = "Si la connexion directe échoue, réessayer via le proxy du système ou un proxy détecté sur ce Mac";
 "相邻短句可容纳于一行时合并显示" = "Les lignes courtes voisines sont fusionnées si elles tiennent sur une ligne";
@@ -2680,6 +2703,7 @@
 "选择歌词显示方式" = "Choisir où afficher les paroles";
 "选择用于播放此网站的浏览器" = "Choisissez le navigateur utilisé pour ce site";
 "选择要分享的句子" = "Choisissez les lignes à partager";
+"选择要监视的歌词文件夹" = "Choisissez le dossier de paroles à surveiller";
 "透明" = "Transparent";
 "逐字" = "Mot à mot";
 "逐字填色时已唱部分使用此颜色" = "Couleur de la partie chantée quand les paroles se remplissent mot à mot";

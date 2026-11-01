@@ -42,6 +42,8 @@
 "%@ 个文件导入失败，其余已导入#one" = "No se pudo importar %@ archivo; el resto se importó";
 "%@ 个歌词源无法连接" = "No se pudo conectar con %@ fuentes de letras";
 "%@ 个歌词源无法连接#one" = "No se pudo conectar con %@ fuente de letras";
+"%@ 份导入的歌词" = "%@ letras importadas";
+"%@ 份导入的歌词#one" = "%@ letra importada";
 "%@ 分钟" = "%@ min";
 "%@ 分钟前更新" = "Actualizado hace %@ min";
 "%@ 句为新增或修改了时间戳，已按字数分配逐字时间" = "%@ líneas nuevas o con la marca de tiempo modificada recibieron tiempos por palabra repartidos según su longitud";
@@ -304,6 +306,7 @@
 "上次检查：%@" = "Última comprobación: %@";
 "上次检测通过（%@）" = "Verificado, funciona (%@)";
 "上次自动匹配 %1$@ 首，找到 %2$@ 首" = "Última vez: %1$@ buscadas, %2$@ encontradas";
+"上次自动导入：%1$@，%2$@ 份" = "Última importación automática: %1$@, %2$@ archivos";
 "上次解析于 %@" = "Última búsqueda: %@";
 "上次解析时无任何歌词源应答，可能是当时网络不可用，并不代表这首歌曲无歌词。重新自动匹配通常可找到歌词" = "Ninguna fuente de letras respondió en la última búsqueda, quizá porque no había red; no significa que la canción no tenga letra. Volver a buscar suele encontrarla";
 "上次：检查 %1$@ 首后停止，更新 %2$@ 首" = "Última vez: detenido tras revisar %1$@, %2$@ actualizadas";
@@ -447,6 +450,7 @@
 "从「应用程序」中选择，无需等待其开始播放" = "Elige una en Aplicaciones, sin esperar a que empiece a reproducir";
 "从上到下" = "De arriba abajo";
 "从备份恢复" = "Restaurar";
+"从导入库删除" = "Quitar de la biblioteca de importación";
 "从屏幕取色" = "Tomar color de la pantalla";
 "从左侧选择一首歌曲" = "Selecciona una canción a la izquierda";
 "从左到右" = "De izquierda a derecha";
@@ -507,6 +511,7 @@
 "偏移" = "Desfase";
 "停止" = "Detener";
 "停止搜索" = "Detener búsqueda";
+"停止监视" = "Dejar de vigilar";
 "停止自动匹配" = "Detener búsqueda automática";
 "停止重新匹配" = "Detener nueva búsqueda";
 "僧伽罗语" = "Cingalés";
@@ -529,6 +534,8 @@
 "全部专辑" = "Todos los álbumes";
 "全部关闭" = "Todo desactivado";
 "全部关闭时不显示歌词" = "Si desactivas todo, no se muestra la letra";
+"全部删除" = "Eliminar todo";
+"全部删除…" = "Eliminar todo…";
 "全部功能、所在位置及默认状态" = "Todas las funciones, dónde encontrarlas en Ajustes y su estado predeterminado";
 "全部同步" = "Todas sincronizadas";
 "全部屏幕" = "Todas las pantallas";
@@ -643,6 +650,7 @@
 "删除原文件" = "Eliminar originales";
 "删除后不再推送到这个渠道，推送记录会保留" = "Al eliminarlo, dejan de enviarse informes a este canal; el historial de envíos se conserva";
 "删除失败" = "No se pudo eliminar";
+"删除失败，请重试" = "No se pudo eliminar. Inténtalo de nuevo";
 "删除本地记录…" = "Eliminar letras guardadas…";
 "删除此导入的字体（不可恢复）" = "Eliminar esta fuente importada (no se puede deshacer)";
 "删除语言包：系统设置 › 通用 › 语言与地区 › 翻译语言" = "Para eliminar idiomas: Ajustes del Sistema › General › Idioma y región › Idiomas de traducción";
@@ -953,6 +961,7 @@
 "宽度模式" = "Modo de ancho";
 "密钥或地址有误" = "Secreto o URL incorrectos";
 "对应多首歌曲，请选择 %@" = "Coincide con varias canciones, elige una %@";
+"对应歌词库中的歌曲" = "Asociada a una canción de la biblioteca";
 "对齐方式" = "Alineación";
 "导入" = "Importar";
 "导入 %@ 首" = "Importar %@ canciones";
@@ -965,6 +974,9 @@
 "导入字体…" = "Importar fuente…";
 "导入将包含账号和所有个人设置，完成后重启 Lyrimuse" = "Al importar se traen tus cuentas y todos tus ajustes personales; después Lyrimuse se reinicia";
 "导入并重启" = "Importar y reiniciar";
+"导入库" = "Biblioteca de importación";
+"导入库…" = "Biblioteca de importación…";
+"导入库是空的" = "La biblioteca de importación está vacía";
 "导入文件…" = "Importar archivo…";
 "导入方式" = "Importar como";
 "导入本机的歌词文件（LRC、TTML、YRC、QRC、KRC 或纯文本），也可拖入窗口" = "Importa un archivo de letra de este Mac (LRC, TTML, YRC, QRC, KRC o texto sin formato), o arrástralo a la ventana";
@@ -1151,6 +1163,7 @@
 "已校准的歌曲不再自动更换歌词源，以免歌词变化后校准失效。将偏移设回 0 即可解除" = "Las canciones calibradas ya no cambian de fuente de letra automáticamente, así que la calibración sigue siendo válida. Vuelve a poner el desfase en 0 para quitarla";
 "已添加" = "Añadido";
 "已演唱部分的颜色，也用于歌词旁进度图标的已播放部分。默认跟随系统强调色（深色菜单栏下自动提亮）；自定义后按原色显示，不再自动提亮" = "Color de la parte cantada y de la parte llena del icono de progreso junto a la letra. Por omisión sigue el color de acento del sistema (más claro en una barra de menús oscura); un color personalizado se usa tal cual, sin aclararlo";
+"已用在歌曲上的歌词保持不变，只是以后重新匹配时不再参与比较" = "La letra ya aplicada a canciones se mantiene; solo deja de compararse cuando se vuelvan a emparejar";
 "已由「自动识别」接管，取消「自动识别」后将仅识别勾选的播放器" = "Lo cubre «Detección automática». Desactívala para reconocer solo los reproductores seleccionados";
 "已缓存读音" = "Romanización en caché";
 "已自动跳过广告" = "Anuncio omitido automáticamente";
@@ -1384,6 +1397,7 @@
 "按收听最多的前 %1$@ 位歌手统计，占此期间收听量的 %2$@#one" = "Según tu top %1$@ de artistas, %2$@ de tus reproducciones en este periodo";
 "按收听最多的前 %@ 位歌手统计" = "Según tus %@ artistas más escuchados";
 "按收听最多的前 %@ 位歌手统计#one" = "Según tu top %@ de artistas";
+"按歌名和歌手识别" = "Identificada por título y artista";
 "按相关度" = "Por relevancia";
 "按纯音乐处理：不显示歌词，也不自动搜索；原有歌词将保留，取消标记即可恢复" = "Tratar como instrumental: la letra se oculta y no se busca automáticamente. La letra existente se conserva y vuelve al quitar la marca";
 "按翻唱者署名" = "Artista de la versión según el título";
@@ -1435,6 +1449,7 @@
 "搜索字体" = "Buscar fuentes";
 "搜索时默认按相关度排序：歌名开头匹配的优先，其次是歌名、歌手、专辑中匹配的" = "Al buscar, los resultados se ordenan por relevancia: primero los títulos que empiezan por la búsqueda y luego las coincidencias en título, artista y álbum";
 "搜索期间这首歌曲被修改过，本轮结果未采用" = "Esta canción se editó durante la búsqueda, así que no se aplicó el resultado de esta ronda";
+"搜索歌名或歌手" = "Buscar título o artista";
 "搜索歌手/歌名/专辑" = "Buscar artista/título/álbum";
 "搜索歌词" = "Buscar letra";
 "搜索歌词…" = "Buscar letra…";
@@ -1494,6 +1509,7 @@
 "整行时间轴" = "Sincronización por línea";
 "文件中包含账号凭证与密钥的明文，请妥善保管，请勿分享。歌词库将另存为同名的第二个文件，迁移时请一并拷贝" = "El archivo contiene las credenciales y claves de tus cuentas en texto sin cifrar. Guárdalo en un lugar seguro y no lo compartas. La biblioteca de letras se guarda como un segundo archivo con el mismo nombre; copia ambos al pasar a un Mac nuevo";
 "文件中尚无歌词，未保存" = "El archivo aún no tiene letra; no se guardó";
+"文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变" = "Los archivos de letra nuevos o modificados de la carpeta se importan solos: las canciones sin letra la reciben de inmediato y las que ya tienen no cambian";
 "文件夹中没有可识别的歌词文件" = "No hay archivos de letra reconocibles en esta carpeta";
 "文件过多（上限 %@ 个、200 MB），请分批导入" = "Demasiados archivos (límite de %@ archivos, 200 MB). Impórtalos por partes";
 "文件过大，不像是歌词，未保存" = "El archivo es demasiado grande para ser una letra; no se guardó";
@@ -1653,6 +1669,7 @@
 "更多播放器（%d）" = "Más reproductores (%d)";
 "更多歌词操作" = "Más acciones de letra";
 "更多设置…" = "Más ajustes…";
+"更换…" = "Cambiar…";
 "更换备份文件夹…" = "Cambiar carpeta de copias…";
 "更换或手动修改歌词时，其他 %d 个条目一并更新" = "Los reemplazos y ediciones manuales también se aplican a %d entradas más";
 "更换或手动修改歌词时，其他 %d 个条目一并更新#one" = "Los reemplazos y ediciones manuales también se aplican a %d entrada más";
@@ -1808,6 +1825,7 @@
 "查看、编辑和重新搜索已缓存的歌词" = "Ver, editar y volver a buscar letras en caché";
 "查看「%@」" = "Mostrar «%@»";
 "查看专辑简介" = "Ver notas del álbum";
+"查看和删除导入的歌词，设置监视文件夹" = "Revisa y quita letras importadas, y define una carpeta vigilada";
 "查看完整说明" = "Notas de la versión completas";
 "查看官方文档 →" = "Ver documentación oficial →";
 "查看效果与教程 →" = "Vista previa y guía →";
@@ -1971,6 +1989,7 @@
 "正在备份歌词库…" = "Haciendo copia de la biblioteca…";
 "正在安装…" = "Instalando…";
 "正在导入…" = "Importando…";
+"正在导入监视文件夹中的新文件…" = "Importando archivos nuevos de la carpeta vigilada…";
 "正在应用到歌词引擎…" = "Aplicando al motor de letras…";
 "正在搜索歌词…" = "Buscando letra…";
 "正在搜索：%@" = "Buscando: %@";
@@ -2106,6 +2125,7 @@
 "清空全部时间轴校准" = "Borrar todas las calibraciones de sincronización";
 "清空全部电台校准" = "Borrar todas las calibraciones de radio";
 "清空全部缓存" = "Borrar toda la caché";
+"清空导入库？" = "¿Vaciar la biblioteca de importación?";
 "清空搜索" = "Borrar búsqueda";
 "清除" = "Borrar";
 "清除…" = "Borrar…";
@@ -2157,6 +2177,7 @@
 "现在" = "ahora";
 "现场版场次不符" = "Grabación en vivo de otro concierto";
 "玻璃浓淡" = "Densidad del cristal";
+"用「导入歌词文件夹…」导入，或在下方设置监视文件夹" = "Usa Importar carpeta de letras… o define una carpeta vigilada abajo";
 "用于改进 Lyrimuse：版本、系统、用了哪些功能和崩溃报告，不含歌名和账号" = "Ayuda a mejorar Lyrimuse: versión, sistema, funciones usadas e informes de fallos. Nunca títulos de canciones ni cuentas";
 "用当前配色覆盖" = "Sobrescribir con colores actuales";
 "用户名下方显示" = "Debajo de tu nombre";
@@ -2174,6 +2195,8 @@
 "白色" = "Blanco";
 "白色、跟随封面、自定义颜色或彩虹" = "Blanco, color de la ilustración, color personalizado o arcoíris";
 "皇家学术院转写（RTGS），如 สวัสดี → sawatdi" = "Sistema real de transcripción tailandés (RTGS), p. ej. สวัสดี → sawatdi";
+"监视" = "Vigilar";
+"监视文件夹" = "Carpeta vigilada";
 "直连失败时，经下方代理服务器重试" = "Si falla la conexión directa, reintentar a través del servidor proxy de abajo";
 "直连失败时，经系统代理或本机检测到的代理重试" = "Si falla la conexión directa, reintentar a través del proxy del sistema o de uno detectado en este Mac";
 "相邻短句可容纳于一行时合并显示" = "Las líneas cortas contiguas se unen si caben en una línea";
@@ -2680,6 +2703,7 @@
 "选择歌词显示方式" = "Elige dónde aparece la letra";
 "选择用于播放此网站的浏览器" = "Elige el navegador que usas para este sitio";
 "选择要分享的句子" = "Elige las líneas que quieres compartir";
+"选择要监视的歌词文件夹" = "Elige la carpeta de letras que quieres vigilar";
 "透明" = "Transparente";
 "逐字" = "Palabra por palabra";
 "逐字填色时已唱部分使用此颜色" = "Color de la parte cantada al rellenarse la letra palabra por palabra";
