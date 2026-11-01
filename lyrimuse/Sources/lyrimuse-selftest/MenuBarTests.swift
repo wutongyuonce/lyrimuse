@@ -7,6 +7,15 @@ import Foundation
 
 @MainActor
 func runMenuBarTests() {
+    // ---- 面板格子标题：没有空格的中日文只放一行，带空格 / 连字符的按词折行 ----
+    do {
+        for t in ["フローティング歌詞", "メニューバーの歌詞", "悬浮歌词", "選單列歌詞"] {
+            expectEqual(TileTitleWrap.breaksInsideWords(t), true, "不折行: \(t)")
+        }
+        for t in ["Schwebender Text", "Menüleisten-Text", "Floating Lyrics", "메뉴 막대 가사", "Paroles de la barre des menus", ""] {
+            expectEqual(TileTitleWrap.breaksInsideWords(t), false, "按词折行: \(t)")
+        }
+    }
     // ---- 菜单栏跑马灯:像素级偏移 ----
     do {
         // 一段固定的参数:滚 100pt，每秒 50pt（走完要 2 秒），首尾各停 1 秒。

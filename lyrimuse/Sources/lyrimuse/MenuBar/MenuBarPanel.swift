@@ -1207,12 +1207,14 @@ private struct MenuBarPanelView: View {
                 VStack(spacing: 1) {
                     // 缩字保留但门槛提到 0.85:正常语言都放得下,它只兜"某种翻译特别长"的
                     // 意外,不是常态依赖。
-                    // 没有副标题的格子(三个展示形态)纵向有两行的余量:译文长的语言折成两行,别截断
+                    // 没有副标题的格子(三个展示形态)纵向有两行的余量:译文长的语言折成两行,别截断;
+                    // 没有空格的中日文标题折行会拆开词,只放一行、缩字的门槛放宽到 0.75(见 06 章决策 79)
+                    let unbreakable = TileTitleWrap.breaksInsideWords(title)
                     Text(title).font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
-                        .lineLimit(subtitle == nil ? 2 : 1)
-                        .minimumScaleFactor(0.85)
+                        .lineLimit(subtitle == nil && !unbreakable ? 2 : 1)
+                        .minimumScaleFactor(unbreakable ? 0.75 : 0.85)
                     // 副标题可选:三个开关的「已开启/已关闭」去掉了 —— 开关状态
                     // 本来就由图标那个高亮圆底表达(开=白字+强调色底,关=次要色+浅灰底),
                     // 再写一行字是同一件事说两遍。剩下两格的副标题是**真信息**,保留:
