@@ -108,7 +108,7 @@ func runLocalDocsTests() {
         // 别把这个 guard 改成 expectEqual:CI 会因为「文件缺失」红,而那不是缺陷,是刻意不发布。
         guard FileManager.default.fileExists(atPath: skillsDir.path) else { break skillGuard }
         let expected = ["lyrimuse-lyric-source-integration", "lyrimuse-lyrics-triage", "lyrimuse-player-integration",
-                        "lyrimuse-release", "lyrimuse-verify-ui"]
+                        "lyrimuse-release", "lyrimuse-ui-language-integration", "lyrimuse-verify-ui"]
         let found = ((try? FileManager.default.contentsOfDirectory(atPath: skillsDir.path)) ?? [])
             .filter { !$0.hasPrefix(".") }.sorted()
         expectEqual(found, expected, "项目级 skill: 登记的都在、没有多出来的(多一份要来这里登记)")
