@@ -278,7 +278,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ guarda su caché de letras y su cola de reproducción en carpetas protegidas. Con acceso, se usan directamente las letras que ya hay en este Mac y las próximas canciones se resuelven por adelantado; sin él, las letras se siguen buscando en internet"
+            "value" : "%@ guarda su caché de letras y su cola de reproducción en carpetas protegidas. Con acceso, se usan directamente las letras que ya hay en este Mac y se busca por adelantado la letra de las próximas canciones; sin él, las letras se siguen buscando en internet"
           }
         },
         "fr" : {
@@ -337,7 +337,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ne communique pas sa position de lecture au système. Avec l’accès, Lyrimuse lit le temps affiché dans sa fenêtre pour se calibrer, et appuie sur son bouton aléatoire ou répétition quand vous cliquez sur l’un d’eux. Sans accès, la position peut être décalée de 1–2 secondes en lecture automatique, et les boutons aléatoire et répétition sont indisponibles"
+            "value" : "%@ ne communique pas sa position de lecture au système. Avec l’accès, Lyrimuse lit le temps affiché dans sa fenêtre pour se calibrer, et appuie sur son bouton Aléatoire ou Répéter quand vous cliquez sur l’un d’eux. Sans accès, la position peut être décalée de 1 à 2 secondes en lecture automatique, et les boutons Aléatoire et Répéter sont indisponibles"
           }
         },
         "ja" : {
@@ -2870,7 +2870,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wiedergabesteuerung nicht mehr bei Hover zeigen"
+            "value" : "Wiedergabesteuerung nicht mehr beim Überfahren zeigen"
           }
         },
         "en" : {
@@ -3211,7 +3211,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grosor de la línea principal; la segunda línea y la vista previa de la siguiente al expandir son un punto más finas"
+            "value" : "Grosor de la línea principal; la segunda línea y la vista previa de la siguiente al expandir son un nivel más finas"
           }
         },
         "fr" : {
@@ -3293,7 +3293,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notch-Liedtext ausschalten"
+            "value" : "Notch-Text ausschalten"
           }
         },
         "en" : {
@@ -4188,7 +4188,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Wiedergabe Nr. N“ fasst verschiedene Schreibweisen desselben Titels zusammen (Lang-/Kurzzeichen, Klammerstil, Künstlerangaben usw.). Hier stehen alle in dieser Zeile zusammengefassten Schreibweisen mit eigener Anzahl und Grund sowie jede einzelne Wiedergabe"
+            "value" : "„Wiedergabe #N“ fasst verschiedene Schreibweisen desselben Titels zusammen (Lang-/Kurzzeichen, Klammerstil, Künstlerangaben usw.). Hier stehen alle in dieser Zeile zusammengefassten Schreibweisen mit eigener Anzahl und Grund sowie jede einzelne Wiedergabe"
           }
         },
         "en" : {
@@ -5344,7 +5344,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steuerung bei Hover zeigen"
+            "value" : "Steuerung beim Überfahren zeigen"
           }
         },
         "en" : {
@@ -5680,7 +5680,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ · depuis %2$@"
+            "value" : "%1$@ · de %2$@"
           }
         },
         "ja" : {
@@ -5979,13 +5979,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Il y a %1$@ ans jour pour jour : %2$@ écoute, les plus répétés"
+                  "value" : "Il y a %1$@ ans jour pour jour : %2$@ écoute, vos morceaux les plus écoutés"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Il y a %1$@ ans jour pour jour : %2$@ écoutes, les plus répétés"
+                  "value" : "Il y a %1$@ ans jour pour jour : %2$@ écoutes, vos morceaux les plus écoutés"
                 }
               }
             }
@@ -8414,13 +8414,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En Safari, abre Safari › Ajustes › Avanzado y selecciona «Mostrar funciones para desarrolladores web». Aparecerá el panel «Desarrollo» en Ajustes; selecciona allí «Permitir JavaScript de eventos de Apple»"
+            "value" : "En Safari, abre Safari › Ajustes › Avanzado y selecciona «Mostrar funciones para desarrolladores web». Aparecerá el panel «Desarrollo» en Ajustes; selecciona allí «Permitir JavaScript en Eventos Apple»"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dans Safari, ouvrez Safari › Réglages › Avancées et cochez « Afficher les fonctionnalités pour les développeurs web ». Une sous-fenêtre Développeurs apparaît alors dans Réglages ; cochez-y « Autoriser JavaScript venant des événements Apple »"
+            "value" : "Dans Safari, ouvrez Safari › Réglages › Avancées et cochez « Afficher les fonctionnalités pour les développeurs web ». Une sous-fenêtre Développeurs apparaît alors dans Réglages ; cochez-y « Autoriser JavaScript à partir des évènements Apple »"
           }
         },
         "ja" : {
@@ -10119,7 +10119,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird geladen …"
+            "value" : "Wird geladen …"
           }
         },
         "en" : {
@@ -10555,7 +10555,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coincide el álbum"
+            "value" : "Álbum coincidente"
           }
         },
         "fr" : {
@@ -11018,13 +11018,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Der %@ früher gewählte Titel wurde inzwischen automatisch aktualisiert – es ist nicht mehr deine Version, daher nicht gesperrt"
+                  "value" : "Der %@ früher gewählte Titel wurde inzwischen automatisch aktualisiert – es ist nicht mehr die gewählte Version, daher nicht gesperrt"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Die %@ früher gewählten Titel wurden inzwischen automatisch aktualisiert – es sind nicht mehr deine Versionen, daher nicht gesperrt"
+                  "value" : "Die %@ früher gewählten Titel wurden inzwischen automatisch aktualisiert – es sind nicht mehr die gewählten Versionen, daher nicht gesperrt"
                 }
               }
             }
@@ -11746,7 +11746,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aus Programmen wählen …"
+            "value" : "Aus Programmen wählen …"
           }
         },
         "en" : {
@@ -11846,7 +11846,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aus Datei importieren …"
+            "value" : "Aus Datei importieren …"
           }
         },
         "en" : {
@@ -13171,7 +13171,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle Einstellungen …"
+            "value" : "Alle Einstellungen …"
           }
         },
         "en" : {
@@ -13749,7 +13749,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Andere Quellen werden noch durchsucht …"
+            "value" : "Andere Quellen werden noch durchsucht …"
           }
         },
         "en" : {
@@ -13767,7 +13767,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recherche encore dans d’autres sources…"
+            "value" : "Recherche en cours dans d’autres sources…"
           }
         },
         "ja" : {
@@ -13820,7 +13820,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contenu corroboré"
+            "value" : "Contenu confirmé"
           }
         },
         "ja" : {
@@ -13961,7 +13961,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sichern in iCloud fehlgeschlagen. Verwende unten „Exportieren …“, um stattdessen eine Datei zu sichern"
+            "value" : "Sichern in iCloud fehlgeschlagen. Verwende unten „Exportieren …“, um stattdessen eine Datei zu sichern"
           }
         },
         "en" : {
@@ -14138,7 +14138,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suggérer moins"
+            "value" : "Suggérer moins souvent"
           }
         },
         "ja" : {
@@ -14733,7 +14733,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird entfernt …"
+            "value" : "Wird entfernt …"
           }
         },
         "en" : {
@@ -15010,7 +15010,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez « Autoriser JavaScript venant des événements Apple » dans le menu Développement de ce navigateur"
+            "value" : "Activez « Autoriser JavaScript à partir des événements Apple » dans le menu Développement de ce navigateur"
           }
         },
         "ja" : {
@@ -15884,13 +15884,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Il y a un an jour pour jour : %@ écoute, les plus répétés"
+                  "value" : "Il y a un an jour pour jour : %@ écoute, vos morceaux les plus écoutés"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Il y a un an jour pour jour : %@ écoutes, les plus répétés"
+                  "value" : "Il y a un an jour pour jour : %@ écoutes, vos morceaux les plus écoutés"
                 }
               }
             }
@@ -16087,7 +16087,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Problem melden …"
+            "value" : "Problem melden …"
           }
         },
         "en" : {
@@ -16564,7 +16564,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn etwas nicht klappt, klicke mit der rechten Maustaste auf das Menüleistensymbol und wähle „Hilfe › Problem melden …“"
+            "value" : "Wenn etwas nicht klappt, klicke mit der rechten Maustaste auf das Menüleistensymbol und wähle „Hilfe › Problem melden …“"
           }
         },
         "en" : {
@@ -17041,7 +17041,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht mehr immer oben"
+            "value" : "Nicht mehr im Vordergrund"
           }
         },
         "en" : {
@@ -19817,7 +19817,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Backup-Ordner …"
+            "value" : "Backup-Ordner …"
           }
         },
         "en" : {
@@ -20399,7 +20399,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Umbenennen …"
+            "value" : "Umbenennen …"
           }
         },
         "en" : {
@@ -21136,7 +21136,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportieren …"
+            "value" : "Exportieren …"
           }
         },
         "en" : {
@@ -22149,7 +22149,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moins suggéré"
+            "value" : "Suggéré moins souvent"
           }
         },
         "ja" : {
@@ -23337,7 +23337,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notch-Liedtext eingeblendet"
+            "value" : "Notch-Text eingeblendet"
           }
         },
         "en" : {
@@ -23383,7 +23383,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menüleisten-Liedtext eingeblendet"
+            "value" : "Menüleisten-Text eingeblendet"
           }
         },
         "en" : {
@@ -25347,7 +25347,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activé (par défaut) : quand l’algorithme d’association ou les règles de score changent, les paroles existantes sont réévaluées en arrière-plan et peuvent être remplacées par une meilleure version\nDésactivé : une fois choisies, les paroles ne sont jamais remplacées automatiquement ; premières recherches, nouvelles recherches et modifications manuelles ne sont pas concernées"
+            "value" : "Activé (par défaut) : quand l’algorithme de correspondance ou les règles de score changent, les paroles existantes sont réévaluées en arrière-plan et peuvent être remplacées par une meilleure version\nDésactivé : une fois choisies, les paroles ne sont jamais remplacées automatiquement ; premières recherches, nouvelles recherches et modifications manuelles ne sont pas concernées"
           }
         },
         "ja" : {
@@ -26490,7 +26490,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meine Themen"
+            "value" : "Meine Designs"
           }
         },
         "en" : {
@@ -27590,7 +27590,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Version (Live / Remix / Demo / Club Mix …) in Titel, Album oder Dateikopf passt nicht zum lokalen Titel"
+            "value" : "Die Version (Live / Remix / Demo / Club Mix …) in Titel, Album oder Dateikopf passt nicht zum lokalen Titel"
           }
         },
         "en" : {
@@ -29106,7 +29106,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext suchen …"
+            "value" : "Liedtext suchen …"
           }
         },
         "en" : {
@@ -29159,7 +29159,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext wird gesucht …"
+            "value" : "Liedtext wird gesucht …"
           }
         },
         "en" : {
@@ -29636,7 +29636,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gilt, sobald dieses Feld geschlossen ist"
+            "value" : "Gilt, sobald das Panel geschlossen ist"
           }
         },
         "en" : {
@@ -32087,7 +32087,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weitere Einstellungen …"
+            "value" : "Weitere Einstellungen …"
           }
         },
         "en" : {
@@ -32134,7 +32134,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Backup-Ordner ändern …"
+            "value" : "Backup-Ordner ändern …"
           }
         },
         "en" : {
@@ -33815,7 +33815,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Scrobbles warten lokal"
+            "value" : "Keine lokalen Scrobbles ausstehend"
           }
         },
         "en" : {
@@ -34610,7 +34610,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird geprüft …"
+            "value" : "Wird geprüft …"
           }
         },
         "en" : {
@@ -34716,7 +34716,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nach Updates suchen …"
+            "value" : "Nach Updates suchen …"
           }
         },
         "en" : {
@@ -34769,7 +34769,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Startet Lyrimuse automatisch, wenn dein Player öffnet"
+            "value" : "Startet Lyrimuse automatisch, wenn dein Player startet"
           }
         },
         "en" : {
@@ -36310,7 +36310,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtextfenster …"
+            "value" : "Liedtextfenster …"
           }
         },
         "en" : {
@@ -36416,7 +36416,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext-Verwaltung …"
+            "value" : "Liedtext-Verwaltung …"
           }
         },
         "en" : {
@@ -36628,7 +36628,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird geladen …"
+            "value" : "Wird geladen …"
           }
         },
         "en" : {
@@ -36681,7 +36681,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird synchronisiert …"
+            "value" : "Wird synchronisiert …"
           }
         },
         "en" : {
@@ -36840,7 +36840,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext wird gesucht …"
+            "value" : "Liedtext wird gesucht …"
           }
         },
         "en" : {
@@ -36999,7 +36999,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtextquellen werden durchsucht …"
+            "value" : "Liedtextquellen werden durchsucht …"
           }
         },
         "en" : {
@@ -37052,7 +37052,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dieser Tag in früheren Jahren wird gesucht …"
+            "value" : "„An diesem Tag“ wird geladen …"
           }
         },
         "en" : {
@@ -37070,7 +37070,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recherche de ce jour les années passées…"
+            "value" : "Chargement de « Ce jour-là »…"
           }
         },
         "ja" : {
@@ -37105,7 +37105,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Manuell gewählte Titel werden geprüft …"
+            "value" : "Manuell gewählte Titel werden geprüft …"
           }
         },
         "en" : {
@@ -37211,7 +37211,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisierung wird bestätigt, fast fertig …"
+            "value" : "Autorisierung wird bestätigt, fast fertig …"
           }
         },
         "en" : {
@@ -37264,7 +37264,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird automatisch gesichert …"
+            "value" : "Wird automatisch gesichert …"
           }
         },
         "en" : {
@@ -37317,7 +37317,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisierungstoken wird angefordert …"
+            "value" : "Autorisierungstoken wird angefordert …"
           }
         },
         "en" : {
@@ -37423,7 +37423,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird neu zugeordnet …"
+            "value" : "Wird neu zugeordnet …"
           }
         },
         "en" : {
@@ -37476,7 +37476,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird neu zugeordnet … (%1$@/%2$@)"
+            "value" : "Wird neu zugeordnet … (%1$@/%2$@)"
           }
         },
         "en" : {
@@ -37529,7 +37529,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird geprüft …"
+            "value" : "Wird geprüft …"
           }
         },
         "en" : {
@@ -38071,13 +38071,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo cargar este día en años anteriores: Last.fm no respondió"
+            "value" : "No se pudo cargar «Un día como hoy»: Last.fm no respondió"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossible de charger ce jour les années passées : Last.fm n’a pas répondu"
+            "value" : "Impossible de charger « Ce jour-là » : Last.fm n’a pas répondu"
           }
         },
         "ja" : {
@@ -38530,7 +38530,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird getestet …"
+            "value" : "Wird getestet …"
           }
         },
         "en" : {
@@ -38742,7 +38742,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird hinzugefügt …"
+            "value" : "Wird hinzugefügt …"
           }
         },
         "en" : {
@@ -39007,7 +39007,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Löschen …"
+            "value" : "Löschen …"
           }
         },
         "en" : {
@@ -40274,7 +40274,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La copia contiene las credenciales y claves de tus cuentas en texto sin cifrar y se sincroniza con todos los dispositivos que usan la misma cuenta de Apple"
+            "value" : "La copia contiene las credenciales y claves de tus cuentas en texto sin cifrar y se sincroniza con todos los dispositivos que usan la misma Cuenta de Apple"
           }
         },
         "fr" : {
@@ -41110,7 +41110,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Signatur-Secret (optional)"
+            "value" : "Signaturschlüssel (optional)"
           }
         },
         "en" : {
@@ -41393,7 +41393,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traduire si aucune traduction"
+            "value" : "Traduire si non fournie"
           }
         },
         "ja" : {
@@ -41723,7 +41723,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desde siempre"
+            "value" : "Total"
           }
         },
         "fr" : {
@@ -43258,7 +43258,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titelseite bei NetEase Cloud Music"
+            "value" : "Songseite in NetEase Cloud Music"
           }
         },
         "en" : {
@@ -43435,7 +43435,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toutes les requêtes réseau ont échoué (problème DNS/connexion) : ce sondage n’a pas pu s’exécuter"
+            "value" : "Toutes les requêtes réseau ont échoué (problème DNS/connexion) : ce test n’a pas pu s’exécuter"
           }
         },
         "ja" : {
@@ -45207,7 +45207,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nachreichen"
+            "value" : "Nachtragen"
           }
         },
         "en" : {
@@ -45260,7 +45260,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stelle zuerst die Web-App bereit und hole einen Zugriffstoken. Die Schritte stehen im README des Projekts: https://github.com/Yudaotor/lyrimuse"
+            "value" : "Stelle zuerst die Web-App bereit und hole ein Zugriffstoken. Die Schritte stehen im README des Projekts: https://github.com/Yudaotor/lyrimuse"
           }
         },
         "en" : {
@@ -45384,7 +45384,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rechoisi après une mise à jour des règles de score"
+            "value" : "Choisi à nouveau après une mise à jour des règles de score"
           }
         },
         "ja" : {
@@ -45543,7 +45543,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossible d’analyser le fichier d’historique local"
+            "value" : "Impossible d’analyser le fichier des enregistrements locaux"
           }
         },
         "ja" : {
@@ -45831,7 +45831,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einstellungen …"
+            "value" : "Einstellungen …"
           }
         },
         "en" : {
@@ -46944,7 +46944,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kurzbefehl drücken …"
+            "value" : "Kurzbefehl drücken …"
           }
         },
         "en" : {
@@ -47319,7 +47319,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossible de lire le fichier d’historique local"
+            "value" : "Impossible de lire le fichier des enregistrements locaux"
           }
         },
         "ja" : {
@@ -48532,7 +48532,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dernière année"
+            "value" : "12 derniers mois"
           }
         },
         "ja" : {
@@ -49299,7 +49299,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« %@ » n’a pas répondu à ce tour. Rien n’a été changé pour éviter une dégradation. Réessayez plus tard"
+            "value" : "« %@ » n’a pas répondu cette fois. Rien n’a été changé pour éviter une dégradation. Réessayez plus tard"
           }
         },
         "ja" : {
@@ -49352,7 +49352,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre de sources de paroles ayant renvoyé un résultat à ce tour. Cliquez pour les détails"
+            "value" : "Nombre de sources de paroles ayant renvoyé un résultat cette fois. Cliquez pour les détails"
           }
         },
         "ja" : {
@@ -49405,7 +49405,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun résultat à ce tour. Réessayez"
+            "value" : "Aucun résultat cette fois. Réessayez"
           }
         },
         "ja" : {
@@ -49511,7 +49511,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Des sources n’ont pas répondu à ce tour. Rien n’a été changé pour éviter une dégradation. Réessayez plus tard"
+            "value" : "Des sources n’ont pas répondu cette fois. Rien n’a été changé pour éviter une dégradation. Réessayez plus tard"
           }
         },
         "ja" : {
@@ -49617,7 +49617,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce morceau a été modifié pendant la recherche : le résultat de ce tour n’a pas été appliqué"
+            "value" : "Ce morceau a été modifié pendant la recherche : ce résultat n’a pas été appliqué"
           }
         },
         "ja" : {
@@ -49670,7 +49670,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pas de paroles mot à mot à ce tour : « %@ » (mot à mot) est conservé pour garder le minutage mot à mot"
+            "value" : "Pas de paroles mot à mot cette fois : « %@ » (mot à mot) est conservé pour garder le minutage mot à mot"
           }
         },
         "ja" : {
@@ -49723,7 +49723,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun résultat utilisable à ce tour. Paroles actuelles conservées"
+            "value" : "Aucun résultat utilisable cette fois. Paroles actuelles conservées"
           }
         },
         "ja" : {
@@ -49776,7 +49776,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucune source n’a renvoyé de résultat à ce tour"
+            "value" : "Aucune source n’a renvoyé de résultat cette fois"
           }
         },
         "ja" : {
@@ -50133,7 +50133,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cette source a le morceau, mais seulement en texte brut sans minutage. Il se lit en texte statique dans la « Fenêtre des paroles », sans surlignage mot à mot ni ligne par ligne pendant la lecture"
+            "value" : "Cette source a le morceau, mais seulement en texte brut sans minutage. Le texte se lit de façon statique dans la « Fenêtre des paroles », sans surlignage mot à mot ni ligne par ligne pendant la lecture"
           }
         },
         "ja" : {
@@ -50649,13 +50649,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Supprime %d enregistrement local, y compris les paroles modifiées ou choisies parmi les résultats, ainsi que son fichier de paroles exporté. Une sauvegarde est faite automatiquement avant, restaurable via « Restaurer depuis la sauvegarde auto » dans ce menu. Les morceaux seront à nouveau associés à la lecture"
+                  "value" : "Supprime %d enregistrement local, y compris les paroles modifiées ou choisies parmi les résultats, ainsi que son fichier de paroles exporté. Une sauvegarde est faite automatiquement avant, restaurable via « Restaurer depuis la sauvegarde auto » dans ce menu. Les morceaux seront réassociés à leur prochaine lecture"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Supprime les %d enregistrements locaux, y compris les paroles modifiées ou choisies parmi les résultats, ainsi que leurs fichiers de paroles exportés. Une sauvegarde est faite automatiquement avant, restaurable via « Restaurer depuis la sauvegarde auto » dans ce menu. Les morceaux seront à nouveau associés à la lecture"
+                  "value" : "Supprime les %d enregistrements locaux, y compris les paroles modifiées ou choisies parmi les résultats, ainsi que leurs fichiers de paroles exportés. Une sauvegarde est faite automatiquement avant, restaurable via « Restaurer depuis la sauvegarde auto » dans ce menu. Les morceaux seront réassociés à leur prochaine lecture"
                 }
               }
             }
@@ -51472,13 +51472,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Entrar en pantalla completa"
+            "value" : "Usar pantalla completa"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passer en plein écran"
+            "value" : "Activer le mode plein écran"
           }
         },
         "ja" : {
@@ -51725,7 +51725,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last.fm verbinden …"
+            "value" : "Last.fm verbinden …"
           }
         },
         "en" : {
@@ -51902,7 +51902,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quitter le plein écran"
+            "value" : "Quitter le mode plein écran"
           }
         },
         "ja" : {
@@ -53563,7 +53563,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einrichtung erneut ausführen …"
+            "value" : "Einrichtung erneut ausführen …"
           }
         },
         "en" : {
@@ -54105,7 +54105,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic y mantén para arrastrar"
+            "value" : "Mantén pulsado para arrastrar"
           }
         },
         "fr" : {
@@ -54158,7 +54158,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haz clic y mantén, o haz clic secundario, para abrir los ajustes"
+            "value" : "Mantén pulsado o haz clic secundario para abrir los ajustes"
           }
         },
         "fr" : {
@@ -54588,7 +54588,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muet"
+            "value" : "Couper le son"
           }
         },
         "ja" : {
@@ -55471,7 +55471,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erste Auflösung"
+            "value" : "Erste Suche"
           }
         },
         "en" : {
@@ -57461,13 +57461,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cette semaine l’an dernier : %@ écoute, les plus écoutés en boucle"
+                  "value" : "Cette semaine l’an dernier : %@ écoute, vos morceaux les plus écoutés"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cette semaine l’an dernier : %@ écoutes, les plus écoutés en boucle"
+                  "value" : "Cette semaine l’an dernier : %@ écoutes, vos morceaux les plus écoutés"
                 }
               }
             }
@@ -57562,13 +57562,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cette semaine il y a %1$@ ans : %2$@ écoute, les plus écoutés en boucle"
+                  "value" : "Cette semaine il y a %1$@ ans : %2$@ écoute, vos morceaux les plus écoutés"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Cette semaine il y a %1$@ ans : %2$@ écoutes, les plus écoutés en boucle"
+                  "value" : "Cette semaine il y a %1$@ ans : %2$@ écoutes, vos morceaux les plus écoutés"
                 }
               }
             }
@@ -58338,7 +58338,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keiner der standardmäßig aufgeführten Browser (Safari, Chrome, Edge) wurde auf diesem Mac gefunden. Andere Browser kannst du unten über „Aus Programmen wählen …“ hinzufügen"
+            "value" : "Keiner der standardmäßig aufgeführten Browser (Safari, Chrome, Edge) wurde auf diesem Mac gefunden. Andere Browser kannst du unten über „Aus Programmen wählen …“ hinzufügen"
           }
         },
         "en" : {
@@ -58697,7 +58697,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einige Punkte erfordern Aufmerksamkeit"
+            "value" : "Noch nicht alles erledigt"
           }
         },
         "en" : {
@@ -59368,7 +59368,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext-Bibliothek wird gezählt …"
+            "value" : "Liedtext-Bibliothek wird gezählt …"
           }
         },
         "en" : {
@@ -59545,7 +59545,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quand tous les lecteurs cochés sont fermés, Lyrimuse quitte après 5 secondes ; si l’un d’eux se rouvre entre-temps, c’est annulé. Si les Réglages, le Gestionnaire de paroles ou la fenêtre des paroles sont ouverts, Lyrimuse attend leur fermeture"
+            "value" : "Quand tous les lecteurs cochés sont fermés, Lyrimuse se ferme 5 secondes plus tard ; si l’un d’eux se rouvre entre-temps, la fermeture est annulée. Si les Réglages, le Gestionnaire de paroles ou la fenêtre des paroles sont ouverts, Lyrimuse attend leur fermeture"
           }
         },
         "ja" : {
@@ -59621,7 +59621,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn du fortfährst, bestätigst du die"
+            "value" : "Wenn du fortfährst, bestätigst du den"
           }
         },
         "en" : {
@@ -59633,7 +59633,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Al continuar, confirmas que conoces"
+            "value" : "Al continuar, confirmas que conoces el"
           }
         },
         "fr" : {
@@ -60044,7 +60044,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird übernommen …"
+            "value" : "Wird übernommen …"
           }
         },
         "en" : {
@@ -61120,7 +61120,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwalten …"
+            "value" : "Verwalten …"
           }
         },
         "en" : {
@@ -61715,7 +61715,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ändern …"
+            "value" : "Ändern …"
           }
         },
         "en" : {
@@ -62511,7 +62511,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La conexión falló o expiró: %@"
+            "value" : "Error de conexión o tiempo de espera agotado: %@"
           }
         },
         "fr" : {
@@ -62705,7 +62705,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La conexión falló o expiró sin respuesta"
+            "value" : "Error de conexión o tiempo de espera agotado, sin respuesta"
           }
         },
         "fr" : {
@@ -62758,7 +62758,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ses sources en amont (NetEase / QQ Music) sont injoignables : recherche impossible à ce tour"
+            "value" : "Ses sources en amont (NetEase / QQ Music) sont injoignables : recherche impossible cette fois"
           }
         },
         "ja" : {
@@ -64282,7 +64282,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versionshinweise zu dieser Version auf GitHub"
+            "value" : "Hinweise zu dieser Version auf GitHub"
           }
         },
         "en" : {
@@ -64435,7 +64435,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diagnose exportieren …"
+            "value" : "Diagnose exportieren …"
           }
         },
         "en" : {
@@ -64559,7 +64559,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quelle part d’un morceau doit être lue pour le scrobbler\n50 % : la moitié ou 4 minutes, au premier atteint (règle de Last.fm)\n75 % / 90 % : cette part du morceau\nFin du morceau : seulement s’il est lu jusqu’au bout ; les morceaux passés ne comptent pas"
+            "value" : "Quelle part d’un morceau doit être lue pour le scrobbler\n50 % : la moitié ou 4 minutes, selon le premier seuil atteint (règle de Last.fm)\n75 % / 90 % : cette part du morceau\nFin du morceau : seulement s’il est lu jusqu’au bout ; les morceaux passés ne comptent pas"
           }
         },
         "ja" : {
@@ -64912,7 +64912,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Webplayer melden keine genaue Position; mit dieser Option kalibriert Lyrimuse direkt nach einem Titelwechsel neu"
+            "value" : "Web-Player melden keine genaue Position; mit dieser Option kalibriert Lyrimuse direkt nach einem Titelwechsel neu"
           }
         },
         "en" : {
@@ -65700,7 +65700,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenigste Quellen geantwortet"
+            "value" : "Wenigste Antworten zuerst"
           }
         },
         "en" : {
@@ -66804,13 +66804,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%d jeu de requêtes à ce tour"
+                  "value" : "%d jeu de requêtes cette fois"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%d jeux de requêtes à ce tour"
+                  "value" : "%d jeux de requêtes cette fois"
                 }
               }
             }
@@ -66860,7 +66860,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucune source n’a répondu à ce tour"
+            "value" : "Aucune source n’a répondu cette fois"
           }
         },
         "ja" : {
@@ -68749,7 +68749,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Entrées et déroulement de ce tour"
+            "value" : "Entrées et déroulement de cette recherche"
           }
         },
         "ja" : {
@@ -69174,7 +69174,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mise à jour de logiciels"
+            "value" : "Mise à jour du logiciel"
           }
         },
         "ja" : {
@@ -69391,7 +69391,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suche nach Updates …"
+            "value" : "Suche nach Updates …"
           }
         },
         "en" : {
@@ -69438,7 +69438,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird geladen …"
+            "value" : "Wird geladen …"
           }
         },
         "en" : {
@@ -69485,7 +69485,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installation wird vorbereitet …"
+            "value" : "Installation wird vorbereitet …"
           }
         },
         "en" : {
@@ -69532,7 +69532,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird installiert …"
+            "value" : "Wird installiert …"
           }
         },
         "en" : {
@@ -69926,7 +69926,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir Mise à jour de logiciels"
+            "value" : "Ouvrir Mise à jour du logiciel"
           }
         },
         "ja" : {
@@ -70508,7 +70508,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Schrift importieren …"
+            "value" : "Schrift importieren …"
           }
         },
         "en" : {
@@ -71592,13 +71592,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%1$@ morceau, il faut %2$@. Les morceaux qui ont déjà des paroles sont aussi réassociés, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux. Vous pouvez arrêter à tout moment sans perdre la progression"
+                  "value" : "%1$@ morceau, comptez %2$@. Les morceaux qui ont déjà des paroles sont aussi réassociés, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux. Vous pouvez arrêter à tout moment sans perdre la progression"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%1$@ morceaux, il faut %2$@. Les morceaux qui ont déjà des paroles sont aussi réassociés, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux. Vous pouvez arrêter à tout moment sans perdre la progression"
+                  "value" : "%1$@ morceaux, comptez %2$@. Les morceaux qui ont déjà des paroles sont aussi réassociés, sauf ceux modifiés à la main, au minutage calibré ou instrumentaux. Vous pouvez arrêter à tout moment sans perdre la progression"
                 }
               }
             }
@@ -71912,7 +71912,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Verbindung, neuer Versuch gleich …"
+            "value" : "Keine Verbindung, neuer Versuch gleich …"
           }
         },
         "en" : {
@@ -72118,7 +72118,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zuletzt: nach %1$@ geprüften gestoppt, %2$@ aktualisiert"
+            "value" : "Zuletzt: %1$@ geprüft, dann gestoppt, %2$@ aktualisiert"
           }
         },
         "en" : {
@@ -72608,7 +72608,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anmelden …"
+            "value" : "Anmelden …"
           }
         },
         "en" : {
@@ -73085,7 +73085,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Player hinzufügen …"
+            "value" : "Player hinzufügen …"
           }
         },
         "en" : {
@@ -73138,7 +73138,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle eine aus „Programme“, ohne zu warten, bis sie abspielt"
+            "value" : "Wähle eine App im Ordner „Programme“, ohne zu warten, bis sie etwas abspielt"
           }
         },
         "en" : {
@@ -73191,7 +73191,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auswählen …"
+            "value" : "Auswählen …"
           }
         },
         "en" : {
@@ -76682,7 +76682,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dans la barre des menus de Brave : Affichage › Options pour les développeurs › Autoriser JavaScript à partir des événements Apple"
+            "value" : "Dans la barre des menus de Brave : Présentation › Options pour les développeurs › Autoriser JavaScript à partir des événements Apple"
           }
         },
         "ja" : {
@@ -77323,7 +77323,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seit dem letzten Zeitraum um %@ gestiegen"
+            "value" : "Gegenüber dem letzten Zeitraum um %@ gestiegen"
           }
         },
         "en" : {
@@ -77376,7 +77376,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seit dem letzten Zeitraum um %@ gefallen"
+            "value" : "Gegenüber dem letzten Zeitraum um %@ gefallen"
           }
         },
         "en" : {
@@ -77876,7 +77876,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automation für %@ ist aus …"
+            "value" : "Automation für %@ ist aus …"
           }
         },
         "en" : {
@@ -78335,7 +78335,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiviere dies, um Liedtexte von diesem Mac zu nutzen und den nächsten Titel vorab vorzubereiten"
+            "value" : "Aktiviere dies, um Liedtexte von diesem Mac zu nutzen und den nächsten Titel vorzubereiten"
           }
         },
         "en" : {
@@ -78494,7 +78494,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird auf die Liedtext-Engine angewendet …"
+            "value" : "Wird auf die Liedtext-Engine angewendet …"
           }
         },
         "en" : {
@@ -79024,7 +79024,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Liedtext-Engine wird neu gestartet. Sie muss den ganzen Liedtext-Cache erneut lesen, was meist ein bis zwei Minuten dauert …"
+            "value" : "Die Liedtext-Engine wird neu gestartet. Sie muss den ganzen Liedtext-Cache erneut lesen, was meist ein bis zwei Minuten dauert …"
           }
         },
         "en" : {
@@ -79077,7 +79077,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext-Engine wird neu gestartet und prüft den Zugriff erneut …"
+            "value" : "Liedtext-Engine wird neu gestartet und prüft den Zugriff erneut …"
           }
         },
         "en" : {
@@ -79442,7 +79442,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird gestartet …"
+            "value" : "Wird gestartet …"
           }
         },
         "en" : {
@@ -80025,7 +80025,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext wird gesucht …"
+            "value" : "Liedtext wird gesucht …"
           }
         },
         "en" : {
@@ -81161,7 +81161,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paroles en trop dans un pont instrumental"
+            "value" : "Paroles en trop dans un interlude"
           }
         },
         "ja" : {
@@ -81367,7 +81367,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Repris du même enregistrement sur un autre album"
+            "value" : "Réutilisé : même enregistrement, autre album"
           }
         },
         "ja" : {
@@ -81420,7 +81420,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Repris du même morceau sous une autre graphie d’artiste"
+            "value" : "Réutilisé : même morceau, autre graphie d’artiste"
           }
         },
         "ja" : {
@@ -81555,7 +81555,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rest wird geladen …"
+            "value" : "Rest wird geladen …"
           }
         },
         "en" : {
@@ -81967,7 +81967,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Warten auf den nächsten Titel …"
+            "value" : "Warten auf den nächsten Titel …"
           }
         },
         "en" : {
@@ -82355,7 +82355,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ganze Bibliothek neu zuordnen …"
+            "value" : "Ganze Bibliothek neu zuordnen …"
           }
         },
         "en" : {
@@ -83684,7 +83684,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spiele einen Titel ab und wähle dann erneut „Liedtext suchen …“"
+            "value" : "Spiele einen Titel ab und wähle dann erneut „Liedtext suchen …“"
           }
         },
         "en" : {
@@ -84319,7 +84319,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Farben vor dem Anwenden eines Themas. Klicke, um sie wiederherzustellen"
+            "value" : "Die Farben vor dem Anwenden eines Designs. Klicke, um sie wiederherzustellen"
           }
         },
         "en" : {
@@ -84572,7 +84572,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausgeklappte Ecken"
+            "value" : "Ecken ausgeklappt"
           }
         },
         "en" : {
@@ -84996,7 +84996,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrimuse behalten …"
+            "value" : "Lyrimuse behalten …"
           }
         },
         "en" : {
@@ -85208,7 +85208,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf Last.fm erneut verbinden …"
+            "value" : "Auf Last.fm erneut verbinden …"
           }
         },
         "en" : {
@@ -85526,7 +85526,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erneut verbinden …"
+            "value" : "Erneut verbinden …"
           }
         },
         "en" : {
@@ -85632,7 +85632,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erreicht ein Titel 100, 1.000 … Wiedergaben oder deine Gesamtzahl 1.000, 5.000 …, öffnet sich die Notch zum Feiern. Erfordert Last.fm"
+            "value" : "Erreicht ein Titel 100, 1.000 … Wiedergaben oder deine Gesamtzahl 1.000, 5.000 …, öffnet sich die Notch zum Feiern. Erfordert Last.fm"
           }
         },
         "en" : {
@@ -85644,7 +85644,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando una canción llega a 100, 1000… reproducciones, o tu total llega a 1000, 5000…, el Notch se despliega para celebrarlo. Requiere Last.fm"
+            "value" : "Cuando una canción llega a 100, 1000… reproducciones, o tu total llega a 1000, 5000…, el notch se despliega para celebrarlo. Requiere Last.fm"
           }
         },
         "fr" : {
@@ -85756,7 +85756,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Écoute nº %@ au total"
+            "value" : "Écoute n° %@ au total"
           }
         },
         "ja" : {
@@ -85791,7 +85791,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trennen …"
+            "value" : "Trennen …"
           }
         },
         "en" : {
@@ -87614,7 +87614,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spotifys Webplayer unter open.spotify.com"
+            "value" : "Spotifys Web-Player unter open.spotify.com"
           }
         },
         "en" : {
@@ -87779,7 +87779,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La letra flotante, el Notch, la barra de menús y la Touch Bar pueden usarse a la vez; abre la ventana de letra cuando la necesites"
+            "value" : "La letra flotante, el notch, la barra de menús y la Touch Bar pueden usarse a la vez; abre la ventana de letra cuando la necesites"
           }
         },
         "fr" : {
@@ -88297,7 +88297,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discord laden …"
+            "value" : "Discord laden …"
           }
         },
         "en" : {
@@ -88933,7 +88933,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbindung zu Discord …"
+            "value" : "Verbinden mit Discord …"
           }
         },
         "en" : {
@@ -89940,7 +89940,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur ausgewählte Player erscheinen auf Discord; Webplayer zählen als ihr Browser"
+            "value" : "Nur ausgewählte Player erscheinen auf Discord; Web-Player zählen als ihr Browser"
           }
         },
         "en" : {
@@ -90682,7 +90682,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausblenden …"
+            "value" : "Ausblenden …"
           }
         },
         "en" : {
@@ -91053,7 +91053,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fügt der Control Strip eine Lyrimuse-Taste hinzu; tippe darauf, um den Text anzuzeigen"
+            "value" : "Fügt dem Control Strip eine Lyrimuse-Taste hinzu; tippe darauf, um den Text anzuzeigen"
           }
         },
         "en" : {
@@ -92152,7 +92152,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Liedtext dieses Titels hat sich während der Bearbeitung geändert, daher wurde dieses Sichern nicht übernommen. Klicke erneut auf „Bearbeiten“, um die neueste Version zu öffnen"
+            "value" : "Der Liedtext dieses Titels hat sich während der Bearbeitung geändert, daher wurde die gesicherte Fassung nicht übernommen. Klicke erneut auf „Bearbeiten“, um die neueste Version zu öffnen"
           }
         },
         "en" : {
@@ -92164,7 +92164,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La letra de esta canción cambió mientras la editabas, así que este guardado no se aplicó. Vuelve a hacer clic en «Editar» para abrir la última versión"
+            "value" : "La letra de esta canción cambió mientras la editabas, así que este guardado no se aplicó. Vuelve a editarla para abrir la última versión"
           }
         },
         "fr" : {
@@ -92764,7 +92764,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatische Zuordnung wird vorbereitet …"
+            "value" : "Automatische Zuordnung wird vorbereitet …"
           }
         },
         "en" : {
@@ -94319,7 +94319,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gesicherten Liedtext löschen …"
+            "value" : "Gesicherten Liedtext löschen …"
           }
         },
         "en" : {
@@ -96937,7 +96937,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Añade la pronunciación en los idiomas seleccionados; si se muestra se define en «Mostrar letra»"
+            "value" : "Añade la romanización en los idiomas seleccionados; si se muestra se define en «Mostrar letra»"
           }
         },
         "fr" : {
@@ -97302,7 +97302,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⌘S Enregistrer · Esc Ignorer"
+            "value" : "⌘S Enregistrer · Échap Abandonner"
           }
         },
         "ja" : {
@@ -97831,7 +97831,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Füge die Tasten für Helligkeit, Lautstärke und mehr rechts in der Touch Bar in „Systemeinstellungen › Tastatur › Touch Bar-Einstellungen …“ hinzu, entferne oder ordne sie neu"
+            "value" : "Füge die Tasten für Helligkeit, Lautstärke und mehr rechts in der Touch Bar in „Systemeinstellungen › Tastatur › Touch Bar-Einstellungen …“ hinzu, entferne oder ordne sie neu"
           }
         },
         "en" : {
@@ -97934,13 +97934,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ ungültigen Eintrag bereinigen …"
+                  "value" : "%@ ungültigen Eintrag bereinigen …"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ ungültige Einträge bereinigen …"
+                  "value" : "%@ ungültige Einträge bereinigen …"
                 }
               }
             }
@@ -98586,7 +98586,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Altura de la fila de letra, igual en reposo y expandida. Por omisión se ajusta al texto (más alta con la segunda línea activada); puedes aumentarla"
+            "value" : "Altura de la fila de letra, igual en reposo y expandida. De forma predeterminada se ajusta al texto (más alta con la segunda línea activada); puedes aumentarla"
           }
         },
         "fr" : {
@@ -98951,7 +98951,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se muestra como instrumental en todas partes y no se busca letra automáticamente. La letra existente se conserva y vuelve al desmarcarla"
+            "value" : "Se muestra como instrumental en todas partes y no se busca letra automáticamente. La letra existente se conserva y vuelve al quitar la marca"
           }
         },
         "fr" : {
@@ -99010,7 +99010,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’autorisation Accessibilité garde précise la position de lecture de %@ et affiche ses boutons Aléatoire et Répéter"
+            "value" : "L’autorisation Accessibilité maintient la précision de la position de lecture de %@ et affiche ses boutons Aléatoire et Répéter"
           }
         },
         "ja" : {
@@ -99063,7 +99063,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez-la pour garder précise la position de lecture de %@ en lecture automatique et afficher ses boutons Aléatoire et Répéter"
+            "value" : "Activez-la pour maintenir la précision de la position de lecture de %@ en lecture automatique et afficher ses boutons Aléatoire et Répéter"
           }
         },
         "ja" : {
@@ -99116,7 +99116,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyrimuse ne peut pas écrire à ces emplacements, le moteur de paroles ne peut donc pas démarrer :"
+            "value" : "Lyrimuse ne peut pas écrire dans ces emplacements, le moteur de paroles ne peut donc pas démarrer :"
           }
         },
         "ja" : {
@@ -99763,7 +99763,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unbrauchbar"
+            "value" : "Ungeeignet"
           }
         },
         "en" : {
@@ -100417,7 +100417,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez-la pour garder précise la position de lecture de %@ en lecture automatique, afficher les boutons Aléatoire, Répéter et Favori de %@ et contrôler la lecture sans le focus multimédia du système"
+            "value" : "Activez-la pour maintenir la précision de la position de lecture de %@ en lecture automatique, afficher les boutons Aléatoire, Répéter et Favori de %@ et contrôler la lecture sans le focus multimédia du système"
           }
         },
         "ja" : {
@@ -104256,7 +104256,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo cuenta las pronunciaciones guardadas en la caché, que se exportan con los archivos de letra; no se cuentan las generadas durante la reproducción"
+            "value" : "Solo cuenta la romanización guardada en la caché, que se exporta con los archivos de letra; no se cuenta la generada durante la reproducción"
           }
         },
         "fr" : {
@@ -104822,7 +104822,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Starten …"
+            "value" : "Starten …"
           }
         },
         "en" : {
@@ -104928,7 +104928,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ mit unbekanntem Status; werden automatisch mit Last.fm abgeglichen"
+            "value" : "%@ mit unbekanntem Status; sie werden automatisch mit Last.fm abgeglichen"
           }
         },
         "en" : {
@@ -105617,7 +105617,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "App hinzufügen …"
+            "value" : "App hinzufügen …"
           }
         },
         "en" : {
@@ -106352,7 +106352,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivado, no hay barra de progreso; Discord muestra el tiempo transcurrido, que no se puede desactivar"
+            "value" : "Si se desactiva, no hay barra de progreso; Discord muestra el tiempo transcurrido, que no se puede desactivar"
           }
         },
         "fr" : {
@@ -107668,7 +107668,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diese Version für alle …"
+            "value" : "Für alle verwenden …"
           }
         },
         "en" : {
@@ -108420,7 +108420,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einträge dieses Titels …"
+            "value" : "Einträge dieses Titels …"
           }
         },
         "en" : {
@@ -108655,7 +108655,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abtrennen …"
+            "value" : "Abtrennen …"
           }
         },
         "en" : {
@@ -111167,7 +111167,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pruebas de coincidencia"
+            "value" : "Por qué coinciden"
           }
         },
         "fr" : {
@@ -113770,7 +113770,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne sie aus „Kurzbefehle“, Raycast, Alfred und ähnlichen Tools. Bewege den Zeiger über einen Tastaturkurzbefehl oben, um den Link für diese Aktion zu kopieren"
+            "value" : "Öffne sie über „Kurzbefehle“, Raycast, Alfred und ähnliche Tools. Bewege den Zeiger über einen Tastaturkurzbefehl oben, um den Link für diese Aktion zu kopieren"
           }
         },
         "en" : {
@@ -113788,7 +113788,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrez-les depuis Raccourcis, Raycast, Alfred et outils similaires. Survolez un raccourci ci-dessus pour copier le lien de cette action"
+            "value" : "Ouvrez-les depuis Raccourcis, Raycast, Alfred et d’autres outils similaires. Survolez un raccourci ci-dessus pour copier le lien de cette action"
           }
         },
         "ja" : {
@@ -115189,7 +115189,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scrobbles dieses Tages werden abgerufen …"
+            "value" : "Scrobbles dieses Tages werden abgerufen …"
           }
         },
         "en" : {
@@ -115608,7 +115608,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verbinden mit Lyrimuse …"
+            "value" : "Verbinden mit Lyrimuse …"
           }
         },
         "en" : {
@@ -115661,7 +115661,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Getrennt. Neu verbinden …"
+            "value" : "Getrennt. Wird neu verbunden …"
           }
         },
         "en" : {
@@ -116527,7 +116527,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contrôlez la lecture et accédez aux paroles depuis d’autres appareils"
+            "value" : "Contrôlez la lecture et passez à une ligne des paroles depuis d’autres appareils"
           }
         },
         "ja" : {
@@ -117846,7 +117846,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivada · Actívala para una sincronización más precisa y controlar el volumen de LX Music"
+            "value" : "Desactivada · Actívala para sincronizar con más precisión y controlar el volumen de LX Music"
           }
         },
         "fr" : {
@@ -118635,13 +118635,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta fuente encontró la canción pero no tiene texto de letra, así que no se puntuó"
+            "value" : "Esta fuente encontró la canción, pero no tiene texto de letra, así que no se puntuó"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cette source a trouvé le morceau mais sans texte de paroles, il n’a donc pas été noté"
+            "value" : "Cette source a trouvé le morceau, mais sans texte de paroles : elle n’a donc pas été notée"
           }
         },
         "ja" : {
@@ -119282,7 +119282,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der weltweit größte Liedtextkatalog, auch hinter den Liedtexten von Spotify"
+            "value" : "Weltweit größter Liedtextkatalog, liefert auch die Liedtexte für Spotify"
           }
         },
         "en" : {
@@ -119752,7 +119752,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ abgelehnt: %2$@"
+            "value" : "Von %1$@ abgelehnt: %2$@"
           }
         },
         "en" : {
@@ -120363,7 +120363,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Löschen …"
+            "value" : "Löschen …"
           }
         },
         "en" : {
@@ -121832,13 +121832,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comprueba que «Secreto de firma» coincida con los ajustes del bot. Si la verificación por firma está desactivada, deja este campo vacío"
+            "value" : "Comprueba que «Clave de firma» coincida con los ajustes del bot. Si la verificación por firma está desactivada, deja este campo vacío"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vérifiez que « Secret de signature » correspond aux réglages du bot. Si la vérification par signature est désactivée, videz ce champ"
+            "value" : "Vérifiez que « Clé de signature » correspond aux réglages du bot. Si la vérification par signature est désactivée, videz ce champ"
           }
         },
         "ja" : {
@@ -121961,7 +121961,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Testnachricht wird gesendet …"
+            "value" : "Testnachricht wird gesendet …"
           }
         },
         "en" : {
@@ -122290,7 +122290,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bearbeiten …"
+            "value" : "Bearbeiten …"
           }
         },
         "en" : {
@@ -122619,7 +122619,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erneut senden fehlgeschlagen: %@"
+            "value" : "Erneutes Senden fehlgeschlagen: %@"
           }
         },
         "en" : {
@@ -122872,7 +122872,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Service qui transfère les messages vers WeChat. Scannez le QR code avec WeChat pour obtenir une SendKey ; les bilans arrivent dans le compte officiel Fangtang"
+            "value" : "Service qui transfère les messages vers WeChat. Scannez le code QR avec WeChat pour obtenir une SendKey ; les bilans arrivent dans le compte officiel Fangtang"
           }
         },
         "ja" : {
@@ -122919,7 +122919,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bot Telegram. Créez-le avec @BotFather ; les bilans vous sont envoyés, à vous ou à un de vos groupes"
+            "value" : "Bot Telegram. Créez-le avec @BotFather ; les bilans sont envoyés à vous-même ou à un groupe dont vous êtes membre"
           }
         },
         "ja" : {
@@ -122995,7 +122995,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein Slack Incoming Webhook. Berichte werden in einem Kanal deines Workspace gepostet"
+            "value" : "Ein Slack Incoming Webhook. Berichte werden in einem Kanal deines Workspaces gepostet"
           }
         },
         "en" : {
@@ -123571,7 +123571,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuente de datos"
+            "value" : "Origen de datos"
           }
         },
         "fr" : {
@@ -123618,7 +123618,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuente de datos: %@"
+            "value" : "Origen de datos: %@"
           }
         },
         "fr" : {
@@ -123665,7 +123665,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuente de datos de este informe"
+            "value" : "Origen de datos de este informe"
           }
         },
         "fr" : {
@@ -125093,7 +125093,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre d’artistes, d’albums et de morceaux à lister en tête"
+            "value" : "Nombre d’artistes, d’albums et de morceaux à afficher dans chaque classement"
           }
         },
         "ja" : {
@@ -125422,7 +125422,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Environ 4 lignes visibles sur l’écran verrouillé ; ouvrez pour lire la suite"
+            "value" : "Environ 4 lignes visibles sur l’écran verrouillé ; ouvrez-la pour lire la suite"
           }
         },
         "ja" : {
@@ -126210,7 +126210,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pas encore de paroles"
+            "value" : "Les paroles n’ont pas encore commencé"
           }
         },
         "ja" : {
@@ -126474,7 +126474,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Echte Daten werden geladen …"
+            "value" : "Echte Daten werden geladen …"
           }
         },
         "en" : {
@@ -127508,7 +127508,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zugestellt (%.1f s). Prüfe, ob er auf deinem Handy oder in der Gruppe angekommen ist"
+            "value" : "Zugestellt (%.1f s). Prüfe, ob die Nachricht auf deinem Handy oder in der Gruppe angekommen ist"
           }
         },
         "en" : {
@@ -128708,7 +128708,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toujours en direct"
+            "value" : "Toujours se connecter directement"
           }
         },
         "ja" : {
@@ -129167,7 +129167,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Auto“ bevorzugt den Bildschirm mit Notch. Ist der gewählte Bildschirm getrennt, gilt „Auto“, bis er zurück ist"
+            "value" : "„Auto“ bevorzugt das Display mit Notch. Ist das gewählte Display getrennt, gilt „Auto“, bis es zurück ist"
           }
         },
         "en" : {
@@ -129220,7 +129220,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "„Alle Displays“ zeigt eine Kopie in der Menüleiste jedes Bildschirms; „Auto“ bevorzugt den Hauptbildschirm; ein gewählter, getrennter Bildschirm fällt auf „Auto“ zurück"
+            "value" : "„Alle Displays“ zeigt eine Kopie in der Menüleiste jedes Displays; „Auto“ bevorzugt das Hauptdisplay; ein gewähltes, getrenntes Display fällt auf „Auto“ zurück"
           }
         },
         "en" : {
@@ -129803,7 +129803,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext teilen …"
+            "value" : "Liedtext teilen …"
           }
         },
         "en" : {
@@ -129962,7 +129962,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bild sichern …"
+            "value" : "Bild sichern …"
           }
         },
         "en" : {
@@ -130015,7 +130015,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teilen …"
+            "value" : "Teilen …"
           }
         },
         "en" : {
@@ -130280,7 +130280,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt den Wiedergabefortschritt, wenn nicht erweitert"
+            "value" : "Zeigt den Wiedergabefortschritt, wenn nicht ausgeklappt"
           }
         },
         "en" : {
@@ -130810,7 +130810,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bereinigen …"
+            "value" : "Bereinigen …"
           }
         },
         "en" : {
@@ -131087,7 +131087,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El acceso total al disco permite a %@ preparar por adelantado la letra de las próximas canciones; solo lee su cola de reproducción"
+            "value" : "El acceso total al disco permite preparar por adelantado la letra de las próximas canciones de %@; solo se lee su cola de reproducción"
           }
         },
         "fr" : {
@@ -131393,7 +131393,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt erweitert mehrere Liedzeilen, die aktuelle Zeile leuchtet Wort für Wort auf"
+            "value" : "Zeigt ausgeklappt mehrere Liedzeilen, die aktuelle Zeile leuchtet Wort für Wort auf"
           }
         },
         "en" : {
@@ -132029,7 +132029,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Panjabi"
+            "value" : "Punjabi"
           }
         },
         "en" : {
@@ -133107,7 +133107,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depuis Spotify"
+            "value" : "Via Spotify"
           }
         },
         "ja" : {
@@ -133160,7 +133160,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depuis Kuwo Music"
+            "value" : "Via Kuwo Music"
           }
         },
         "ja" : {
@@ -133195,7 +133195,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Song-Seite bei Kugou Music"
+            "value" : "Songseite in Kugou Music"
           }
         },
         "en" : {
@@ -133672,7 +133672,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der gewählte Bildschirm hat keine dauerhaft sichtbare Menüleiste, daher bleibt der Text neben dem Symbol"
+            "value" : "Das gewählte Display hat keine dauerhaft sichtbare Menüleiste, daher bleibt der Text neben dem Symbol"
           }
         },
         "en" : {
@@ -134326,7 +134326,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depuis Kugou Music"
+            "value" : "Via Kugou Music"
           }
         },
         "ja" : {
@@ -134585,7 +134585,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ indica el progreso de reproducción solo al segundo. Con permiso, Lyrimuse lee la barra de progreso de su ventana para calibrar la posición, lee su lista de reproducción para resolver por adelantado las próximas canciones, usa sus menús para controlar la repetición y lee y ajusta su volumen; también puede pausar, reanudar y cambiar de canción cuando otra app tiene el foco multimedia del sistema. Sin permiso, la letra puede desfasarse medio segundo tras saltar a otro punto, no están disponibles el botón de repetición ni el control de volumen, y no se puede controlar la reproducción si el foco está en otra app"
+            "value" : "%@ solo indica el progreso de reproducción con precisión de segundos. Con permiso, Lyrimuse lee la barra de progreso de su ventana para calibrar la posición, lee su lista de reproducción para preparar por adelantado la letra de las próximas canciones, usa sus menús para controlar la repetición y lee y ajusta su volumen; también puede pausar, reanudar y cambiar de canción cuando otra app tiene el foco multimedia del sistema. Sin permiso, la letra puede desfasarse medio segundo tras saltar a otro punto, no están disponibles el botón de repetición ni el control de volumen, y no se puede controlar la reproducción si el foco está en otra app"
           }
         },
         "fr" : {
@@ -135386,7 +135386,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisation Accessibilité manquante : %@ n’a pas d’aléatoire, de répétition ni de volume, et Lyrimuse ne peut pas mettre en pause, reprendre ou changer de morceau sans le focus multimédia du système"
+            "value" : "Autorisation Accessibilité manquante : les commandes Aléatoire, Répéter et Volume de %@ sont masquées, et Lyrimuse ne peut pas mettre en pause, reprendre ou changer de morceau sans le focus multimédia du système"
           }
         },
         "ja" : {
@@ -135439,7 +135439,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’autorisation Accessibilité active l’aléatoire, la répétition et le volume pour %@, et permet à Lyrimuse de mettre en pause, reprendre et changer de morceau quand une autre app détient le focus multimédia du système"
+            "value" : "L’autorisation Accessibilité affiche les commandes Aléatoire, Répéter et Volume de %@, et permet à Lyrimuse de mettre en pause, reprendre et changer de morceau quand une autre app détient le focus multimédia du système"
           }
         },
         "ja" : {
@@ -135492,7 +135492,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez cette autorisation pour afficher l’aléatoire, la répétition et le volume de %@, et pour mettre en pause, reprendre et changer de morceau quand il perd le focus multimédia du système"
+            "value" : "Activez cette autorisation pour afficher les commandes Aléatoire, Répéter et Volume de %@, et pour mettre en pause, reprendre et changer de morceau quand il perd le focus multimédia du système"
           }
         },
         "ja" : {
@@ -138619,7 +138619,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Écoutes de la période précédente, absent des bilans quotidiens"
+            "value" : "Écoutes de la période précédente (absent des bilans quotidiens)"
           }
         },
         "ja" : {
@@ -140032,7 +140032,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vorlage bearbeiten …"
+            "value" : "Vorlage bearbeiten …"
           }
         },
         "en" : {
@@ -140138,7 +140138,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Übersicht und dein meistgehörter Künstler, Album und Titel"
+            "value" : "Übersicht sowie Top-Künstler, Top-Album und Top-Titel"
           }
         },
         "en" : {
@@ -140156,7 +140156,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Résumé et vos artiste, album et morceau les plus écoutés"
+            "value" : "Résumé, et l’artiste, l’album et le morceau les plus écoutés"
           }
         },
         "ja" : {
@@ -140256,7 +140256,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa tu plantilla, enviada como texto sin formato"
+            "value" : "Usa tu plantilla y se envía como texto sin formato"
           }
         },
         "fr" : {
@@ -140456,7 +140456,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erweiterter Hintergrund"
+            "value" : "Hintergrund ausgeklappt"
           }
         },
         "en" : {
@@ -140721,7 +140721,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ist der Zeiger über der Liedzeile, wird sie abgeblendet statt erweitert, und Klicks gehen an das Fenster darunter"
+            "value" : "Ist der Zeiger über der Liedzeile, verblasst sie, statt auszuklappen, und Klicks gehen an das Fenster darunter"
           }
         },
         "en" : {
@@ -140827,7 +140827,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bei lokalen Dateien zuerst die gleichnamige .lrc oder eingebetteten Liedtext nutzen"
+            "value" : "Bei lokalen Dateien zuerst die gleichnamige .lrc-Datei oder eingebetteten Liedtext nutzen"
           }
         },
         "en" : {
@@ -141198,7 +141198,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopien löschen …"
+            "value" : "Kopien löschen …"
           }
         },
         "en" : {
@@ -142470,7 +142470,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Backup der Liedtexte vor dem Löschen …"
+            "value" : "Liedtexte werden vor dem Löschen gesichert …"
           }
         },
         "en" : {
@@ -142523,7 +142523,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird als %@ gesichert …"
+            "value" : "Wird als %@ gesichert …"
           }
         },
         "en" : {
@@ -142576,7 +142576,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird als %1$@ gesichert … %2$@ von %3$@ Titeln"
+            "value" : "Wird als %1$@ gesichert … %2$@ von %3$@ Titeln"
           }
         },
         "en" : {
@@ -142841,7 +142841,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neu in dieser Version …"
+            "value" : "Neu in dieser Version …"
           }
         },
         "en" : {
@@ -142912,7 +142912,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Illustration de l’album"
+            "value" : "Illustration d’album"
           }
         },
         "ja" : {
@@ -143000,7 +143000,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Datei importieren …"
+            "value" : "Datei importieren …"
           }
         },
         "en" : {
@@ -143378,13 +143378,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importada de un archivo de este Mac, sin puntuar. Una vez aplicada, la coincidencia automática no la sustituirá"
+            "value" : "Importada de un archivo de este Mac, sin puntuar. Una vez aplicada, la búsqueda automática no la sustituirá"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importées d’un fichier de ce Mac, sans score. Une fois adoptées, la correspondance automatique ne les remplacera pas"
+            "value" : "Importées d’un fichier de ce Mac, sans score. Une fois adoptées, l’association automatique ne les remplacera pas"
           }
         },
         "ja" : {
@@ -143431,13 +143431,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige un archivo de letra. También puedes seleccionar sus archivos de traducción y pronunciación con el mismo nombre"
+            "value" : "Elige un archivo de letra. También puedes seleccionar sus archivos de traducción y romanización con el mismo nombre"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez un fichier de paroles. Vous pouvez aussi sélectionner ses fichiers de traduction et de prononciation du même nom"
+            "value" : "Choisissez un fichier de paroles. Vous pouvez aussi sélectionner ses fichiers de traduction et de romanisation du même nom"
           }
         },
         "ja" : {
@@ -143644,7 +143644,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucunes paroles reconnues dans le fichier"
+            "value" : "Aucune parole reconnue dans le fichier"
           }
         },
         "ja" : {
@@ -143838,7 +143838,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtextdatei importieren …"
+            "value" : "Liedtextdatei importieren …"
           }
         },
         "en" : {
@@ -144115,7 +144115,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sustituye la letra actual. Puede cambiarse automáticamente si otra fuente ofrece una versión claramente mejor, como una con sincronización por palabra"
+            "value" : "Sustituye la letra actual. Puede cambiarse automáticamente si otra fuente ofrece una versión claramente mejor, como una con tiempos por palabra"
           }
         },
         "fr" : {
@@ -144168,13 +144168,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sustituye la letra actual y la bloquea para que la coincidencia automática no la cambie"
+            "value" : "Sustituye la letra actual y la bloquea para que la búsqueda automática no la cambie"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Remplace les paroles actuelles et les verrouille pour que la correspondance automatique ne les change pas"
+            "value" : "Remplace les paroles actuelles et les verrouille pour que l’association automatique ne les change pas"
           }
         },
         "ja" : {
@@ -144221,13 +144221,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las canciones que ya tienen letra no cambian; el resto funciona como Preferir"
+            "value" : "Las canciones que ya tienen letra no cambian; el resto funciona como «Preferir»"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les morceaux qui ont déjà des paroles restent inchangés ; les autres fonctionnent comme Privilégier"
+            "value" : "Les morceaux qui ont déjà des paroles restent inchangés ; les autres fonctionnent comme « Privilégier »"
           }
         },
         "ja" : {
@@ -144469,7 +144469,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtextdateien werden gelesen und zugeordnet …"
+            "value" : "Liedtextdateien werden gelesen und zugeordnet …"
           }
         },
         "en" : {
@@ -144681,7 +144681,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird importiert %@"
+            "value" : "Bereit zum Import %@"
           }
         },
         "en" : {
@@ -144699,7 +144699,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seront importés %@"
+            "value" : "À importer %@"
           }
         },
         "ja" : {
@@ -145259,7 +145259,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wird importiert …"
+            "value" : "Wird importiert …"
           }
         },
         "en" : {
@@ -145466,7 +145466,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Liedtext-Ordner importieren …"
+            "value" : "Liedtext-Ordner importieren …"
           }
         },
         "en" : {
@@ -145637,7 +145637,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La letra importada de una carpeta tiene preferencia (+300); otra fuente puede ganar con una versión claramente mejor, como una con sincronización por palabra"
+            "value" : "La letra importada de una carpeta tiene preferencia (+300); otra fuente puede ganar con una versión claramente mejor, como una con tiempos por palabra"
           }
         },
         "fr" : {
@@ -145678,7 +145678,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bibliothek wird gesichert …"
+            "value" : "Bibliothek wird gesichert …"
           }
         },
         "en" : {
@@ -146163,7 +146163,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les paroles déjà appliquées aux morceaux restent inchangées ; elles ne seront simplement plus comparées lors des nouvelles correspondances"
+            "value" : "Les paroles déjà appliquées aux morceaux restent inchangées ; elles ne seront simplement plus comparées lors d’une nouvelle association"
           }
         },
         "ja" : {
@@ -146308,13 +146308,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ paroles importées"
+                  "value" : "%@ fichier de paroles importé"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%@ paroles importées"
+                  "value" : "%@ fichiers de paroles importés"
                 }
               }
             }
@@ -146458,7 +146458,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nutze „Liedtext-Ordner importieren …“ oder lege unten einen überwachten Ordner fest"
+            "value" : "Nutze „Liedtext-Ordner importieren …“ oder lege unten einen überwachten Ordner fest"
           }
         },
         "en" : {
@@ -146470,7 +146470,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa Importar carpeta de letras… o define una carpeta vigilada abajo"
+            "value" : "Usa «Importar carpeta de letras…» o define una carpeta vigilada abajo"
           }
         },
         "fr" : {
@@ -146723,7 +146723,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ändern …"
+            "value" : "Ändern …"
           }
         },
         "en" : {
@@ -146829,7 +146829,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle löschen …"
+            "value" : "Alle löschen …"
           }
         },
         "en" : {
@@ -146935,7 +146935,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neue Dateien aus dem überwachten Ordner werden importiert …"
+            "value" : "Neue Dateien aus dem überwachten Ordner werden importiert …"
           }
         },
         "en" : {
@@ -147200,7 +147200,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Import-Bibliothek …"
+            "value" : "Import-Bibliothek …"
           }
         },
         "en" : {
@@ -147306,7 +147306,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@-Kopien werden gelöscht …"
+            "value" : "%@-Kopien werden gelöscht …"
           }
         },
         "en" : {
@@ -147359,7 +147359,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@-Kopien werden gelöscht … %2$@ von %3$@ Titeln"
+            "value" : "%1$@-Kopien werden gelöscht … %2$@ von %3$@ Titeln"
           }
         },
         "en" : {

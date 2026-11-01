@@ -134,7 +134,7 @@ Nachreichen reicht nur **13 Tage** zurück. Wurde eine Wiedergabe einmal versuch
 
 Last.fm erhält, was der Player gemeldet hat. Eine Bibliothek, die dieselbe Person sowohl als `Khalil Fong` als auch als `方大同` meldet, zeigt dort also zwei Künstler.
 
-Innerhalb von Lyrimuse werden sie bei Wiedergabezahlen, Charts und „N-te Wiedergabe“-Angaben zusammengeführt – über das Angleichen von traditionellem und vereinfachtem Chinesisch, Aliasse für romanisierte Namen, das Entfernen von Katalogzusätzen (`(Remastered 2014)`, `(feat. …)`, `(Explicit)`) und eine Alias-Tabelle pro Künstler. Zusammengeführt wird lokal statt vor dem Übermitteln, weil eine falsche lokale Zusammenführung mit einer Aktualisierung behoben ist, ein falscher Scrobble dagegen eine dauerhafte Änderung an einer öffentlichen Seite ist.
+Innerhalb von Lyrimuse werden sie bei Wiedergabezahlen, Charts und „Wiedergabe #N“-Angaben zusammengeführt – über das Angleichen von traditionellem und vereinfachtem Chinesisch, Aliasse für romanisierte Namen, das Entfernen von Katalogzusätzen (`(Remastered 2014)`, `(feat. …)`, `(Explicit)`) und eine Alias-Tabelle pro Künstler. Zusammengeführt wird lokal statt vor dem Übermitteln, weil eine falsche lokale Zusammenführung mit einer Aktualisierung behoben ist, ein falscher Scrobble dagegen eine dauerhafte Änderung an einer öffentlichen Seite ist.
 
 ## 7. Häufige Fragen
 

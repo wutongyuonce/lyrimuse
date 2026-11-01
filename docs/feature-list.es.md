@@ -728,7 +728,7 @@ Se envían a los canales que configures, varios a la vez si quieres: Bark, ntfy,
 - Ajustes: Avisos push › Canales
 - Ajustes: Avisos push › Hora de envío
 - Ajustes: Avisos push › Informes de escucha
-- Ajustes: Avisos push › Fuente de datos
+- Ajustes: Avisos push › Origen de datos
 - Ajustes: Avisos push › Elementos por lista
 - Ajustes: Avisos push › Informe diario de escucha
 - Ajustes: Avisos push › Resumen semanal de escucha
@@ -1333,7 +1333,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Esc
 - **Canales**: Los informes de escucha van a todos los canales activados. Si tienes varios, elige los canales de cada informe en «Informes de escucha», más abajo. Haz clic en una fila para editarla o enviar una prueba; clic secundario para eliminarla
 - **Hora de envío**
 - **Informes de escucha**
-- **Fuente de datos**
+- **Origen de datos**
 - **Elementos por lista**: Cuántos artistas, álbumes y canciones principales mostrar
 - **Resumen semanal de escucha**
 - **Informe diario de escucha**
@@ -1360,5 +1360,5 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Esc
 - **Privacidad**
 - **Ocultar temporalmente**
 - **Ocultar detalles de la canción**: Solo muestra el reproductor que usas y el progreso. No se envían el título, el artista, el álbum, la letra, los enlaces ni el botón «Escuchar en el reproductor»
-- **Mostrar barra de progreso**: Desactivado, no hay barra de progreso; Discord muestra el tiempo transcurrido, que no se puede desactivar
+- **Mostrar barra de progreso**: Si se desactiva, no hay barra de progreso; Discord muestra el tiempo transcurrido, que no se puede desactivar
 - **Reproductores mostrados**

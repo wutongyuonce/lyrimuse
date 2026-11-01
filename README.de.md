@@ -186,7 +186,7 @@ Dabei wird die einmalige Gatekeeper-Quarantäne automatisch aufgehoben, ein weit
      ```
      Öffne die App danach ganz normal. Das ist pro Download nur einmal nötig.
    - **Rechtsklick → Öffnen:** Klicke im Finder mit der rechten Maustaste (oder bei gedrückter ctrl-Taste) auf `Lyrimuse.app`, wähle **Öffnen** und bestätige im Dialog noch einmal mit **Öffnen**. Das klappt nicht auf jeder macOS-Version bei jeder Art von Warnung; bleibt die Warnung, nimm den Terminal-Befehl oben.
-   - **Systemeinstellungen → Datenschutz & Sicherheit:** Versuche einmal, die App zu öffnen (sie wird blockiert), öffne dann **Systemeinstellungen → Datenschutz & Sicherheit**, scrolle nach unten und klicke neben der Lyrimuse-Warnung auf **Trotzdem öffnen**. Bestätige noch einmal, falls du gefragt wirst.
+   - **Systemeinstellungen → Datenschutz & Sicherheit:** Versuche einmal, die App zu öffnen (sie wird blockiert), öffne dann **Systemeinstellungen → Datenschutz & Sicherheit**, scrolle nach unten und klicke neben der Lyrimuse-Warnung auf **Dennoch öffnen**. Bestätige noch einmal, falls du gefragt wirst.
 
    Mach das nur bei einem Build, dem du wirklich vertraust: dem von der Releases-Seite dieses Repos oder einem, den du selbst gebaut hast.
 

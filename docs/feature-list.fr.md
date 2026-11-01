@@ -31,7 +31,7 @@ Ces fonctionnalités restent désactivées après l’installation. Activez-les 
 | [Utiliser les paroles déjà enregistrées par le lecteur](#feature-player-local-lyrics) | Réglages › Lecteur › Autorisations et services › Accès complet au disque |
 | [Privilégier les paroles du fichier](#feature-prefer-local-file-lyrics) | Réglages › Paroles › Source › Privilégier les paroles du fichier |
 | [Verrouiller les paroles choisies](#feature-lock-hand-picked) | Réglages › Paroles › Source › Verrouiller les paroles choisies |
-| [Traduire si aucune traduction](#feature-machine-translation) | Réglages › Paroles › Langue › Traduire si aucune traduction |
+| [Traduire si aucune traduction](#feature-machine-translation) | Réglages › Paroles › Langue › Traduire si non fournie |
 | [Couper les lignes longues, joindre les courtes](#feature-split-join-lines) | Réglages › Paroles › Minutage et coupures › Couper les lignes longues |
 | [Paroles de l’encoche](#feature-notch-lyrics) | Réglages › Affichage des paroles › Encoche › Paroles de l’encoche |
 | [Paroles de la barre des menus](#feature-menu-bar-lyrics) | Réglages › Affichage des paroles › Barre des menus › Paroles de la barre des menus |
@@ -59,7 +59,7 @@ Ces fonctionnalités restent désactivées après l’installation. Activez-les 
 | [Bilans d’écoute quotidiens, hebdomadaires, mensuels et annuels](#feature-digests) | Réglages › Alertes push › Canaux |
 | [Lancement silencieux](#feature-silent-launch) | Réglages › Général › Démarrage et notifications › Lancement silencieux |
 | [Notifier au changement de morceau](#feature-song-notifications) | Réglages › Général › Démarrage et notifications › Notifier au changement de morceau |
-| [Mises à jour automatiques et bêtas](#feature-updates) | Réglages › Mise à jour de logiciels › Réglages de mise à jour › Vérifier automatiquement |
+| [Mises à jour automatiques et bêtas](#feature-updates) | Réglages › Mise à jour du logiciel › Réglages de mise à jour › Vérifier automatiquement |
 
 <a id="section-lyrics"></a>
 
@@ -205,7 +205,7 @@ Les traductions fournies avec les paroles apparaissent sous chaque ligne. NetEas
 Quand aucune source n’a de traduction, les paroles sont traduites automatiquement. Sur macOS 15 ou ultérieur, avec la langue téléchargée, la traduction intégrée d’Apple s’en charge sur votre Mac et les paroles y restent ; sinon, les lignes à traduire sont envoyées à Google Traduction, puis à MyMemory. Les langues de traduction se téléchargent depuis la même carte.
 
 - Désactivée par défaut
-- Réglages : Paroles › Langue › Traduire si aucune traduction
+- Réglages : Paroles › Langue › Traduire si non fournie
 - Réglages : Paroles › Langue › Langues de traduction
 
 <a id="feature-romanization"></a>
@@ -794,7 +794,7 @@ Douze icônes en trois tailles, qui bougent avec la musique pendant la lecture, 
 
 - Activée par défaut
 - Réglages : Général › Barre des menus et Dock › Icône de la barre des menus
-- Réglages : Général › Barre des menus et Dock › Illustration de l’album
+- Réglages : Général › Barre des menus et Dock › Illustration d’album
 - Réglages : Général › Barre des menus et Dock › Taille de l’icône
 - Réglages : Général › Barre des menus et Dock › Animer l’icône
 
@@ -850,9 +850,9 @@ Exportez tous vos réglages dans un seul fichier, enregistré par défaut sur iC
 Recherche les nouvelles versions de lui-même ; lisez les notes et installez depuis la page Mise à jour de logiciels. Activez « Mises à jour bêta » pour essayer les nouveautés en avance.
 
 - Désactivée par défaut
-- Réglages : Mise à jour de logiciels › Réglages de mise à jour › Vérifier automatiquement
-- Réglages : Mise à jour de logiciels › Réglages de mise à jour › Télécharger et installer automatiquement
-- Réglages : Mise à jour de logiciels › Réglages de mise à jour › Mises à jour bêta
+- Réglages : Mise à jour du logiciel › Réglages de mise à jour › Vérifier automatiquement
+- Réglages : Mise à jour du logiciel › Réglages de mise à jour › Télécharger et installer automatiquement
+- Réglages : Mise à jour du logiciel › Réglages de mise à jour › Mises à jour bêta
 
 <a id="feature-diagnostics"></a>
 
@@ -890,7 +890,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 ### Paroles › Langue
 
 - **Langue de traduction**
-- **Traduire si aucune traduction** : Traduit d’abord sur ce Mac, puis en ligne si ce n’est pas possible
+- **Traduire si non fournie** : Traduit d’abord sur ce Mac, puis en ligne si ce n’est pas possible
 - **Langues de traduction** : Langues système pour la traduction sur l’appareil
 - **Écriture chinoise**
 - **Langues de romanisation**
@@ -1156,7 +1156,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 
 - **Adresse locale**
 - **Autoriser l’accès du réseau local** : Les appareils du même réseau peuvent se connecter avec un lien incluant une clé d’accès
-- **Autoriser le contrôle à distance** : Contrôlez la lecture et accédez aux paroles depuis d’autres appareils
+- **Autoriser le contrôle à distance** : Contrôlez la lecture et passez à une ligne des paroles depuis d’autres appareils
 - **Lien d’accès**
 - **Lien de secours (adresse IP)**
 - **Réinitialiser la clé d’accès** : Les liens déjà partagés cesseront de fonctionner
@@ -1220,7 +1220,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 
 ### Raccourcis clavier
 
-- **Liens profonds** : Ouvrez-les depuis Raccourcis, Raycast, Alfred et outils similaires. Survolez un raccourci ci-dessus pour copier le lien de cette action
+- **Liens profonds** : Ouvrez-les depuis Raccourcis, Raycast, Alfred et d’autres outils similaires. Survolez un raccourci ci-dessus pour copier le lien de cette action
 - **Afficher/masquer les paroles flottantes**
 - **Afficher/masquer les paroles de l’encoche**
 - **Développer l’encoche un instant**
@@ -1250,7 +1250,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 ### Général › Barre des menus et Dock
 
 - **Icône de la barre des menus**
-- **Illustration de l’album**
+- **Illustration d’album**
 - **Taille de l’icône**
 - **Animer l’icône**
 - **Afficher dans le Dock**
@@ -1276,11 +1276,11 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 - **Fichier de réglages** : Contient des identifiants en clair. Exporte les réglages et la bibliothèque de paroles en deux fichiers ; l’importation remplace tous les réglages
 - **Effacer tous les réglages** : Efface seulement les réglages de ce Mac ; sauvegardes et fichiers exportés conservés. Action irréversible
 
-### Mise à jour de logiciels
+### Mise à jour du logiciel
 
-- **Mise à jour de logiciels**
+- **Mise à jour du logiciel**
 
-### Mise à jour de logiciels › Réglages de mise à jour
+### Mise à jour du logiciel › Réglages de mise à jour
 
 - **Vérifier automatiquement** : Recherche une nouvelle version une fois par jour
 - **Télécharger et installer automatiquement** : Téléchargement en arrière-plan, installation à la fermeture de Lyrimuse
@@ -1334,7 +1334,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 - **Heure d’envoi**
 - **Bilans d’écoute**
 - **Source des données**
-- **Éléments** : Nombre d’artistes, d’albums et de morceaux à lister en tête
+- **Éléments** : Nombre d’artistes, d’albums et de morceaux à afficher dans chaque classement
 - **Récap d’écoute hebdomadaire**
 - **Bilan d’écoute quotidien**
 - **Récap d’écoute mensuel**

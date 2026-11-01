@@ -205,7 +205,7 @@ tenga éxito, así que un cierre inesperado a mitad de la petición no puede pro
 Last.fm recibe lo que informó el reproductor, así que una biblioteca que informa de la misma persona como
 `Khalil Fong` y como `方大同` mostrará allí dos artistas.
 
-Dentro de Lyrimuse, los recuentos de reproducciones, las listas y los números de «N.ª escucha» los fusionan, mediante
+Dentro de Lyrimuse, los recuentos de reproducciones, las listas y los números de «Reproducción n.º N» los fusionan, mediante
 la unificación de chino tradicional y simplificado, alias de nombres romanizados, la eliminación del ruido del catálogo
 (`(Remastered 2014)`, `(feat. …)`, `(Explicit)`) y una tabla de alias por artista. La fusión se hace
 en local y no antes del envío porque una fusión local errónea se deshace al actualizar, mientras que un

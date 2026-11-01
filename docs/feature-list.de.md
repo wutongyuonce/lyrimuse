@@ -378,7 +378,7 @@ Läuft nichts, zeigt das Liedtextfenster den letzten Titel mit einer Zeile aus s
 Schrift (die des Systems oder deine eigene .ttf / .otf), Größe, Stärke, Text- und Hintergrundfarbe, Kontur und Milchglas. Der schwebende Text bringt Farbdesigns mit und kann eigene sichern; die Textfarbe kann dem Albumcover folgen, und schwebender Text, Notch, Menüleiste und Touch Bar können auch als Regenbogen fließen. Tastaturkurzbefehle oder Scrollen über dem Liedtext bei gedrückter ⌘-Taste (Mausrad oder Streichen mit zwei Fingern) machen den schwebenden Text auch spontan größer oder kleiner.
 
 - Einstellungen: Liedtext-Anzeige › Schwebender Text › Design
-- Einstellungen: Liedtext-Anzeige › Schwebender Text › Design › Meine Themen
+- Einstellungen: Liedtext-Anzeige › Schwebender Text › Design › Meine Designs
 - Einstellungen: Liedtext-Anzeige › Notch › Textzeile › Liedtextfarbe
 - Einstellungen: Liedtext-Anzeige › Menüleiste › Farbe › Regenbogen
 - Einstellungen: Liedtext-Anzeige › Schwebender Text › Schrift › Schrift
@@ -606,7 +606,7 @@ Bei YouTube Music im Browser wird Werbung übersprungen, sobald die Taste „Üb
 Player, die nicht in der Liste stehen, lassen sich aus dem Ordner „Programme“ zu deinen vertrauenswürdigen Playern hinzufügen, und Lyrimuse fragt nach, wenn es einen unbekannten Player bemerkt, der Musik abspielt.
 
 - Einstellungen: Player › Andere Apps
-- Einstellungen: Player › App hinzufügen …
+- Einstellungen: Player › App hinzufügen …
 - Einstellungen: Player › Hinweis auf neue Player
 
 <a id="feature-permissions"></a>
@@ -881,7 +881,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 
 - **Liedtextquellen**
 - **Zuordnungsalgorithmus**
-- **Liedtext aus der Datei bevorzugen**: Bei lokalen Dateien zuerst die gleichnamige .lrc oder eingebetteten Liedtext nutzen
+- **Liedtext aus der Datei bevorzugen**: Bei lokalen Dateien zuerst die gleichnamige .lrc-Datei oder eingebetteten Liedtext nutzen
 - **Nach Algorithmus-Update neu wählen**: Im Hintergrund neu bewertet; kann zu einer besseren Version wechseln
 - **Liedtext für gleiche Titel teilen**: Eine Kopie pro Aufnahme über Player und Albumversionen hinweg; Änderungen gelten überall
 - **Manuell gewählte Texte sperren**: Manuell gewählte Liedtexte werden nie durch die automatische Zuordnung ersetzt
@@ -916,7 +916,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 - **Musik-Apps**
 - **Web**: Liedtext funktioniert auch bei Musik im Browser. Klicke auf „+“, um deinen Browser zu koppeln; die Position wird direkt von der Seite gelesen, sodass der Text nach einem Titelwechsel sofort synchron ist
 - **Andere Apps**: Nicht aufgeführte Apps können auch als Player dienen: Nach dem Hinzufügen zeigen ihre Titel Liedtext und zählen zu deinem Hörverlauf
-- **App hinzufügen …**: Wähle eine aus „Programme“, ohne zu warten, bis sie abspielt
+- **App hinzufügen …**: Wähle eine App im Ordner „Programme“, ohne zu warten, bis sie etwas abspielt
 - **Hinweis auf neue Player**
 
 ### Player › Web
@@ -960,7 +960,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 
 ### Liedtext-Anzeige › Schwebender Text › Design
 
-- **Meine Themen**
+- **Meine Designs**
 
 ### Liedtext-Anzeige › Schwebender Text › Schrift
 
@@ -1023,10 +1023,10 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 
 ### Liedtext-Anzeige › Notch › Stil
 
-- **Erweiterter Hintergrund**
+- **Hintergrund ausgeklappt**
 - **Ecken**
-- **Ausgeklappte Ecken**
-- **Fortschrittslinie**: Zeigt den Wiedergabefortschritt, wenn nicht erweitert
+- **Ecken ausgeklappt**
+- **Fortschrittslinie**: Zeigt den Wiedergabefortschritt, wenn nicht ausgeklappt
 
 ### Liedtext-Anzeige › Notch › Linkes Ohr
 
@@ -1053,7 +1053,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 
 ### Liedtext-Anzeige › Notch › Ausgeklappt
 
-- **Mehrzeiliger Liedtext**: Zeigt erweitert mehrere Liedzeilen, die aktuelle Zeile leuchtet Wort für Wort auf
+- **Mehrzeiliger Liedtext**: Zeigt ausgeklappt mehrere Liedzeilen, die aktuelle Zeile leuchtet Wort für Wort auf
 - **Zeilen**
 - **Steuerung**
 - **Textversatz anzeigen**
@@ -1132,7 +1132,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 - **Position der Steuerung**
 - **Taste „Mehr“ anzeigen**: Tippe darauf, um zu Wiedergabeposition, Kalibrierung, Favorit, Zufall/Wiederholen und Lautstärke zu wechseln. Was der Player nicht unterstützt, wird ausgeblendet
 - **Control Strip beim Ausklappen ausblenden**: Der Liedtext füllt die ganze Touch Bar. Um Helligkeit, Lautstärke und andere Systemtasten zu erreichen, tippe zuerst links auf ✕, um den Text einzuklappen
-- **Control Strip**: Füge die Tasten für Helligkeit, Lautstärke und mehr rechts in der Touch Bar in „Systemeinstellungen › Tastatur › Touch Bar-Einstellungen …“ hinzu, entferne oder ordne sie neu
+- **Control Strip**: Füge die Tasten für Helligkeit, Lautstärke und mehr rechts in der Touch Bar in „Systemeinstellungen › Tastatur › Touch Bar-Einstellungen …“ hinzu, entferne oder ordne sie neu
 
 ### Liedtext-Anzeige › Touch Bar › Farbe
 
@@ -1220,7 +1220,7 @@ Alle Einstellungen des Einstellungsfensters nach Ort: insgesamt 300. Gib einen N
 
 ### Tastaturkurzbefehle
 
-- **Deep Links**: Öffne sie aus „Kurzbefehle“, Raycast, Alfred und ähnlichen Tools. Bewege den Zeiger über einen Tastaturkurzbefehl oben, um den Link für diese Aktion zu kopieren
+- **Deep Links**: Öffne sie über „Kurzbefehle“, Raycast, Alfred und ähnliche Tools. Bewege den Zeiger über einen Tastaturkurzbefehl oben, um den Link für diese Aktion zu kopieren
 - **Schwebenden Text ein-/ausblenden**
 - **Notch-Text ein-/ausblenden**
 - **Notch-Liedtext kurz einblenden**

@@ -134,7 +134,7 @@ Le rattrapage ne remonte que sur **13 jours**. Une fois qu’une écoute a ét�
 
 Last.fm reçoit ce que le lecteur a indiqué, donc une bibliothèque qui désigne la même personne à la fois par `Khalil Fong` et `方大同` y affichera deux artistes.
 
-Dans Lyrimuse, le nombre d’écoutes, les classements et les numéros de « Nᵉ écoute » les fusionnent, grâce au rapprochement traditionnel/simplifié, aux alias de noms romanisés, au retrait du bruit de catalogue (`(Remastered 2014)`, `(feat. …)`, `(Explicit)`) et à une table d’alias par artiste. La fusion se fait en local plutôt qu’avant l’envoi, car une mauvaise fusion locale s’annule par une actualisation, alors qu’un mauvais scrobble est une modification permanente d’une page publique.
+Dans Lyrimuse, le nombre d’écoutes, les classements et les numéros de « Écoute n° N » les fusionnent, grâce au rapprochement traditionnel/simplifié, aux alias de noms romanisés, au retrait du bruit de catalogue (`(Remastered 2014)`, `(feat. …)`, `(Explicit)`) et à une table d’alias par artiste. La fusion se fait en local plutôt qu’avant l’envoi, car une mauvaise fusion locale s’annule par une actualisation, alors qu’un mauvais scrobble est une modification permanente d’une page publique.
 
 ## 7. Questions fréquentes
 
