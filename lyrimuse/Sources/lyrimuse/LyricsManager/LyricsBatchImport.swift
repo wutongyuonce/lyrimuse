@@ -120,11 +120,25 @@ enum LyricsBatchImport {
     static var stagingDirectory: URL { LyrimusePaths.configFile(stagingDirectoryName) }
 
     /// 读文件夹(含子文件夹)里认得的歌词文件,写暂存请求,交引擎出预览清单。阻塞,放后台跑。
-    static func prepare(folder: URL) async -> Result<Prepared, PrepareError> {
-        await Task.detached(priority: .userInitiated) { prepareBlocking(folder: folder) }.value
+    /// `onlyGroups`:只暂存这几组(`groupKey`)的文件,监视文件夹只交有变动的那几组;nil = 整个文件夹。
+    static func prepare(folder: URL, onlyGroups: Set<String>? = nil) async -> Result<Prepared, PrepareError> {
+        await Task.detached(priority: .userInitiated) { prepareBlocking(folder: folder, onlyGroups: onlyGroups) }.value
     }
 
-    private static func prepareBlocking(folder: URL) -> Result<Prepared, PrepareError> {
+    /// 引擎认得的后缀(importbatch.go importStemSuffixes),长的在前。
+    private static let stemSuffixes = [".tr.lrc", ".roma.lrc", ".enhanced.lrc", ".lrcx", ".lrc", ".yrc", ".ttml", ".xml", ".qrc", ".krc", ".txt"]
+
+    /// 一个文件属于哪一组:所在子目录 + 去掉后缀的文件名,不分大小写,跟引擎 groupImportFiles 同一个分法。
+    static func groupKey(_ relativePath: String) -> String {
+        let name = (relativePath as NSString).lastPathComponent
+        let dir = (relativePath as NSString).deletingLastPathComponent
+        let lower = name.lowercased()
+        let stem = stemSuffixes.first { lower.hasSuffix($0) }.map { String(name.dropLast($0.count)) }
+            ?? (name as NSString).deletingPathExtension
+        return (dir + "\u{0}" + stem).lowercased()
+    }
+
+    private static func prepareBlocking(folder: URL, onlyGroups: Set<String>?) -> Result<Prepared, PrepareError> {
         let root = folder.standardizedFileURL.path
         guard let walker = FileManager.default.enumerator(
             at: folder, includingPropertiesForKeys: [.isRegularFileKey],
@@ -134,18 +148,18 @@ enum LyricsBatchImport {
         var total = 0
         for case let url as URL in walker {
             guard extensions.contains(url.pathExtension.lowercased()),
-                  (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true,
-                  let handle = try? FileHandle(forReadingFrom: url) else { continue }
+                  (try? url.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true else { continue }
+            let full = url.standardizedFileURL.path
+            let rel = full.hasPrefix(root + "/") ? String(full.dropFirst(root.count + 1)) : url.lastPathComponent
+            if let onlyGroups, !onlyGroups.contains(groupKey(rel)) { continue }
+            guard let handle = try? FileHandle(forReadingFrom: url) else { continue }
             defer { try? handle.close() }
             guard let data = try? handle.read(upToCount: LyricsSearchService.importMaxBytes + 1) else { continue }
             total += data.count
             guard files.count < maxFiles, total <= maxTotalBytes else { return .failure(.tooMany) }
-            let full = url.standardizedFileURL.path
-            let rel = full.hasPrefix(root + "/") ? String(full.dropFirst(root.count + 1)) : url.lastPathComponent
             files.append(.init(name: url.lastPathComponent, path: rel, data: data))
         }
         guard !files.isEmpty else { return .failure(.noFiles) }
-        discardStaleStaging()
         FileIO.createDirectory(stagingDirectory)
         let staging = stagingDirectory.appendingPathComponent("\(UUID().uuidString).json")
         guard let body = try? JSONEncoder().encode(StagingRequest(files: files)), FileIO.write(body, to: staging) else {
@@ -306,7 +320,8 @@ struct LyricsBatchImportSheet: View {
         case .matched, .ambiguous:
             guard let t = target(item) else { return .choose }
             if t.manual { return .manual }
-            if mode == .fill, t.hasLyrics { return .hasLyrics }
+            // 纯文本盖不住已有的逐行歌词,引擎不写(applyImportBatchLocked)。
+            if mode == .fill || item.plainText == true, t.hasLyrics { return .hasLyrics }
             return .ready
         }
     }
@@ -544,7 +559,7 @@ struct LyricsBatchImportSheet: View {
             staging: prepared.staging, mode: mode.rawValue, items: items) { importPhase = $0 }
         importPhase = nil
         if let changed {
-            storedCount = min(storing, changed)
+            storedCount = storing
             importedCount = changed
             LyricsBatchImport.discard(prepared.staging)
         } else {

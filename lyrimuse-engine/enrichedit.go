@@ -113,6 +113,8 @@ type enrichEditRequest struct {
 	ImportItems []importBatchItem `json:"items,omitempty"`
 	// drop_imported_lyrics(importstore.go):导入库里要删的记录文件名;Value 为真时整个导入库清空。
 	ImportNames []string `json:"import_names,omitempty"`
+	// importPrepared:import_lyrics_batch 在拿锁之前读好、解析好的暂存(prepareImportBatch),不从请求文件里来。
+	importPrepared *importBatchPrepared
 }
 
 type enrichEditResult struct {
@@ -149,6 +151,10 @@ func applyEnrichEdit(req enrichEditRequest) enrichEditResult {
 		res.Error = errEnrichCacheNotLoaded.Error()
 		warnf("enrich edit: op=%s refused: %v", req.Op, errEnrichCacheNotLoaded)
 		return res
+	}
+	// 批量导入的暂存可能有上百 MB:读取、解析放在锁外,锁里只写缓存(importbatch.go)。
+	if req.Op == "import_lyrics_batch" {
+		req.importPrepared = prepareImportBatch(req)
 	}
 	var out enrichEditOutcome
 	switch req.Op {

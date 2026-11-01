@@ -79,14 +79,32 @@ func importedLyricsFileName(key string) string {
 	return hex.EncodeToString(sum[:]) + ".json"
 }
 
-// importedLooseKey:宽松比对用的 key,去掉歌名里的时长变体位(「~durN」)后按 loosenEnrichKey 折平。
+// importedLooseKey:宽松比对用的 key(繁简、大小写、空格、多歌手分隔符折平)。时长变体位(「~durN」)照留:那是另一个录音,
+// 不借这一份。
 func importedLooseKey(key string) string {
-	if strings.Count(key, "|") >= 2 {
-		artist, title, album := splitEnrichKey(key)
-		title = strings.TrimSuffix(title, enrichKeyDurationVariantRe.FindString(title))
-		key = artist + "|" + title + "|" + album
-	}
 	return loosenEnrichKey(key)
+}
+
+// lookupImportedLyricsNameLocked:按 key 找记录;exact 为假表示按宽松 key 对上的(存的是另一种写法)。调用方持锁。
+func lookupImportedLyricsNameLocked(key string) (stored, name string, exact, ok bool) {
+	if name, ok := importedLyricsIndex.keys[key]; ok {
+		return key, name, true, true
+	}
+	if orig, hit := importedLyricsIndex.loose[importedLooseKey(key)]; hit {
+		if name, ok := importedLyricsIndex.keys[orig]; ok {
+			return orig, name, false, true
+		}
+	}
+	return "", "", false, false
+}
+
+// importedLyricsFitsDuration:知道时长时(durationSecs > 0)末句时间要跟时长吻合。
+func importedLyricsFitsDuration(rec importedLyricsRecord, durationSecs float64) bool {
+	if durationSecs <= 0 {
+		return true
+	}
+	last, ok := lastLRCTimestampSecs(rec.Lyrics)
+	return !ok || durationFits(last, durationSecs)
 }
 
 // loadImportedLyricsIndexLocked:index.json 改过(或换了配置目录)才重读。调用方持 importedLyricsIndex 的锁。
@@ -227,14 +245,15 @@ func dropImportedLyrics(keys ...string) {
 	loadImportedLyricsIndexLocked()
 	changed := false
 	for _, k := range keys {
-		name, ok := importedLyricsIndex.keys[k]
+		// 跟读的时候(importedLyricsRecordLookup)同一套找法,宽松 key 对上的也删,不然删不掉、下一轮又被挑回来。
+		stored, name, _, ok := lookupImportedLyricsNameLocked(k)
 		if !ok {
 			continue
 		}
 		if err := os.Remove(filepath.Join(dir, name)); err != nil && !errors.Is(err, fs.ErrNotExist) {
 			noteFileErr("remove", filepath.Join(dir, name), err)
 		}
-		delete(importedLyricsIndex.keys, k)
+		delete(importedLyricsIndex.keys, stored)
 		changed = true
 	}
 	if changed {
@@ -300,34 +319,25 @@ func dropImportedLyricsFiles(names []string, all bool) int {
 // importedLyricsRecordFor:这首有没有导入的歌词。先按原 key 找,找不到按宽松 key(繁简、大小写、空格、多歌手分隔符、
 // 时长变体位)找。
 func importedLyricsRecordFor(key string) (importedLyricsRecord, bool) {
+	rec, _, ok := importedLyricsRecordLookup(key)
+	return rec, ok
+}
+
+// importedLyricsRecordLookup:同 importedLyricsRecordFor,另报是不是按原 key 对上的。
+func importedLyricsRecordLookup(key string) (importedLyricsRecord, bool, bool) {
 	dir := importedLyricsDir()
 	if dir == "" || key == "" {
-		return importedLyricsRecord{}, false
+		return importedLyricsRecord{}, false, false
 	}
 	importedLyricsIndex.Lock()
 	loadImportedLyricsIndexLocked()
-	name, ok := importedLyricsIndex.keys[key]
-	if !ok {
-		if orig, hit := importedLyricsIndex.loose[importedLooseKey(key)]; hit {
-			name, ok = importedLyricsIndex.keys[orig]
-		}
-	}
+	_, name, exact, ok := lookupImportedLyricsNameLocked(key)
 	importedLyricsIndex.Unlock()
 	if !ok {
-		return importedLyricsRecord{}, false
+		return importedLyricsRecord{}, false, false
 	}
-	data, err := os.ReadFile(filepath.Join(dir, name))
-	if err != nil {
-		if !errors.Is(err, fs.ErrNotExist) {
-			noteFileErr("read", filepath.Join(dir, name), err)
-		}
-		return importedLyricsRecord{}, false
-	}
-	var rec importedLyricsRecord
-	if err := json.Unmarshal(data, &rec); err != nil || strings.TrimSpace(rec.Lyrics) == "" {
-		return importedLyricsRecord{}, false
-	}
-	return rec, true
+	rec, ok := readImportedLyricsRecord(dir, name)
+	return rec, exact, ok
 }
 
 // importedIdentityMatches:按身份存的这份认不认这首:歌手对得上(折平后相同,或 artistMatches)。
@@ -369,13 +379,8 @@ func importedLyricsRecordBySong(artist, title string, durationSecs float64) (imp
 	importedLyricsIndex.Unlock()
 	for _, name := range names {
 		rec, ok := readImportedLyricsRecord(dir, name)
-		if !ok || !importedIdentityMatches(rec, artist, title) {
+		if !ok || !importedIdentityMatches(rec, artist, title) || !importedLyricsFitsDuration(rec, durationSecs) {
 			continue
-		}
-		if durationSecs > 0 {
-			if last, ok := lastLRCTimestampSecs(rec.Lyrics); ok && !durationFits(last, durationSecs) {
-				continue
-			}
 		}
 		return rec, true
 	}
@@ -425,7 +430,11 @@ func dropImportedLyricsForSong(key string) {
 // importedLyricsFor:选词的候选池用。先按这首的 key、再按宽松 key、最后按身份找(importedLyricsRecordBySong)。身份按这首本地的
 // 歌名歌手专辑,不算「播放器给定」(不吃同源加权)。
 func importedLyricsFor(artist, title, album string, durationSecs float64) (lyricSourceResult, bool) {
-	rec, ok := importedLyricsRecordFor(enrichKey(artist, title, album))
+	rec, exact, ok := importedLyricsRecordLookup(enrichKey(artist, title, album))
+	// 按宽松 key 对上的(存的是另一种写法)跟按身份存的一样,知道时长时末句要吻合。
+	if ok && !exact && !importedLyricsFitsDuration(rec, durationSecs) {
+		ok = false
+	}
 	if !ok {
 		rec, ok = importedLyricsRecordBySong(artist, title, durationSecs)
 	}

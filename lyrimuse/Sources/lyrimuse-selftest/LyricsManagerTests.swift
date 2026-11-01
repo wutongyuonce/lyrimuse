@@ -1967,13 +1967,17 @@ func runLyricsManagerTests() {
             expectEqual(false, true, "搜索候选歌词: 侧栏要有「当前使用」那一块和候选表头")
         }
         expectEqual(sheet.contains("Text(\"\\(searchResults.count)\")"), true, "搜索候选歌词: 候选计数只算搜索结果")
+        let serviceSource = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("lyrimuse/LyricsManager/LyricsSearchService.swift"),
+            encoding: .utf8)) ?? ""
         let quickWindow = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().appendingPathComponent("lyrimuse/LyricsManager/LyricsQuickSearchWindow.swift"),
             encoding: .utf8)) ?? ""
         expectEqual(sourceHas(sheet, "            importedSection\n            currentSection\n")
                     && sourceHas(sheet, "            importedCandidate = nil\n            takePendingImport()\n")
                     && sheet.contains("(importedCandidate.map { [$0] } ?? []) + (current.map { [$0] } ?? []) + searchResults")
-                    && quickWindow.contains("markManual: candidate.isImported || AppSettings.shared.manualPickLocksLyrics"), true,
+                    && quickWindow.contains("markManual: candidate.isImported || AppSettings.shared.manualPickLocksLyrics")
+                    && serviceSource.contains("var isImported = false") && serviceSource.contains("imported.isImported = true"), true,
                     "导入歌词: 导入的那条单独一块摆在「当前使用」上面、换歌清掉、能预览,采用时一律按手改锁定")
         let storeSource = (try? String(contentsOf: URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().appendingPathComponent("lyrimuse/LyricsManager/EnrichCacheStore.swift"),

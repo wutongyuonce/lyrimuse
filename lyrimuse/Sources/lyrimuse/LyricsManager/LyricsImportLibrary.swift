@@ -196,7 +196,8 @@ final class LyricsImportWatcher: ObservableObject {
         if state?.folder != folder.path { state = State(folder: folder.path, files: [:]) }
         let changed = Set(current.filter { state?.files[$0.key] != $0.value }.keys)
         guard !changed.isEmpty else { return }
-        guard case .success(let prepared) = await LyricsBatchImport.prepare(folder: folder) else { return }
+        let groups = Set(changed.map(LyricsBatchImport.groupKey))
+        guard case .success(let prepared) = await LyricsBatchImport.prepare(folder: folder, onlyGroups: groups) else { return }
         defer { LyricsBatchImport.discard(prepared.staging) }
         let items: [[String: Any]] = prepared.plan.items.compactMap { item in
             guard item.files.contains(where: changed.contains) else { return nil }

@@ -380,3 +380,94 @@ func TestDropImportedLyricsFiles(t *testing.T) {
 		t.Error("清空后不该再找到")
 	}
 }
+
+// 审查补的:时长变体位是另一个录音,不借;宽松 key(另一种写法)对上的要时长吻合;删的时候跟读的时候同一套找法。
+func TestImportedLyricsLooseKeyRespectsVariantAndDuration(t *testing.T) {
+	t.Setenv("LYRIMUSE_CONFIG_DIR", t.TempDir())
+	setUpEnrichEditTest(t, importTestCache())
+	lyr := lrcBodyEn(20, 10) // 末句 190 秒
+	if err := saveImportedLyrics(
+		importedLyricsRecord{Key: "A|Song|Album", Lyrics: lyr},
+		importedLyricsRecord{Key: "B|Tune~dur300|Album", Lyrics: lyr},
+	); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := importedLyricsFor("B", "Tune", "Album", 0); ok {
+		t.Error("时长变体那条是另一个录音,不该借给不带变体位的这首")
+	}
+	if _, ok := importedLyricsFor("a", "song", "ALBUM", 200); !ok {
+		t.Error("宽松 key 对上、时长吻合应借")
+	}
+	if _, ok := importedLyricsFor("a", "song", "ALBUM", 400); ok {
+		t.Error("宽松 key 对上但时长对不上不该借")
+	}
+	if _, ok := importedLyricsFor("A", "Song", "Album", 400); !ok {
+		t.Error("原 key 对上的不看时长")
+	}
+	dropImportedLyricsForSong("a|song|album")
+	if _, ok := importedLyricsRecordFor("A|Song|Album"); ok {
+		t.Error("按宽松 key 也应删掉")
+	}
+}
+
+// 审查补的:只凭歌名对上的不自动认定;「311 - Amber」两种猜法都留;纯文本不给存入导入库。
+func TestPlanLyricsImportTitleOnlyAndPlainText(t *testing.T) {
+	if g := importIdentityGuesses("311 - Amber", nil); len(g) != 2 || g[0] != (importIdentity{artist: "311", title: "Amber"}) || g[1] != (importIdentity{title: "Amber"}) {
+		t.Errorf("数字开头的两段应同时猜歌手和只有歌名: %+v", g)
+	}
+	files := []importLyricsFile{pathFile("晴天.lrc", lrcBody(4, 60)), pathFile("X Artist - Y Title.txt", "第一句\n第二句")}
+	plan := planLyricsImport(files, "zh", importTestCache())
+	by := map[string]importPlanItem{}
+	for _, it := range plan.Items {
+		by[it.Files[0]] = it
+	}
+	if it := by["晴天.lrc"]; it.Status != importStatusAmbiguous || it.Key != "" || len(it.Options) != 1 {
+		t.Errorf("只凭歌名对上的应等用户挑: %+v", it)
+	}
+	if it := by["X Artist - Y Title.txt"]; it.Status != importStatusUnmatched || it.CanStore {
+		t.Errorf("纯文本不该给存入导入库: %+v", it)
+	}
+}
+
+// 审查补的:监视文件夹不写标了纯音乐、只有纯文本的歌;只补模式跳过纯音乐;纯文本盖不住已有的逐行歌词。
+func TestImportBatchRespectsInstrumentalAndPlainText(t *testing.T) {
+	cache := importTestCache()
+	keyI, keyP, keyQ := enrichKey("I", "Inst", "X"), enrichKey("P", "Plain", "X"), enrichKey("周杰伦", "晴天", "叶惠美")
+	cache[keyI] = enrichEntry{DurationSecs: 200, Instrumental: true}
+	cache[keyP] = enrichEntry{DurationSecs: 200, PlainLyrics: bt("纯文本歌词"), PlainLyricsSource: "lrclib"}
+	files := []importLyricsFile{
+		pathFile("I - Inst.lrc", lrcBody(4, 40)), pathFile("P - Plain.lrc", lrcBody(4, 40)), pathFile("周杰伦 - 晴天.txt", "一句\n两句"),
+	}
+	ids := map[string]int{}
+	for _, g := range groupImportFiles(files) {
+		ids[g.Stem] = g.ID
+	}
+	items := []importBatchItem{{ID: ids["I - Inst"], Key: keyI}, {ID: ids["P - Plain"], Key: keyP}, {ID: ids["周杰伦 - 晴天"], Key: keyQ}}
+
+	staging := setUpImportBatch(t, files)
+	setUpEnrichEditTest(t, cache)
+	applyEnrichEdit(enrichEditRequest{Op: "import_lyrics_batch", Staging: staging, Mode: importModeLibrary, ImportItems: items})
+	if e, _ := cacheEntry(t, keyI); !e.Instrumental || e.LyricsSource == importLyricsSource {
+		t.Errorf("监视文件夹不该动标了纯音乐的: %+v", e)
+	}
+	if e, _ := cacheEntry(t, keyP); e.LyricsSource == importLyricsSource || e.PlainLyrics.String() != "纯文本歌词" {
+		t.Errorf("监视文件夹不该动只有纯文本的: %+v", e)
+	}
+	if _, ok := importedLyricsRecordFor(keyI); !ok {
+		t.Error("没写进条目的应进导入库")
+	}
+
+	staging = setUpImportBatch(t, files)
+	setUpEnrichEditTest(t, cache)
+	applyEnrichEdit(enrichEditRequest{Op: "import_lyrics_batch", Staging: staging, Mode: importModeFill, ImportItems: items[:1]})
+	if e, _ := cacheEntry(t, keyI); !e.Instrumental {
+		t.Errorf("只补模式不该动标了纯音乐的: %+v", e)
+	}
+
+	staging = setUpImportBatch(t, files)
+	setUpEnrichEditTest(t, cache)
+	applyEnrichEdit(enrichEditRequest{Op: "import_lyrics_batch", Staging: staging, Mode: importModeManual, ImportItems: items[2:]})
+	if e, _ := cacheEntry(t, keyQ); e.ManualLyrics || e.PlainLyrics.Len() > 0 {
+		t.Errorf("纯文本盖不住已有的逐行歌词,不该写、不该锁: %+v", e)
+	}
+}

@@ -120,8 +120,12 @@ func importIdentityGuesses(stem string, c *scoredLyricCandidateResult) []importI
 			parts = append(parts, p)
 		}
 	}
-	if len(parts) > 1 && importTrackNumRe.MatchString(parts[0]) {
+	// 「01 - 歌手 - 歌名」的开头是音轨号;只有两段时分不清是音轨号还是数字歌手名(「311 - Amber」),两种都猜。
+	if len(parts) > 2 && importTrackNumRe.MatchString(parts[0]) {
 		parts = parts[1:]
+	}
+	if len(parts) == 2 && importTrackNumRe.MatchString(parts[0]) {
+		return append(out, importIdentity{artist: parts[0], title: parts[1]}, importIdentity{title: parts[1]})
 	}
 	switch len(parts) {
 	case 0:
@@ -177,7 +181,7 @@ func buildImportLibrary(cache map[string]enrichEntry) importLibrary {
 		}
 		lib.entries = append(lib.entries, importLibEntry{
 			key: k, artist: artist, title: title, album: album, dur: dur,
-			hasLyrics: e.Lyrics.Len() > 0 || e.BodyFields&32 != 0, manual: e.ManualLyrics, source: e.LyricsSource,
+			hasLyrics: e.Lyrics.Len() > 0 || e.BodyFields&32 != 0 || e.Instrumental, manual: e.ManualLyrics, source: e.LyricsSource,
 		})
 		n := importNormTitle(title)
 		lib.byTitle[n] = append(lib.byTitle[n], len(lib.entries)-1)
@@ -186,7 +190,8 @@ func buildImportLibrary(cache map[string]enrichEntry) importLibrary {
 }
 
 // match:按猜测的先后找第一组对得上的条目。有歌手时歌手要对得上;有专辑、又有专辑也对得上的,只留那几条。
-func (lib importLibrary) match(guesses []importIdentity) []int {
+// byTitleOnly:是只凭歌名对上的(猜测里没有歌手),调用方别自动认定。
+func (lib importLibrary) match(guesses []importIdentity) (hits []int, byTitleOnly bool) {
 	for _, g := range guesses {
 		list := lib.byTitle[importNormTitle(g.title)]
 		if len(list) == 0 {
@@ -218,9 +223,9 @@ func (lib importLibrary) match(guesses []importIdentity) []int {
 				list = sameAlbum
 			}
 		}
-		return list
+		return list, g.artist == ""
 	}
-	return nil
+	return nil, false
 }
 
 type importPlanOption struct {
@@ -323,7 +328,7 @@ func planLyricsImport(files []importLyricsFile, trTarget string, cache map[strin
 		item.Format, item.Lines = res.Format, importTimedLines(c)
 		item.HasWordTiming, item.PlainText = c.HasWordTiming, c.PlainTextOnly
 		item.HasTranslation, item.HasRomanization = c.LyricsTr != "", c.LyricsRoma != ""
-		hits := lib.match(guesses)
+		hits, byTitleOnly := lib.match(guesses)
 		for _, i := range hits {
 			e := lib.entries[i]
 			item.Options = append(item.Options, importPlanOption{
@@ -334,7 +339,10 @@ func planLyricsImport(files []importLyricsFile, trTarget string, cache map[strin
 		switch {
 		case len(hits) == 0:
 			item.Status = importStatusUnmatched
-			item.CanStore = len(importStoreIdentities(g.Stem, c)) > 0
+			item.CanStore = !c.PlainTextOnly && len(importStoreIdentities(g.Stem, c)) > 0
+		case byTitleOnly:
+			// 只凭歌名对上的(文件里、文件名里都没有歌手):交给用户挑,监视文件夹也不自动导。
+			item.Status = importStatusAmbiguous
 		case len(hits) == 1:
 			item.Status, item.Key = importStatusMatched, item.Options[0].Key
 		default:
@@ -457,31 +465,80 @@ type importBatchItem struct {
 	Store bool   `json:"store,omitempty"`
 }
 
-// applyImportBatchLocked:import_lyrics_batch 改动请求。只写缓存里已有的条目;手改过的不 Force 不动;「只补没有歌词的歌」
-// 跳过已有逐行歌词的。调用方持 enrichMu。
+// importBatchPrepared:import_lyrics_batch 在拿 enrichMu 之前读好、解析好的那几组(prepareImportBatch),锁里只写缓存。
+type importBatchPrepared struct {
+	groups map[int]importPreparedGroup
+	err    error
+}
+
+type importPreparedGroup struct {
+	stem  string
+	names []string
+	c     *scoredLyricCandidateResult
+}
+
+// prepareImportBatch:读暂存、分组,只解析预览表里选中的那几组。不碰缓存,在锁外跑。
+func prepareImportBatch(req enrichEditRequest) *importBatchPrepared {
+	files, err := readImportStaging(req.Staging)
+	if err != nil {
+		return &importBatchPrepared{err: err}
+	}
+	groups := groupImportFiles(files)
+	trTarget := features().LyricsTranslationLanguage
+	out := &importBatchPrepared{groups: map[int]importPreparedGroup{}}
+	for _, it := range req.ImportItems {
+		if it.ID < 0 || it.ID >= len(groups) {
+			continue
+		}
+		if _, done := out.groups[it.ID]; done {
+			continue
+		}
+		g := groups[it.ID]
+		names := make([]string, 0, len(g.Files))
+		for _, f := range g.Files {
+			names = append(names, f.Name)
+		}
+		out.groups[it.ID] = importPreparedGroup{stem: g.Stem, names: names, c: parseImportedLyrics(g.Files, trTarget).Candidate}
+	}
+	return out
+}
+
+// applyImportBatchLocked:import_lyrics_batch 改动请求。只写缓存里已有的条目;手改过的不 Force 不动;纯文本盖不住已有的逐行
+// 歌词(显示层先用逐行的),不写;「只补没有歌词的歌」跳过已有逐行歌词、标了纯音乐的;监视文件夹(library)再加上只有纯文本的,
+// 这些只进导入库。调用方持 enrichMu;暂存的读取和解析在锁外做好(req.importPrepared),没做时这里补做。
 func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 	switch req.Mode {
 	case importModeManual, importModePrefer, importModeFill, importModeLibrary:
 	default:
 		return enrichEditOutcome{err: fmt.Errorf("import_lyrics_batch: unknown mode %q", req.Mode)}
 	}
-	files, err := readImportStaging(req.Staging)
-	if err != nil {
-		return enrichEditOutcome{err: fmt.Errorf("import_lyrics_batch: %w", err)}
+	prep := req.importPrepared
+	if prep == nil {
+		prep = prepareImportBatch(req)
 	}
-	groups := groupImportFiles(files)
-	trTarget := features().LyricsTranslationLanguage
+	if prep.err != nil {
+		return enrichEditOutcome{err: fmt.Errorf("import_lyrics_batch: %w", prep.err)}
+	}
 	now := time.Now()
 	var exports, dropped []string
 	var recs []importedLyricsRecord
 	stored := 0
+	keyedRecord := func(key string, g importPreparedGroup) importedLyricsRecord {
+		c := g.c
+		return importedLyricsRecord{
+			Key: key, Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC,
+			BG: c.LyricsBG, Title: c.Title, Artist: c.Artist, Album: c.Album, Files: g.names, ImportedAt: now.Unix(),
+		}
+	}
 	for _, it := range req.ImportItems {
-		if it.ID < 0 || it.ID >= len(groups) {
+		g, ok := prep.groups[it.ID]
+		if !ok || g.c == nil {
 			continue
 		}
+		c := g.c
 		if it.Key == "" {
 			if it.Store {
-				if rec, ok := importStoreRecord(groups[it.ID], trTarget, now); ok {
+				if rec, ok := importStoreRecord(g, now); ok {
 					recs = append(recs, rec)
 					stored++
 				}
@@ -492,25 +549,16 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 		if !ok || (e.ManualLyrics && !it.Force) {
 			continue
 		}
-		if req.Mode == importModeFill && e.Lyrics.Len() > 0 {
+		hasLyrics := e.Lyrics.Len() > 0
+		if c.PlainTextOnly && hasLyrics {
 			continue
 		}
-		g := groups[it.ID]
-		c := parseImportedLyrics(g.Files, trTarget).Candidate
-		if c == nil {
+		if req.Mode == importModeFill && (hasLyrics || e.Instrumental) {
 			continue
 		}
-		var names []string
-		for _, f := range g.Files {
-			names = append(names, f.Name)
-		}
-		// 监视文件夹:已有歌词的只进导入库,不动条目。
-		if req.Mode == importModeLibrary && e.Lyrics.Len() > 0 {
+		if req.Mode == importModeLibrary && (hasLyrics || e.Instrumental || e.PlainLyrics.Len() > 0) {
 			if !c.PlainTextOnly {
-				recs = append(recs, importedLyricsRecord{
-					Key: it.Key, Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC,
-					BG: c.LyricsBG, Title: c.Title, Artist: c.Artist, Album: c.Album, Files: names, ImportedAt: now.Unix(),
-				})
+				recs = append(recs, keyedRecord(it.Key, g))
 				stored++
 			}
 			continue
@@ -533,17 +581,16 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 		enrichCache[it.Key] = e
 		cancelInFlightEnrichLocked(it.Key)
 		exports = append(exports, it.Key)
-		if req.Mode == importModeManual || c.PlainTextOnly {
+		if req.Mode == importModeManual {
 			dropped = append(dropped, it.Key)
-			if req.Mode == importModeManual && songEntitySharing() {
+			if songEntitySharing() {
 				exports = append(exports, shareManualEditLocked(it.Key, now)...)
 			}
 			continue
 		}
-		recs = append(recs, importedLyricsRecord{
-			Key: it.Key, Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC,
-			BG: c.LyricsBG, Title: c.Title, Artist: c.Artist, Album: c.Album, Files: names, ImportedAt: now.Unix(),
-		})
+		if !c.PlainTextOnly {
+			recs = append(recs, keyedRecord(it.Key, g))
+		}
 	}
 	dropImportedLyrics(dropped...)
 	if len(recs) > 0 {
@@ -555,21 +602,17 @@ func applyImportBatchLocked(req enrichEditRequest) enrichEditOutcome {
 }
 
 // importStoreRecord:库里没有对应歌曲的一组,做成按身份存的导入库记录。纯文本、认不出歌手歌名的不存。
-func importStoreRecord(g importFileGroup, trTarget string, now time.Time) (importedLyricsRecord, bool) {
-	c := parseImportedLyrics(g.Files, trTarget).Candidate
+func importStoreRecord(g importPreparedGroup, now time.Time) (importedLyricsRecord, bool) {
+	c := g.c
 	if c == nil || c.PlainTextOnly {
 		return importedLyricsRecord{}, false
 	}
-	ids := importStoreIdentities(g.Stem, c)
+	ids := importStoreIdentities(g.stem, c)
 	if len(ids) == 0 {
 		return importedLyricsRecord{}, false
 	}
-	var names []string
-	for _, f := range g.Files {
-		names = append(names, f.Name)
-	}
 	return importedLyricsRecord{
 		Lyrics: c.Lyrics, Tr: c.LyricsTr, TrLang: c.LyricsTrLang, Roma: c.LyricsRoma, YRC: c.LyricsYRC, BG: c.LyricsBG,
-		Title: ids[0].Title, Artist: ids[0].Artist, Album: c.Album, Files: names, ImportedAt: now.Unix(), Identities: ids,
+		Title: ids[0].Title, Artist: ids[0].Artist, Album: c.Album, Files: g.names, ImportedAt: now.Unix(), Identities: ids,
 	}, true
 }
