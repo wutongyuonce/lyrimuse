@@ -355,6 +355,7 @@
 "专辑 A→Z" = "Álbum A→Z";
 "专辑 Z→A" = "Álbum Z→A";
 "专辑吻合" = "Coincide el álbum";
+"专辑封面" = "Ilustración del álbum";
 "专辑榜" = "Álbumes principales";
 "专辑榜，按「每类列出」的条数，一行一张" = "Álbumes principales, tantos como «Elementos por lista», uno por línea";
 "专辑简介" = "Notas del álbum";
@@ -2004,6 +2005,7 @@
 "汽水音乐歌曲 ID 一致" = "Mismo ID de canción de Soda Music";
 "汽水音乐歌曲页" = "Página de la canción en Soda Music";
 "汽水音乐的歌词接口返回了无法识别的内容（接口可能已变更），并非这首歌曲无歌词，通常将在后续版本中修复" = "La API de letras de Soda Music devolvió contenido no reconocido (puede haber cambiado). No significa que la canción no tenga letra; suele corregirse en una actualización posterior";
+"没有封面时显示「%@」" = "Muestra «%@» si no hay ilustración";
 "没有封面时显示所选图标" = "Muestra el icono elegido si no hay ilustración";
 "没能取到真实数据（网络或后台服务未响应），先用测试数据示意" = "No se pudieron obtener datos reales (la red o el servicio en segundo plano no responde), así que se muestran datos de ejemplo";
 "沿用同曲条目「%@」的时间轴校准，在此调整后将保存到当前条目" = "Usa la calibración de tiempos de «%@», otra entrada de esta canción. Si la ajustas aquí, se guarda en esta entrada";

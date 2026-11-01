@@ -331,11 +331,11 @@ struct MenuBarLyricsIconRow: View {
     var body: some View {
         VStack(spacing: 0) {
             iconRow
-            // 图标长什么样(12 款、用不用封面)在 通用 ›「菜单栏与 Dock」设,这里只给一个跳过去的入口:
+            // 图标长什么样(12 款图标或专辑封面)在 通用 ›「菜单栏与 Dock」设,这里只给一个跳过去的入口:
             // 那枚图标没在显示歌词时也在(菜单栏歌词关着时只剩它),设置留在一处,不在这里再放一份开关。
             SettingsSubRow(title: L10n.t("图标样式")) {
                 Button {
-                    SettingsSearchRouter.shared.revealEntry(titleKey: "菜单栏图标", alsoHighlighting: ["图标换成专辑封面"])
+                    SettingsSearchRouter.shared.revealEntry(titleKey: "菜单栏图标", alsoHighlighting: ["专辑封面"])
                 } label: {
                     HStack(spacing: 3) {
                         Text(styleSummary)
@@ -348,9 +348,9 @@ struct MenuBarLyricsIconRow: View {
         }
     }
 
-    /// 用着封面时报「封面」,否则报所选那款的名字。
+    /// 用着封面时报「专辑封面」,否则报所选那款的名字(同 通用 页卡头)。
     private var styleSummary: String {
-        settings.menuBarIconShowsArtwork ? L10n.t("封面") : settings.menuBarIconStyle.displayName
+        settings.menuBarIconShowsArtwork ? L10n.t("专辑封面") : settings.menuBarIconStyle.displayName
     }
 
     private var iconRow: some View {

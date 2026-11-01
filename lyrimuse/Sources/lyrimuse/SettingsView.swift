@@ -6913,8 +6913,7 @@ private struct GeneralSettingsTab: View {
             // 五张卡:菜单栏与 Dock / 外观与语言 / 启动与通知 / 网络 / 备份与迁移(含清除全部设置)。各行说明一律写成常显副标题,
             // 这一页不放「?」。
             //
-            // **这一页没有预览**:菜单栏就在屏幕顶上,选哪款抬头就看得见,不需要在设置页里
-            // 再仿一条。别把仿菜单栏的 MenuBarIconStage 那套加回来。
+            // 不放整块仿菜单栏的编辑台:菜单栏图标每张卡自带一小段菜单栏(`MenuBarIconPicker`,06 章决策 78),够挑款式用。
             VStack(spacing: 14) {
                 menuBarCard
                 appearanceCard
@@ -6927,14 +6926,15 @@ private struct GeneralSettingsTab: View {
         .id(L10n.current)
     }
 
-    /// 「菜单栏与 Dock」:12 款图标一行排开,所选款名在卡头右侧。
+    /// 「菜单栏与 Dock」:12 款图标和「专辑封面」各一张卡,选中那张的名字在卡头右侧。
     ///
     /// 菜单栏图标放在这张卡而不是「菜单栏歌词」那边:这个图标恰恰是**没有**歌词可显示时才出现的,
     /// 跟 Dock 那一行是同类 —— 都在说这个 App 在系统 UI 里长什么样。
     private var menuBarCard: some View {
         SettingsCard(cornerRadius: 18) {
             SettingsCardHeader(title: L10n.t("菜单栏与 Dock")) {
-                Text(String(format: L10n.t("菜单栏图标：%@"), settings.menuBarIconStyle.displayName))
+                Text(String(format: L10n.t("菜单栏图标：%@"),
+                            settings.menuBarIconShowsArtwork ? L10n.t("专辑封面") : settings.menuBarIconStyle.displayName))
                     .font(.system(size: 11.5))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -6944,14 +6944,6 @@ private struct GeneralSettingsTab: View {
             }
             // 自绘的一行不会自动挂搜索高亮(只有 SettingsRow / SettingsCardHeader 会),手挂。
             .settingsSearchHighlight(title: L10n.t("菜单栏图标"))
-            CardDivider()
-            SettingsRow(
-                icon: "photo",
-                title: L10n.t("图标换成专辑封面"),
-                subtitle: L10n.t("没有封面时显示所选图标")
-            ) {
-                Toggle("", isOn: $settings.menuBarIconShowsArtwork)
-            }
             CardDivider()
             SettingsRow(icon: "arrow.up.left.and.arrow.down.right", title: L10n.t("图标大小")) {
                 SettingsGlassTabPicker(

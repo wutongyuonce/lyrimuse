@@ -355,6 +355,7 @@
 "专辑 A→Z" = "Album A→Z";
 "专辑 Z→A" = "Album Z→A";
 "专辑吻合" = "Album match";
+"专辑封面" = "Album Artwork";
 "专辑榜" = "Top albums";
 "专辑榜，按「每类列出」的条数，一行一张" = "Top albums, as many as “Items per List”, one per line";
 "专辑简介" = "Album Notes";
@@ -2004,6 +2005,7 @@
 "汽水音乐歌曲 ID 一致" = "Same Soda Music song ID";
 "汽水音乐歌曲页" = "Soda Music song page";
 "汽水音乐的歌词接口返回了无法识别的内容（接口可能已变更），并非这首歌曲无歌词，通常将在后续版本中修复" = "Soda Music’s lyrics API returned unrecognized content (the API may have changed). This doesn’t mean the song has no lyrics; a later update usually fixes it";
+"没有封面时显示「%@」" = "Shows “%@” when there’s no artwork";
 "没有封面时显示所选图标" = "Shows the chosen icon when there is no artwork";
 "没能取到真实数据（网络或后台服务未响应），先用测试数据示意" = "Couldn’t fetch real data (network or background service not responding), so sample data is shown";
 "沿用同曲条目「%@」的时间轴校准，在此调整后将保存到当前条目" = "Uses the timing calibration from “%@”, another entry of this song. Adjusting it here saves it to this entry";

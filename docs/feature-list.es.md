@@ -794,7 +794,7 @@ Escribe en la parte superior de la barra lateral de Ajustes para saltar al ajust
 
 - Activada por omisión
 - Ajustes: General › Barra de menús y Dock › Icono de la barra de menús
-- Ajustes: General › Barra de menús y Dock › Usar ilustración como icono
+- Ajustes: General › Barra de menús y Dock › Ilustración del álbum
 - Ajustes: General › Barra de menús y Dock › Tamaño del icono
 - Ajustes: General › Barra de menús y Dock › Animar icono
 
@@ -1250,7 +1250,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Esc
 ### General › Barra de menús y Dock
 
 - **Icono de la barra de menús**
-- **Usar ilustración como icono**
+- **Ilustración del álbum**
 - **Tamaño del icono**
 - **Animar icono**
 - **Mostrar en el Dock**

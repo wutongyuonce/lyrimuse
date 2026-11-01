@@ -794,7 +794,7 @@ Twelve icons in three sizes, moving with the music while it plays, or the album 
 
 - On by default
 - Settings: General › Menu Bar & Dock › Menu Bar Icon
-- Settings: General › Menu Bar & Dock › Use Artwork as Icon
+- Settings: General › Menu Bar & Dock › Album Artwork
 - Settings: General › Menu Bar & Dock › Icon Size
 - Settings: General › Menu Bar & Dock › Animate Icon
 
@@ -1250,7 +1250,7 @@ Every setting in the Settings window, by where it lives: 300 in all. Type a name
 ### General › Menu Bar & Dock
 
 - **Menu Bar Icon**
-- **Use Artwork as Icon**
+- **Album Artwork**
 - **Icon Size**
 - **Animate Icon**
 - **Show in Dock**
