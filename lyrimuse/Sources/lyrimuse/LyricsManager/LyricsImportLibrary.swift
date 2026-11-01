@@ -338,7 +338,8 @@ struct LyricsImportLibrarySheet: View {
         if r.hasWordTiming { parts.append(L10n.t("逐字时间轴")) }
         if r.hasTranslation { parts.append(L10n.t("译文")) }
         if let first = r.files.first { parts.append(first) }
-        if let at = r.importedAt { parts.append(at.formatted(date: .abbreviated, time: .omitted)) }
+        // 日期跟界面语言走,显式传 L10n.locale(不传会落到系统语言)。
+        if let at = r.importedAt { parts.append(at.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, locale: L10n.locale))) }
         return parts.joined(separator: " · ")
     }
 
@@ -352,14 +353,18 @@ struct LyricsImportLibrarySheet: View {
                     .truncationMode(.middle)
                     .help(watcher.folder?.path ?? "")
                     .frame(maxWidth: .infinity, alignment: .leading)
+                // 按钮按完整宽度排,长语言时让路径先缩短,别把按钮挤成两行。
                 Button(watcher.folder == nil ? L10n.t("选择…") : L10n.t("更换…")) { chooseFolder() }
                     .settingsGlassButtons(inSheet: true)
+                    .fixedSize()
                 if watcher.folder != nil {
                     Button(L10n.t("停止监视")) { watcher.setFolder(nil) }
                         .settingsGlassButtons(inSheet: true)
+                        .fixedSize()
                 }
                 Button(L10n.t("全部删除…"), role: .destructive) { confirmDeleteAll = true }
                     .settingsGlassButtons(inSheet: true)
+                    .fixedSize()
                     .disabled(records.isEmpty)
             }
             Group {
@@ -369,7 +374,8 @@ struct LyricsImportLibrarySheet: View {
                     Text(L10n.t("正在导入监视文件夹中的新文件…"))
                 } else if let run = watcher.lastRun {
                     Text(String(format: L10n.t("上次自动导入：%1$@，%2$@ 份"),
-                                run.at.formatted(date: .omitted, time: .shortened), "\(run.changed)"))
+                                run.at.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: L10n.locale)),
+                                "\(run.changed)"))
                 } else {
                     Text(L10n.t("文件夹中新增或修改的歌词文件会自动导入：对应的歌曲没有歌词时直接补上，已有歌词的不变"))
                 }
