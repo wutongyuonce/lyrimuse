@@ -2389,8 +2389,8 @@
 "菜单栏图标" = "Menu Bar Icon";
 "菜单栏图标：%@" = "Menu bar icon: %@";
 "菜单栏歌词" = "Menu Bar Lyrics";
-"菜单栏正中" = "Menu Bar Center";
-"菜单栏正中：歌词显示在菜单栏中间，避开 App 菜单、右侧图标和刘海" = "Menu Bar Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch";
+"菜单栏正中" = "Center";
+"菜单栏正中：歌词显示在菜单栏中间，避开 App 菜单、右侧图标和刘海" = "Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch";
 "落后 %d 分" = "Behind by %d";
 "薄" = "Thin";
 "行上按 %1$@ 次计，明细合计 %2$@ 次" = "The row counts %1$@, the breakdown totals %2$@";

@@ -289,7 +289,7 @@ La ligne en cours directement dans la barre des menus, qui défile quand elle es
 
 - Désactivée par défaut
 - Réglages : Affichage des paroles › Barre des menus › Paroles de la barre des menus
-- Réglages : Affichage des paroles › Barre des menus › Disposition › Position des paroles
+- Réglages : Affichage des paroles › Barre des menus › Disposition › Position
 - Réglages : Affichage des paroles › Barre des menus › Contenu › Contenu affiché
 - Réglages : Affichage des paroles › Barre des menus › Contenu › Seconde ligne
 - Réglages : Raccourcis clavier › Afficher/masquer les paroles de la barre des menus
@@ -1086,7 +1086,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 
 ### Affichage des paroles › Barre des menus › Disposition
 
-- **Position des paroles** : Au centre : les paroles s’affichent au milieu de la barre des menus, à l’écart des menus des apps, des icônes de droite et de l’encoche
+- **Position** : Au centre : les paroles s’affichent au milieu de la barre des menus, à l’écart des menus des apps, des icônes de droite et de l’encoche
 - **Afficher sur**
 - **Mode de largeur** : Fixe : tous les morceaux utilisent la largeur définie Adaptative : chaque morceau prend une largeur selon ses paroles, sans dépasser la largeur définie
 - **Alignement**
@@ -1106,7 +1106,7 @@ Tous les réglages de la fenêtre Réglages, classés par emplacement : 300 au 
 
 ### Affichage des paroles › Barre des menus › Largeur
 
-- **Largeur maximale**
+- **Largeur limite**
 
 ### Affichage des paroles › Barre des menus › Comportement
 

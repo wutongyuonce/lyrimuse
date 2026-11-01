@@ -289,7 +289,7 @@ La línea actual aparece en la barra de menús y se desplaza si es demasiado lar
 
 - Desactivada por omisión
 - Ajustes: Mostrar letra › Barra de menús › Letra en la barra de menús
-- Ajustes: Mostrar letra › Barra de menús › Diseño › Posición de la letra
+- Ajustes: Mostrar letra › Barra de menús › Diseño › Posición
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Qué se muestra
 - Ajustes: Mostrar letra › Barra de menús › Contenido › Segunda línea
 - Ajustes: Atajos de teclado › Alternar letra en la barra de menús
@@ -1086,7 +1086,7 @@ Todos los ajustes de la ventana Ajustes, según dónde están: 300 en total. Esc
 
 ### Mostrar letra › Barra de menús › Diseño
 
-- **Posición de la letra**: Centro de la barra de menús: la letra aparece en medio de la barra, sin tapar los menús de las apps, los iconos de la derecha ni el notch
+- **Posición**: Centro: la letra aparece en medio de la barra de menús, sin tapar los menús de las apps, los iconos de la derecha ni el notch
 - **Mostrar en**
 - **Modo de ancho**: Fijo: todas las canciones usan el ancho definido Adaptable: cada canción toma su ancho de su letra, hasta el ancho definido
 - **Alineación**

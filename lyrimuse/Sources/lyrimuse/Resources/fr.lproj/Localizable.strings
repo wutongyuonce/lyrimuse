@@ -1451,7 +1451,7 @@
 "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词" = "Pour un fichier local, utiliser d’abord le .lrc du même nom ou les paroles intégrées";
 "播放来源" = "Lu dans";
 "播放次数" = "Écoutes";
-"播放歌曲后，歌词将自动显示" = "Lancez un morceau, les paroles s’afficheront ici";
+"播放歌曲后，歌词将自动显示" = "Paroles affichées à la lecture";
 "播放记录" = "Historique de lecture";
 "播放过的歌曲将显示在这里" = "Les morceaux écoutés apparaîtront ici automatiquement";
 "播放进度" = "Position de lecture";
@@ -1672,7 +1672,7 @@
 "最后一句的时间与曲长相差 25% 以上；仍可选用，但排在所有时长相符的候选之后" = "L’écart entre la dernière ligne et la durée du morceau dépasse 25 % ; utilisable, mais classé après tous les résultats de durée concordante";
 "最后一句的时间越接近曲长，得分越高，最高 300" = "Plus la dernière ligne est proche de la durée du morceau, plus le score est élevé, jusqu’à 300";
 "最多 32 个字" = "32 caractères maximum";
-"最大宽度" = "Largeur maximale";
+"最大宽度" = "Largeur limite";
 "最常听的专辑" = "Album phare";
 "最常听的歌手" = "Artiste phare";
 "最常听的歌曲" = "Morceau phare";
@@ -1880,7 +1880,7 @@
 "歌曲简介" = "Notes du morceau";
 "歌词" = "Paroles";
 "歌词一致性" = "Cohérence des paroles";
-"歌词位置" = "Position des paroles";
+"歌词位置" = "Position";
 "歌词使用封面主色；无法获取时为白色" = "Les paroles prennent la couleur dominante de l’illustration, ou du blanc à défaut";
 "歌词偏移" = "Décalage des paroles";
 "歌词偏移归零" = "Réinitialiser le décalage";

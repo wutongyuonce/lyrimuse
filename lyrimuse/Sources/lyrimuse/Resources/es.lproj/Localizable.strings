@@ -1451,7 +1451,7 @@
 "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词" = "Al reproducir un archivo local, usar primero su .lrc del mismo nombre o la letra incrustada";
 "播放来源" = "Reproducida en";
 "播放次数" = "Reproducciones";
-"播放歌曲后，歌词将自动显示" = "Reproduce una canción y la letra aparecerá aquí";
+"播放歌曲后，歌词将自动显示" = "La letra aparece al reproducir";
 "播放记录" = "Historial de reproducción";
 "播放过的歌曲将显示在这里" = "Las canciones que reproduzcas aparecerán aquí automáticamente";
 "播放进度" = "Posición de reproducción";
@@ -1880,7 +1880,7 @@
 "歌曲简介" = "Notas de la canción";
 "歌词" = "Letra";
 "歌词一致性" = "Coherencia de letras";
-"歌词位置" = "Posición de la letra";
+"歌词位置" = "Posición";
 "歌词使用封面主色；无法获取时为白色" = "La letra usa el color principal de la ilustración, o blanco si no hay ninguno";
 "歌词偏移" = "Desfase de la letra";
 "歌词偏移归零" = "Restablecer desfase de la letra";
@@ -2389,8 +2389,8 @@
 "菜单栏图标" = "Icono de la barra de menús";
 "菜单栏图标：%@" = "Icono de la barra de menús: %@";
 "菜单栏歌词" = "Letra en la barra de menús";
-"菜单栏正中" = "Centro de la barra de menús";
-"菜单栏正中：歌词显示在菜单栏中间，避开 App 菜单、右侧图标和刘海" = "Centro de la barra de menús: la letra aparece en medio de la barra, sin tapar los menús de las apps, los iconos de la derecha ni el notch";
+"菜单栏正中" = "Centro";
+"菜单栏正中：歌词显示在菜单栏中间，避开 App 菜单、右侧图标和刘海" = "Centro: la letra aparece en medio de la barra de menús, sin tapar los menús de las apps, los iconos de la derecha ni el notch";
 "落后 %d 分" = "Por detrás: %d pts";
 "薄" = "Fino";
 "行上按 %1$@ 次计，明细合计 %2$@ 次" = "La fila cuenta %1$@; el desglose suma %2$@";

@@ -8402,7 +8402,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne in Safari „Safari › Einstellungen › Erweitert“ und aktiviere „Funktionen für Webentwickler:innen anzeigen“. In den Einstellungen erscheint dann der Bereich „Entwickler“; aktiviere dort „JavaScript von Apple Events erlauben“"
+            "value" : "Öffne in Safari „Safari › Einstellungen › Erweitert“ und aktiviere „Funktionen für Web-Entwickler anzeigen“. In den Einstellungen erscheint dann der Bereich „Entwickler“; aktiviere dort „JavaScript von Apple Events erlauben“"
           }
         },
         "en" : {
@@ -32629,7 +32629,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Largeur maximale"
+            "value" : "Largeur limite"
           }
         },
         "ja" : {
@@ -38430,7 +38430,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spiel einen Titel ab, dann erscheint hier der Liedtext"
+            "value" : "Liedtext erscheint bei Wiedergabe"
           }
         },
         "en" : {
@@ -38442,19 +38442,19 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reproduce una canción y la letra aparecerá aquí"
+            "value" : "La letra aparece al reproducir"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lancez un morceau, les paroles s’afficheront ici"
+            "value" : "Paroles affichées à la lecture"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "曲を再生すると歌詞が自動で表示されます"
+            "value" : "再生すると歌詞を表示"
           }
         },
         "ko" : {
@@ -128808,13 +128808,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Posición de la letra"
+            "value" : "Posición"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Position des paroles"
+            "value" : "Position"
           }
         },
         "ja" : {
@@ -128908,13 +128908,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menu Bar Center"
+            "value" : "Center"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Centro de la barra de menús"
+            "value" : "Centro"
           }
         },
         "fr" : {
@@ -128926,7 +128926,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メニューバーの中央"
+            "value" : "中央"
           }
         },
         "ko" : {
@@ -133731,13 +133731,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menu Bar Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch"
+            "value" : "Center: lyrics appear in the middle of the menu bar, clear of app menus, the icons on the right and the notch"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Centro de la barra de menús: la letra aparece en medio de la barra, sin tapar los menús de las apps, los iconos de la derecha ni el notch"
+            "value" : "Centro: la letra aparece en medio de la barra de menús, sin tapar los menús de las apps, los iconos de la derecha ni el notch"
           }
         },
         "fr" : {
@@ -133749,7 +133749,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メニューバーの中央：Appのメニュー、右側のアイコン、ノッチを避けて、メニューバーの中央に歌詞を表示します"
+            "value" : "中央：Appのメニュー、右側のアイコン、ノッチを避けて、メニューバーの中央に歌詞を表示します"
           }
         },
         "ko" : {

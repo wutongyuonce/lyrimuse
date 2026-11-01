@@ -208,7 +208,7 @@
 "QQ 音乐歌曲页" = "Songseite in QQ Music";
 "QQ 音乐的加密格式" = "Verschlüsseltes Format von QQ Music";
 "Remaster/feat. 等标注" = "Remaster/feat.-Angaben";
-"Safari 的此选项位于设置中：先在「Safari 浏览器 › 设置 › 高级」中勾选「显示网页开发者功能」，设置中将出现「开发者」面板，再在其中勾选「允许Apple事件中的JavaScript」" = "Öffne in Safari „Safari › Einstellungen › Erweitert“ und aktiviere „Funktionen für Webentwickler:innen anzeigen“. In den Einstellungen erscheint dann der Bereich „Entwickler“; aktiviere dort „JavaScript von Apple Events erlauben“";
+"Safari 的此选项位于设置中：先在「Safari 浏览器 › 设置 › 高级」中勾选「显示网页开发者功能」，设置中将出现「开发者」面板，再在其中勾选「允许Apple事件中的JavaScript」" = "Öffne in Safari „Safari › Einstellungen › Erweitert“ und aktiviere „Funktionen für Web-Entwickler anzeigen“. In den Einstellungen erscheint dann der Bereich „Entwickler“; aktiviere dort „JavaScript von Apple Events erlauben“";
 "Scrobble 到 Last.fm" = "An Last.fm scrobbeln";
 "Scrobble 时机" = "Scrobbeln bei";
 "Scrobble 的播放器" = "Player zum Scrobbeln";
@@ -1451,7 +1451,7 @@
 "播放本机文件时，先用同名 .lrc 或文件里内嵌的歌词" = "Bei lokalen Dateien zuerst die gleichnamige .lrc oder eingebetteten Liedtext nutzen";
 "播放来源" = "Gespielt in";
 "播放次数" = "Wiedergaben";
-"播放歌曲后，歌词将自动显示" = "Spiel einen Titel ab, dann erscheint hier der Liedtext";
+"播放歌曲后，歌词将自动显示" = "Liedtext erscheint bei Wiedergabe";
 "播放记录" = "Wiedergabeverlauf";
 "播放过的歌曲将显示在这里" = "Gespielte Titel erscheinen hier automatisch";
 "播放进度" = "Wiedergabeposition";
