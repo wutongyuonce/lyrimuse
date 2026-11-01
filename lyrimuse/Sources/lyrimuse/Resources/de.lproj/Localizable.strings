@@ -565,6 +565,7 @@
 "关于 Lyrimuse" = "Über Lyrimuse";
 "关联平台" = "Verknüpfte Dienste";
 "关闭" = "Schließen";
+"关闭全部" = "Alle deaktivieren";
 "关闭后不显示进度条，Discord 将改为显示已播放时长，该计时无法关闭" = "Wenn deaktiviert, gibt es keinen Fortschrittsbalken; Discord zeigt stattdessen die verstrichene Zeit, die sich nicht abschalten lässt";
 "关闭后仅保留菜单栏图标" = "Wenn aus, bleibt nur das Menüleistensymbol";
 "关闭后平时只保留刘海高度，悬停展开时照常显示" = "Wenn aus, bleibt nur ein Streifen in Notch-Höhe, bis du zum Ausklappen darauf zeigst";
@@ -1239,6 +1240,7 @@
 "延后 %@ 秒显示" = "%@ s später anzeigen";
 "建议" = "Vorschläge";
 "开启「自动识别」时，将识别所有已知和已信任的播放器，上方的勾选暂不生效。如只需识别部分播放器，请取消勾选此项。" = "„Automatisch erkennen“ erkennt alle bekannten und vertrauenswürdigen Player, daher wirken die Häkchen oben derzeit nicht. Deaktiviere es, um nur ausgewählte zu erkennen";
+"开启全部" = "Alle aktivieren";
 "开启后所有听歌报告都会推到这里，之后可在「听歌报告」里按报告调整" = "Wenn aktiv, gehen alle Hörberichte hierher; pro Bericht anpassbar unter „Hörberichte“";
 "开启后播放过半即记录；Last.fm 官方规则不记录" = "Wenn aktiv, werden diese Titel nach der Hälfte gescrobbelt. Nach den offiziellen Last.fm-Regeln nicht";
 "开启后识别所有内置播放器和「其他 App」中的 App" = "Wenn aktiviert, wird jeder integrierte Player und jede App unter „Andere Apps“ erkannt";

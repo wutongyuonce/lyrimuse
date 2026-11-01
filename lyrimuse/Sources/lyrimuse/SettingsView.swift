@@ -2230,7 +2230,7 @@ private struct LyricsSettingsTab: View {
                     }
                     Spacer(minLength: 8)
                     if group.languages.count > 1 {
-                        Button(allOn ? L10n.t("全部关闭") : L10n.t("全部开启")) {
+                        Button(allOn ? L10n.t("关闭全部") : L10n.t("开启全部")) {
                             setReadings(group.languages.map(\.option), on: !allOn)
                         }
                         .buttonStyle(.link)

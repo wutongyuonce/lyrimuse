@@ -65,8 +65,8 @@
 "%@ 条状态未知，稍后将自动与 Last.fm 核对" = "%@ con estado desconocido; se comprobarán automáticamente con Last.fm";
 "%@ 条被 Last.fm 拒绝" = "%@ rechazados por Last.fm";
 "%@ 次" = "×%@";
-"%@ 次收听" = "%@ escuchas";
-"%@ 次收听#one" = "%@ escucha";
+"%@ 次收听" = "%@ reproducciones";
+"%@ 次收听#one" = "%@ reproducción";
 "%@ 点" = "%@:00";
 "%@ 的播放队列位于受保护的目录中。授权后可预先解析即将播放的歌曲；未授权时改为预先解析同一专辑中的其他歌曲" = "%@ guarda su cola de reproducción en una carpeta protegida. Con acceso, se prepara por adelantado la letra de las próximas canciones; sin él, la de otras canciones del mismo álbum";
 "%@ 的歌词缓存位于受系统保护的目录中。授予「完全磁盘访问权限」后，可直接使用本机已有的逐字歌词，无需每次联网搜索" = "%@ guarda su caché de letras en una carpeta protegida por el sistema. Concede «Acceso total al disco» y podrás usar al momento la letra palabra por palabra que ya está en este Mac, sin buscarla en internet";
@@ -565,6 +565,7 @@
 "关于 Lyrimuse" = "Acerca de Lyrimuse";
 "关联平台" = "Plataformas vinculadas";
 "关闭" = "Cerrar";
+"关闭全部" = "Desactivar todo";
 "关闭后不显示进度条，Discord 将改为显示已播放时长，该计时无法关闭" = "Si se desactiva, no hay barra de progreso; Discord muestra el tiempo transcurrido, que no se puede desactivar";
 "关闭后仅保留菜单栏图标" = "Si se desactiva, solo queda el icono de la barra de menús";
 "关闭后平时只保留刘海高度，悬停展开时照常显示" = "Si se desactiva, solo queda la franja a la altura del notch hasta que pases el puntero para expandir";
@@ -1239,6 +1240,7 @@
 "延后 %@ 秒显示" = "Mostrar %@ s más tarde";
 "建议" = "Sugerencias";
 "开启「自动识别」时，将识别所有已知和已信任的播放器，上方的勾选暂不生效。如只需识别部分播放器，请取消勾选此项。" = "«Detección automática» reconoce todos los reproductores conocidos y de confianza, así que las casillas de arriba no tienen efecto ahora. Desactívala para reconocer solo los que elijas";
+"开启全部" = "Activar todo";
 "开启后所有听歌报告都会推到这里，之后可在「听歌报告」里按报告调整" = "Si se activa, todos los informes de escucha se envían aquí; ajústalo por informe en «Informes de escucha»";
 "开启后播放过半即记录；Last.fm 官方规则不记录" = "Si está activado, se hace scrobble de estas canciones al llegar a la mitad. Las reglas oficiales de Last.fm las omiten";
 "开启后识别所有内置播放器和「其他 App」中的 App" = "Al activarlo, se detectan todos los reproductores integrados y las apps de «Otras apps»";

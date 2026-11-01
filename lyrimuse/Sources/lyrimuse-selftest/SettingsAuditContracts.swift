@@ -215,6 +215,8 @@ func runSettingsAuditContracts() {
         return filled(key).count > 5 || filled(hant).count > 5 || filled(en).count > 13
     }
     expectEqual(tooLong, [], "工具栏摘要: 固定文案中文 / 繁体 ≤5 字、英文 ≤13 个字符")
+    expectEqual(sourceHas(app("SettingsView.swift"), "Button(allOn ? L10n.t(\"关闭全部\") : L10n.t(\"开启全部\"))"), true,
+                "按钮用「开启全部 / 关闭全部」,「全部开启 / 全部关闭」只当状态摘要(法、西、韩两种语法形式不同)")
 
     // ---- 悬浮歌词 / 灵动岛设置的排版 ----
     let gallery = app("UI/OverlayThemeGallery.swift")
