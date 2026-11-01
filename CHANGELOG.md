@@ -23,8 +23,12 @@ each version's git tag annotation and on its
 ## v1.12.0
 
 New / 新功能
-- Added Japanese, Korean and Spanish as interface languages
-  新增日语、韩语与西班牙语界面
+- Added Japanese, Korean, Spanish, French and German as interface
+  languages
+  新增日语、韩语、西班牙语、法语与德语界面
+- Added a What's New card after updates, also available from the menu
+  bar right-click menu
+  更新后菜单栏面板会提示一次，点开可看本次更新内容；右键菜单里也能随时查看
 - Added VOX, Pine Player and foobar2000 as built-in players, bringing the
   total to fourteen
   新增内置播放器 VOX、Pine Player 与 foobar2000，内置播放器增至 14 款
@@ -74,24 +78,27 @@ New / 新功能
 - Added lyric sharing: pick up to four lines and save or share them as
   an image card
   新增分享歌词：选 1～4 句生成图片卡片，可拷贝、保存或分享
-- Added animated covers from QQ Music, NetEase and Kugou, and Spotify
-  Canvas as a lyrics window background
-  新增来自 QQ 音乐、网易云音乐与酷狗音乐的动态封面；歌词窗口可用 Spotify Canvas 短片当背景（限在 Spotify 中放过的歌）
+- Added animated covers from QQ Music, NetEase and Kugou, and an optional
+  Spotify Canvas lyrics window background
+  新增来自 QQ 音乐、网易云音乐与酷狗音乐的动态封面；歌词窗口可选用 Spotify Canvas 短片当背景（默认关闭，限在 Spotify 中放过的歌）
 - Added artist bios from Spotify, and album notes and artist bios from
   Kuwo and Kugou
   新增 Spotify 的歌手简介，以及酷我、酷狗的专辑简介与歌手简介
 - You can now use lyrics in or beside local song files in more players,
   and prefer them over online sources
   Apple Music、Spotify、QQ 音乐、网易云音乐、酷狗与洛雪音乐放本机文件时，可用文件旁的 .lrc 和内嵌歌词，并可设为优先使用
+- You can now import lyric files or whole folders, keep an import
+  library and watch a folder
+  可以导入歌词文件或整个文件夹，对上歌词库里的歌；歌词库里还没有的歌先存进导入库，也可以监视一个文件夹
 - You can now choose the word-timed lyric file format: TTML, YRC,
   Enhanced LRC, QRC or KRC
   歌词文件夹的逐字歌词可选存为 TTML、YRC、增强 LRC、QRC 或 KRC
 - Added a proxy setting that retries overseas lyric sources when direct
   connections fail
   新增代理设置，直连失败时经系统代理、本机代理或指定代理重试海外歌词源
-- Added a title card to the OBS page, and a second QR code with the IP
-  link for Android phones
-  OBS 页新增歌名卡；网页歌词新增 IP 链接的二维码，方便安卓手机扫码
+- Added an optional title card to the OBS page, and an IP link QR code
+  for Android phones
+  OBS 页新增可选的歌名卡（默认不显示）；网页歌词新增 IP 链接的二维码，方便安卓手机扫码
 - You can now pick a full, brief or summary listening report per
   channel, or write your own with placeholders
   听歌报告可按渠道选完整、精简、概况三套内容，或用占位符自己写
@@ -100,8 +107,8 @@ New / 新功能
 - Added anonymous usage data, on by default, with no song titles or
   accounts; turn it off in Settings › About
   新增「发送匿名使用数据」（默认开启），用于改进 Lyrimuse，不含歌名和账号；可在 设置 › 关于 › 诊断与数据 中关闭
-- Added a QQ group link next to Discord and Telegram in About
-  「关于」页新增 QQ 群入口，与 Discord、Telegram 并列
+- Added a QQ group link and a Website button to the About page
+  「关于」页新增 QQ 群入口和官网按钮
 
 Improved / 改进
 - Moved data, caches and logs into the standard Library folders, and
@@ -119,6 +126,8 @@ Improved / 改进
 - Improved lyrics by borrowing missing translations and masked words
   from other sources, and removing credit lines
   选中的歌词缺译文或有打码的词时，用其他源中对得上的补回；开头的署名行与影视说明行会被去掉
+- Improved exported .roma.lrc files to use the readings shown on screen
+  导出的 .roma.lrc 读音文件与屏上显示的读音一致
 - Improved matching for Spotify, QQ Music, titles with a version after a
   dash, and NetEase downloads
   改进 Spotify、QQ 音乐、歌名在「 - 」后注明版本的歌曲，以及网易云下载文件（按文件里的歌曲 ID）的歌词匹配
@@ -156,9 +165,9 @@ Improved / 改进
 - Improved the lyrics window's album art background to match Apple
   Music's Now Playing look
   歌词窗口的封面背景改用 Apple Music 播放页的做法，层次更接近
-- You can now hide the progress bar at the bottom of the mini lyrics
-  window
-  迷你歌词窗口可以隐藏底部的进度条
+- You can now hide the mini window's progress bar, or the whole window
+  for instrumentals
+  迷你歌词窗口可以隐藏底部的进度条，也可以在纯音乐或没有歌词时整个隐藏
 - Improved the notch with smoother curved edges and better alignment in
   the expanded view
   灵动岛边缘的弧线更平滑，展开态的各块内容对齐
@@ -173,6 +182,8 @@ Fixed / 修复
 - Fixed a repeated prompt asking to access other apps' data after
   updating to 1.11.0
   修复升级到 1.11.0 后反复弹窗请求读取其他 App 数据的问题
+- Fixed Launch with Player not recognizing players with Chinese names
+  修复「跟随播放器启动」认不出中文名播放器的问题
 - Fixed Lyrimuse not quitting with the player, and Spotify, Apple Music
   or Kaset reopening after you quit them
   修复开启「跟随播放器退出」后 Lyrimuse 不退出，以及退出 Spotify、Apple Music 或 Kaset 后又被重新打开的问题
@@ -231,7 +242,7 @@ Fixed / 修复
 Not sure which one? Check your chip under **About This Mac**.
 不确定该下哪个？打开「关于本机」看芯片是 Apple M… 还是 Intel Core…
 
-445 commits since v1.11.0.
+485 commits since v1.11.0.
 
 **Full Changelog**: https://github.com/Yudaotor/lyrimuse/compare/v1.11.0...v1.12.0
 
